@@ -6,9 +6,12 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Skyflower", "Skyflower.vcxproj", "{37AF7357-6F98-4587-BA3E-CBEF4F9D14A3}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9B38121D-8D9E-45A3-AEE4-483D762F930F} = {9B38121D-8D9E-45A3-AEE4-483D762F930F}
+		{B436B3C1-B4AA-4A61-972E-8DD36A9CC598} = {B436B3C1-B4AA-4A61-972E-8DD36A9CC598}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Graphics", "Graphics.vcxproj", "{9B38121D-8D9E-45A3-AEE4-483D762F930F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sound", "Sound.vcxproj", "{B436B3C1-B4AA-4A61-972E-8DD36A9CC598}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +37,14 @@ Global
 		{9B38121D-8D9E-45A3-AEE4-483D762F930F}.Release|Win32.Build.0 = Release|Win32
 		{9B38121D-8D9E-45A3-AEE4-483D762F930F}.Release|x64.ActiveCfg = Release|x64
 		{9B38121D-8D9E-45A3-AEE4-483D762F930F}.Release|x64.Build.0 = Release|x64
+		{B436B3C1-B4AA-4A61-972E-8DD36A9CC598}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B436B3C1-B4AA-4A61-972E-8DD36A9CC598}.Debug|Win32.Build.0 = Debug|Win32
+		{B436B3C1-B4AA-4A61-972E-8DD36A9CC598}.Debug|x64.ActiveCfg = Debug|x64
+		{B436B3C1-B4AA-4A61-972E-8DD36A9CC598}.Debug|x64.Build.0 = Debug|x64
+		{B436B3C1-B4AA-4A61-972E-8DD36A9CC598}.Release|Win32.ActiveCfg = Release|Win32
+		{B436B3C1-B4AA-4A61-972E-8DD36A9CC598}.Release|Win32.Build.0 = Release|Win32
+		{B436B3C1-B4AA-4A61-972E-8DD36A9CC598}.Release|x64.ActiveCfg = Release|x64
+		{B436B3C1-B4AA-4A61-972E-8DD36A9CC598}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
