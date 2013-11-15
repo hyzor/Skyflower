@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -69,26 +69,37 @@
     <OutDir>$(SolutionDir)bin\x86\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\x86\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)_d</TargetName>
+    <IncludePath>$(SolutionDir)src\;$(DXSDK_DIR)\Include\;$(IncludePath)</IncludePath>
+    <ExecutablePath>$(DXSDK_DIR)\Utilities\bin\x86\;$(ExecutablePath)</ExecutablePath>
+    <LibraryPath>$(DXSDK_DIR)\Lib\x64\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>$(ProjectName)_d</TargetName>
     <OutDir>$(SolutionDir)bin\x64\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\x64\$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)src\;$(DXSDK_DIR)\include\;$(IncludePath)</IncludePath>
+    <ExecutablePath>$(DXSDK_DIR)\Utilities\bin\x64\;$(ExecutablePath)</ExecutablePath>
+    <LibraryPath>$(DXSDK_DIR)\Lib\x64\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)bin\x86\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\x86\$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)src\;$(DXSDK_DIR)\Include\;$(IncludePath)</IncludePath>
+    <ExecutablePath>$(DXSDK_DIR)\Utilities\bin\x86\;$(ExecutablePath)</ExecutablePath>
+    <LibraryPath>$(DXSDK_DIR)\Lib\x64\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)bin\x64\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\x64\$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)src\;$(DXSDK_DIR)\include\;$(IncludePath)</IncludePath>
+    <ExecutablePath>$(DXSDK_DIR)\Utilities\bin\x64\;$(ExecutablePath)</ExecutablePath>
+    <LibraryPath>$(DXSDK_DIR)\Lib\x64\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)src\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>COMPILING_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -100,7 +111,6 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)src\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>COMPILING_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -114,7 +124,6 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)src\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>COMPILING_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -130,7 +139,6 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)src\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>COMPILING_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
