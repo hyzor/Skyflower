@@ -8,5 +8,10 @@ int main(int argc, const char *argv[])
 
 	FinGrafikFunktion();
 
+	while (1)
+	{
+		// Trevlig mainloop.
+	}
+
 	return 0;
 }
