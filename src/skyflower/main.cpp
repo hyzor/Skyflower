@@ -15,9 +15,16 @@ int main(int argc, const char *argv[])
 	uint64_t memory = GetMemoryUsage();
 	printf("Skyflower is using %.1fMiB of memory!\n", (float)memory / (1024 * 1024));
 
-	while (1)
+	float oldTime = GetTime();
+	float time, timeElapsed;
+
+	while(1)
 	{
-		// Trevlig mainloop.
+		time = GetTime();
+		timeElapsed = time - oldTime;
+		oldTime = time;
+
+		//printf("%f\n", timeElapsed);
 	}
 
 	return 0;
