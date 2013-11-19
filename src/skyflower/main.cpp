@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "graphics\graphics.h"
-#include "sound\sound.h"
+#include "graphics/graphics.h"
+#include "sound/sound.h"
 
 int main(int argc, const char *argv[])
 {
