@@ -9,6 +9,8 @@ int main(int argc, const char *argv[])
 {
 	std::cout << "Hello Skyflower!\n";
 
+	std::cout << "Troll0ol0olll\n";
+
 	FinGrafikFunktion();
 	FinLjudFunktion();
 
