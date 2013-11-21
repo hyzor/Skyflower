@@ -21,7 +21,18 @@ int main(int argc, const char *argv[])
 
 	float oldTime = GetTime();
 	float time, timeElapsed;
+	int i = 2;
+	while (i = !0)
+	{
+	
+		switch (i)
+		{
 
+		case 1:
+		{std::cout << "emrik är dumbum"; }
+			break;
+		}
+	}
 	while(1)
 	{
 		time = GetTime();
