@@ -33,6 +33,9 @@ int main(int argc, const char *argv[])
 			break;
 		}
 	}
+
+	std::cout << "Linda testar!" << std::endl;
+
 	while(1)
 	{
 		time = GetTime();
