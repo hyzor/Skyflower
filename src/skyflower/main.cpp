@@ -22,7 +22,7 @@ int main(int argc, const char *argv[])
 	float oldTime = GetTime();
 	float time, timeElapsed;
 	int i = 2;
-	while (i = !0)
+	while (true)
 	{
 	
 		switch (i)
@@ -30,6 +30,9 @@ int main(int argc, const char *argv[])
 
 		case 1:
 		{std::cout << "emrik är dumbum"; }
+			break;
+		case 2:
+			std::cout << "aa, fast ne. Du kan vara";
 			break;
 		}
 	}
