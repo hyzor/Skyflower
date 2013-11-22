@@ -1,5 +1,5 @@
-#ifndef GRAPHICS_H
-#define GRAPHICS_H
+#ifndef GRAPHICS_GRAPHICS_H
+#define GRAPHICS_GRAPHICS_H
 
 #include "shared/platform.h"
 
