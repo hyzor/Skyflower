@@ -34,7 +34,7 @@ Window::Window(const unsigned int width, const unsigned int height, const char *
 
 	memset(&windowClass, 0, sizeof(windowClass));
 	windowClass.cbSize = sizeof(WNDCLASSEX);
-	windowClass.style = CS_HREDRAW | CS_VREDRAW; // | CS_OWNDC
+	windowClass.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 	windowClass.lpfnWndProc = WindowProc;
 	windowClass.cbWndExtra = sizeof(void *); // Extra space for the Window pointer.
 	windowClass.hInstance = m_instanceHandle;
@@ -104,6 +104,11 @@ void Window::PumpMessages() const
 void Window::SetListener(WindowListener *listener)
 {
 	m_listener = listener;
+}
+
+HWND Window::GetHandle() const
+{
+	return m_window;
 }
 
 WindowListener *Window::GetListener() const

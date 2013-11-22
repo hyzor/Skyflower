@@ -19,8 +19,9 @@ public:
 	void PumpMessages() const;
 
 	void SetListener(WindowListener *listener);
-	WindowListener *GetListener() const;
 
+	HWND GetHandle() const;
+	WindowListener *GetListener() const;
 	unsigned int GetWidth() const;
 	unsigned int GetHeight() const;
 
