@@ -19,7 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\skyflower\Application.cpp" />
     <ClCompile Include="src\skyflower\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\skyflower\Application.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{37AF7357-6F98-4587-BA3E-CBEF4F9D14A3}</ProjectGuid>

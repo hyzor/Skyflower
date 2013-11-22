@@ -153,9 +153,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\graphics\graphics.cpp" />
+    <ClCompile Include="src\graphics\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\graphics\graphics.h" />
+    <ClInclude Include="src\graphics\Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

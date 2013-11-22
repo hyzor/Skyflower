@@ -1,52 +1,11 @@
-#include <iostream>
+#include "shared/platform.h"
 
-#include "graphics/graphics.h"
-#include "physics/physics.h"
-#include "sound/sound.h"
+#include "Application.h"
 
-#include "shared/util.h"
-
-int main(int argc, const char *argv[])
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-	std::cout << "Hello Skyflower!\n";
-
-	std::cout << "Troll0ol0olll\n";
-
-	FinGrafikFunktion();
-	FinFysikFunktion();
-	FinLjudFunktion();
-
-	uint64_t memory = GetMemoryUsage();
-	printf("Skyflower is using %.1fMiB of memory!\n", (float)memory / (1024 * 1024));
-
-	float oldTime = GetTime();
-	float time, timeElapsed;
-	int i = 2;
-	while (true)
-	{
-	
-		switch (i)
-		{
-
-		case 1:
-		{std::cout << "emrik är dumbum"; }
-			break;
-		case 2:
-			std::cout << "aa, fast ne. Du kan vara";
-			break;
-		}
-	}
-
-	std::cout << "Linda testar!" << std::endl;
-
-	while(1)
-	{
-		time = GetTime();
-		timeElapsed = time - oldTime;
-		oldTime = time;
-
-		//printf("%f\n", timeElapsed);
-	}
+	Application app;
+	app.Start();
 
 	return 0;
 }
