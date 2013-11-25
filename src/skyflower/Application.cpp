@@ -16,6 +16,9 @@ void Application::Start()
 	m_window = new Window(800, 600, "Skyflower");
 	m_window->SetListener(this);
 
+	m_inputHandler = m_window->GetInputHandler();
+	m_inputHandler->SetListener(this);
+
 	m_quit = false;
 
 	float oldTime = GetTime();
@@ -39,5 +42,21 @@ void Application::OnWindowShouldClose()
 }
 
 void Application::OnWindowResize(unsigned int width, unsigned int height)
+{
+}
+
+void Application::OnMouseMove(int deltaX, int deltaY)
+{
+}
+
+void Application::OnMouseButtonDown(enum MouseButton button)
+{
+}
+
+void Application::OnMouseButtonUp(enum MouseButton button)
+{
+}
+
+void Application::OnMouseWheel(int delta)
 {
 }

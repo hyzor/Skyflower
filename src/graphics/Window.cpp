@@ -1,4 +1,4 @@
-#include <string.h>
+#include <cstring>
 
 #include "shared/platform.h"
 
@@ -16,11 +16,54 @@ static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 			SetWindowLongPtr(hWnd, 0, (LONG_PTR)((CREATESTRUCT*)lParam)->lpCreateParams);
 			break;
 		case WM_SIZE:
-			window->GetListener()->OnWindowResize((unsigned int)LOWORD(lParam), (unsigned int)HIWORD(lParam));
+			if (window->GetListener())
+				window->GetListener()->OnWindowResize((unsigned int)LOWORD(lParam), (unsigned int)HIWORD(lParam));
+
 			break;
 		case WM_CLOSE:
-			window->GetListener()->OnWindowShouldClose();
+			if (window->GetListener())
+				window->GetListener()->OnWindowShouldClose();
+
 			return 0;
+		case WM_INPUT:
+			InputHandler *inputHandler = window->GetInputHandler();
+
+			RAWINPUT input;
+			UINT dwSize = sizeof(input);
+
+			GetRawInputData((HRAWINPUT)lParam, RID_INPUT, &input, &dwSize, sizeof(RAWINPUTHEADER));
+
+			if (input.header.dwType == RIM_TYPEMOUSE)
+			{
+				RAWMOUSE *mouse = &input.data.mouse;
+
+				if (mouse->usFlags & MOUSE_MOVE_RELATIVE)
+					inputHandler->OnMouseMove((int)mouse->lLastX, (int)mouse->lLastY);
+
+				if (mouse->usButtonFlags & RI_MOUSE_WHEEL)
+					inputHandler->OnMouseWheel((int)((short)mouse->usButtonData / WHEEL_DELTA));
+
+				if (mouse->usButtonFlags & RI_MOUSE_LEFT_BUTTON_DOWN)
+					inputHandler->OnMouseButtonDown(MouseButtonLeft);
+				if (mouse->usButtonFlags & RI_MOUSE_LEFT_BUTTON_UP)
+					inputHandler->OnMouseButtonUp(MouseButtonLeft);
+
+				if (mouse->usButtonFlags & RI_MOUSE_RIGHT_BUTTON_DOWN)
+					inputHandler->OnMouseButtonDown(MouseButtonRight);
+				if (mouse->usButtonFlags & RI_MOUSE_RIGHT_BUTTON_UP)
+					inputHandler->OnMouseButtonUp(MouseButtonRight);
+
+				if (mouse->usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_DOWN)
+					inputHandler->OnMouseButtonDown(MouseButtonMiddle);
+				if (mouse->usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_UP)
+					inputHandler->OnMouseButtonUp(MouseButtonMiddle);
+			}
+			else if (input.header.dwType == RIM_TYPEKEYBOARD)
+			{
+				RAWKEYBOARD *keyboard = &input.data.keyboard;
+			}
+
+			break;
 	}
 
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
@@ -28,10 +71,11 @@ static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
 Window::Window(const unsigned int width, const unsigned int height, const char *title)
 {
-	WNDCLASSEX windowClass;
+	m_listener = NULL;
 
 	m_instanceHandle = GetModuleHandle(NULL);
 
+	WNDCLASSEX windowClass;
 	memset(&windowClass, 0, sizeof(windowClass));
 	windowClass.cbSize = sizeof(WNDCLASSEX);
 	windowClass.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
@@ -82,6 +126,8 @@ Window::Window(const unsigned int width, const unsigned int height, const char *
 
 	SetForegroundWindow(m_window);
 	SetFocus(m_window);
+
+	m_inputHandler = new InputHandler(this);
 }
 
 Window::~Window()
@@ -109,6 +155,11 @@ void Window::SetListener(WindowListener *listener)
 HWND Window::GetHandle() const
 {
 	return m_window;
+}
+
+InputHandler *Window::GetInputHandler() const
+{
+	return m_inputHandler;
 }
 
 WindowListener *Window::GetListener() const
