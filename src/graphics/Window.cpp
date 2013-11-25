@@ -37,25 +37,25 @@ static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 			{
 				RAWMOUSE *mouse = &input.data.mouse;
 
-				if (mouse->usFlags & MOUSE_MOVE_RELATIVE)
+				if ((mouse->usFlags & MOUSE_MOVE_RELATIVE) == MOUSE_MOVE_RELATIVE)
 					inputHandler->OnMouseMove((int)mouse->lLastX, (int)mouse->lLastY);
 
-				if (mouse->usButtonFlags & RI_MOUSE_WHEEL)
+				if ((mouse->usButtonFlags & RI_MOUSE_WHEEL) == RI_MOUSE_WHEEL)
 					inputHandler->OnMouseWheel((int)((short)mouse->usButtonData / WHEEL_DELTA));
 
-				if (mouse->usButtonFlags & RI_MOUSE_LEFT_BUTTON_DOWN)
+				if ((mouse->usButtonFlags & RI_MOUSE_LEFT_BUTTON_DOWN) == RI_MOUSE_LEFT_BUTTON_DOWN)
 					inputHandler->OnMouseButtonDown(MouseButtonLeft);
-				if (mouse->usButtonFlags & RI_MOUSE_LEFT_BUTTON_UP)
+				if ((mouse->usButtonFlags & RI_MOUSE_LEFT_BUTTON_UP) == RI_MOUSE_LEFT_BUTTON_UP)
 					inputHandler->OnMouseButtonUp(MouseButtonLeft);
 
-				if (mouse->usButtonFlags & RI_MOUSE_RIGHT_BUTTON_DOWN)
+				if ((mouse->usButtonFlags & RI_MOUSE_RIGHT_BUTTON_DOWN) == RI_MOUSE_RIGHT_BUTTON_DOWN)
 					inputHandler->OnMouseButtonDown(MouseButtonRight);
-				if (mouse->usButtonFlags & RI_MOUSE_RIGHT_BUTTON_UP)
+				if ((mouse->usButtonFlags & RI_MOUSE_RIGHT_BUTTON_UP) == RI_MOUSE_RIGHT_BUTTON_UP)
 					inputHandler->OnMouseButtonUp(MouseButtonRight);
 
-				if (mouse->usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_DOWN)
+				if ((mouse->usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_DOWN) == RI_MOUSE_MIDDLE_BUTTON_DOWN)
 					inputHandler->OnMouseButtonDown(MouseButtonMiddle);
-				if (mouse->usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_UP)
+				if ((mouse->usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_UP) == RI_MOUSE_MIDDLE_BUTTON_UP)
 					inputHandler->OnMouseButtonUp(MouseButtonMiddle);
 			}
 			else if (input.header.dwType == RIM_TYPEKEYBOARD)

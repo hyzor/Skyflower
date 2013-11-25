@@ -2,6 +2,7 @@
 #include <cstring>
 
 #include "shared/platform.h"
+#include "shared/util.h"
 
 #include "InputHandler.h"
 #include "Window.h"
@@ -12,7 +13,7 @@ InputHandler::InputHandler(Window *window)
 	m_inputDevicesRegistered = false;
 	m_listener = NULL;
 
-	for (int i = 0; i < MouseButtonCount; i++)
+	for (int i = 0; i < ARRAY_SIZE(m_mouseButtonStates); i++)
 	{
 		m_mouseButtonStates[i] = false;
 	}
