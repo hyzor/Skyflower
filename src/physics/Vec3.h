@@ -1,0 +1,59 @@
+#ifndef VEC3_H
+#define VEC3_H
+
+#include "shared/platform.h"
+#include <math.h>
+
+class DLL_API Vec3
+{
+	public:
+		float X;
+		float Y;
+		float Z;
+
+		Vec3();
+		Vec3(float X, float Y);
+		Vec3(float X, float Y, float Z);
+		Vec3(int X, int Y);
+		Vec3(int X, int Y, int Z);
+
+		float Length();
+		void Normalize();
+
+		float Dot(Vec3 &v);
+		Vec3 Cross(Vec3 &v); 
+		static float Dot(Vec3 &v1, Vec3 &v2);
+		static Vec3 Cross(Vec3 &v1, Vec3 &v2);
+
+		Vec3 operator+(Vec3 &v);
+		Vec3 operator-(Vec3 &v);
+		Vec3 operator*(Vec3 &v);
+		Vec3 operator/(Vec3 &v);
+
+		Vec3 operator+=(Vec3 &v);
+		Vec3 operator-=(Vec3 &v);
+		Vec3 operator*=(Vec3 &v);
+		Vec3 operator/=(Vec3 &v);
+
+		Vec3 operator*(float v);
+		Vec3 operator/(float v);
+		Vec3 operator*=(float v);
+		Vec3 operator/=(float v);
+		Vec3 operator*(int v);
+		Vec3 operator/(int v);
+		Vec3 operator*=(int v);
+		Vec3 operator/=(int v);
+
+		bool operator==(Vec3 &v);
+		bool operator!=(Vec3 &v);
+		bool operator==(float v);
+		bool operator!=(float v);
+		bool operator==(int v);
+		bool operator!=(int v);
+
+	private:
+};
+
+
+
+#endif
