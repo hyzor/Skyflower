@@ -22,6 +22,9 @@ public: // InputListener
 	void OnMouseButtonUp(enum MouseButton button);
 	void OnMouseWheel(int delta);
 
+	void OnKeyDown(unsigned short key);
+	void OnKeyUp(unsigned short key);
+
 private:
 	Window *m_window;
 	InputHandler *m_inputHandler;

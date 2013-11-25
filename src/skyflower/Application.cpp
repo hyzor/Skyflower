@@ -60,3 +60,11 @@ void Application::OnMouseButtonUp(enum MouseButton button)
 void Application::OnMouseWheel(int delta)
 {
 }
+
+void Application::OnKeyDown(unsigned short key)
+{
+}
+
+void Application::OnKeyUp(unsigned short key)
+{
+}

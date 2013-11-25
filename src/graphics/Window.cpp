@@ -10,6 +10,7 @@ static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 {
 	Window *window = (Window *)GetWindowLongPtr(hWnd, 0);
 
+	// FIXME: Handle WM_CHAR for text input.
 	switch(uMsg)
 	{
 		case WM_CREATE:
@@ -61,6 +62,11 @@ static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 			else if (input.header.dwType == RIM_TYPEKEYBOARD)
 			{
 				RAWKEYBOARD *keyboard = &input.data.keyboard;
+
+				if ((keyboard->Flags & RI_KEY_MAKE) == RI_KEY_MAKE)
+					inputHandler->OnKeyDown(keyboard->VKey);
+				if ((keyboard->Flags & RI_KEY_BREAK) == RI_KEY_BREAK)
+					inputHandler->OnKeyUp(keyboard->VKey);
 			}
 
 			break;

@@ -17,6 +17,11 @@ InputHandler::InputHandler(Window *window)
 	{
 		m_mouseButtonStates[i] = false;
 	}
+
+	for (int i = 0; i < ARRAY_SIZE(m_keyStates); i++)
+	{
+		m_keyStates[i] = false;
+	}
 }
 
 InputHandler::~InputHandler()
@@ -57,6 +62,11 @@ bool InputHandler::isMouseButtonDown(enum MouseButton button) const
 	return m_mouseButtonStates[button];
 }
 
+bool InputHandler::isKeyDown(unsigned short key) const
+{
+	return m_keyStates[key];
+}
+
 void InputHandler::OnMouseMove(int deltaX, int deltaY)
 {
 	if (m_listener)
@@ -83,4 +93,20 @@ void InputHandler::OnMouseWheel(int delta)
 {
 	if (m_listener)
 		m_listener->OnMouseWheel(delta);
+}
+
+void InputHandler::OnKeyDown(unsigned short key)
+{
+	m_keyStates[key] = true;
+
+	if (m_listener)
+		m_listener->OnKeyDown(key);
+}
+
+void InputHandler::OnKeyUp(unsigned short key)
+{
+	m_keyStates[key] = false;
+
+	if (m_listener)
+		m_listener->OnKeyUp(key);
 }
