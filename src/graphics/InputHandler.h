@@ -37,9 +37,14 @@ public:
 
 	InputListener *GetListener() const;
 
+	void SetMouseCapture(bool capture);
+	bool GetMouseCapture();
+
 	bool isMouseButtonDown(enum MouseButton button) const;
 	bool isKeyDown(unsigned short key) const;
-
+	// The returned values are relative to the upper-left corner of the window.
+	void GetMousePosition(int &x, int &y);
+	bool isMouseInWindow();
 
 	// Only WindowProc should call these.
 	void OnMouseMove(int deltaX, int deltaY);
@@ -59,6 +64,7 @@ private:
 	Window *m_window;
 	bool m_inputDevicesRegistered;
 	InputListener *m_listener;
+	bool m_mouseCaptured;
 
 	bool m_mouseButtonStates[MouseButtonCount];
 	bool m_keyStates[USHRT_MAX];

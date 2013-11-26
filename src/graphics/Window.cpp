@@ -26,6 +26,17 @@ static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 				window->GetListener()->OnWindowShouldClose();
 
 			return 0;
+		case WM_NCACTIVATE:
+			if (wParam == TRUE)
+			{
+				// Window is active.
+			}
+			else
+			{
+				// Window is inactive.
+			}
+
+			break;
 		case WM_INPUT:
 			InputHandler *inputHandler = window->GetInputHandler();
 

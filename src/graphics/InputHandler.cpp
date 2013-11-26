@@ -12,6 +12,7 @@ InputHandler::InputHandler(Window *window)
 	m_window = window;
 	m_inputDevicesRegistered = false;
 	m_listener = NULL;
+	m_mouseCaptured = false;
 
 	for (int i = 0; i < ARRAY_SIZE(m_mouseButtonStates); i++)
 	{
@@ -57,6 +58,16 @@ InputListener *InputHandler::GetListener() const
 	return m_listener;
 }
 
+void InputHandler::SetMouseCapture(bool capture)
+{
+	m_mouseCaptured = capture;
+}
+
+bool InputHandler::GetMouseCapture()
+{
+	return m_mouseCaptured;
+}
+
 bool InputHandler::isMouseButtonDown(enum MouseButton button) const
 {
 	return m_mouseButtonStates[button];
@@ -67,14 +78,43 @@ bool InputHandler::isKeyDown(unsigned short key) const
 	return m_keyStates[key];
 }
 
+void InputHandler::GetMousePosition(int &x, int &y)
+{
+	POINT point;
+	GetCursorPos(&point);
+	ScreenToClient(m_window->GetHandle(), &point);
+
+	x = point.x;
+	y = point.y;
+}
+
+bool InputHandler::isMouseInWindow()
+{
+	int x, y;
+	GetMousePosition(x, y);
+
+	if (x < 0 || y < 0)
+		return false;
+	if (x >= m_window->GetWidth() || y >= m_window->GetHeight())
+		return false;
+
+	return true;
+}
+
 void InputHandler::OnMouseMove(int deltaX, int deltaY)
 {
+	if (!m_mouseCaptured && !isMouseInWindow())
+		return;
+
 	if (m_listener)
 		m_listener->OnMouseMove(deltaX, deltaY);
 }
 
 void InputHandler::OnMouseButtonDown(enum MouseButton button)
 {
+	if (!m_mouseCaptured && !isMouseInWindow())
+		return;
+
 	m_mouseButtonStates[button] = true;
 
 	if (m_listener)
@@ -83,6 +123,9 @@ void InputHandler::OnMouseButtonDown(enum MouseButton button)
 
 void InputHandler::OnMouseButtonUp(enum MouseButton button)
 {
+	if (!m_mouseCaptured && !isMouseInWindow())
+		return;
+
 	m_mouseButtonStates[button] = false;
 
 	if (m_listener)
@@ -91,6 +134,9 @@ void InputHandler::OnMouseButtonUp(enum MouseButton button)
 
 void InputHandler::OnMouseWheel(int delta)
 {
+	if (!m_mouseCaptured && !isMouseInWindow())
+		return;
+
 	if (m_listener)
 		m_listener->OnMouseWheel(delta);
 }
