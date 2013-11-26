@@ -3,6 +3,7 @@
 
 #include "shared/platform.h"
 #include <math.h>
+#include <cfloat>
 
 class DLL_API Vec3
 {
@@ -50,6 +51,13 @@ class DLL_API Vec3
 		bool operator!=(float v);
 		bool operator==(int v);
 		bool operator!=(int v);
+
+		static Vec3 Max();
+		static Vec3 Min();
+		static Vec3 Zero();
+
+		static Vec3 Max(Vec3 v1, Vec3 v2);
+		static Vec3 Min(Vec3 v1, Vec3 v2);
 
 	private:
 };

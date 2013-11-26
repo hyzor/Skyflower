@@ -47,11 +47,11 @@ void Vec3::Normalize()
 
 float Vec3::Dot(Vec3 &v)
 {
-	return (*this).Dot(v);
+	return Dot(*this, v);
 }
 Vec3 Vec3::Cross(Vec3 &v)
 {
-	return (*this).Cross(v);
+	return Cross(*this, v);
 }
 
 float Vec3::Dot(Vec3 &v1, Vec3 &v2)
@@ -171,4 +171,39 @@ bool Vec3::operator==(int v)
 bool Vec3::operator!=(int v)
 {
 	return !(*this == v);
+}
+
+Vec3 Vec3::Max()
+{
+	return Vec3(FLT_MAX, FLT_MAX, FLT_MAX);
+}
+Vec3 Vec3::Min()
+{
+	return Vec3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+}
+Vec3 Vec3::Zero()
+{
+	return Vec3();
+}
+Vec3 Vec3::Max(Vec3 v1, Vec3 v2)
+{
+	Vec3 res = v1;
+	if (v2.X > res.X)
+		res.X = v2.X;
+	if (v2.Y > res.Y)
+		res.Y = v2.Y;
+	if (v2.Z > res.Z)
+		res.Z = v2.Z;
+	return res;
+}
+Vec3 Vec3::Min(Vec3 v1, Vec3 v2)
+{
+	Vec3 res = v1;
+	if (v2.X < res.X)
+		res.X = v2.X;
+	if (v2.Y < res.Y)
+		res.Y = v2.Y;
+	if (v2.Z < res.Z)
+		res.Z = v2.Z;
+	return res;
 }

@@ -3,6 +3,7 @@
 
 #include "shared/platform.h"
 #include "Vec3.h"
+#include "Box.h"
 
 class DLL_API Ray
 {
@@ -13,6 +14,8 @@ class DLL_API Ray
 		Ray();
 		Ray(float X, float Y, float Z, float dX, float dY, float dZ);
 		Ray(Vec3 Pos, Vec3 Dir);
+
+		Box GetBox();
 	private:
 };
 
