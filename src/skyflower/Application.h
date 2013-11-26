@@ -2,8 +2,10 @@
 #define SKYFLOWER_APPLICATION
 
 #include "graphics/Window.h"
+#include "graphics/InputHandler.h"
+#include "Sound/SoundEngine.h"
 
-class Application : WindowListener
+class Application : WindowListener, InputListener
 {
 public:
 	Application();
@@ -15,8 +17,21 @@ public: // WindowListener
 	void OnWindowShouldClose();
 	void OnWindowResize(unsigned int width, unsigned int height);
 
+public: // InputListener
+	void OnMouseMove(int deltaX, int deltaY);
+	void OnMouseButtonDown(enum MouseButton button);
+	void OnMouseButtonUp(enum MouseButton button);
+	void OnMouseWheel(int delta);
+
+	void OnKeyDown(unsigned short key);
+	void OnKeyUp(unsigned short key);
+
 private:
 	Window *m_window;
+	InputHandler *m_inputHandler;
+
+	SoundEngine *m_soundEngine;
+
 	bool m_quit;
 };
 

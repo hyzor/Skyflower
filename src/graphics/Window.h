@@ -3,6 +3,8 @@
 
 #include "shared/platform.h"
 
+#include "InputHandler.h"
+
 class DLL_API WindowListener
 {
 public:
@@ -21,6 +23,7 @@ public:
 	void SetListener(WindowListener *listener);
 
 	HWND GetHandle() const;
+	InputHandler *GetInputHandler() const;
 	WindowListener *GetListener() const;
 	unsigned int GetWidth() const;
 	unsigned int GetHeight() const;
@@ -32,6 +35,7 @@ private:
 	HWND m_window;
 
 	WindowListener *m_listener;
+	InputHandler *m_inputHandler;
 };
 
 #endif

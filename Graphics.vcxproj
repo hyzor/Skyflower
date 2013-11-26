@@ -69,31 +69,31 @@
     <OutDir>$(SolutionDir)bin\x86\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\x86\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)_d</TargetName>
-    <IncludePath>$(SolutionDir)src\;$(DXSDK_DIR)\Include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)src\;$(SolutionDir)include/;$(SolutionDir)external/include/;$(DXSDK_DIR)\Include\;$(IncludePath)</IncludePath>
     <ExecutablePath>$(DXSDK_DIR)\Utilities\bin\x86\;$(ExecutablePath)</ExecutablePath>
-    <LibraryPath>$(OutDir);$(DXSDK_DIR)\Lib\x64\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(OutDir);$(SolutionDir)external/lib/x86/;$(DXSDK_DIR)\Lib\x86\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>$(ProjectName)_d</TargetName>
     <OutDir>$(SolutionDir)bin\x64\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\x64\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)src\;$(DXSDK_DIR)\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)src\;$(SolutionDir)include/;$(SolutionDir)external/include/;$(DXSDK_DIR)\Include\;$(IncludePath)</IncludePath>
     <ExecutablePath>$(DXSDK_DIR)\Utilities\bin\x64\;$(ExecutablePath)</ExecutablePath>
-    <LibraryPath>$(OutDir);$(DXSDK_DIR)\Lib\x64\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(OutDir);$(SolutionDir)external/lib/x64/;$(DXSDK_DIR)\Lib\x64\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)bin\x86\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\x86\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)src\;$(DXSDK_DIR)\Include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)src\;$(SolutionDir)include/;$(SolutionDir)external/include/;$(DXSDK_DIR)\Include\;$(IncludePath)</IncludePath>
     <ExecutablePath>$(DXSDK_DIR)\Utilities\bin\x86\;$(ExecutablePath)</ExecutablePath>
-    <LibraryPath>$(OutDir);$(DXSDK_DIR)\Lib\x64\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(OutDir);$(SolutionDir)external/lib/x86/;$(DXSDK_DIR)\Lib\x86\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)bin\x64\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\x64\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)src\;$(DXSDK_DIR)\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)src\;$(SolutionDir)include/;$(SolutionDir)external/include/;$(DXSDK_DIR)\Include\;$(IncludePath)</IncludePath>
     <ExecutablePath>$(DXSDK_DIR)\Utilities\bin\x64\;$(ExecutablePath)</ExecutablePath>
-    <LibraryPath>$(OutDir);$(DXSDK_DIR)\Lib\x64\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(OutDir);$(SolutionDir)external/lib/x64/;$(DXSDK_DIR)\Lib\x64\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -152,11 +152,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\graphics\graphics.cpp" />
+    <ClCompile Include="src\graphics\InputHandler.cpp" />
     <ClCompile Include="src\graphics\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\graphics\graphics.h" />
+    <ClInclude Include="src\graphics\InputHandler.h" />
     <ClInclude Include="src\graphics\Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

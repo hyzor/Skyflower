@@ -69,27 +69,27 @@
     <TargetName>$(ProjectName)_d</TargetName>
     <OutDir>$(SolutionDir)bin\x86\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\x86\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)src\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)src\;$(SolutionDir)include/;$(SolutionDir)external/include/;$(IncludePath)</IncludePath>
+    <LibraryPath>$(OutDir);$(SolutionDir)external/lib/x86/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>$(ProjectName)_d</TargetName>
     <OutDir>$(SolutionDir)bin\x64\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\x64\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)src\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)src\;$(SolutionDir)include/;$(SolutionDir)external/include/;$(IncludePath)</IncludePath>
+    <LibraryPath>$(OutDir);$(SolutionDir)external/lib/x64/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)bin\x64\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\x64\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)src\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)src\;$(SolutionDir)include/;$(SolutionDir)external/include/;$(IncludePath)</IncludePath>
+    <LibraryPath>$(OutDir);$(SolutionDir)external/lib/x64/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)bin\x86\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\x86\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)src\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)src\;$(SolutionDir)include/;$(SolutionDir)external/include/;$(IncludePath)</IncludePath>
+    <LibraryPath>$(OutDir);$(SolutionDir)external/lib/x86/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -150,26 +150,12 @@
   <ItemGroup>
     <ClCompile Include="src\physics\Box.cpp" />
     <ClCompile Include="src\physics\Collision.cpp" />
-    <ClCompile Include="src\physics\CollisionInstance.cpp" />
-    <ClCompile Include="src\physics\CollisionModel.cpp" />
-    <ClCompile Include="src\physics\ModelTree.cpp" />
-    <ClCompile Include="src\physics\physics.cpp" />
-    <ClCompile Include="src\physics\Ray.cpp" />
     <ClCompile Include="src\physics\Sphere.cpp" />
-    <ClCompile Include="src\physics\Triangle.cpp" />
-    <ClCompile Include="src\physics\Vec3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\physics\Box.h" />
     <ClInclude Include="src\physics\Collision.h" />
-    <ClInclude Include="src\physics\CollisionInstance.h" />
-    <ClInclude Include="src\physics\CollisionModel.h" />
-    <ClInclude Include="src\physics\ModelTree.h" />
-    <ClInclude Include="src\physics\physics.h" />
-    <ClInclude Include="src\physics\Ray.h" />
     <ClInclude Include="src\physics\Sphere.h" />
-    <ClInclude Include="src\physics\Triangle.h" />
-    <ClInclude Include="src\physics\Vec3.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
