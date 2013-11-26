@@ -2,12 +2,12 @@
 
 CollisionModel::CollisionModel()
 {
-	Tree = nullptr;
+	tree = nullptr;
 }
 CollisionModel::~CollisionModel()
 {
-	if (!Tree)
-		delete Tree;
+	if (!tree)
+		delete tree;
 }
 
 void CollisionModel::LoadObj(std::string file)
@@ -48,7 +48,9 @@ void CollisionModel::LoadObj(std::string file)
 	bounds = Box(vMin, vMax - vMin);
 
 	//create tree
-
+	tree = new ModelTreeParent(vMin, vMax);
+	for (int i = 0; i < triangles.size(); i++)
+		tree->Add(&triangles[i], 3);
 }
 
 Box CollisionModel::GetBox()
@@ -64,6 +66,11 @@ Triangle* CollisionModel::GetTriangle(int index)
 int CollisionModel::Triangles()
 {
 	return triangles.size();
+}
+
+ModelTreeParent* CollisionModel::GetTree()
+{
+	return tree;
 }
 
 
