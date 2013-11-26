@@ -5,12 +5,21 @@
 
 DLL_API SoundEngine *CreateSoundEngine()
 {
-	SoundEngine *engine = (SoundEngine *)new SoundEngineImpl();
+	SoundEngineImpl *engine = new SoundEngineImpl();
 
-	return engine;
+	if (!engine->Init())
+	{
+		delete engine;
+		return NULL;
+	}
+
+	return (SoundEngine *)engine;
 }
 
 DLL_API void DestroySoundEngine(SoundEngine *engine)
 {
-	delete engine;
+	SoundEngineImpl *engineImpl = (SoundEngineImpl *)engine;
+	engineImpl->Release();
+
+	delete engineImpl;
 }
