@@ -95,7 +95,7 @@ bool InputHandler::isMouseInWindow()
 
 	if (x < 0 || y < 0)
 		return false;
-	if (x >= m_window->GetWidth() || y >= m_window->GetHeight())
+	if (x >= (int)m_window->GetWidth() || y >= (int)m_window->GetHeight())
 		return false;
 
 	return true;
