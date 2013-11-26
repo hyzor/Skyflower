@@ -3,6 +3,7 @@
 
 #include "graphics/Window.h"
 #include "graphics/InputHandler.h"
+#include "Sound/SoundEngine.h"
 
 class Application : WindowListener, InputListener
 {
@@ -28,6 +29,9 @@ public: // InputListener
 private:
 	Window *m_window;
 	InputHandler *m_inputHandler;
+
+	SoundEngine *m_soundEngine;
+
 	bool m_quit;
 };
 

@@ -5,6 +5,7 @@
 Application::Application()
 {
 	m_window = NULL;
+	m_soundEngine = NULL;
 }
 
 Application::~Application()
@@ -19,6 +20,8 @@ void Application::Start()
 	m_inputHandler = m_window->GetInputHandler();
 	m_inputHandler->SetListener(this);
 
+	//m_soundEngine = CreateSoundEngine();
+
 	m_quit = false;
 
 	float oldTime = GetTime();
@@ -32,6 +35,8 @@ void Application::Start()
 
 		m_window->PumpMessages();
 	}
+
+	//DestroySoundEngine(m_soundEngine);
 
 	delete m_window;
 }
