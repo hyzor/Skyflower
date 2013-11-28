@@ -8,6 +8,7 @@
 
 #include "SoundEngineImpl.h"
 #include "SoundSourceImpl.h"
+#include "ListenerImpl.h"
 #include "SoundResource.h"
 #include "SoundResourceWAV.h"
 #include "TaskQueueWin32.h"
@@ -66,6 +67,8 @@ bool SoundEngineImpl::Init()
 
 	m_bufferPoolMutex = new Mutex();
 	m_resourceMutex = new Mutex();
+
+	m_activeListener = NULL;
 
 	return true;
 }
@@ -141,7 +144,9 @@ SoundSource *SoundEngineImpl::CreateSource()
 
 Listener *SoundEngineImpl::CreateListener()
 {
-	return NULL;
+	Listener *listener = (Listener *)new ListenerImpl();
+
+	return listener;
 }
 
 void SoundEngineImpl::DestroySource(SoundSource *source)
@@ -171,10 +176,17 @@ void SoundEngineImpl::DestroySource(SoundSource *source)
 
 void SoundEngineImpl::DestroyListener(Listener *listener)
 {
+	ListenerImpl *listenerImpl = (ListenerImpl *)listener;
+
+	if (listenerImpl == m_activeListener)
+		m_activeListener = NULL;
+
+	delete listenerImpl;
 }
 
 void SoundEngineImpl::SetActiveListener(Listener *listener)
 {
+	m_activeListener = (ListenerImpl *)listener;
 }
 
 void SoundEngineImpl::SetDopplerFactor(float dopplerFactor)
@@ -193,6 +205,7 @@ void SoundEngineImpl::PlaySound(const char *file, const float position[3], float
 
 void SoundEngineImpl::Update(float deltaTime)
 {
+	ListenerImpl *activeListener = (ListenerImpl *)m_activeListener;
 	SoundSourceImpl *source;
 	SoundResource *resource;
 	ALint state;
@@ -202,6 +215,14 @@ void SoundEngineImpl::Update(float deltaTime)
 	int processedCount = 0;
 	int queuedCount = 0;
 	int j;
+
+	if (activeListener)
+	{
+		alListenerf(AL_GAIN, activeListener->m_volume);
+		alListenerfv(AL_POSITION, activeListener->m_position);
+		alListenerfv(AL_ORIENTATION, activeListener->m_orientation);
+		alListenerfv(AL_VELOCITY, activeListener->m_velocity);
+	}
 
 	for (size_t i = 0; i < m_sourcesPendingDeletion.size(); i++)
 	{

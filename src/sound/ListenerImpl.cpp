@@ -4,6 +4,10 @@
 
 ListenerImpl::ListenerImpl()
 {
+	m_volume = 1.0f;
+	m_velocity[0] = 0.0f;
+	m_velocity[1] = 0.0f;
+	m_velocity[2] = 0.0f;
 }
 
 ListenerImpl::~ListenerImpl()
@@ -12,21 +16,29 @@ ListenerImpl::~ListenerImpl()
 
 void ListenerImpl::SetMasterVolume(float volume)
 {
-	alListenerf(AL_GAIN, volume);
+	m_volume = volume;
 }
 
 void ListenerImpl::SetPosition(const float position[3])
 {
-	alListenerfv(AL_POSITION, position);
+	m_position[0] = position[0];
+	m_position[1] = position[1];
+	m_position[2] = position[2];
 }
 
 void ListenerImpl::SetOrientation(const float forward[3], const float up[3])
 {
-	float values[6] = {forward[0], forward[1], forward[2], up[0], up[1], up[2]};
-	alListenerfv(AL_ORIENTATION, values);
+	m_orientation[0] = forward[0];
+	m_orientation[1] = forward[1];
+	m_orientation[2] = forward[2];
+	m_orientation[3] = up[0];
+	m_orientation[4] = up[1];
+	m_orientation[5] = up[2];
 }
 
 void ListenerImpl::SetVelocity(const float velocity[3])
 {
-	alListenerfv(AL_VELOCITY, velocity);
+	m_velocity[0] = velocity[0];
+	m_velocity[1] = velocity[1];
+	m_velocity[2] = velocity[2];
 }

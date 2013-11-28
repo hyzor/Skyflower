@@ -8,6 +8,7 @@
 
 #include "Sound/Listener.h"
 #include "Sound/SoundSource.h"
+#include "ListenerImpl.h"
 #include "SoundResource.h"
 #include "TaskQueue.h"
 #include "Util.h"
@@ -63,6 +64,8 @@ private:
 	Mutex *m_bufferPoolMutex;
 
 	Mutex *m_resourceMutex;
+
+	ListenerImpl *m_activeListener;
 
 	std::vector<RefCounted<SoundResource *>> m_soundResources;
 	std::vector<SoundSource *> m_soundSources;
