@@ -10,7 +10,7 @@ public:
 
 	virtual void EnqueueTask(const std::function<void()> &task) = 0;
 
-	virtual void WaitForTasks() = 0;
+	virtual void WaitForTasks(bool cancelPendingTasks) = 0;
 };
 
 #endif

@@ -15,10 +15,11 @@ public:
 
 	void EnqueueTask(const std::function<void()> &task);
 
-	void WaitForTasks();
+	void WaitForTasks(bool cancelPendingTasks);
 
 private:
-	PTP_POOL m_pool;
+	TP_POOL *m_pool;
+	TP_CLEANUP_GROUP *m_cleanupGroup;
 	TP_CALLBACK_ENVIRON m_environment;
 };
 

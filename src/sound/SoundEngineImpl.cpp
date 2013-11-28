@@ -79,7 +79,7 @@ void SoundEngineImpl::Release()
 		printf("alcGetError=%s\n", alcGetString(m_device, error));
 #endif
 
-	m_taskQueue->WaitForTasks();
+	m_taskQueue->WaitForTasks(true);
 	delete m_taskQueue;
 
 #if 0
