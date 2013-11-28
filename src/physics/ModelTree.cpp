@@ -7,6 +7,11 @@ ModelTreeLeaf::~ModelTreeLeaf() {}
 void ModelTreeNode::Add(Triangle* t, int layers){}
 float ModelTreeNode::Test(Ray &r) { return 0; }
 
+ModelTreeParent::ModelTreeParent() : ModelTreeParent::ModelTreeNode()
+{
+	left = nullptr;
+	right = nullptr;
+}
 ModelTreeParent::ModelTreeParent(Vec3 min, Vec3 max) : ModelTreeParent::ModelTreeNode()
 {
 	this->min = Vec3::Min(min, max);
@@ -15,6 +20,7 @@ ModelTreeParent::ModelTreeParent(Vec3 min, Vec3 max) : ModelTreeParent::ModelTre
 	left = nullptr;
 	right = nullptr;
 }
+
 
 ModelTreeParent::~ModelTreeParent()
 {
@@ -134,4 +140,95 @@ float ModelTreeLeaf::Test(Ray &r)
 		}
 	}
 	return hit;
+}
+
+
+int ModelTreeNode::GetType()
+{
+	return 0;
+}
+int ModelTreeParent::GetType()
+{
+	return 1;
+}
+int ModelTreeLeaf::GetType()
+{
+	return 2;
+}
+
+void ModelTreeNode::Write(std::fstream* outfile, Triangle* first){}
+void ModelTreeParent::Write(std::fstream* outfile, Triangle* first)
+{
+	int type = GetType();
+	outfile->write((char*)&type, 4);
+	outfile->write((char*)&min, 12);
+	outfile->write((char*)&max, 12);
+
+	int create; //2 left parent, 3 left leaf, 4 right parent, 5 right leaf
+	if (left->GetType() == 1)
+		create = 2;
+	else if (left->GetType() == 2)
+		create = 3;
+	outfile->write((char*)&create, 4);
+	left->Write(outfile, first);
+
+	if (right->GetType() == 1)
+		create = 4;
+	else if (right->GetType() == 2)
+		create = 5;
+	outfile->write((char*)&create, 4);
+	right->Write(outfile, first);
+}
+void ModelTreeLeaf::Write(std::fstream* outfile, Triangle* first)
+{
+	int type = GetType();
+	outfile->write((char*)&type, 4);
+
+	int cTriangles = triangles.size();
+	outfile->write((char*)&cTriangles, 4);
+
+	for (int i = 0; i < cTriangles; i++)
+	{
+		int relativeAddress = (int)(triangles[i] - first);
+		outfile->write((char*)&relativeAddress, 4);
+	}
+}
+
+void ModelTreeNode::Read(std::ifstream* infile, Triangle* first){}
+void ModelTreeParent::Read(std::ifstream* infile, Triangle* first)
+{
+	int type;
+	infile->read((char*)&type, 4);
+	infile->read((char*)&min, 12);
+	infile->read((char*)&max, 12);
+
+	int create; //2 left parent, 3 left leaf, 4 right parent, 5 right leaf
+	infile->read((char*)&create, 4);
+	if (create == 2)
+		left = new ModelTreeParent();
+	else if (create == 3)
+		left = new ModelTreeLeaf();
+	left->Read(infile, first);
+
+	infile->read((char*)&create, 4);
+	if (create == 4)
+		right = new ModelTreeParent();
+	else if (create == 5)
+		right = new ModelTreeLeaf();
+	right->Read(infile, first);
+}
+void ModelTreeLeaf::Read(std::ifstream* infile, Triangle* first)
+{
+	int type;
+	infile->read((char*)&type, 4);
+
+	int cTriangles;
+	infile->read((char*)&cTriangles, 4);
+
+	for (int i = 0; i < cTriangles; i++)
+	{
+		int relativeAddress;
+		infile->read((char*)&relativeAddress, 4);
+		triangles.push_back(first+relativeAddress);
+	}
 }

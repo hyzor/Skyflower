@@ -26,7 +26,7 @@ CollisionInstance* Collision::CreateCollisionInstance(std::string file, Vec3 pos
 	else
 	{
 		CollisionModel* cm = new CollisionModel();
-		cm->LoadObj(file);
+		cm->Load(file);
 		it = models.begin();
 		models.insert(it, std::pair<std::string, CollisionModel*>(file, cm));
 		ret = new CollisionInstance(cm, pos);

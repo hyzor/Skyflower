@@ -9,12 +9,6 @@ class DLL_API Box
 	public:
 		Vec3 Position;
 		Vec3 Size;
-		float X;
-		float Y;
-		float Z;
-		float Width;
-		float Height;
-		float Depth;
 
 		Box();
 		Box(float X, float Y, float Z, float Width, float Height, float Depth);

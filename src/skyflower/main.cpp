@@ -7,6 +7,7 @@
 #include "physics/Collision.h"
 #include "physics/Physics.h"
 #include "Application.h"
+#include "ScriptHandler.h"
 
 //int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 int main(int argc, const char *argv[])
@@ -32,11 +33,12 @@ int main(int argc, const char *argv[])
 		std::cout << "triangle collision! " << t.Test(r) << std::endl;
 
 
-	//CollisionInstance ci = Collision::GetInstance()->CreateCollisionInstance("TestBlock.obj", Vec3());
-	//if (ci.Test(r) > 0)
-	//	std::cout << "Model collision! " << ci.Test(r) << std::endl;
+	//CollisionInstance* ci = Collision::GetInstance()->CreateCollisionInstance("TestBlock", Vec3());
+	//if (ci->Test(r) > 0)
+		//std::cout << "Model collision! " << ci->Test(r) << std::endl;
+	//Collision::GetInstance()->DeleteCollisionInstance(ci);
 
-	Physics p;
+	/*Physics p;
 	float dt; //represents delta time for the gameloop
 
 	Vec3 pos(0.0f, 0.0f, 0.0f); //represents the position of an entity in the world
@@ -114,7 +116,7 @@ int main(int argc, const char *argv[])
 		std::cout << "Position_" + iter + " - X: " + x + " Y: " + y + " Z: " + z + " \n";
 		std::cout << "Velocity_" + iter + " - X: " + x + " Y: " + y + " Z: " + z + " \n";
 	}
-
+	*/
 
 
 
@@ -124,6 +126,7 @@ int main(int argc, const char *argv[])
 
 	//delete singleton
 	delete Collision::GetInstance();
+	delete ScriptHandler::GetInstance();
 
 	return 0;
 }
