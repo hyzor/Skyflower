@@ -1,9 +1,12 @@
 #include "shared/platform.h"
 
 #include "physics/Collision.h"
+#include "physics/Physics.h"
 #include "Application.h"
 #include <stdio.h>
 #include <iostream>
+#include <sstream>
+#include <ctime>
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
@@ -38,6 +41,89 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	CollisionInstance ci = Collision::GetInstance()->CreateCollisionInstance("TestBlock.obj", Vec3());
 	if(ci.Test(r) > 0)
 		std::cout << "Model collision! " << ci.Test(r) << std::endl;
+
+	Physics p;
+	float dt; //represents delta time for the gameloop
+
+	Vec3 pos(0.0f, 0.0f, 0.0f); //represents the position of an entity in the world
+	Vec3 velo(0.0f, 0.0f, 0.0f); //same, but velocity
+
+	std::ostringstream ss;
+	std::string x, y, z;
+	std::string xVelo, yVelo, zVelo;
+	std::string iter;
+
+	ss << pos.X;
+	x = ss.str();
+
+	ss.str("");
+	ss << pos.Y;
+	y = ss.str();
+
+	ss.str("");
+	ss << pos.Z;
+	z = ss.str();
+
+	ss.str("");
+	ss << velo.X;
+	xVelo = ss.str();
+
+	ss.str("");
+	ss << velo.Y;
+	yVelo = ss.str();
+
+	ss.str("");
+	ss << velo.Z;
+	zVelo = ss.str();
+
+	std::cout << "Position_0 - X: " + x + " Y: " + y + " Z: " + z + " \n";
+	std::cout << "Velocity_0 - X: " + xVelo + " Y: " + yVelo + " Z: " + zVelo + " \n";
+
+	dt = 0.1f;
+	p.update(dt);
+
+	for (int i = 0; i < 100; i++)
+	{
+		//TO be done: do collisioncheck here and decide whether or not to call Physics::addGravityCalc(), or do collisioncheck inside physics class
+		p.update(dt); //unnecessary in this example, but should be called before any calculations
+		p.addGravityCalc(pos, velo);
+
+		ss.str("");
+		ss << pos.X;
+		x = ss.str();
+
+		ss.str("");
+		ss << pos.Y;
+		y = ss.str();
+
+		ss.str("");
+		ss << pos.Z;
+		z = ss.str();
+
+		ss.str("");
+		ss << velo.X;
+		xVelo = ss.str();
+
+		ss.str("");
+		ss << velo.Y;
+		yVelo = ss.str();
+
+		ss.str("");
+		ss << velo.Z;
+		zVelo = ss.str();
+
+		ss.str("");
+		ss << (i + 1);
+		iter = ss.str();
+
+
+		std::cout << "Position_" + iter + " - X: " + x + " Y: " + y + " Z: " + z + " \n";
+		std::cout << "Velocity_" + iter + " - X: " + x + " Y: " + y + " Z: " + z + " \n";
+	}
+
+	
+
+	
 
 	app.Start();
 
