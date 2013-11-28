@@ -21,6 +21,7 @@ class CollisionModel
 
 		Box GetBox();
 		Triangle* GetTriangle(int index);
+		ModelTreeParent* GetTree();
 		int Triangles();
 		
 	private:
@@ -28,7 +29,7 @@ class CollisionModel
 		Box bounds;
 
 		std::vector<std::string> split(std::string line);
-		ModelTreeParent* Tree;
+		ModelTreeParent* tree;
 };
 
 
