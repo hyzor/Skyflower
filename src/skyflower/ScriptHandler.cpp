@@ -4,11 +4,8 @@ ScriptHandler* ScriptHandler::instance = nullptr;
 
 ScriptHandler::ScriptHandler()
 {
-	L = lua_open();
-	luaopen_base(L);
-	luaopen_table(L);
-	luaopen_string(L);
-	luaopen_math(L);
+	L = luaL_newstate();
+	luaL_openlibs(L);
 
 	lua_register(L, "Print", Print);
 }
@@ -36,7 +33,9 @@ void ScriptHandler::ReportErrors(lua_State* L, int status)
 
 void ScriptHandler::Run(std::string file)
 {
-	int s = luaL_loadfile(L, file.c_str());
+	std::string path = "../../scripts/" + file;
+
+	int s = luaL_loadfile(L, path.c_str());
 
 	if (s == 0)
 		s = lua_pcall(L, 0, LUA_MULTRET, 0);
