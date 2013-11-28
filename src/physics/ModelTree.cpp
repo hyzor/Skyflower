@@ -122,9 +122,9 @@ float ModelTreeLeaf::Test(Ray &r)
 {
 	Box rBounds = r.GetBox();
 	float hit = 0;
-	for (int i = 0; i < triangles.size(); i++)
+	for (unsigned int i = 0; i < triangles.size(); i++)
 	{
-		int t = triangles[i]->Test(r);
+		float t = triangles[i]->Test(r);
 		if (t > 0 && t < 1)
 		{
 			if (hit == 0)

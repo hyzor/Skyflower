@@ -24,16 +24,16 @@ Vec3::Vec3(float X, float Y, float Z)
 
 Vec3::Vec3(int X, int Y)
 {
-	this->X = X;
-	this->Y = Y;
-	this->Z = 0;
+	this->X = (float)X;
+	this->Y = (float)Y;
+	this->Z = (float)0;
 }
 
 Vec3::Vec3(int X, int Y, int Z)
 {
-	this->X = X;
-	this->Y = Y;
-	this->Z = Z;
+	this->X = (float)X;
+	this->Y = (float)Y;
+	this->Z = (float)Z;
 }
 
 float Vec3::Length()
