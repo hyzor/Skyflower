@@ -6,84 +6,25 @@
 
 const char *Window::m_windowClassName = "Skyflower";
 
-static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+static LRESULT CALLBACK GlobalWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	Window *window = (Window *)GetWindowLongPtr(hWnd, 0);
 
-	// FIXME: Handle WM_CHAR for text input.
-	switch(uMsg)
+	if (window)
 	{
+		return window->WindowProc(hWnd, uMsg, wParam, lParam);
+	}
+	else
+	{
+		switch(uMsg)
+		{
 		case WM_CREATE:
 			SetWindowLongPtr(hWnd, 0, (LONG_PTR)((CREATESTRUCT*)lParam)->lpCreateParams);
 			break;
-		case WM_SIZE:
-			if (window->GetListener())
-				window->GetListener()->OnWindowResize((unsigned int)LOWORD(lParam), (unsigned int)HIWORD(lParam));
+		}
 
-			break;
-		case WM_CLOSE:
-			if (window->GetListener())
-				window->GetListener()->OnWindowShouldClose();
-
-			return 0;
-		case WM_NCACTIVATE:
-			if (wParam == TRUE)
-			{
-				// Window is active.
-			}
-			else
-			{
-				// Window is inactive.
-			}
-
-			break;
-		case WM_INPUT:
-			InputHandler *inputHandler = window->GetInputHandler();
-
-			RAWINPUT input;
-			UINT dwSize = sizeof(input);
-
-			GetRawInputData((HRAWINPUT)lParam, RID_INPUT, &input, &dwSize, sizeof(RAWINPUTHEADER));
-
-			if (input.header.dwType == RIM_TYPEMOUSE)
-			{
-				RAWMOUSE *mouse = &input.data.mouse;
-
-				if ((mouse->usFlags & MOUSE_MOVE_RELATIVE) == MOUSE_MOVE_RELATIVE)
-					inputHandler->OnMouseMove((int)mouse->lLastX, (int)mouse->lLastY);
-
-				if ((mouse->usButtonFlags & RI_MOUSE_WHEEL) == RI_MOUSE_WHEEL)
-					inputHandler->OnMouseWheel((int)((short)mouse->usButtonData / WHEEL_DELTA));
-
-				if ((mouse->usButtonFlags & RI_MOUSE_LEFT_BUTTON_DOWN) == RI_MOUSE_LEFT_BUTTON_DOWN)
-					inputHandler->OnMouseButtonDown(MouseButtonLeft);
-				if ((mouse->usButtonFlags & RI_MOUSE_LEFT_BUTTON_UP) == RI_MOUSE_LEFT_BUTTON_UP)
-					inputHandler->OnMouseButtonUp(MouseButtonLeft);
-
-				if ((mouse->usButtonFlags & RI_MOUSE_RIGHT_BUTTON_DOWN) == RI_MOUSE_RIGHT_BUTTON_DOWN)
-					inputHandler->OnMouseButtonDown(MouseButtonRight);
-				if ((mouse->usButtonFlags & RI_MOUSE_RIGHT_BUTTON_UP) == RI_MOUSE_RIGHT_BUTTON_UP)
-					inputHandler->OnMouseButtonUp(MouseButtonRight);
-
-				if ((mouse->usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_DOWN) == RI_MOUSE_MIDDLE_BUTTON_DOWN)
-					inputHandler->OnMouseButtonDown(MouseButtonMiddle);
-				if ((mouse->usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_UP) == RI_MOUSE_MIDDLE_BUTTON_UP)
-					inputHandler->OnMouseButtonUp(MouseButtonMiddle);
-			}
-			else if (input.header.dwType == RIM_TYPEKEYBOARD)
-			{
-				RAWKEYBOARD *keyboard = &input.data.keyboard;
-
-				if ((keyboard->Flags & RI_KEY_MAKE) == RI_KEY_MAKE)
-					inputHandler->OnKeyDown(keyboard->VKey);
-				if ((keyboard->Flags & RI_KEY_BREAK) == RI_KEY_BREAK)
-					inputHandler->OnKeyUp(keyboard->VKey);
-			}
-
-			break;
+		return DefWindowProc(hWnd, uMsg, wParam, lParam);
 	}
-
-	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
 Window::Window(const unsigned int width, const unsigned int height, const char *title)
@@ -96,7 +37,7 @@ Window::Window(const unsigned int width, const unsigned int height, const char *
 	memset(&windowClass, 0, sizeof(windowClass));
 	windowClass.cbSize = sizeof(WNDCLASSEX);
 	windowClass.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-	windowClass.lpfnWndProc = WindowProc;
+	windowClass.lpfnWndProc = GlobalWindowProc;
 	windowClass.cbWndExtra = sizeof(void *); // Extra space for the Window pointer.
 	windowClass.hInstance = m_instanceHandle;
 	windowClass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
@@ -143,6 +84,7 @@ Window::Window(const unsigned int width, const unsigned int height, const char *
 
 	SetForegroundWindow(m_window);
 	SetFocus(m_window);
+	m_active = true;
 
 	m_inputHandler = new InputHandler(this);
 }
@@ -167,6 +109,11 @@ void Window::PumpMessages() const
 void Window::SetListener(WindowListener *listener)
 {
 	m_listener = listener;
+}
+
+bool Window::IsActive() const
+{
+	return m_active;
 }
 
 HWND Window::GetHandle() const
@@ -198,4 +145,73 @@ unsigned int Window::GetHeight() const
 	GetClientRect(m_window, &rect);
 
 	return rect.bottom;
+}
+
+LRESULT Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	// FIXME: Handle WM_CHAR for text input.
+	switch(uMsg)
+	{
+	case WM_SIZE:
+		if (m_listener)
+			m_listener->OnWindowResize((unsigned int)LOWORD(lParam), (unsigned int)HIWORD(lParam));
+
+		break;
+	case WM_CLOSE:
+		if (m_listener)
+			m_listener->OnWindowShouldClose();
+
+		return 0;
+	case WM_NCACTIVATE:
+		if (wParam == TRUE)
+			m_active = true;
+		else
+			m_active = false;
+
+		break;
+	case WM_INPUT:
+		RAWINPUT input;
+		UINT dwSize = sizeof(input);
+
+		GetRawInputData((HRAWINPUT)lParam, RID_INPUT, &input, &dwSize, sizeof(RAWINPUTHEADER));
+
+		if (input.header.dwType == RIM_TYPEMOUSE)
+		{
+			RAWMOUSE *mouse = &input.data.mouse;
+
+			if ((mouse->usFlags & MOUSE_MOVE_RELATIVE) == MOUSE_MOVE_RELATIVE)
+				m_inputHandler->OnMouseMove((int)mouse->lLastX, (int)mouse->lLastY);
+
+			if ((mouse->usButtonFlags & RI_MOUSE_WHEEL) == RI_MOUSE_WHEEL)
+				m_inputHandler->OnMouseWheel((int)((short)mouse->usButtonData / WHEEL_DELTA));
+
+			if ((mouse->usButtonFlags & RI_MOUSE_LEFT_BUTTON_DOWN) == RI_MOUSE_LEFT_BUTTON_DOWN)
+				m_inputHandler->OnMouseButtonDown(MouseButtonLeft);
+			if ((mouse->usButtonFlags & RI_MOUSE_LEFT_BUTTON_UP) == RI_MOUSE_LEFT_BUTTON_UP)
+				m_inputHandler->OnMouseButtonUp(MouseButtonLeft);
+
+			if ((mouse->usButtonFlags & RI_MOUSE_RIGHT_BUTTON_DOWN) == RI_MOUSE_RIGHT_BUTTON_DOWN)
+				m_inputHandler->OnMouseButtonDown(MouseButtonRight);
+			if ((mouse->usButtonFlags & RI_MOUSE_RIGHT_BUTTON_UP) == RI_MOUSE_RIGHT_BUTTON_UP)
+				m_inputHandler->OnMouseButtonUp(MouseButtonRight);
+
+			if ((mouse->usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_DOWN) == RI_MOUSE_MIDDLE_BUTTON_DOWN)
+				m_inputHandler->OnMouseButtonDown(MouseButtonMiddle);
+			if ((mouse->usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_UP) == RI_MOUSE_MIDDLE_BUTTON_UP)
+				m_inputHandler->OnMouseButtonUp(MouseButtonMiddle);
+		}
+		else if (input.header.dwType == RIM_TYPEKEYBOARD)
+		{
+			RAWKEYBOARD *keyboard = &input.data.keyboard;
+
+			if ((keyboard->Flags & RI_KEY_MAKE) == RI_KEY_MAKE)
+				m_inputHandler->OnKeyDown(keyboard->VKey);
+			if ((keyboard->Flags & RI_KEY_BREAK) == RI_KEY_BREAK)
+				m_inputHandler->OnKeyUp(keyboard->VKey);
+		}
+
+		break;
+	}
+
+	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }

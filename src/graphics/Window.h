@@ -22,11 +22,16 @@ public:
 
 	void SetListener(WindowListener *listener);
 
+	bool IsActive() const;
+
 	HWND GetHandle() const;
 	InputHandler *GetInputHandler() const;
 	WindowListener *GetListener() const;
 	unsigned int GetWidth() const;
 	unsigned int GetHeight() const;
+
+	// Don't call this.
+	LRESULT WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 private:
 	static const char *m_windowClassName;
@@ -36,6 +41,8 @@ private:
 
 	WindowListener *m_listener;
 	InputHandler *m_inputHandler;
+	
+	bool m_active;
 };
 
 #endif
