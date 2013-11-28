@@ -32,9 +32,9 @@ int main(int argc, const char *argv[])
 		std::cout << "triangle collision! " << t.Test(r) << std::endl;
 
 
-	CollisionInstance ci = Collision::GetInstance()->CreateCollisionInstance("TestBlock.obj", Vec3());
-	if (ci.Test(r) > 0)
-		std::cout << "Model collision! " << ci.Test(r) << std::endl;
+	//CollisionInstance ci = Collision::GetInstance()->CreateCollisionInstance("TestBlock.obj", Vec3());
+	//if (ci.Test(r) > 0)
+	//	std::cout << "Model collision! " << ci.Test(r) << std::endl;
 
 	Physics p;
 	float dt; //represents delta time for the gameloop
