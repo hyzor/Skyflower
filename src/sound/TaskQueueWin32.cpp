@@ -19,9 +19,11 @@ TaskQueueWin32::TaskQueueWin32()
 	assert(m_pool);
 	assert(m_cleanupGroup);
 
+	SYSTEM_INFO sysinfo;
+	GetSystemInfo(&sysinfo);
+
 	SetThreadpoolThreadMinimum(m_pool, 1);
-	// FIXME: Don't hardcode this.
-	SetThreadpoolThreadMaximum(m_pool, 4);
+	SetThreadpoolThreadMaximum(m_pool, sysinfo.dwNumberOfProcessors);
 
 	InitializeThreadpoolEnvironment(&m_environment);
 	SetThreadpoolCallbackPool(&m_environment, m_pool);
