@@ -38,7 +38,7 @@ void CollisionModel::LoadObj(std::string file)
 	//calculate bounds
 	Vec3 vMin = Vec3::Max();
 	Vec3 vMax = Vec3::Min();
-	for (int i = 0; i < positions.size(); i++)
+	for (unsigned int i = 0; i < positions.size(); i++)
 	{
 		Vec3 pos = positions[i];
 
@@ -49,7 +49,7 @@ void CollisionModel::LoadObj(std::string file)
 
 	//create tree
 	tree = new ModelTreeParent(vMin, vMax);
-	for (int i = 0; i < triangles.size(); i++)
+	for (unsigned int i = 0; i < triangles.size(); i++)
 		tree->Add(&triangles[i], 3);
 }
 

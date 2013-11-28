@@ -21,9 +21,11 @@
   <ItemGroup>
     <ClCompile Include="src\skyflower\Application.cpp" />
     <ClCompile Include="src\skyflower\main.cpp" />
+    <ClCompile Include="src\skyflower\ScriptHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\skyflower\Application.h" />
+    <ClInclude Include="src\skyflower\ScriptHandler.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{37AF7357-6F98-4587-BA3E-CBEF4F9D14A3}</ProjectGuid>
@@ -89,8 +91,8 @@
     <OutDir>$(SolutionDir)bin\x86\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\x86\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)_d</TargetName>
-    <IncludePath>$(SolutionDir)src\;$(SolutionDir)include/;$(SolutionDir)external/include/;$(IncludePath)</IncludePath>
-    <LibraryPath>$(OutDir);$(SolutionDir)external/lib/x86/;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files (x86)\Lua\5.1\include;$(SolutionDir)src\;$(SolutionDir)include/;$(SolutionDir)external/include/;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files (x86)\Lua\5.1\lib;$(OutDir);$(SolutionDir)external/lib/x86/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)bin\x86\</OutDir>
@@ -106,7 +108,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Shared_d.lib;Graphics_d.lib;Physics_d.lib;Sound_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>lua5.1.lib;Shared_d.lib;Graphics_d.lib;Physics_d.lib;Sound_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy "$(SolutionDir)external\bin\x86\*" "$(SolutionDir)\bin\x86\" /y</Command>

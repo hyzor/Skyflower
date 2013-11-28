@@ -11,7 +11,7 @@
 #include "ModelTree.h"
 #include "Box.h"
 
-class CollisionModel
+class DLL_API CollisionModel
 {
 	public:
 		CollisionModel();

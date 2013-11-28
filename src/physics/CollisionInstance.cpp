@@ -17,7 +17,7 @@ float CollisionInstance::Test(Ray r)
 		{
 			for (int i = 0; i < Model->Triangles(); i++)
 			{
-				int t = Model->GetTriangle(i)->Test(r);
+				float t = Model->GetTriangle(i)->Test(r);
 				if (t > 0 && t < 1)
 				{
 					if (hit == 0)

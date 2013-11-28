@@ -4,6 +4,7 @@
 #include "shared/platform.h"
 #include "physics/Collision.h"
 #include "Application.h"
+#include "ScriptHandler.h"
 
 //int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 int main(int argc, const char *argv[])
@@ -12,7 +13,7 @@ int main(int argc, const char *argv[])
 
 	std::cout << "Debug!" << std::endl;
 
-	Box b1 = Box(10,0,0,10,10,10);
+	/*Box b1 = Box(10,0,0,10,10,10);
 	Box b2 = Box(19, 9, -9, 10, 10, 10);
 	if(b1.Test(b2))
 		std::cout << "box collision!" << std::endl;
@@ -32,11 +33,14 @@ int main(int argc, const char *argv[])
 	if(ci.Test(r) > 0)
 		std::cout << "Model collision! " << ci.Test(r) << std::endl;
 
+	ScriptHandler::GetInstance()->Run("test.lua");*/
+
 	app.Start();
 
 
 	//delete singleton
 	delete Collision::GetInstance();
+	delete ScriptHandler::GetInstance();
 
 	return 0;
 }

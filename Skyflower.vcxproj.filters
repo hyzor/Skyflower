@@ -21,9 +21,15 @@
     <ClCompile Include="src\skyflower\Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\skyflower\ScriptHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\skyflower\Application.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\ScriptHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
