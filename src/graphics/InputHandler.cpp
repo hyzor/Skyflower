@@ -63,7 +63,7 @@ void InputHandler::SetMouseCapture(bool capture)
 	m_mouseCaptured = capture;
 }
 
-bool InputHandler::GetMouseCapture()
+bool InputHandler::IsMouseCaptured()
 {
 	return m_mouseCaptured;
 }

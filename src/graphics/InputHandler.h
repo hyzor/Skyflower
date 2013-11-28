@@ -38,7 +38,7 @@ public:
 	InputListener *GetListener() const;
 
 	void SetMouseCapture(bool capture);
-	bool GetMouseCapture();
+	bool IsMouseCaptured();
 
 	bool isMouseButtonDown(enum MouseButton button) const;
 	bool isKeyDown(unsigned short key) const;
