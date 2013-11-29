@@ -4,6 +4,9 @@
 #include "graphics/Window.h"
 #include "graphics/InputHandler.h"
 #include "Sound/SoundEngine.h"
+#include "physics/Physics.h"
+#include <iostream>
+#include <sstream>
 
 class Application : WindowListener, InputListener
 {
@@ -31,6 +34,12 @@ private:
 	InputHandler *m_inputHandler;
 
 	SoundEngine *m_soundEngine;
+
+	Physics p;
+	Vec3 pos; //representing the position of a movable object
+	Vec3 look; //representing the forward direction of a movable object
+	Vec3 right; //representing the right direction of a movable object
+	float speed;
 
 	bool m_quit;
 };

@@ -6,6 +6,11 @@ Application::Application()
 {
 	m_window = NULL;
 	m_soundEngine = NULL;
+
+	this->look = Vec3(1.0f, 0.0f, 1.0f);
+	this->pos = Vec3(0.0f, 0.0f, 0.0f);
+	this->right = Vec3(1.0f, 0.0f, -1.0f);
+	this->speed = 1.0f;
 }
 
 Application::~Application()
@@ -68,6 +73,38 @@ void Application::OnMouseWheel(int delta)
 
 void Application::OnKeyDown(unsigned short key)
 {
+	switch (key)
+	{
+	case 0x57:
+		p.moveForward(pos, look, speed);
+		break;
+	case 0x53:
+		p.moveBackward(pos, look, speed);
+		break;
+	case 0x41:
+		p.moveLeft(pos, right, speed);
+		break;
+	case 0x44:
+		p.moveRight(pos, right, speed);
+		break;
+	}
+
+	std::ostringstream ss;
+	std::string x, y, z;
+
+	ss << pos.X;
+	x = ss.str();
+
+	ss.str("");
+	ss << pos.Y;
+	y = ss.str();
+
+	ss.str("");
+	ss << pos.Z;
+	z = ss.str();
+
+	std::cout << "Position X: " + x + ", Y: " + y + " Z: " + z + "\n";
+	p.update(0.1f);
 }
 
 void Application::OnKeyUp(unsigned short key)

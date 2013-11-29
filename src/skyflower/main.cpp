@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <iostream>
 #include <sstream>
-#include <ctime>
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
