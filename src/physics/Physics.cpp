@@ -85,3 +85,64 @@ void Physics::addGravityCalc(Vec3 &pos)
 	pos = previousPos + previousVelocity * this->dt + this->gravity * (this->dt * this->dt) / 2.0f;
 }
 
+void Physics::moveForward(Vec3 &pos, Vec3 look, float speed)
+{
+	Vec3 velocity = Vec3(1.0f, 1.0f, 1.0f);
+	velocity = look * speed * this->dt;
+	pos += velocity;
+}
+
+void Physics::moveBackward(Vec3 &pos, Vec3 look, float speed)
+{
+	Vec3 velocity = Vec3(1.0f, 1.0f, 1.0f);
+	velocity = look * speed * this->dt;
+	pos -= velocity;
+}
+
+void Physics::moveRight(Vec3 &pos, Vec3 right, float speed)
+{
+	Vec3 velocity = Vec3(1.0f, 1.0f, 1.0f);
+	velocity = right * speed * this->dt;
+	pos += velocity;
+}
+
+void Physics::moveLeft(Vec3 &pos, Vec3 right, float speed)
+{
+	Vec3 velocity = Vec3(1.0f, 1.0f, 1.0f);
+	velocity = right * speed * this->dt;
+	pos -= velocity;
+}
+
+void Physics::moveForward(Vec3 &pos, Vec3 look)
+{
+	float speed = DEFAULT_MOVEMENTSPEED;
+	Vec3 velocity = Vec3(1.0f, 1.0f, 1.0f);
+
+	velocity = look * speed * this->dt;
+	pos += velocity;
+}
+void Physics::moveBackward(Vec3 &pos, Vec3 look)
+{
+	float speed = DEFAULT_MOVEMENTSPEED;
+	Vec3 velocity = Vec3(1.0f, 1.0f, 1.0f);
+
+	velocity = look * speed * this->dt;
+	pos -= velocity;
+}
+void Physics::moveRight(Vec3 &pos, Vec3 right)
+{
+	float speed = DEFAULT_MOVEMENTSPEED;
+	Vec3 velocity = Vec3(1.0f, 1.0f, 1.0f);
+
+	velocity = right * speed * this->dt;
+	pos += right;
+}
+void Physics::moveLeft(Vec3 &pos, Vec3 right)
+{
+	float speed = DEFAULT_MOVEMENTSPEED;
+	Vec3 velocity = Vec3(1.0f, 1.0f, 1.0f);
+
+	velocity = right * speed * this->dt;
+	pos -= right;
+}
+
