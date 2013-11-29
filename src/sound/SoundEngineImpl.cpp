@@ -151,6 +151,9 @@ Listener *SoundEngineImpl::CreateListener()
 
 void SoundEngineImpl::DestroySource(SoundSource *source)
 {
+	if (!source)
+		return;
+
 	SoundSourceImpl *sourceImpl = (SoundSourceImpl *)source;
 
 	for (auto i = m_soundSources.begin(); i != m_soundSources.end(); i++)
@@ -176,6 +179,9 @@ void SoundEngineImpl::DestroySource(SoundSource *source)
 
 void SoundEngineImpl::DestroyListener(Listener *listener)
 {
+	if (!listener)
+		return;
+
 	ListenerImpl *listenerImpl = (ListenerImpl *)listener;
 
 	if (listenerImpl == m_activeListener)
@@ -388,6 +394,9 @@ SoundResource *SoundEngineImpl::GetSoundResource(const std::string &name)
 
 void SoundEngineImpl::ReleaseSoundResource(SoundResource *resource)
 {
+	if (!resource)
+		return;
+
 	m_resourceMutex->Lock();
 
 	for(auto i = m_soundResources.begin(); i != m_soundResources.end(); i++)

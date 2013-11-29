@@ -18,6 +18,9 @@ DLL_API SoundEngine *CreateSoundEngine()
 
 DLL_API void DestroySoundEngine(SoundEngine *engine)
 {
+	if (!engine)
+		return;
+
 	SoundEngineImpl *engineImpl = (SoundEngineImpl *)engine;
 	engineImpl->Release();
 
