@@ -4,7 +4,7 @@
 
 #include "Window.h"
 
-const char *Window::m_windowClassName = "Skyflower";
+static const char *windowClassName = "Skyflower";
 
 static LRESULT CALLBACK GlobalWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -43,7 +43,7 @@ Window::Window(const unsigned int width, const unsigned int height, const char *
 	windowClass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	windowClass.hCursor = LoadCursor(NULL, IDC_ARROW);
 	windowClass.hbrBackground = NULL;
-	windowClass.lpszClassName = m_windowClassName;
+	windowClass.lpszClassName = windowClassName;
 
 	RegisterClassEx(&windowClass);
 
@@ -68,7 +68,7 @@ Window::Window(const unsigned int width, const unsigned int height, const char *
 	if (windowHeight > screenHeight)
 		windowHeight = screenHeight;
 
-	m_window = CreateWindow(m_windowClassName,   // window class
+	m_window = CreateWindow(windowClassName,     // window class
 						    title,               // title-bar string
 							windowStyle,         // style
 						    CW_USEDEFAULT,       // horizontal position
@@ -92,7 +92,7 @@ Window::Window(const unsigned int width, const unsigned int height, const char *
 Window::~Window()
 {
 	DestroyWindow(m_window);
-	UnregisterClass(m_windowClassName, m_instanceHandle);
+	UnregisterClass(windowClassName, m_instanceHandle);
 }
 
 void Window::PumpMessages() const

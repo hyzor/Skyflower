@@ -34,8 +34,6 @@ public:
 	LRESULT WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 private:
-	static const char *m_windowClassName;
-
 	HINSTANCE m_instanceHandle;
 	HWND m_window;
 
