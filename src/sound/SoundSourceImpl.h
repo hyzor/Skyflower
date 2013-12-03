@@ -1,61 +1,55 @@
 #ifndef SOUND_SOUNDSOURCEIMPL_H
 #define SOUND_SOUNDSOURCEIMPL_H
 
+#include <cstdint>
 #include <string>
 
 #include <AL/al.h>
 
 #include "Sound/SoundSource.h"
-#include "SoundEngineImpl.h"
 
-class SoundResource;
 class SoundEngineImpl;
+class ResourceCache;
 
 class SoundSourceImpl : public SoundSource
 {
 public:
-	SoundSourceImpl(SoundEngineImpl *engine);
+	SoundSourceImpl(ResourceCache *resourceCache);
 	virtual ~SoundSourceImpl();
 
-	void SetResource(const char *name);
-	SoundResource *GetResource();
+	virtual void SetResource(const std::string &name);
+	uint32_t GetResourceHash();
 
-	void Play();
-	void Pause();
+	void Update();
 
-	void Seek(float time);
+	virtual void Play();
+	virtual void Pause();
 
-	bool IsPlaying();
-	bool IsLooping();
+	virtual void Seek(float time);
 
-	void SetVolume(float volume);
-	void SetLooping(bool looping);
-	void SetPitch(float pitch);
+	virtual bool IsPlaying();
+	virtual bool IsLooping();
 
-	void SetPosition(const float position[3]);
-	void SetVelocity(const float velocity[3]);
-	void SetIsRelativeToListener(bool relative);
+	virtual void SetVolume(float volume);
+	virtual void SetLooping(bool looping);
+	virtual void SetPitch(float pitch);
 
-private:
-	friend class SoundEngineImpl;
-
-	void ReleaseAllQueuedBuffers();
+	virtual void SetPosition(const float position[3]);
+	virtual void SetVelocity(const float velocity[3]);
+	virtual void SetIsRelativeToListener(bool relative);
 
 private:
-	SoundEngineImpl *m_engine;
+	void ClearBuffers();
+
+private:
+	ResourceCache *m_resourceCache;
 
 	ALuint m_source;
-	SoundResource *m_resource;
+	uint32_t m_resourceHash;
+	//unsigned int m_nextBufferIndex;
 
 	bool m_isPlaying;
 	bool m_isLooping;
-
-	bool m_isLoadingBuffer;
-	bool m_isLoadingResource;
-	bool m_cancelBufferLoading;
-
-	size_t m_nextSample;
-	float m_pendingSeek;
 };
 
 #endif

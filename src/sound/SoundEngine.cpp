@@ -3,11 +3,11 @@
 #include "Sound/SoundEngine.h"
 #include "SoundEngineImpl.h"
 
-DLL_API SoundEngine *CreateSoundEngine()
+DLL_API SoundEngine *CreateSoundEngine(const std::string &resourceDir)
 {
 	SoundEngineImpl *engine = new SoundEngineImpl();
 
-	if (!engine->Init())
+	if (!engine->Init(resourceDir))
 	{
 		delete engine;
 		return NULL;

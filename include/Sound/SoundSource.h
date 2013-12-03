@@ -1,14 +1,14 @@
 #ifndef SOUND_SOUNDSOURCE_H
 #define SOUND_SOUNDSOURCE_H
 
-#include "shared/platform.h"
+#include <string>
 
-class DLL_API SoundSource
+class SoundSource
 {
 public:
 	virtual ~SoundSource() {}
 
-	virtual void SetResource(const char *name) = 0;
+	virtual void SetResource(const std::string &name) = 0;
 
 	virtual void Play() = 0;
 	virtual void Pause() = 0;

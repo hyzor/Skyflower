@@ -1,9 +1,7 @@
 #ifndef SOUND_LISTENER_H
 #define SOUND_LISTENER_H
 
-#include "shared/platform.h"
-
-class DLL_API Listener
+class Listener
 {
 public:
 	virtual ~Listener() {}
