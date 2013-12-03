@@ -14,6 +14,8 @@ class ModelTreeNode
 		virtual ~ModelTreeNode();
 		virtual void Add(Triangle* t, int layers);
 		virtual float Test(Ray &r);
+		virtual bool Test(Triangle &t);
+		virtual bool Test(ModelTreeNode* mtp);
 		virtual void Write(std::fstream* outfile, Triangle* first);
 		virtual void Read(std::ifstream* infile, Triangle* first);
 		virtual int GetType();
@@ -27,6 +29,8 @@ class ModelTreeParent : public ModelTreeNode
 		~ModelTreeParent();
 		void Add(Triangle* t, int layers);
 		float Test(Ray &r);
+		bool Test(Triangle &t);
+		bool Test(ModelTreeNode* mtp);
 		void Write(std::fstream* outfile, Triangle* first);
 		void Read(std::ifstream* infile, Triangle* first);
 		int GetType();
@@ -48,6 +52,8 @@ class ModelTreeLeaf : public ModelTreeNode
 		~ModelTreeLeaf();
 		void Add(Triangle* t, int layers);
 		float Test(Ray &r);
+		bool Test(Triangle &t);
+		bool Test(ModelTreeNode* mtp);
 		void Write(std::fstream* outfile, Triangle* first);
 		void Read(std::ifstream* infile, Triangle* first);
 		int GetType();

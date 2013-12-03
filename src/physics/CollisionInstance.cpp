@@ -32,3 +32,45 @@ float CollisionInstance::Test(Ray r)
 	else
 		return Model->GetTree()->Test(r);
 }
+
+bool CollisionInstance::Test(Triangle t)
+{
+	t.P1 -= Position;
+	t.P2 -= Position;
+	t.P3 -= Position;
+
+	if (!Model->GetTree())
+	{
+		Box tBounds = t.GetBox();
+		if (tBounds.Test(Model->GetBox()))
+		{
+			for (int i = 0; i < Model->Triangles(); i++)
+			{
+				if (Model->GetTriangle(i)->Test(t))
+					return true;
+			}
+		}
+		return false;
+	}
+	else
+		return Model->GetTree()->Test(t);
+}
+
+bool CollisionInstance::Test(CollisionInstance* ci)
+{
+	if (ci->Model->GetBox().Test(Model->GetBox()))
+	{
+		if (!Model->GetTree() || !ci->Model->GetTree())
+		{
+			for (int i = 0; i < Model->Triangles(); i++)
+			{
+				if (Test(*Model->GetTriangle(i)))
+					return true;
+			}
+			return false;
+		}
+		else
+			return Model->GetTree()->Test(ci->Model->GetTree());
+	}
+	return false;
+}

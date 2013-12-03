@@ -6,6 +6,8 @@ ModelTreeLeaf::ModelTreeLeaf() : ModelTreeLeaf::ModelTreeNode() {}
 ModelTreeLeaf::~ModelTreeLeaf() {}
 void ModelTreeNode::Add(Triangle* t, int layers){}
 float ModelTreeNode::Test(Ray &r) { return 0; }
+bool ModelTreeNode::Test(Triangle &r) { return false; }
+bool ModelTreeNode::Test(ModelTreeNode* mtn) { return false; }
 
 ModelTreeParent::ModelTreeParent() : ModelTreeParent::ModelTreeNode()
 {
@@ -124,9 +126,78 @@ float ModelTreeParent::Test(Ray &r)
 	return hit;
 }
 
+bool ModelTreeParent::Test(Triangle &t)
+{
+	//create plane in center
+	Vec3 center = (min + max) / 2;
+	Vec3 normal = Vec3(0, 0, 1);
+	Vec3 size = max - min;
+	if (size.Y > size.Z)
+		normal = Vec3(0, 1, 0);
+	if (size.X > size.Y && size.X > size.Z)
+		normal = Vec3(1, 0, 0);
+
+	//check side to test
+	bool testright = false;
+	bool testleft = false;
+	if (InfrontOfPlane(t.P1, center, normal))
+		testright = true;
+	else
+		testleft = true;
+	if (InfrontOfPlane(t.P2, center, normal))
+		testright = true;
+	else
+		testleft = true;
+	if (InfrontOfPlane(t.P3, center, normal))
+		testright = true;
+	else
+		testleft = true;
+
+	//test side
+	bool hit = false;
+	if (testright)
+		hit = right->Test(t);
+	if (!hit && testleft)
+		hit = left->Test(t);
+	return hit;
+}
+
+bool ModelTreeParent::Test(ModelTreeNode *mtn)
+{
+	ModelTreeParent* mtp = (ModelTreeParent*)mtn;
+
+	//create plane in center
+	Vec3 center = (min + max) / 2;
+	Vec3 normal = Vec3(0, 0, 1);
+	Vec3 size = max - min;
+	if (size.Y > size.Z)
+		normal = Vec3(0, 1, 0);
+	if (size.X > size.Y && size.X > size.Z)
+		normal = Vec3(1, 0, 0);
+
+	//check side to test
+	bool testright = false;
+	bool testleft = false;
+	if (InfrontOfPlane(mtp->min, center, normal))
+		testright = true;
+	else
+		testleft = true;
+	if (InfrontOfPlane(mtp->max, center, normal))
+		testright = true;
+	else
+		testleft = true;
+
+	//test side
+	bool hit = false;
+	if (testright)
+		hit = right->Test(mtp);
+	if (!hit && testleft)
+		hit = left->Test(mtp);
+	return hit;
+}
+
 float ModelTreeLeaf::Test(Ray &r)
 {
-	Box rBounds = r.GetBox();
 	float hit = 0;
 	for (unsigned int i = 0; i < triangles.size(); i++)
 	{
@@ -140,6 +211,26 @@ float ModelTreeLeaf::Test(Ray &r)
 		}
 	}
 	return hit;
+}
+
+bool ModelTreeLeaf::Test(Triangle &t)
+{
+	for (unsigned int i = 0; i < triangles.size(); i++)
+	{
+		if (triangles[i]->Test(t))
+			return true;
+	}
+	return false;
+}
+
+bool ModelTreeLeaf::Test(ModelTreeNode *mtp)
+{
+	for (unsigned int i = 0; i < triangles.size(); i++)
+	{
+		if (mtp->Test(*triangles[i]))
+			return true;
+	}
+	return false;
 }
 
 

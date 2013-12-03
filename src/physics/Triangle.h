@@ -16,8 +16,11 @@ class DLL_API Triangle
 		Triangle(Vec3 P1, Vec3 P2, Vec3 P3);
 
 		float Test(Ray &r);
+		bool Test(Triangle &t);
 		static float Test(Triangle &t, Ray &r);
+		static bool Test(Triangle &t1, Triangle &t2);
 
+		Box GetBox();
 	private:
 };
 
