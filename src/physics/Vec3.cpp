@@ -40,9 +40,10 @@ float Vec3::Length()
 {
 	return (float)sqrt(this->X*this->X + this->Y*this->Y + this->Z*this->Z);
 }
-void Vec3::Normalize()
+Vec3 Vec3::Normalize()
 {
 	*this /= this->Length();
+	return *this;
 }
 
 float Vec3::Dot(Vec3 &v)

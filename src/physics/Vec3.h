@@ -19,7 +19,7 @@ class DLL_API Vec3
 		Vec3(int X, int Y, int Z);
 
 		float Length();
-		void Normalize();
+		Vec3 Normalize();
 
 		float Dot(Vec3 &v);
 		Vec3 Cross(Vec3 &v); 

@@ -20,11 +20,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\skyflower\Application.cpp" />
+    <ClCompile Include="src\skyflower\Field.cpp" />
     <ClCompile Include="src\skyflower\main.cpp" />
+    <ClCompile Include="src\skyflower\PotentialField.cpp" />
     <ClCompile Include="src\skyflower\ScriptHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\skyflower\Application.h" />
+    <ClInclude Include="src\skyflower\Field.h" />
+    <ClInclude Include="src\skyflower\PotentialField.h" />
     <ClInclude Include="src\skyflower\ScriptHandler.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

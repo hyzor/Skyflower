@@ -46,14 +46,12 @@ void Collision::DeleteCollisionInstance(CollisionInstance* ci)
 		if (ci == instances[i])
 			index = i;
 		else if (cm == instances[i]->Model)
-				found = true;
+			found = true;
 	}
 
 	if (index != -1)
-	{
 		instances.erase(instances.begin() + index);
-		delete ci;
-	}
+
 	if (!found) //delete model if no other instance uses it
 	{
 		for (std::map<std::string, CollisionModel*>::iterator it = models.begin(); it != models.end(); it++)
@@ -66,6 +64,8 @@ void Collision::DeleteCollisionInstance(CollisionInstance* ci)
 		}
 		delete cm;
 	}
+
+	delete ci;
 }
 
 std::vector<CollisionInstance*> Collision::GetCollisionInstances()
