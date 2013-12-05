@@ -4,9 +4,7 @@
 
 #include "Cistron.h"
 #include "tinyxml2.h"
-#include "Messenger.h"
-#include "Person.h"
-#include "Monster.h"
+#include "ComponentHeaders.h"
 #include <string>
 #include <iostream>
 using namespace std;

@@ -74,16 +74,16 @@
     <ClInclude Include="src\skyflower\tinyxml2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\skyflower\Messenger.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="src\skyflower\Person.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="src\skyflower\Monster.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
     <ClInclude Include="src\skyflower\ComponentHeaders.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\Components\Messenger.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\Components\Monster.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\Components\Person.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>

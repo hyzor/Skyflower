@@ -34,12 +34,12 @@
     <ClInclude Include="src\skyflower\Cistron.h" />
     <ClInclude Include="src\skyflower\Component.h" />
     <ClInclude Include="src\skyflower\ComponentHeaders.h" />
+    <ClInclude Include="src\skyflower\Components\Messenger.h" />
+    <ClInclude Include="src\skyflower\Components\Monster.h" />
+    <ClInclude Include="src\skyflower\Components\Person.h" />
     <ClInclude Include="src\skyflower\Entity.h" />
     <ClInclude Include="src\skyflower\EntityManager.h" />
     <ClInclude Include="src\skyflower\Field.h" />
-    <ClInclude Include="src\skyflower\Messenger.h" />
-    <ClInclude Include="src\skyflower\Monster.h" />
-    <ClInclude Include="src\skyflower\Person.h" />
     <ClInclude Include="src\skyflower\PotentialField.h" />
     <ClInclude Include="src\skyflower\ScriptHandler.h" />
     <ClInclude Include="src\skyflower\tinyxml2.h" />

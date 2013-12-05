@@ -1,3 +1,3 @@
-#include "Messenger.h"
-#include "Person.h"
-#include "Monster.h"
+#include "Components/Messenger.h"
+#include "Components/Person.h"
+#include "Components/Monster.h"
