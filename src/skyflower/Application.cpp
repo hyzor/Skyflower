@@ -1,12 +1,15 @@
+#include <string>
+#include <iostream>
+#include <cassert>
+
 #include "shared/util.h"
+#include "Sound/SoundEngine.h"
 
 #include "Application.h"
-
 #include "Cistron.h"
 #include "tinyxml2.h"
 #include "ComponentHeaders.h"
-#include <string>
-#include <iostream>
+
 using namespace std;
 using namespace tinyxml2;
 using namespace Cistron;
@@ -47,12 +50,12 @@ void Application::Start()
 	m_quit = false;
 
 	float oldTime = GetTime();
-	float time, timeElapsed;
+	float time, deltaTime;
 
 	while(!m_quit)
 	{
 		time = GetTime();
-		timeElapsed = time - oldTime;
+		deltaTime = time - oldTime;
 		oldTime = time;
 
 		m_window->PumpMessages();
