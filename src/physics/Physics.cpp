@@ -12,6 +12,7 @@ Physics::Physics()
 	this->projectileAngle = 0.0f;
 	this->dt = 0.0;
 	this->totalRot = 0.0f;
+	this->velocity = Vec3::Zero();
 }
 
 
@@ -138,7 +139,7 @@ void Physics::move(Vec3 &pos, Vec3 cameraLookAt, Vec3 dir, float speed)
 	{
 		totalRot += 0.1 * dt;
 	}
-	float rad = totalRot * (3.14 / 180);
+	float rad = totalRot * (PI / 180);
 	float x, z, dx, dz, cs, sn;
 	cs = cosf(rad);
 	sn = sinf(rad);
@@ -161,7 +162,7 @@ void Physics::moveLeft(Vec3 &pos, Vec3 cameraLookAt, float speed)
 	{
 		totalRot += 0.1 * dt;
 	}
-	float rad = totalRot * (3.14 / 180);
+	float rad = totalRot * (PI / 180);
 	float x, z, dx, dz, cs, sn;
 	cs = cosf(rad);
 	sn = sinf(rad);
@@ -211,3 +212,16 @@ void Physics::moveLeft(Vec3 &pos, Vec3 right)
 	pos -= right;
 }
 
+void Physics::jump(Vec3 &pos)
+{
+	if (!isJumping)
+	{
+		jumping = true;
+		velocity.Y += DEFAULT_JUMP_VELOCITY;
+	}
+}
+
+float Physics::lerp(float a, float b, float amount)
+{
+	return a + (b - a) * amount;
+}

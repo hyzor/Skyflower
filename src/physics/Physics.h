@@ -12,16 +12,20 @@
 #define DEFAULT_MASS 50.0f; //In KG
 #define DEFAULT_VELOCITY_FALL Vec3(0.0f, -1.0f, 0.0f);
 #define DEFAULT_MOVEMENTSPEED 1.0f;
+#define DEFAULT_JUMP_VELOCITY 10.0f
 
+const float PI = 3.141592653589;
 class DLL_API Physics
 {
 private:
 	std::clock_t start;
 	Vec3 gravity;
+	Vec3 velocity;
 	float mass;
 	float projectileAngle;
 	float dt;
 	float totalRot;
+	bool jumping;
 
 	//float gDeltaTime; //used for gravity related calculations
 	//float jDeltaTime; //used for jump related calculations
@@ -36,7 +40,7 @@ public:
 
 
 	void update(float dt); //Call each frame (so far only an update of delta time)
-	void jumpCalc(Vec3 &pos, Vec3 &velocity, Vec3 &acceleration); //perform a jump on the given floats that represents a position
+	void jump(Vec3 &pos); //perform a jump on the given floats that represents a position
 	void addGravityCalc(Vec3 &pos, Vec3 &velocity, Vec3 &acceleration); //apply gravity to the given input representing a position, should be called every frame (unless collisioncheck confirms the object is not airborne)
 	void addGravityCalc(Vec3 &pos, Vec3 &velocity); //same operation as function above but with no need for acceleration
 	void addGravityCalc(Vec3 &pos); // same story here, only position though
@@ -61,7 +65,10 @@ public:
 
 	float getMass() const;
 	Vec3 getGravity() const;
+	bool isJumping() const { return jumping; }
 
+private:
+	float lerp(float a, float b, float amount);
 };
 
 
