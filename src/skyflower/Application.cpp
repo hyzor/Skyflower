@@ -79,9 +79,25 @@ void Application::OnKeyDown(unsigned short key)
 	std::string x, y, z;
 	p.update(0.01f);
 
+
+	if (key == 'W')
+	{
+		p.moveForward(pos, speed);
+	}
+
 	if (key == 'A')
 	{
-		p.move(pos, cameraLookAt, dir, speed);
+		p.moveLeft(pos, speed);
+	}
+
+	if (key == 'S')
+	{
+		p.moveBackward(pos, speed);
+	}
+
+	if (key == 'D')
+	{
+		p.moveRight(pos, speed);
 	}
 	
 
