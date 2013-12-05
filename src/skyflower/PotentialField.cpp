@@ -44,18 +44,9 @@ Vec3 PotentialField::GetDir(Vec3 pos)
 {
 	Vec3 dir;
 	float minWeight = 9999999;
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 15; i++)
 	{
-		Vec3 ranDir;
-		if (i == 0)
-			ranDir = Vec3(1, 0);
-		if (i == 1)
-			ranDir = Vec3(-1, 0);
-		if (i == 2)
-			ranDir = Vec3(0, 1);
-		if (i == 3)
-			ranDir = Vec3(0, -1);
-		//Vec3 ranDir = Vec3((rand() % 200) / 100.0f - 1, (rand() % 200) / 100.0f - 1, (rand() % 200) / 100.0f - 1).Normalize();
+		Vec3 ranDir = Vec3((rand() % 200) / 100.0f - 1, (rand() % 200) / 100.0f - 1, 0.0f).Normalize();
 		
 		float weight = GetWeight(pos + ranDir);
 
