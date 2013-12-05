@@ -37,7 +37,7 @@ void Application::Start()
 	EntityManager *entityManager = new EntityManager();
 
 	//loading xml-file, creating entities and components to this entityManager
-	entityManager->loadXML(entityManager, "test2.xml");
+	//entityManager->loadXML(entityManager, "test2.xml");
 
 	////sends a message to all components in all entities in that manager
 	//entityManager->sendMessageToAllEntities("Hello");
@@ -62,6 +62,8 @@ void Application::Start()
 	}
 
 	//DestroySoundEngine(m_soundEngine);
+
+	delete entityManager;
 
 	delete m_window;
 }

@@ -16,8 +16,6 @@ int main(int argc, const char *argv[])
 {
 	Application app;
 
-	std::cout << "Debug!" << std::endl;
-
 
 
 	/*CollisionInstance* ci = Collision::GetInstance()->CreateCollisionInstance("TestBlock", Vec3());
@@ -27,7 +25,7 @@ int main(int argc, const char *argv[])
 
 
 
-	
+	/*
 	PotentialField pf;
 	pf.CreateField(200, 5, Vec3(10, 10, 0));
 	pf.CreateField(500, 3, Vec3(6, 10, 0));
@@ -53,7 +51,7 @@ int main(int argc, const char *argv[])
 			std::cout << std::endl;
 		}
 	}
-
+	*/
 
 
 
