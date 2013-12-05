@@ -17,6 +17,10 @@ SoundSourceImpl::SoundSourceImpl(ResourceCache *resourceCache)
 	m_isLastBufferQueued = false;
 	m_isPlaying = false;
 	m_isLooping = false;
+
+	m_position[0] = 0.0f;
+	m_position[1] = 0.0f;
+	m_position[2] = 0.0f;
 }
 
 SoundSourceImpl::~SoundSourceImpl()
@@ -243,12 +247,12 @@ void SoundSourceImpl::Seek(float time)
 #endif
 }
 
-bool SoundSourceImpl::IsPlaying()
+bool SoundSourceImpl::IsPlaying() const
 {
 	return m_isPlaying;
 }
 
-bool SoundSourceImpl::IsLooping()
+bool SoundSourceImpl::IsLooping() const
 {
 	return m_isLooping;
 }
@@ -275,6 +279,10 @@ void SoundSourceImpl::SetPitch(float pitch)
 void SoundSourceImpl::SetPosition(const float position[3])
 {
 	alSourcefv(m_source, AL_POSITION, position);
+
+	m_position[0] = position[0];
+	m_position[1] = position[1];
+	m_position[2] = position[2];
 }
 
 void SoundSourceImpl::SetVelocity(const float velocity[3])
@@ -285,4 +293,11 @@ void SoundSourceImpl::SetVelocity(const float velocity[3])
 void SoundSourceImpl::SetIsRelativeToListener(bool relative)
 {
 	alSourcei(m_source, AL_SOURCE_RELATIVE, (relative ? AL_TRUE : AL_FALSE));
+}
+
+void SoundSourceImpl::GetPosition(float output[3]) const
+{
+	output[0] = m_position[0];
+	output[1] = m_position[1];
+	output[2] = m_position[2];
 }

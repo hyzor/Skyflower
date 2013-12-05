@@ -17,6 +17,8 @@ public:
 	// Used for the doppler effect, should be in the same unit as the speed of sound set in SoundEngine.
 	virtual void SetVelocity(const float velocity[3]);
 
+	virtual void GetPosition(float output[3]) const;
+
 	void ApplyState();
 
 private:

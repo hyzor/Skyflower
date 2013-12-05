@@ -24,8 +24,8 @@ public:
 
 	virtual void Seek(float time);
 
-	virtual bool IsPlaying();
-	virtual bool IsLooping();
+	virtual bool IsPlaying() const;
+	virtual bool IsLooping() const;
 
 	virtual void SetVolume(float volume);
 	virtual void SetLooping(bool looping);
@@ -34,6 +34,8 @@ public:
 	virtual void SetPosition(const float position[3]);
 	virtual void SetVelocity(const float velocity[3]);
 	virtual void SetIsRelativeToListener(bool relative);
+
+	virtual void GetPosition(float output[3]) const;
 
 private:
 	void ClearBuffers();
@@ -49,6 +51,8 @@ private:
 	bool m_isLastBufferQueued;
 	bool m_isPlaying;
 	bool m_isLooping;
+
+	float m_position[3];
 };
 
 #endif
