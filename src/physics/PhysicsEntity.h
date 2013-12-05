@@ -1,7 +1,9 @@
 #ifndef PHYSICSENTITY_H
 #define PHYSICSENTITY_H
 
+#include "Vec3.h"
 #include "shared/platform.h"
+
 
 class DLL_API PhysicsEntity
 {
@@ -15,6 +17,7 @@ private:
 	long id;
 	float mass;
 	bool jumping;
+	Vector rotation;
 
 };
 #endif

@@ -1,11 +1,18 @@
 #include "shared/util.h"
 
 #include "Application.h"
+#include <iostream>
+#include <sstream>
 
 Application::Application()
 {
 	m_window = NULL;
 	m_soundEngine = NULL;
+
+	pos = Vec3(0.0f, 0.0f, 0.0f);
+	dir = Vec3(-1.0f, 0.0f, 0.0f);
+	cameraLookAt = Vec3(pos - Vec3(0.0f, 5.0f, -10.0f));
+	speed = 1.0f;
 }
 
 Application::~Application()
@@ -68,6 +75,28 @@ void Application::OnMouseWheel(int delta)
 
 void Application::OnKeyDown(unsigned short key)
 {
+	std::stringstream ss;
+	std::string x, y, z;
+	p.update(0.01f);
+
+	if (key == 'A')
+	{
+		p.move(pos, cameraLookAt, dir, speed);
+	}
+	
+
+	ss << pos.X;
+	x = ss.str();
+
+	ss.str("");
+	ss << pos.Y;
+	y = ss.str();
+
+	ss.str("");
+	ss << pos.Z;
+	z = ss.str();
+
+	std::cout << "Pos X: " + x + " Y: " + y + " Z: " + z + "\n";
 }
 
 void Application::OnKeyUp(unsigned short key)

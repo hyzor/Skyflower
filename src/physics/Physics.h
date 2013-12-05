@@ -6,6 +6,7 @@
 #include <DirectXMath.h>
 #include <ctime>
 #include "Vec3.h"
+#include <math.h>
 
 #define DEFAULT_GRAVITY Vec3(0.0f, -9.82f, 0.0f);
 #define DEFAULT_MASS 50.0f; //In KG
@@ -20,6 +21,7 @@ private:
 	float mass;
 	float projectileAngle;
 	float dt;
+	float totalRot;
 
 	//float gDeltaTime; //used for gravity related calculations
 	//float jDeltaTime; //used for jump related calculations
@@ -42,8 +44,13 @@ public:
 	
 	void moveForward(Vec3 &pos, Vec3 look, float speed);
 	void moveBackward(Vec3 &pos, Vec3 look, float speed);
-	void moveRight(Vec3 &pos, Vec3 right, float speed);
-	void moveLeft(Vec3 &pos, Vec3 right, float speed);
+	//void moveRight(Vec3 &pos, Vec3 right, Vec3 look, Vec3 cameraLookAt, float speed);
+	void moveLeft(Vec3 &pos,Vec3 cameraLookAt, float speed);
+
+	void move(Vec3 &pos, Vec3 cameraLookAt, Vec3 dir, float speed);
+
+	void rotateY(); //rotate the look vector around its position
+
 	void moveForward(Vec3 &pos, Vec3 look);
 	void moveBackward(Vec3 &pos, Vec3 look);
 	void moveRight(Vec3 &pos, Vec3 right);

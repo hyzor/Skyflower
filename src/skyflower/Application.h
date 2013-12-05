@@ -4,6 +4,7 @@
 #include "graphics/Window.h"
 #include "graphics/InputHandler.h"
 #include "Sound/SoundEngine.h"
+#include "physics/Physics.h"
 
 class Application : WindowListener, InputListener
 {
@@ -31,6 +32,12 @@ private:
 	InputHandler *m_inputHandler;
 
 	SoundEngine *m_soundEngine;
+	Physics p;
+	Vec3 pos;
+	Vec3 dir;
+	Vec3 cameraLookAt;
+	float speed;
+
 
 	bool m_quit;
 };
