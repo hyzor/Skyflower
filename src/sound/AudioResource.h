@@ -10,6 +10,8 @@
 
 #include <AL/al.h>
 
+#include "AudioDecoder.h"
+
 struct MemoryMappedFile
 {
 	const char *data;

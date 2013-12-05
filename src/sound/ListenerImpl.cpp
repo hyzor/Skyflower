@@ -42,3 +42,11 @@ void ListenerImpl::SetVelocity(const float velocity[3])
 	m_velocity[1] = velocity[1];
 	m_velocity[2] = velocity[2];
 }
+
+void ListenerImpl::ApplyState()
+{
+	alListenerf(AL_GAIN, m_volume);
+	alListenerfv(AL_POSITION, m_position);
+	alListenerfv(AL_ORIENTATION, m_orientation);
+	alListenerfv(AL_VELOCITY, m_velocity);
+}

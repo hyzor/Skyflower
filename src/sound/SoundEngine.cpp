@@ -7,8 +7,7 @@ DLL_API SoundEngine *CreateSoundEngine(const std::string &resourceDir)
 {
 	SoundEngineImpl *engine = new SoundEngineImpl();
 
-	if (!engine->Init(resourceDir))
-	{
+	if (!engine->Init(resourceDir)) {
 		delete engine;
 		return NULL;
 	}
@@ -18,8 +17,9 @@ DLL_API SoundEngine *CreateSoundEngine(const std::string &resourceDir)
 
 DLL_API void DestroySoundEngine(SoundEngine *engine)
 {
-	if (!engine)
+	if (!engine) {
 		return;
+	}
 
 	SoundEngineImpl *engineImpl = (SoundEngineImpl *)engine;
 	engineImpl->Release();

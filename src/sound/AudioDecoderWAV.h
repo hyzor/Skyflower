@@ -1,9 +1,7 @@
 #ifndef SOUND_AUDIODECODERWAV_H
 #define SOUND_AUDIODECODERWAV_H
 
-#include <cstdint>
-
-#include <AL/al.h>
+#include "AudioDecoder.h"
 
 bool AudioDecoderWAVInit(struct AudioResource *resource);
 void AudioDecoderWAVRelease(struct AudioResource *resource);

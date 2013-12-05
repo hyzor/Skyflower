@@ -1,7 +1,6 @@
 #include <cassert>
 
 #include "AudioResource.h"
-#include "AudioDecoder.h"
 
 static struct MemoryMappedFile *MemoryMapFile(const char *file)
 {
@@ -83,6 +82,7 @@ struct AudioResource *CreateAudioResource(const std::string &file)
 	}
 
 	assert(resource->totalSamples > 0);
+	assert(resource->samplesPerBuffer > 0);
 	assert(resource->channels > 0);
 	assert(resource->sampleRate > 0);
 	assert(resource->bitDepth > 0);

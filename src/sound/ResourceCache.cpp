@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cassert>
 #include <cstdint>
 #include <cstdio>
@@ -6,9 +7,8 @@
 
 #include <AL/al.h>
 
-#include "ResourceCache.h"
 #include "AudioResource.h"
-#include "AudioDecoder.h"
+#include "ResourceCache.h"
 #include "TaskQueueWin32.h"
 
 /* Based on http://www.w3.org/TR/PNG/#D-CRCAppendix */
@@ -186,20 +186,20 @@ enum BufferStatus ResourceCache::RequestBuffer(uint32_t resourceHash, unsigned i
 	int emptySlot = -1;
 
 	for (int i = 0; i < SOUNDENGINE_BUFFER_POOL_SIZE; i++) {
-		if (m_cacheEntryLoading[i]) {
-			continue;
-		}
-
 		if (m_cacheEntries[i].resourceHash == resourceHash && m_cacheEntries[i].bufferIndex == bufferIndex) {
+			m_cacheEntries[i].lastRequestedFrame = m_currentFrame;
+
+			if (m_cacheEntryLoading[i]) {
+				return BufferStatusPendingLoad;
+			}
+
 			if (buffer_out) {
 				*buffer_out = m_cacheEntries[i].buffer;
 			}
 
-			m_cacheEntries[i].lastRequestedFrame = m_currentFrame;
-
 			return BufferStatusLoaded;
 		}
-		else if (emptySlot == -1) {
+		else if (emptySlot == -1 && !m_cacheEntryLoading[i]) {
 			if (m_cacheEntries[i].resourceHash == 0x0) {
 				emptySlot = i;
 			}
@@ -214,6 +214,10 @@ enum BufferStatus ResourceCache::RequestBuffer(uint32_t resourceHash, unsigned i
 		return BufferStatusOutOfMemory;
 	}
 
+	if (emptySlot == -1) {
+		printf("ResourceCache::RequestBuffer, replacing cache entry %i (resourceHash=%#x, bufferIndex=%u, lastRequestedFrame=%u, currentFrame=%u)\n", bestSlot, m_cacheEntries[bestSlot].resourceHash, m_cacheEntries[bestSlot].bufferIndex, bestSlotFrame, m_currentFrame);
+	}
+
 	int slot = (emptySlot != -1 ? emptySlot : bestSlot);
 	m_cacheEntryLoading[slot] = true;
 
@@ -221,12 +225,12 @@ enum BufferStatus ResourceCache::RequestBuffer(uint32_t resourceHash, unsigned i
 	m_cacheEntries[slot].bufferIndex = bufferIndex;
 	m_cacheEntries[slot].lastRequestedFrame = m_currentFrame;
 
-	uint64_t sampleCount = resource->samplesPerBuffer;
 	uint64_t sampleOffset = bufferIndex * resource->samplesPerBuffer;
+	uint64_t sampleCount = std::min(resource->samplesPerBuffer, resource->totalSamples - sampleOffset);
 	ALuint buffer = m_cacheEntries[slot].buffer;
 	// FIXME: Unload the previous buffer data?
 
-	m_taskQueue->EnqueueTask([this, slot, resource, buffer, sampleCount, sampleOffset]() {
+	m_taskQueue->EnqueueTask([this, slot, resource, buffer, sampleOffset, sampleCount]() {
 		audioDecoders[resource->decoder].fillBuffer(resource, sampleOffset, sampleCount, buffer);
 		m_cacheEntryLoading[slot] = false;
 	});
@@ -234,13 +238,24 @@ enum BufferStatus ResourceCache::RequestBuffer(uint32_t resourceHash, unsigned i
 	return BufferStatusPendingLoad;
 }
 
-bool ResourceCache::IsResourceStreaming(uint32_t resourceHash)
+unsigned int ResourceCache::GetResourceBufferCount(uint32_t resourceHash)
 {
 	AudioResource *resource = m_resources[resourceHash];
 
 	if (!resource) {
-		return false;
+		return 0;
 	}
 
-	return (resource->samplesPerBuffer < resource->totalSamples);
+	unsigned int result = (unsigned int)(resource->totalSamples / resource->samplesPerBuffer);
+
+	if (resource->totalSamples % resource->samplesPerBuffer > 0) {
+		result++;
+	}
+
+	return result;
+}
+
+bool ResourceCache::IsResourceStreaming(uint32_t resourceHash)
+{
+	return (GetResourceBufferCount(resourceHash) > 1);
 }

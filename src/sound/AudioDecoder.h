@@ -3,11 +3,9 @@
 
 #include <cstdint>
 
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#include <Windows.h>
-
 #include <AL/al.h>
+
+#include "AudioResource.h"
 
 enum AudioDecoders
 {

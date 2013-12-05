@@ -8,10 +8,9 @@
 
 #include "Sound/Listener.h"
 #include "Sound/SoundSource.h"
+#include "Config.h"
 #include "ListenerImpl.h"
 #include "ResourceCache.h"
-#include "TaskQueue.h"
-#include "Config.h"
 
 class SoundEngineImpl
 {

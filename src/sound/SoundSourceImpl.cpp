@@ -10,7 +10,11 @@ SoundSourceImpl::SoundSourceImpl(ResourceCache *resourceCache)
 
 	alGenSources(1, &m_source);
 	m_resourceHash = 0x0;
+	m_nextBufferIndex = 0;
+	m_queuedBufferIndices[0] = -1;
+	m_queuedBufferIndices[1] = -1;
 
+	m_isLastBufferQueued = false;
 	m_isPlaying = false;
 	m_isLooping = false;
 }
@@ -36,6 +40,11 @@ void SoundSourceImpl::ClearBuffers()
 	for (int i = 0; i < count; i++) {
 		alSourceUnqueueBuffers(m_source, 1, &buffer);
 	}
+
+	m_queuedBufferIndices[0] = -1;
+	m_queuedBufferIndices[1] = -1;
+
+	m_isLastBufferQueued = false;
 }
 
 void SoundSourceImpl::SetResource(const std::string &name)
@@ -46,23 +55,14 @@ void SoundSourceImpl::SetResource(const std::string &name)
 	ClearBuffers();
 
 	m_resourceHash = m_resourceCache->PrefetchResource(name);
+	m_nextBufferIndex = 0;
 
-	ALuint buffer;
+	// Start loading the first buffer.
+	m_resourceCache->RequestBuffer(m_resourceHash, 0, NULL);
 
-	if (m_resourceCache->RequestBuffer(m_resourceHash, 0, &buffer) == BufferStatusLoaded) {
-		if (!m_resourceCache->IsResourceStreaming(m_resourceHash)) {
-			alSourcei(m_source, AL_BUFFER, buffer);
-			alSourcei(m_source, AL_LOOPING, (m_isLooping ? AL_TRUE : AL_FALSE));
-		}
-		else {
-			//source->m_nextSample = 0;
-			alSourcei(m_source, AL_LOOPING, AL_FALSE);
-			alSourceQueueBuffers(m_source, 1, &buffer);
-		}
-
-		if (m_isPlaying) {
-			Play();
-		}
+	// If we are streaming, also start loading the second buffer.
+	if (m_resourceCache->IsResourceStreaming(m_resourceHash)) {
+		m_resourceCache->RequestBuffer(m_resourceHash, 1, NULL);
 	}
 }
 
@@ -90,7 +90,7 @@ void SoundSourceImpl::Update()
 			if (m_isPlaying && sourceState != AL_PLAYING) {
 				m_isPlaying = false;
 
-				printf("Reached end of non-streaming source\n");
+				//printf("Reached end of non-streaming non-looping source, stopping\n");
 			}
 		}
 	}
@@ -101,33 +101,77 @@ void SoundSourceImpl::Update()
 
 		assert(processedBuffers <= 2);
 
-		alSourceUnqueueBuffers(m_source, processedBuffers, NULL);
+		ALuint unqueuedBuffers[2];
+		alSourceUnqueueBuffers(m_source, processedBuffers, unqueuedBuffers);
+
+		unsigned int lastBufferIndex = m_resourceCache->GetResourceBufferCount(m_resourceHash) - 1;
+
+		if (processedBuffers > 0) {
+			for (int i = 0; i < processedBuffers; i++) {
+				if (m_queuedBufferIndices[i] == lastBufferIndex) {
+					m_isLastBufferQueued = false;
+
+					if (!m_isLooping && m_isPlaying) {
+						// We reached the end of a non-looping source, stop playback.
+						m_isPlaying = false;
+
+						//printf("We just unqueued the last buffer of a non-looping source, stopping\n");
+					}
+				}
+			}
+			
+			// Move the remaining queued buffers to the start of the array.
+			for (int i = processedBuffers; i < 2; i++) {
+				m_queuedBufferIndices[i - processedBuffers] = m_queuedBufferIndices[i];
+			}
+			// Clear the end of the array.
+			for (int i = 2 - processedBuffers; i < 2; i++) {
+				m_queuedBufferIndices[i] = -1;
+			}
+		}
 
 		if (queuedBuffers < 2) {
 			needBuffer = true;
 		}
 
+		// Touch the queued buffers so they won't get thrown out of the cache.
 		for (int i = 0; i < queuedBuffers; i++) {
-			// FIXME: Touch buffer!
+			m_resourceCache->RequestBuffer(m_resourceHash, m_queuedBufferIndices[i], NULL);
 		}
-
-		// FIXME: Detect if we reached the end and check m_isLooping.
-		// We should still load and attach buffer 0 and 1, but we should stop playing.
 	}
 
 	if (needBuffer) {
 		ALuint buffer;
 
-		switch (m_resourceCache->RequestBuffer(m_resourceHash, 0/*m_nextBufferIndex*/, &buffer)) {
+		switch (m_resourceCache->RequestBuffer(m_resourceHash, m_nextBufferIndex, &buffer)) {
 		case BufferStatusLoaded:
+			alSourcei(m_source, AL_LOOPING, ((m_isLooping && !isStreaming)? AL_TRUE : AL_FALSE));
+
 			if (!isStreaming) {
 				// The source must be stopped before we can change any buffers.
 				alSourceStop(m_source);
 				alSourcei(m_source, AL_BUFFER, buffer);
 			}
 			else {
+				if (!m_isLooping && m_isLastBufferQueued) {
+					break;
+				}
+
 				alSourceQueueBuffers(m_source, 1, &buffer);
-				// m_nextBufferIndex++;
+
+				for (int i = 0; i < 2; i++) {
+					if (m_queuedBufferIndices[i] == -1) {
+						m_queuedBufferIndices[i] = m_nextBufferIndex;
+						break;
+					}
+				}
+
+				m_nextBufferIndex++;
+
+				if (m_nextBufferIndex == m_resourceCache->GetResourceBufferCount(m_resourceHash)) {
+					m_isLastBufferQueued = true;
+					m_nextBufferIndex = 0;
+				}
 			}
 
 			if (m_isPlaying) {
@@ -135,27 +179,24 @@ void SoundSourceImpl::Update()
 			}
 
 			break;
-		case BufferStatusIndexOutOfBounds:
-			// FIXME: We can only set m_nextBufferIndex to zero here if we are looping.
-			// Otherwise we might start playing from the start again if we can't detect we
-			// played to the end in time.
-
-			// m_nextBufferIndex = 0;
-			break;
 		case BufferStatusLoadingHeaders:
+			//printf("SoundSourceImpl::Update, BufferStatusLoadingHeaders\n");
+			break;
 		case BufferStatusPendingLoad:
+			//printf("SoundSourceImpl::Update, BufferStatusPendingLoad\n");
+			break;
+		case BufferStatusIndexOutOfBounds:
+			printf("SoundSourceImpl::Update, BufferStatusIndexOutOfBounds\n");
+			break;
 		case BufferStatusOutOfMemory:
+			printf("SoundSourceImpl::Update, BufferStatusOutOfMemory\n");
 			break;
 		case BufferStatusInvalidFile:
+			printf("SoundSourceImpl::Update, BufferStatusInvalidFile\n");
 			m_resourceHash = 0x0;
 			return;
 		}
 	}
-}
-
-uint32_t SoundSourceImpl::GetResourceHash()
-{
-	return m_resourceHash;
 }
 
 void SoundSourceImpl::Play()
@@ -172,6 +213,9 @@ void SoundSourceImpl::Pause()
 
 void SoundSourceImpl::Seek(float time)
 {
+	// FIXME: Implement!
+	assert(0);
+
 #if 0
 	if (m_isLoadingResource)
 	{

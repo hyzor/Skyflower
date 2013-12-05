@@ -1,15 +1,15 @@
+#include <algorithm>
 #include <cassert>
 #include <cstdlib>
 #include <cstdio>
-#include <algorithm>
 
 #include <AL/al.h>
 #include <AL/alc.h>
 
-#include "SoundEngineImpl.h"
-#include "SoundSourceImpl.h"
 #include "AudioResource.h"
 #include "ListenerImpl.h"
+#include "SoundEngineImpl.h"
+#include "SoundSourceImpl.h"
 #include "TaskQueueWin32.h"
 
 SoundEngineImpl::SoundEngineImpl()
@@ -49,8 +49,9 @@ bool SoundEngineImpl::Init(const std::string &resourceDir)
 #if 1
 	ALCenum error = alcGetError(m_device);
 
-	if (error != ALC_NO_ERROR)
+	if (error != ALC_NO_ERROR) {
 		printf("alcGetError=%s\n", alcGetString(m_device, error));
+	}
 #endif
 
 	m_resourceCache = new ResourceCache(resourceDir);
@@ -64,13 +65,14 @@ void SoundEngineImpl::Release()
 #if 1
 	ALCenum error = alcGetError(m_device);
 
-	if (error != ALC_NO_ERROR)
+	if (error != ALC_NO_ERROR) {
 		printf("alcGetError=%s\n", alcGetString(m_device, error));
+	}
 #endif
 
 	SoundSource *source;
 
-	while (!m_sources.empty()){
+	while (!m_sources.empty()) {
 		source = m_sources.back();
 		m_sources.pop_back();
 
@@ -149,6 +151,7 @@ void SoundEngineImpl::SetSpeedOfSound(float speed)
 
 void SoundEngineImpl::PlaySound(const char *file, const float position[3], float volume, bool relativeToListener)
 {
+	// FIXME: Implement!
 	assert(0);
 }
 
@@ -158,10 +161,7 @@ void SoundEngineImpl::Update(float deltaTime)
 	SoundSourceImpl *source;
 
 	if (activeListener) {
-		alListenerf(AL_GAIN, activeListener->m_volume);
-		alListenerfv(AL_POSITION, activeListener->m_position);
-		alListenerfv(AL_ORIENTATION, activeListener->m_orientation);
-		alListenerfv(AL_VELOCITY, activeListener->m_velocity);
+		activeListener->ApplyState();
 	}
 
 	m_resourceCache->Update();
@@ -174,7 +174,8 @@ void SoundEngineImpl::Update(float deltaTime)
 #if 1
 	ALenum error = alGetError();
 
-	if (error != AL_NO_ERROR)
+	if (error != AL_NO_ERROR) {
 		printf("alGetError=%s (0x%x)\n", alGetString(error), error);
+	}
 #endif
 }

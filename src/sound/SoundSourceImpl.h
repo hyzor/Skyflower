@@ -7,9 +7,7 @@
 #include <AL/al.h>
 
 #include "Sound/SoundSource.h"
-
-class SoundEngineImpl;
-class ResourceCache;
+#include "ResourceCache.h"
 
 class SoundSourceImpl : public SoundSource
 {
@@ -18,7 +16,6 @@ public:
 	virtual ~SoundSourceImpl();
 
 	virtual void SetResource(const std::string &name);
-	uint32_t GetResourceHash();
 
 	void Update();
 
@@ -46,8 +43,10 @@ private:
 
 	ALuint m_source;
 	uint32_t m_resourceHash;
-	//unsigned int m_nextBufferIndex;
+	unsigned int m_nextBufferIndex;
+	int m_queuedBufferIndices[2];
 
+	bool m_isLastBufferQueued;
 	bool m_isPlaying;
 	bool m_isLooping;
 };
