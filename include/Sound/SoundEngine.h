@@ -1,12 +1,14 @@
 #ifndef SOUND_SOUNDENGINE_H
 #define SOUND_SOUNDENGINE_H
 
+#include <string>
+
 #include "shared/platform.h"
 
-class SoundSource;
-class Listener;
+#include "Sound/Listener.h"
+#include "Sound/SoundSource.h"
 
-class DLL_API SoundEngine
+class SoundEngine
 {
 public:
 	virtual ~SoundEngine() {}
@@ -27,7 +29,7 @@ public:
 	virtual void Update(float deltaTime) = 0;
 };
 
-DLL_API SoundEngine *CreateSoundEngine();
+DLL_API SoundEngine *CreateSoundEngine(const std::string &resourceDir);
 DLL_API void DestroySoundEngine(SoundEngine *engine);
 
 #endif

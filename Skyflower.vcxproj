@@ -20,16 +20,29 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\skyflower\Application.cpp" />
+    <ClCompile Include="src\skyflower\Component.cpp" />
+    <ClCompile Include="src\skyflower\Entity.cpp" />
+    <ClCompile Include="src\skyflower\EntityManager.cpp" />
     <ClCompile Include="src\skyflower\Field.cpp" />
     <ClCompile Include="src\skyflower\main.cpp" />
     <ClCompile Include="src\skyflower\PotentialField.cpp" />
     <ClCompile Include="src\skyflower\ScriptHandler.cpp" />
+    <ClCompile Include="src\skyflower\tinyxml2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\skyflower\Application.h" />
+    <ClInclude Include="src\skyflower\Cistron.h" />
+    <ClInclude Include="src\skyflower\Component.h" />
+    <ClInclude Include="src\skyflower\ComponentHeaders.h" />
+    <ClInclude Include="src\skyflower\Components\Messenger.h" />
+    <ClInclude Include="src\skyflower\Components\Monster.h" />
+    <ClInclude Include="src\skyflower\Components\Person.h" />
+    <ClInclude Include="src\skyflower\Entity.h" />
+    <ClInclude Include="src\skyflower\EntityManager.h" />
     <ClInclude Include="src\skyflower\Field.h" />
     <ClInclude Include="src\skyflower\PotentialField.h" />
     <ClInclude Include="src\skyflower\ScriptHandler.h" />
+    <ClInclude Include="src\skyflower\tinyxml2.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{37AF7357-6F98-4587-BA3E-CBEF4F9D14A3}</ProjectGuid>
@@ -109,6 +122,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -123,6 +137,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -139,6 +154,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -157,6 +173,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

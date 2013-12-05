@@ -22,21 +22,25 @@
     <ClInclude Include="include\Sound\Listener.h" />
     <ClInclude Include="include\Sound\SoundEngine.h" />
     <ClInclude Include="include\Sound\SoundSource.h" />
+    <ClInclude Include="src\sound\AudioDecoder.h" />
+    <ClInclude Include="src\sound\AudioDecoderWAV.h" />
+    <ClInclude Include="src\sound\AudioResource.h" />
     <ClInclude Include="src\sound\Config.h" />
     <ClInclude Include="src\sound\ListenerImpl.h" />
+    <ClInclude Include="src\sound\ResourceCache.h" />
     <ClInclude Include="src\sound\SoundEngineImpl.h" />
-    <ClInclude Include="src\sound\SoundResource.h" />
-    <ClInclude Include="src\sound\SoundResourceWAV.h" />
     <ClInclude Include="src\sound\SoundSourceImpl.h" />
     <ClInclude Include="src\sound\TaskQueue.h" />
     <ClInclude Include="src\sound\TaskQueueWin32.h" />
-    <ClInclude Include="src\sound\Util.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\sound\AudioDecoder.cpp" />
+    <ClCompile Include="src\sound\AudioDecoderWAV.cpp" />
+    <ClCompile Include="src\sound\AudioResource.cpp" />
     <ClCompile Include="src\sound\ListenerImpl.cpp" />
+    <ClCompile Include="src\sound\ResourceCache.cpp" />
     <ClCompile Include="src\sound\SoundEngine.cpp" />
     <ClCompile Include="src\sound\SoundEngineImpl.cpp" />
-    <ClCompile Include="src\sound\SoundResourceWAV.cpp" />
     <ClCompile Include="src\sound\SoundSourceImpl.cpp" />
     <ClCompile Include="src\sound\TaskQueueWin32.cpp" />
   </ItemGroup>
