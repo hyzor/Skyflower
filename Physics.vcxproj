@@ -153,8 +153,8 @@
     <ClCompile Include="src\physics\CollisionInstance.cpp" />
     <ClCompile Include="src\physics\CollisionModel.cpp" />
     <ClCompile Include="src\physics\ModelTree.cpp" />
+    <ClCompile Include="src\physics\Orientation.cpp" />
     <ClCompile Include="src\physics\Physics.cpp" />
-    <ClCompile Include="src\physics\PhysicsEntity.cpp" />
     <ClCompile Include="src\physics\Ray.cpp" />
     <ClCompile Include="src\physics\Sphere.cpp" />
     <ClCompile Include="src\physics\Triangle.cpp" />
@@ -166,8 +166,8 @@
     <ClInclude Include="src\physics\CollisionInstance.h" />
     <ClInclude Include="src\physics\CollisionModel.h" />
     <ClInclude Include="src\physics\ModelTree.h" />
+    <ClInclude Include="src\physics\Orientation.h" />
     <ClInclude Include="src\physics\Physics.h" />
-    <ClInclude Include="src\physics\PhysicsEntity.h" />
     <ClInclude Include="src\physics\Ray.h" />
     <ClInclude Include="src\physics\Sphere.h" />
     <ClInclude Include="src\physics\Triangle.h" />
