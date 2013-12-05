@@ -87,9 +87,4 @@
       <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <Xml Include="src\skyflower\test2.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
-  </ItemGroup>
 </Project>
