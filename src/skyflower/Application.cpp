@@ -19,7 +19,7 @@ void Application::Start()
 	gEngine = CreateGraphicsEngine();
 	gEngine->Init(m_window->GetHandle());
 	m_quit = false;
-
+	CameraController *camera = gEngine->CreateCameraController();
 	//loading xml-file, creating entities and components to this entityManager
 	//entityManager->loadXML(entityManager, "test2.xml");
 
@@ -45,7 +45,10 @@ void Application::Start()
 		oldTime = time;
 
 		d->SetPosition(d->GetPosition() + Vec3(0.01f, 0.0f, 0.0f));
+		Vec3 dir = (d->GetPosition() - camera->GetPosition()).Normalize();
 
+		camera->SetDirection(dir);
+		camera->SetPosition(d->GetPosition() - dir * 1000);
 		gEngine->DrawScene();
 		gEngine->UpdateScene(timeElapsed);
 

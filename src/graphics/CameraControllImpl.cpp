@@ -2,7 +2,7 @@
 
 CameraControllImpl::CameraControllImpl(Camera *c)
 {
-
+	this->camera = c;
 }
 
 CameraControllImpl::~CameraControllImpl(){}
