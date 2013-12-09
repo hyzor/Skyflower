@@ -50,7 +50,7 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 		delete mDirect3D;
 }
 
-bool GraphicsEngineImpl::Init(HWND hWindow)
+bool GraphicsEngineImpl::Init(HWND hWindow, int width, int height)
 {
 	//mD3dWindow = new D3dWindow(hWindow);
 
@@ -59,9 +59,6 @@ bool GraphicsEngineImpl::Init(HWND hWindow)
 
 	//if (!mD3dWindow->Init())
 	//	return false;
-
-	int width = 1024;
-	int height = 768;
 
 	mDirect3D = new Direct3D();
 

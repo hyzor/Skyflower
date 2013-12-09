@@ -34,7 +34,7 @@ void Application::Start()
 
 	// Create graphics engine
 	m_graphicsEngine = CreateGraphicsEngine();
-	m_graphicsEngine->Init(m_window->GetHandle());
+	m_graphicsEngine->Init(m_window->GetHandle(), m_window->GetWidth(), m_window->GetHeight());
 
 	//m_soundEngine = CreateSoundEngine("../../content/sounds/");
 	//assert(m_soundEngine);

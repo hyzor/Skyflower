@@ -32,7 +32,7 @@ class DLL_API GraphicsEngine
 public:
 	virtual ~GraphicsEngine() {}
 
-	virtual bool Init(HWND hWindow) = 0;
+	virtual bool Init(HWND hWindow, int width, int height) = 0;
 	virtual int Run() = 0;
 	virtual void DrawScene() = 0;
 	virtual void UpdateScene(float dt) = 0;

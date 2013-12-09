@@ -62,7 +62,7 @@ public:
 	GraphicsEngineImpl();
 	~GraphicsEngineImpl();
 
-	bool Init(HWND hWindow);
+	bool Init(HWND hWindow, int width, int height);
 	int Run();
 	//int DrawScene();
 
