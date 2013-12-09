@@ -1,6 +1,7 @@
 #include "shared/util.h"
-
+#include "EntityManager.h"
 #include "Application.h"
+#include "ScriptHandler.h"
 
 Application::Application()
 {
@@ -23,14 +24,18 @@ void Application::Start()
 	m_quit = false;
 
 	//loading xml-file, creating entities and components to this entityManager
-	//entityManager->loadXML(entityManager, "test2.xml");
+	EntityManager * entityManager = new EntityManager();
+	entityManager->loadXML(entityManager, "test3.xml");
+	
 
 	////sends a message to all components in all entities in that manager
-	//entityManager->sendMessageToAllEntities("Hello");
+	entityManager->sendMessageToAllEntities("Hello");
 
 	////sends a message to a specific entity, in this case a Player-entity.
 	//entityManager->sendMessageToEntity("Hello", "Player");
 
+	//ScriptHandler *script = ScriptHandler::GetInstance();
+	//script->Run("test.lua");
 
 	gEngine->CreateInstance("Data\\Models\\duck.obj")->SetVisibility(false);
 
@@ -40,6 +45,12 @@ void Application::Start()
 	float oldTime = GetTime();
 	float time, timeElapsed;
 
+	//if (script->getMessage())
+	//{
+	//	entityManager->sendMessageToAllEntities("Hello");
+	//	entityManager->sendMessageToEntity("Hello", "Player2");
+	//}
+
 	while(!m_quit)
 	{
 		time = GetTime();
@@ -47,6 +58,7 @@ void Application::Start()
 		oldTime = time;
 
 		d->SetPosition(d->GetPosition() + Vec3(0.01f, 0.0f, 0.0f));
+
 
 		gEngine->DrawScene();
 		gEngine->UpdateScene(timeElapsed);

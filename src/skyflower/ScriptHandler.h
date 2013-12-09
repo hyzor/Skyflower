@@ -2,6 +2,8 @@
 #define SCRIPTHANDLER_H
 
 #include <iostream>
+#include <string>
+using namespace std;
 
 #include <lua.hpp>
 
@@ -13,6 +15,7 @@ class ScriptHandler
 
 		void Run(std::string file);
 		lua_State* GetLua();
+		bool getMessage();
 
 	private:
 		ScriptHandler();
@@ -23,6 +26,8 @@ class ScriptHandler
 		lua_State* L;
 
 		static int Print(lua_State* L);
+
+
 };
 
 
