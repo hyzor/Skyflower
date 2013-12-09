@@ -21,6 +21,8 @@
   <ItemGroup>
     <ClCompile Include="src\graphics\AnimatedEntity.cpp" />
     <ClCompile Include="src\graphics\Camera.cpp" />
+    <ClCompile Include="src\graphics\CameraController.cpp" />
+    <ClCompile Include="src\graphics\CameraControllImpl.cpp" />
     <ClCompile Include="src\graphics\Character.cpp" />
     <ClCompile Include="src\graphics\d3dUtilities.cpp" />
     <ClCompile Include="src\graphics\D3dWindow.cpp" />
@@ -46,6 +48,8 @@
   <ItemGroup>
     <ClInclude Include="src\graphics\AnimatedEntity.h" />
     <ClInclude Include="src\graphics\Camera.h" />
+    <ClInclude Include="src\graphics\CameraController.h" />
+    <ClInclude Include="src\graphics\CameraControllImpl.h" />
     <ClInclude Include="src\graphics\Character.h" />
     <ClInclude Include="src\graphics\d3dUtilities.h" />
     <ClInclude Include="src\graphics\D3dWindow.h" />

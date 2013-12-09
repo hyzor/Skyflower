@@ -126,6 +126,11 @@ bool GraphicsEngineImpl::Init(HWND hWindow)
 	return true;
 }
 
+CameraController* GraphicsEngineImpl::CreateCameraController()
+{
+	return CreateCameraControll(mCamera);
+}
+
 int GraphicsEngineImpl::Run()
 {
 
@@ -302,8 +307,6 @@ void GraphicsEngineImpl::DeleteInstance(ModelInstance* m)
 
 	delete mi;
 }
-
-
 
 
 ModelInstanceImpl::ModelInstanceImpl(Vec3 pos, Vec3 rot, Vec3 scale)

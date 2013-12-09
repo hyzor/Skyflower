@@ -27,7 +27,12 @@ XMFLOAT3 Camera::GetPosition() const
 {
 	return mPosition;
 }
-
+void Camera::SetDirection(Vec3 direction)
+{
+	mLook.x = direction.X;
+	mLook.y = direction.Y;
+	mLook.z = direction.Z;
+}
 void Camera::SetPosition( float x, float y, float z )
 {
 	mPosition = XMFLOAT3(x, y, z);

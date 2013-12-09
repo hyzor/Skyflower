@@ -3,6 +3,7 @@
 
 #include "d3dUtilities.h"
 #include "xnacollision.h"
+#include "shared\Vec3.h"
 
 class Camera
 {
@@ -16,6 +17,8 @@ public:
 
 	void SetPosition(float x, float y, float z);
 	void SetPosition(const XMFLOAT3& v);
+	void SetDirection(Vec3 direction);
+	void Rotate(Vec3 rotation);
 
 	// Get functions
 	XMVECTOR GetRightXM() const;

@@ -10,12 +10,14 @@
 #include "GenericSkinnedModel.h"
 #include "TextureManager.h"
 #include "Camera.h"
+#include "CameraControllImpl.h"
 #include <map>
 #include <string>
 #include "Sky.h"
 
 //#include "AnimatedEntity.h"
 #include "Character.h"
+#include "GraphicsEngine.h"
 
 class DLL_API ModelInstanceImpl : public ModelInstance
 {
@@ -69,6 +71,7 @@ public:
 
 	ModelInstance* CreateInstance(std::string file);
 	ModelInstance* CreateInstance(std::string file, Vec3 pos);
+	CameraController *CreateCameraController();
 	void DeleteInstance(ModelInstance* mi);
 
 	void OnResize();

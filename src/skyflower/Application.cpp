@@ -1,5 +1,4 @@
 #include "shared/util.h"
-
 #include "Application.h"
 
 Application::Application()
@@ -19,7 +18,6 @@ void Application::Start()
 	// Create graphics engine
 	gEngine = CreateGraphicsEngine();
 	gEngine->Init(m_window->GetHandle());
-
 	m_quit = false;
 
 	//loading xml-file, creating entities and components to this entityManager
