@@ -1,7 +1,7 @@
+#include <algorithm>
 #include <cassert>
 #include <cstdint>
 #include <cstdio>
-#include <algorithm>
 
 #include "AudioDecoderWAV.h"
 #include "AudioResource.h"
@@ -90,12 +90,10 @@ bool AudioDecoderWAVInit(struct AudioResource *resource)
 		buffer += chunkSize;
 		dataHeader = (const struct ChunkHeader *)buffer;
 		chunkSize = dataHeader->size;
-	} while(dataHeader->fourcc != FOURCC('d', 'a', 't', 'a'));
+	} while (dataHeader->fourcc != FOURCC('d', 'a', 't', 'a'));
 
 	uint64_t totalSamples = dataHeader->size / (bitDepth / 8);
-	// FIXME: !!!
-	//bool shouldStream = (dataHeader->size > SOUNDENGINE_STREAM_THRESHOLD_SIZE? true : false);
-	bool shouldStream = false;
+	bool shouldStream = (dataHeader->size > SOUNDENGINE_STREAM_THRESHOLD_SIZE? true : false);
 
 	struct WAVDecoderContext *context = new struct WAVDecoderContext;
 	context->dataOffset = (buffer - resource->file->data) + sizeof(struct ChunkHeader);
@@ -107,6 +105,8 @@ bool AudioDecoderWAVInit(struct AudioResource *resource)
 	resource->sampleRate = sampleRate;
 	resource->bitDepth = bitDepth;
 	resource->context = (void *)context;
+
+	//printf("AudioDecoderWAV, shouldStream=%d, bufferCount=%d, channels=%d, sampleRate=%d, bitDepth=%d\n", shouldStream, (int)ceil(resource->totalSamples / (float)resource->samplesPerBuffer), channels, sampleRate, bitDepth);
 
 	return true;
 }
@@ -133,5 +133,5 @@ void AudioDecoderWAVFillBuffer(const struct AudioResource *resource, uint64_t sa
 	uint64_t byteOffset = context->dataOffset + sampleOffset * (resource->bitDepth / 8);
 	uint64_t size = sampleCount * (resource->bitDepth / 8);
 
-	alBufferData(buffer, resource->format, resource->file->data, (ALsizei)size, resource->sampleRate);
+	alBufferData(buffer, resource->format, (const void *)(resource->file->data + byteOffset), (ALsizei)size, resource->sampleRate);
 }

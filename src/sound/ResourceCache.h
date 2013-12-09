@@ -7,9 +7,9 @@
 
 #include <AL/al.h>
 
+#include "AudioResource.h"
 #include "Config.h"
 #include "TaskQueue.h"
-#include "AudioResource.h"
 
 enum BufferStatus
 {
@@ -42,6 +42,7 @@ public:
 	// resourceHash must be a value returned by PrefetchResource.
 	enum BufferStatus RequestBuffer(uint32_t resourceHash, unsigned int bufferIndex, ALuint *buffer_out);
 
+	unsigned int GetResourceBufferCount(uint32_t resourceHash);
 	bool IsResourceStreaming(uint32_t resourceHash);
 
 private:

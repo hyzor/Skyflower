@@ -42,7 +42,7 @@
     <ClCompile Include="src\physics\Physics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\physics\PhysicsEntity.cpp">
+    <ClCompile Include="src\physics\Orientation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -74,7 +74,7 @@
     <ClInclude Include="src\physics\Physics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\physics\PhysicsEntity.h">
+    <ClInclude Include="src\physics\Orientation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
