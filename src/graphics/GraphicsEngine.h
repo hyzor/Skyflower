@@ -11,11 +11,18 @@
 class DLL_API ModelInstance
 {
 public:
-	std::string model;
-	bool isVisible;
-	Vec3 pos;
-	Vec3 rot;
-	Vec3 scale;
+	virtual ~ModelInstance() {};
+
+	virtual bool IsVisible() = 0;
+	virtual Vec3 GetPosition() = 0;
+	virtual Vec3 GetRotation() = 0;
+	virtual Vec3 GetScale() = 0;
+
+	virtual void SetPosition(Vec3 pos) = 0;
+	virtual void SetRotation(Vec3 rot) = 0;
+	virtual void SetScale(Vec3 scale) = 0;
+	virtual void SetVisibility(bool visible) = 0;
+	virtual void Set(Vec3 pos, Vec3 rot, Vec3 scale) = 0;
 };
 
 class DLL_API GraphicsEngine
@@ -29,6 +36,7 @@ public:
 	virtual void UpdateScene(float dt) = 0;
 
 	virtual ModelInstance* CreateInstance(std::string file) = 0;
+	virtual ModelInstance* CreateInstance(std::string file, Vec3 pos) = 0;
 	virtual void DeleteInstance(ModelInstance* mi) = 0;
 
 	//virtual bool HasDevice();

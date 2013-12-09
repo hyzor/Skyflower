@@ -32,9 +32,10 @@ void Application::Start()
 	//entityManager->sendMessageToEntity("Hello", "Player");
 
 
-	ModelInstance* d = gEngine->CreateInstance("Data\\Models\\duck.obj");
-	gEngine->CreateInstance("Data\\Models\\duck.obj");
-	d->pos = Vec3(-70, 50, 0);
+	gEngine->CreateInstance("Data\\Models\\duck.obj")->SetVisibility(false);
+
+	ModelInstance* d = gEngine->CreateInstance("Data\\Models\\duck.obj", Vec3(-100, 50, 0));
+	d->SetRotation(Vec3(-3.14f/2, 3.14f/4));
 
 	float oldTime = GetTime();
 	float time, timeElapsed;
@@ -45,13 +46,15 @@ void Application::Start()
 		timeElapsed = time - oldTime;
 		oldTime = time;
 
-		d->pos += Vec3(0.01f, 0.0f, 0.0f);
+		d->SetPosition(d->GetPosition() + Vec3(0.01f, 0.0f, 0.0f));
 
 		gEngine->DrawScene();
 		gEngine->UpdateScene(timeElapsed);
 
 		m_window->PumpMessages();
 	}
+
+	gEngine->DeleteInstance(d);
 
 	//DestroySoundEngine(m_soundEngine);
 
