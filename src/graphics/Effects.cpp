@@ -136,17 +136,38 @@ NormalMapEffect::~NormalMapEffect()
 
 }
 
+//==============================================================================
+// Sky effect
+//==============================================================================
+SkyEffect::SkyEffect(ID3D11Device* device, const std::wstring& filename)
+: Effect(device, filename)
+{
+	skyTech = mFX->GetTechniqueByName("SkyTech");
+
+	worldViewProj = mFX->GetVariableByName("gWorldViewProj")->AsMatrix();
+	cubeMap = mFX->GetVariableByName("gCubeMap")->AsShaderResource();
+	inMenu = mFX->GetVariableByName("inMenu")->AsScalar();
+}
+
+SkyEffect::~SkyEffect()
+{
+
+};
+
 BasicEffect* Effects::BasicFX = 0;
 NormalMapEffect* Effects::NormalMapFX = 0;
+SkyEffect* Effects::SkyFX = 0;
 
 void Effects::InitAll(ID3D11Device* device)
 {
 	BasicFX = new BasicEffect(device, L"Data/FX/Basic.fxo2013");
 	NormalMapFX = new NormalMapEffect(device, L"Data/FX/NormalMap.fxo2013");
+	SkyFX = new SkyEffect(device, L"Data/FX/Sky.fxo2013");
 }
 
 void Effects::DestroyAll()
 {
 	SafeDelete(BasicFX);
 	SafeDelete(NormalMapFX);
+	SafeDelete(SkyFX);
 }

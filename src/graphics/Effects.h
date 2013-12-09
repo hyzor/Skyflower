@@ -179,7 +179,26 @@ public:
 
 	// Menu
 	ID3DX11EffectScalarVariable* inMenu;
+};
 
+//==============================================================================
+// Sky effect
+//==============================================================================
+class SkyEffect : public Effect
+{
+public:
+	SkyEffect(ID3D11Device* device, const std::wstring& filename);
+	~SkyEffect();
+
+	void SetWorldViewProj(CXMMATRIX m) { worldViewProj->SetMatrix(reinterpret_cast<const float*>(&m)); }
+	void SetInMenu(bool menu) { inMenu->SetBool(menu); }
+	void SetCubeMap(ID3D11ShaderResourceView* _cubeMap) { cubeMap->SetResource(_cubeMap); }
+
+	ID3DX11EffectTechnique* skyTech;
+	ID3DX11EffectScalarVariable  *inMenu;
+	ID3DX11EffectMatrixVariable* worldViewProj;
+
+	ID3DX11EffectShaderResourceVariable* cubeMap;
 };
 
 //==============================================================================
@@ -193,6 +212,7 @@ public:
 
 	static BasicEffect* BasicFX;
 	static NormalMapEffect* NormalMapFX;
+	static SkyEffect* SkyFX;
 };
 
 #endif

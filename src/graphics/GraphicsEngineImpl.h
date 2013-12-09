@@ -12,6 +12,7 @@
 #include "Camera.h"
 #include <map>
 #include <string>
+#include "Sky.h"
 
 //#include "AnimatedEntity.h"
 #include "Character.h"
@@ -66,6 +67,8 @@ private:
 	Character* mCharacter;
 
 	MSG msg;
+
+	Sky* mSky;
 };
 
 #endif

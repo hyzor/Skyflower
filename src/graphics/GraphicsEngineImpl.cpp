@@ -44,6 +44,8 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 
 	delete mCharacter;
 
+	delete mSky;
+
 	if (mDirect3D)
 		delete mDirect3D;
 }
@@ -114,6 +116,8 @@ bool GraphicsEngineImpl::Init(HWND hWindow)
 	mDirLights[2].Diffuse = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
 	mDirLights[2].Specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	mDirLights[2].Direction = XMFLOAT3(0.0f, 0.0f, -0.57735f);
+
+	mSky = new Sky(mDirect3D->GetDevice(), L"Data\\Textures\\SkyBox_Space.dds", 5000.0f);
 
 	//mD3dWindow->ShowWindow();
 	//mD3dWindow->OnResize();
@@ -262,7 +266,11 @@ void GraphicsEngineImpl::DrawScene()
 	mEffects->NormalMapFX->SetEyePosW(mCamera->GetPosition());
 	mEffects->NormalMapFX->SetDirLights(mDirLights);
 
+	// Draw animated character
 	mCharacter->Draw(mDirect3D->GetImmediateContext(), mEffects->NormalMapFX->DirLights3TexSkinnedTech, mCamera);
+
+	// Draw sky
+	mSky->draw(mDirect3D->GetImmediateContext(), *mCamera, false);
 
 	// Restore default states
 	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };

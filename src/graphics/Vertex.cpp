@@ -56,6 +56,11 @@ void InputLayouts::InitAll(ID3D11Device* device)
 {
 	D3DX11_PASS_DESC passDesc;
 
+	// Position
+	Effects::SkyFX->skyTech->GetPassByIndex(0)->GetDesc(&passDesc);
+	HR(device->CreateInputLayout(InputLayoutDesc::Position, 1, passDesc.pIAInputSignature,
+		passDesc.IAInputSignatureSize, &Position));
+
 	// Basic32
 	Effects::BasicFX->PointLight1Tech->GetPassByIndex(0)->GetDesc(&passDesc);
 	HR(device->CreateInputLayout(InputLayoutDesc::Basic32, 3, passDesc.pIAInputSignature,
