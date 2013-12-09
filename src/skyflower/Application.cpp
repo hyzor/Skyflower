@@ -22,6 +22,15 @@ void Application::Start()
 
 	m_quit = false;
 
+	//loading xml-file, creating entities and components to this entityManager
+	//entityManager->loadXML(entityManager, "test2.xml");
+
+	////sends a message to all components in all entities in that manager
+	//entityManager->sendMessageToAllEntities("Hello");
+
+	////sends a message to a specific entity, in this case a Player-entity.
+	//entityManager->sendMessageToEntity("Hello", "Player");
+
 
 	ModelInstance* d = gEngine->CreateInstance("Data\\Models\\duck.obj");
 	gEngine->CreateInstance("Data\\Models\\duck.obj");
@@ -43,6 +52,10 @@ void Application::Start()
 
 		m_window->PumpMessages();
 	}
+
+	//DestroySoundEngine(m_soundEngine);
+
+	//delete entityManager;
 
 	delete m_window;
 	DestroyGraphicsEngine(gEngine);

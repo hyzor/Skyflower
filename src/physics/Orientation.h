@@ -2,7 +2,7 @@
 #define ORIENTATION_H
 
 #include "shared/platform.h"
-#include "Vec3.h"
+#include "shared/Vec3.h"
 #include <DirectXMath.h>
 
 enum Axis
