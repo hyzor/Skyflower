@@ -181,5 +181,14 @@
     <FxCompile Include="src\graphics\FX\Sky.fx">
       <Filter>FX</Filter>
     </FxCompile>
+    <FxCompile Include="src\graphics\FX\Basic.fx">
+      <Filter>FX</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\FX\LightDef.fx">
+      <Filter>FX</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\FX\NormalMap.fx">
+      <Filter>FX</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
