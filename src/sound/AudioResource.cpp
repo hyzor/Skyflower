@@ -101,15 +101,3 @@ void DestroyAudioResource(struct AudioResource *resource)
 	FreeMemoryMappedFile(resource->file);
 	delete resource;
 }
-
-unsigned int ConvertTimeToBufferIndex(float time, unsigned int *sampleOffset_out)
-{
-	// FIXME: Implement!
-	assert(0);
-
-	if (sampleOffset_out) {
-		*sampleOffset_out = 0;
-	}
-
-	return 0;
-}
