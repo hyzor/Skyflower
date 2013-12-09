@@ -7,7 +7,11 @@ using namespace Cistron;
 
 
 // constructor/destructor
-Entity::Entity(EntityId id, string type) : fId(id), type(type), fFinalized(false) {
+Entity::Entity(EntityId id, string type) : fId(id), type(type), fFinalized(false)
+{
+	this->pos.X = 1;
+	this->pos.Y = 2;
+	this->pos.Z = 3;
 }
 Entity::~Entity() {
 
@@ -73,7 +77,6 @@ list<Component*> Entity::getComponents() {
 	// return normally
 	return comps;
 }
-
 
 // remove a component
 void Entity::removeComponent(Component *comp) {
@@ -183,11 +186,6 @@ void Entity::sendAMessageToAll(string message)
 	this->fComponents["Monster"].front()->sendMessage(message);
 }
 
-//void Entity::sendMessageToComponentType(string message, string type)
-//{
-//	//this->fComponents[type].front()->sendLocalMessage(message);
-//}
-
 void Entity::sendMessageToEntity(string message, EntityId id)
 {
 	this->fComponents["Monster"].front()->sendMessageToEntity(id, message);
@@ -203,4 +201,20 @@ bool Entity::getType(string type)
 	{
 		return false;
 	}
+}
+
+EntityId Entity::getEntityId()
+{
+	return this->fId;
+}
+
+Vec3 Entity::returnPos()
+{
+	return this->pos;
+}
+
+void Entity::updatePos(Vec3 pos)
+{
+	this->pos = pos;
+	cout << this->pos.X << endl;
 }

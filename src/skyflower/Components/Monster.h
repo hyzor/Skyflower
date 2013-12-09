@@ -29,6 +29,7 @@ private:
 
 	void printHello(Message const & msg) {
 		cout << "Det är " << this->fName << " som skriver detta meddelandet!" << endl;
+
 	}
 
 };

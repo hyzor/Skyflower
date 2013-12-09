@@ -614,11 +614,11 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 	{
 
 	}
-	else if (xmlFile == "test3.xml")
+	else if (xmlFile == "test2.xml")
 	{
 		cout << "3:an här!" << endl;
 	}
-	else if (xmlFile == "test2.xml")
+	else if (xmlFile == "test3.xml")
 	{
 		//For every entity that is to be created in this EntityManager
 		for (XMLElement* elem = root->FirstChildElement(); elem != NULL; elem = elem->NextSiblingElement())
@@ -746,4 +746,28 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 
 	return true;
 }
+
+Vec3 EntityManager::getEntityPos(EntityId ownerId, ComponentId compId, string name)
+{
+	for (int i = 0; i < this->fIdCounter; i++)
+	{
+		if (this->fEntitys[i]->getEntityId() == ownerId)
+		{
+			return this->fEntitys[i]->returnPos();
+		}
+	}	
+}
+
+void EntityManager::updateEntityPos(Vec3 pos, EntityId ownerId)
+{
+	for (int i = 0; i < this->fIdCounter; i++)
+	{
+		if (this->fEntitys[i]->getEntityId() == ownerId)
+		{
+			this->fEntitys[i]->updatePos(pos);
+		}
+	}
+}
+
+
 

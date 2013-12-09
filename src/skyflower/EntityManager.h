@@ -122,6 +122,9 @@ class EntityManager {
 		void sendMessageToEntity(string message, string entity); //sends a message to a specific entity
 		bool loadXML(EntityManager * entityManager, string xmlFile);
 
+		Vec3 getEntityPos(EntityId ownerId, ComponentId compId, string name);
+		void updateEntityPos(Vec3 pos, EntityId id);
+
 	private:
 
 		/**

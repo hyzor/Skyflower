@@ -295,3 +295,13 @@ void Component::trackMessageRequest(string message) {
 	// start tracking
 	fEntityManager->trackRequest(reqId, false, this);
 }
+
+Vec3 Component::getEntityPos()
+{
+	return this->fEntityManager->getEntityPos(this->fOwnerId, this->fId, this->fName);
+}
+
+void Component::updateEntityPos(Vec3 pos)
+{
+	this->fEntityManager->updateEntityPos(pos, this->fOwnerId);
+}

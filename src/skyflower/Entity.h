@@ -27,14 +27,14 @@ class Entity {
 		// constructor/destructor
 		Entity(EntityId id, string type);
 		virtual ~Entity();
-
+		void sendPosToComponent();
 	
 	private:
 
 		// Entity id
 		EntityId fId;
 		string type;
-
+		Vec3 pos;
 
 		/**
 		 * COMPONENT MANAGEMENT
@@ -94,10 +94,12 @@ class Entity {
 
 		//my own
 		void sendAMessageToAll(string message);
-		void sendMessageToComponentType(string message, string type);
 		void sendMessageToEntity(string message, EntityId id);
 
 		bool getType(string type);
+		EntityId getEntityId();
+		Vec3 returnPos();
+		void updatePos(Vec3 pos);
 
 
 };

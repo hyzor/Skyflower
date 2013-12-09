@@ -7,8 +7,10 @@
 #include <map>
 #include <list>
 #include <functional>
+#include "Cistron.h"
 //#include <boost/any.hpp>
 #include <ostream>
+#include "shared/Vec3.h"
 
 
 namespace Cistron {
@@ -94,8 +96,6 @@ class Component {
 		// constructor/destructor
 		Component(string name);
 		virtual ~Component();
-
-
 
 		// function called when the component is added to an Entity
 		virtual void addedToEntity();
@@ -223,8 +223,10 @@ class Component {
 		// to string
 		string toString();
 
-	private:
+		Vec3 getEntityPos();
+		void updateEntityPos(Vec3 pos);
 
+	private:
 		// set owner
 		void setOwner(EntityId id);
 
@@ -242,6 +244,7 @@ class Component {
 
 		// name of the component
 		string fName;
+		string type;
 
 		// destroyed
 		bool fDestroyed;
