@@ -5,7 +5,7 @@
 #include "shared/platform.h"
 #include <DirectXMath.h>
 #include <ctime>
-#include "Vec3.h"
+#include "shared/Vec3.h"
 
 #define DEFAULT_GRAVITY Vec3(0.0f, -9.82f, 0.0f);
 #define DEFAULT_MASS 50.0f; //In KG

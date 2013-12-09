@@ -2,7 +2,7 @@
 #define BOX_H
 
 #include "shared/platform.h"
-#include "Vec3.h"
+#include "shared/Vec3.h"
 
 class DLL_API Box
 {

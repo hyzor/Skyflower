@@ -4,6 +4,7 @@
 #include <ctime>
 #include <Windows.h>
 
+//#include "graphics/GraphicsEngine.h"
 #include "shared/platform.h"
 #include "physics/Collision.h"
 #include "physics/Physics.h"
@@ -19,6 +20,15 @@ int main(int argc, const char *argv[])
 	std::cout << "Debug!" << std::endl;
 
 
+	// Graphics engine
+	//GraphicsEngine* gEngine = CreateGraphicsEngine();
+
+	//if (!gEngine->Init(app.m_window->m_window))
+	//	return 0;
+
+	//std::cout << "GraphicsEngine started\n";
+	//gEngine->Run();
+
 
 	/*CollisionInstance* ci = Collision::GetInstance()->CreateCollisionInstance("TestBlock", Vec3());
 	if (ci->Test(r) > 0)
@@ -28,31 +38,31 @@ int main(int argc, const char *argv[])
 
 
 	
-	PotentialField pf;
-	pf.CreateField(200, 5, Vec3(10, 10, 0));
-	pf.CreateField(500, 3, Vec3(6, 10, 0));
-	pf.CreateField(-20, 100, Vec3(0, 0, 0));
-	Vec3 pos = Vec3(10, 20, 0);
-	for (int i = 0; i < 30; i++)
-	{
-		system("CLS");
+	//PotentialField pf;
+	//pf.CreateField(200, 5, Vec3(10, 10, 0));
+	//pf.CreateField(500, 3, Vec3(6, 10, 0));
+	//pf.CreateField(-20, 100, Vec3(0, 0, 0));
+	//Vec3 pos = Vec3(10, 20, 0);
+	//for (int i = 0; i < 30; i++)
+	//{
+	//	system("CLS");
 
-		pos += pf.GetDir(pos);
+	//	pos += pf.GetDir(pos);
 
-		for (int y = 0; y < 20; y++)
-		{
-			for (int x = 0; x < 20; x++)
-			{
-				if ((int)pos.X == x && (int)pos.Y == y)
-					std::cout << "#";
-				else if (pf.GetWeight(Vec3(x, y))>0)
-					std::cout << "+";
-				else
-					std::cout << "-";
-			}
-			std::cout << std::endl;
-		}
-	}
+	//	for (int y = 0; y < 20; y++)
+	//	{
+	//		for (int x = 0; x < 20; x++)
+	//		{
+	//			if ((int)pos.X == x && (int)pos.Y == y)
+	//				std::cout << "#";
+	//			else if (pf.GetWeight(Vec3(x, y))>0)
+	//				std::cout << "+";
+	//			else
+	//				std::cout << "-";
+	//		}
+	//		std::cout << std::endl;
+	//	}
+	//}
 
 
 

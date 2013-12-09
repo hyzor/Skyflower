@@ -15,7 +15,7 @@ public:
 class DLL_API Window
 {
 public:
-	Window(const unsigned int width, const unsigned int height, const char *title);
+	Window(const unsigned int width, const unsigned int height, const wchar_t *title);
 	virtual ~Window();
 
 	void PumpMessages() const;
@@ -39,7 +39,7 @@ private:
 
 	WindowListener *m_listener;
 	InputHandler *m_inputHandler;
-	
+
 	bool m_active;
 };
 

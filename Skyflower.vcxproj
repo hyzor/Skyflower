@@ -37,6 +37,7 @@
     <ClInclude Include="src\skyflower\Components\Messenger.h" />
     <ClInclude Include="src\skyflower\Components\Monster.h" />
     <ClInclude Include="src\skyflower\Components\Person.h" />
+    <ClInclude Include="src\skyflower\DirectInput.h" />
     <ClInclude Include="src\skyflower\Entity.h" />
     <ClInclude Include="src\skyflower\EntityManager.h" />
     <ClInclude Include="src\skyflower\Field.h" />
@@ -53,7 +54,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>

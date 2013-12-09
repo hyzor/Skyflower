@@ -18,12 +18,24 @@
     <ClInclude Include="src\shared\platform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\shared\GameTimer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src\shared\util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shared\Vec3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\shared\util.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shared\GameTimer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shared\Vec3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

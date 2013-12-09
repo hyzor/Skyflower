@@ -1,7 +1,7 @@
 #ifndef VEC3_H
 #define VEC3_H
 
-#include "shared/platform.h"
+#include "platform.h"
 #include <math.h>
 #include <cfloat>
 

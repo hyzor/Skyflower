@@ -2,7 +2,7 @@
 #define COLLISIONMODEL_H
 
 #include "shared/platform.h"
-#include "Vec3.h"
+#include "shared/Vec3.h"
 #include <string>
 #include <stdlib.h>
 #include <vector>

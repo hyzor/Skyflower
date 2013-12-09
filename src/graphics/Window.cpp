@@ -4,7 +4,7 @@
 
 #include "Window.h"
 
-static const char *windowClassName = "Skyflower";
+static const wchar_t *windowClassName = L"Skyflower";
 
 static LRESULT CALLBACK GlobalWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -16,7 +16,7 @@ static LRESULT CALLBACK GlobalWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 	}
 	else
 	{
-		switch(uMsg)
+		switch (uMsg)
 		{
 		case WM_CREATE:
 			SetWindowLongPtr(hWnd, 0, (LONG_PTR)((CREATESTRUCT*)lParam)->lpCreateParams);
@@ -27,7 +27,7 @@ static LRESULT CALLBACK GlobalWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 	}
 }
 
-Window::Window(const unsigned int width, const unsigned int height, const char *title)
+Window::Window(const unsigned int width, const unsigned int height, const wchar_t *title)
 {
 	m_listener = NULL;
 
@@ -69,16 +69,16 @@ Window::Window(const unsigned int width, const unsigned int height, const char *
 		windowHeight = screenHeight;
 
 	m_window = CreateWindow(windowClassName,     // window class
-						    title,               // title-bar string
-							windowStyle,         // style
-						    CW_USEDEFAULT,       // horizontal position
-						    CW_USEDEFAULT,       // vertical position
-							windowWidth,		 // width
-							windowHeight,		 // height
-						    NULL,				 // parent window
-						    NULL,				 // menu
-							m_instanceHandle,    // handle to application instance
-						    this);		         // window-creation data (this will be passed to the WM_CREATE message)
+		title,               // title-bar string
+		windowStyle,         // style
+		CW_USEDEFAULT,       // horizontal position
+		CW_USEDEFAULT,       // vertical position
+		windowWidth,		 // width
+		windowHeight,		 // height
+		NULL,				 // parent window
+		NULL,				 // menu
+		m_instanceHandle,    // handle to application instance
+		this);		         // window-creation data (this will be passed to the WM_CREATE message)
 
 	ShowWindow(m_window, SW_SHOW);
 
@@ -99,7 +99,7 @@ void Window::PumpMessages() const
 {
 	MSG msg;
 
-	while(PeekMessage(&msg, m_window, 0, 0, PM_REMOVE))
+	while (PeekMessage(&msg, m_window, 0, 0, PM_REMOVE))
 	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
@@ -150,7 +150,7 @@ unsigned int Window::GetHeight() const
 LRESULT Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	// FIXME: Handle WM_CHAR for text input.
-	switch(uMsg)
+	switch (uMsg)
 	{
 	case WM_SIZE:
 		if (m_listener)

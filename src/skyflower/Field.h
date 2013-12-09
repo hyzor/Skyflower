@@ -1,7 +1,7 @@
 #ifndef FIELD_H
 #define FIELD_H
 
-#include "physics\Vec3.h"
+#include "shared\Vec3.h"
 
 class Field
 {

@@ -132,11 +132,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\shared\GameTimer.h" />
     <ClInclude Include="src\shared\platform.h" />
     <ClInclude Include="src\shared\util.h" />
+    <ClInclude Include="src\shared\Vec3.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\shared\GameTimer.cpp" />
     <ClCompile Include="src\shared\util.cpp" />
+    <ClCompile Include="src\shared\Vec3.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -18,6 +18,54 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\graphics\AnimatedEntity.cpp" />
+    <ClCompile Include="src\graphics\Camera.cpp" />
+    <ClCompile Include="src\graphics\Character.cpp" />
+    <ClCompile Include="src\graphics\d3dUtilities.cpp" />
+    <ClCompile Include="src\graphics\D3dWindow.cpp" />
+    <ClCompile Include="src\graphics\Direct3D.cpp" />
+    <ClCompile Include="src\graphics\Effects.cpp" />
+    <ClCompile Include="src\graphics\GenericMesh.cpp" />
+    <ClCompile Include="src\graphics\GenericModel.cpp" />
+    <ClCompile Include="src\graphics\GenericObjectLoader.cpp" />
+    <ClCompile Include="src\graphics\GenericSkinnedMesh.cpp" />
+    <ClCompile Include="src\graphics\GenericSkinnedModel.cpp" />
+    <ClCompile Include="src\graphics\GraphicsEngine.cpp" />
+    <ClCompile Include="src\graphics\GraphicsEngineImpl.cpp" />
+    <ClCompile Include="src\graphics\InputHandler.cpp" />
+    <ClCompile Include="src\graphics\MathHelper.cpp" />
+    <ClCompile Include="src\graphics\SkinnedData.cpp" />
+    <ClCompile Include="src\graphics\TextureManager.cpp" />
+    <ClCompile Include="src\graphics\Vertex.cpp" />
+    <ClCompile Include="src\graphics\Window.cpp" />
+    <ClCompile Include="src\graphics\xnacollision.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\graphics\AnimatedEntity.h" />
+    <ClInclude Include="src\graphics\Camera.h" />
+    <ClInclude Include="src\graphics\Character.h" />
+    <ClInclude Include="src\graphics\d3dUtilities.h" />
+    <ClInclude Include="src\graphics\D3dWindow.h" />
+    <ClInclude Include="src\graphics\d3dx11effect.h" />
+    <ClInclude Include="src\graphics\Direct3D.h" />
+    <ClInclude Include="src\graphics\Effects.h" />
+    <ClInclude Include="src\graphics\GenericMesh.h" />
+    <ClInclude Include="src\graphics\GenericModel.h" />
+    <ClInclude Include="src\graphics\GenericObjectLoader.h" />
+    <ClInclude Include="src\graphics\GenericSkinnedMesh.h" />
+    <ClInclude Include="src\graphics\GenericSkinnedModel.h" />
+    <ClInclude Include="src\graphics\GraphicsEngine.h" />
+    <ClInclude Include="src\graphics\GraphicsEngineImpl.h" />
+    <ClInclude Include="src\graphics\InputHandler.h" />
+    <ClInclude Include="src\graphics\LightDef.h" />
+    <ClInclude Include="src\graphics\MathHelper.h" />
+    <ClInclude Include="src\graphics\SkinnedData.h" />
+    <ClInclude Include="src\graphics\TextureManager.h" />
+    <ClInclude Include="src\graphics\Vertex.h" />
+    <ClInclude Include="src\graphics\Window.h" />
+    <ClInclude Include="src\graphics\xnacollision.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9B38121D-8D9E-45A3-AEE4-483D762F930F}</ProjectGuid>
     <RootNamespace>Graphics</RootNamespace>
@@ -27,7 +75,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -69,9 +117,9 @@
     <OutDir>$(SolutionDir)bin\x86\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\x86\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)_d</TargetName>
-    <IncludePath>$(SolutionDir)src\;$(SolutionDir)include/;$(SolutionDir)external/include/;$(DXSDK_DIR)\Include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\src\;$(DXSDK_DIR)\Include\;$(SolutionDir)\External\assimp\include;$(IncludePath)</IncludePath>
     <ExecutablePath>$(DXSDK_DIR)\Utilities\bin\x86\;$(ExecutablePath)</ExecutablePath>
-    <LibraryPath>$(OutDir);$(SolutionDir)external/lib/x86/;$(DXSDK_DIR)\Lib\x86\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(OutDir);$(DXSDK_DIR)\Lib\x86\;$(SolutionDir)\External\assimp\lib\assimp_debug-dll_win32;$(SolutionDir)\src\graphics\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>$(ProjectName)_d</TargetName>
@@ -104,7 +152,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Shared_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Shared_d.lib;d3d11.lib;d3dx11.lib;dxgi.lib;dxguid.lib;dxerr.lib;Effects11d_2013.lib;D3DCompiler.lib;assimp32D-vs12.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -151,14 +199,6 @@
       <AdditionalDependencies>Shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="src\graphics\InputHandler.cpp" />
-    <ClCompile Include="src\graphics\Window.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\graphics\InputHandler.h" />
-    <ClInclude Include="src\graphics\Window.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
