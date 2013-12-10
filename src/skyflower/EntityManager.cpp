@@ -5,14 +5,16 @@ using namespace Cistron;
 using namespace tinyxml2;
 #include <iostream>
 #include <cassert>
+#include "shared/Vec3.h"
 
 using std::cout;
 using std::endl;
 
 
 // constructor/destructor
-EntityManager::EntityManager() : fIdCounter(0), fRequestIdCounter(0), fNLocks(0) {
+EntityManager::EntityManager(GraphicsEngine* gEngine) : fIdCounter(0), fRequestIdCounter(0), fNLocks(0) {
 
+	this->gEngine = gEngine;
 	// because we start counting from 1 for request id's, we add an empty request lock in front
 	fRequestLocks.push_back(RequestLock());
 }
@@ -74,10 +76,11 @@ RequestId EntityManager::getExistingRequestId(ComponentRequestType type, string 
 
 
 // create a new Entity
-EntityId EntityManager::createEntity(string type) {
+EntityId EntityManager::createEntity(string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
+	float xScale, float yScale, float zScale, string model, bool isVisible) {
 
 	// create a new Entity
-	Entity *obj = new Entity(fIdCounter, type);
+	Entity *obj = new Entity(gEngine,fIdCounter, type, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible);
 	//cout << "Created Entity " << fIdCounter << endl;
 	++fIdCounter;
 
@@ -614,11 +617,11 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 	{
 
 	}
-	else if (xmlFile == "test2.xml")
+	else if (xmlFile == "test3.xml")
 	{
 		cout << "3:an här!" << endl;
 	}
-	else if (xmlFile == "test3.xml")
+	else if (xmlFile == "test2.xml")
 	{
 		//For every entity that is to be created in this EntityManager
 		for (XMLElement* elem = root->FirstChildElement(); elem != NULL; elem = elem->NextSiblingElement())
@@ -629,8 +632,78 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 			//if the entity type is Player
 			if (elemName == "Player")
 			{
+				float xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale;
+				string model = "";
+				bool isVisible = false;
+
+				attr = elem->Attribute("xPos");
+				if (attr != NULL)
+				{
+					xPos = elem->FloatAttribute("xPos");
+				}
+
+				attr = elem->Attribute("yPos");
+				if (attr != NULL)
+				{
+					yPos = elem->FloatAttribute("yPos");
+				}
+
+				attr = elem->Attribute("zPos");
+				if (attr != NULL)
+				{
+					zPos = elem->FloatAttribute("zPos");
+				}
+
+				attr = elem->Attribute("xRot");
+				if (attr != NULL)
+				{
+					xRot = elem->FloatAttribute("xRot");
+				}
+
+				attr = elem->Attribute("yRot");
+				if (attr != NULL)
+				{
+					yRot = elem->FloatAttribute("yRot");
+				}
+
+				attr = elem->Attribute("zRot");
+				if (attr != NULL)
+				{
+					zRot = elem->FloatAttribute("zRot");
+				}
+
+				attr = elem->Attribute("xScale");
+				if (attr != NULL)
+				{
+					xScale = elem->FloatAttribute("xScale");
+				}
+
+				attr = elem->Attribute("yScale");
+				if (attr != NULL)
+				{
+					yScale = elem->FloatAttribute("yScale");
+				}
+
+				attr = elem->Attribute("zScale");
+				if (attr != NULL)
+				{
+					zScale = elem->FloatAttribute("zScale");
+				}
+
+				attr = elem->Attribute("model");
+				if (attr != NULL)
+				{
+					model = elem->Attribute("model");
+				}
+
+				attr = elem->Attribute("isVisible");
+				if (attr != NULL)
+				{
+					isVisible = elem->BoolAttribute("isVisible");
+				}
 				//Creating the Player entity and adding it to the entitymanager
-				EntityId player = entityManager->createEntity("Player");
+				EntityId player = entityManager->createEntity("Player", xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible);
+
 
 				//Looping through all the components for Player-entity.
 				for (XMLElement* e = elem->FirstChildElement(); e != NULL; e = e->NextSiblingElement())
@@ -679,13 +752,32 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 						entityManager->addComponent(player, p1);
 					}
 
+					else if (componentName == "Render")
+					{
+						bool isVisible;
+						attr = e->Attribute("isVisible");
+
+						if (attr != NULL)
+						{
+							isVisible = e->BoolAttribute("isVisible");
+						}
+
+						Render* r = new Render();
+						entityManager->addComponent(player, r);
+					}
 				}
 			}
 			//if the entity type is Player2
 			else if (elemName == "Player2")
 			{
+				float xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale;
+				xPos = yPos = zPos = xRot = yRot = zRot = 0.0f; 
+				xScale = yScale = zScale = 1.0f;
+				string model = "";
+				bool isVisible = false;
+
 				//Creating the Player entity and adding it to the entityManager.
-				EntityId player2 = entityManager->createEntity("Player2");
+				EntityId player2 = entityManager->createEntity("Player2", xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible);
 
 				//Looping through all the components for Player2-entity.
 				for (XMLElement* e = elem->FirstChildElement(); e != NULL; e = e->NextSiblingElement())
@@ -737,6 +829,39 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 						entityManager->addComponent(player2, p1);
 
 					}
+
+					if (componentName == "Movement")
+					{
+						attr = e->Attribute("x");
+						float x = 0.0f, y = 0.0f, z = 0.0f;
+						Vec3 pos;
+
+						if (attr != NULL)
+						{
+							x = e->FloatAttribute("x");
+						}
+						else
+							return false;
+
+						attr = e->Attribute("y");
+						if (attr != NULL)
+						{
+							y = e->FloatAttribute("y");
+						}
+						else
+							return false;
+
+						attr = e->Attribute("z");
+						if (attr != NULL)
+						{
+							z = e->FloatAttribute("z");
+						}
+						else
+							return false;
+
+						Movement* m = new Movement(x, y, z);
+						entityManager->addComponent(player2, m);
+					}
 				}
 			}
 		}
@@ -747,7 +872,7 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 	return true;
 }
 
-Vec3 EntityManager::getEntityPos(EntityId ownerId, ComponentId compId, string name)
+Vec3 EntityManager::getEntityPos(EntityId ownerId)
 {
 	for (int i = 0; i < this->fIdCounter; i++)
 	{
@@ -760,6 +885,37 @@ Vec3 EntityManager::getEntityPos(EntityId ownerId, ComponentId compId, string na
 	return Vec3(0.0f, 0.0f, 0.0f);
 }
 
+Vec3 EntityManager::getEntityRot(EntityId ownerId)
+{
+	for (int i = 0; i < this->fIdCounter; i++)
+	{
+		if (this->fEntitys[i]->getEntityId() == ownerId)
+		{
+			return this->fEntitys[i]->returnRot();
+		}
+	}
+}
+Vec3 EntityManager::getEntityScale(EntityId ownerId)
+{
+	for (int i = 0; i < this->fIdCounter; i++)
+	{
+		if (this->fEntitys[i]->getEntityId() == ownerId)
+		{
+			return this->fEntitys[i]->returnScale();
+		}
+	}
+}
+bool EntityManager::getEntityVisibility(EntityId ownerId)
+{
+	for (int i = 0; i < this->fIdCounter; i++)
+	{
+		if (this->fEntitys[i]->getEntityId() == ownerId)
+		{
+			return this->fEntitys[i]->returnVisible();
+		}
+	}
+}
+
 void EntityManager::updateEntityPos(Vec3 pos, EntityId ownerId)
 {
 	for (int i = 0; i < this->fIdCounter; i++)
@@ -767,6 +923,37 @@ void EntityManager::updateEntityPos(Vec3 pos, EntityId ownerId)
 		if (this->fEntitys[i]->getEntityId() == ownerId)
 		{
 			this->fEntitys[i]->updatePos(pos);
+		}
+	}
+}
+
+void EntityManager::updateEntityRot(Vec3 rot, EntityId ownerId)
+{
+	for (int i = 0; i < this->fIdCounter; i++)
+	{
+		if (this->fEntitys[i]->getEntityId() == ownerId)
+		{
+			this->fEntitys[i]->updateRot(rot);
+		}
+	}
+}
+void EntityManager::updateEntityScale(Vec3 scale, EntityId ownerId)
+{
+	for (int i = 0; i < this->fIdCounter; i++)
+	{
+		if (this->fEntitys[i]->getEntityId() == ownerId)
+		{
+			this->fEntitys[i]->updateScale(scale);
+		}
+	}
+}
+void EntityManager::updateEntityVisibility(bool isVisible, EntityId ownerId)
+{
+	for (int i = 0; i < this->fIdCounter; i++)
+	{
+		if (this->fEntitys[i]->getEntityId() == ownerId)
+		{
+			this->fEntitys[i]->updateVisible(isVisible);
 		}
 	}
 }

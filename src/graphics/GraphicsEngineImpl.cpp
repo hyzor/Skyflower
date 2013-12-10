@@ -81,7 +81,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, int width, int height)
 	// Load models
 	mSkinnedModels["Character"] = new GenericSkinnedModel(mDirect3D->GetDevice(),
 		mTextureMgr,
-		"Data\\Models\\Character\\PlaceHolderPlayerexportsettingsTest.dae",
+		"Data\\Models\\Character\\char.dae",
 		L"Data\\Models\\Character\\");
 
 	// -----------------------------------------

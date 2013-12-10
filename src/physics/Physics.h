@@ -14,7 +14,7 @@ const float PI = 3.141592653589f;
 
 #define DEFAULT_GRAVITY Vec3(0.0f, -9.82f, 0.0f);
 #define DEFAULT_MASS 50.0f; //In KG
-#define DEFAULT_VELOCITY_FALL Vec3(0.0f, -1.0f, 0.0f);
+#define DEFAULT_VELOCITY Vec3(0.0f, 0.0f, 0.0f);
 #define DEFAULT_MOVEMENTSPEED 1.0f;
 #define DEFAULT_JUMP_VELOCITY 10.0f
 
@@ -49,6 +49,11 @@ public:
 	void moveBackward(Vec3 &pos, float speed);
 	void moveRight(Vec3 &pos, float speed);
 	void moveLeft(Vec3 &pos, float speed);
+
+	void moveForward(Vec3 &pos);
+	void moveBackward(Vec3 &pos);
+	void moveRight(Vec3 &pos);
+	void moveLeft(Vec3 &pos);
 
 	void setGravity(float x, float y, float z); //call to alter the effects of gravity, default gravity vector is (0, -9.82, 0) (gravity of earth).
 	void setMass(float mass); //not relevant yet
