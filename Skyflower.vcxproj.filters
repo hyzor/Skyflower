@@ -45,7 +45,7 @@
     <ClCompile Include="src\skyflower\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\skyflower\Chart.cpp">
+    <ClCompile Include="src\skyflower\LineChart.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -101,7 +101,7 @@
     <ClInclude Include="src\skyflower\Components\Render.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="src\skyflower\Chart.h">
+    <ClInclude Include="src\skyflower\LineChart.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
