@@ -8,9 +8,6 @@ Camera::Camera(void)
 	mLook(0.0f, 0.0f, 1.0f)
 {
 	SetLens(0.25f*MathHelper::pi, 1.0f, 1.0f, 1000.0f);
-	Yaw = 0;
-	Pitch = 0;
-	Roll = 0;
 }
 
 
@@ -153,7 +150,7 @@ float Camera::GetFarWindowHeight() const
 
 void Camera::UpdateViewMatrix()
 {
-	XMVECTOR right = XMLoadFloat3(&mRight);
+	/*XMVECTOR right = XMLoadFloat3(&mRight);
 	XMVECTOR up = XMLoadFloat3(&mUp);
 	XMVECTOR look = XMLoadFloat3(&mLook);
 	XMVECTOR pos = XMLoadFloat3(&mPosition);
@@ -192,7 +189,7 @@ void Camera::UpdateViewMatrix()
 	mView(0, 3) = 0.0f;
 	mView(1, 3) = 0.0f;
 	mView(2, 3) = 0.0f;
-	mView(3, 3) = 1.0f;
+	mView(3, 3) = 1.0f;*/
 }
 
 
@@ -204,4 +201,57 @@ XNA::Frustum Camera::GetFrustum() const
 void Camera::ComputeFrustum()
 {
 	ComputeFrustumFromProjection(&mFrustum, &GetProjMatrix());
+}
+
+void Camera::Yaw(float degrees)
+{
+	D3DXVECTOR3 up(0, 1, 0);
+	D3DXVECTOR3 dir(mLook.x, mLook.y, mLook.z);
+	D3DXVECTOR3 right(mRight.x, mRight.y, mRight.z);
+
+	D3DXMATRIX yaw; // create a matrix to hold the rotation
+	D3DXMatrixRotationAxis(&yaw, &up, D3DXToRadian(degrees));
+
+	// Update the view vectors of both the target and camera based on the rotation represented in our yaw matrix
+	D3DXVec3TransformCoord(&dir, &dir, &yaw);
+	//D3DXVec3TransformCoord(&tarView, &tarView, &yaw);
+
+	// Also update the right vectors of the target and camera
+	D3DXVec3TransformCoord(&right, &right, &yaw);
+	//D3DXVec3TransformCoord(&tarRight, &tarRight, &yaw);
+
+	//mUp = XMFLOAT3(dir.x, dir.y, dir.z);
+	mRight = XMFLOAT3(right.x, right.y, right.z);
+	mLook = XMFLOAT3(dir.x, dir.y, dir.z);
+}
+
+void Camera::Pitch(float degrees)
+{
+	int i = 5;
+}
+
+void Camera::LookAt(Vec3 at)
+{
+	D3DXVECTOR3 right(1, 0, 0);
+	D3DXVECTOR3 dir(0, 0, 1);
+	XMVECTOR lookat = XMLoadFloat3(&XMFLOAT3(at.X, at.Y, at.Z));
+	XMVECTOR up = XMLoadFloat3(&XMFLOAT3(0, 1, 0));
+	XMVECTOR position = XMLoadFloat3(&XMFLOAT3(mPosition.x, mPosition.y, mPosition.z));
+
+	XMMATRIX view = XMMatrixLookAtLH(position, lookat, up);// D3DXToRadian(degrees));
+	XMStoreFloat4x4(&mView, view);
+
+	// Update the view vectors of both the target and camera based on the rotation represented in our yaw matrix
+	/*D3DXVec3TransformCoord(&dir, &dir, &yaw);
+	//D3DXVec3TransformCoord(&tarView, &tarView, &yaw);
+
+	// Also update the right vectors of the target and camera
+	D3DXVec3TransformCoord(&right, &right, &yaw);
+	//D3DXVec3TransformCoord(&tarRight, &tarRight, &yaw);
+
+	D3DXVec3TransformCoord(&up, &up, &yaw);
+
+	mUp = XMFLOAT3(up.x, up.y, up.z);
+	mRight = XMFLOAT3(right.x, right.y, right.z);
+	mLook = XMFLOAT3(dir.x, dir.y, dir.z);*/
 }
