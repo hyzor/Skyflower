@@ -19,7 +19,7 @@
 #include "Character.h"
 #include "GraphicsEngine.h"
 
-class DLL_API ModelInstanceImpl : public ModelInstance
+class ModelInstanceImpl : public ModelInstance
 {
 public:
 	ModelInstanceImpl(Vec3 pos, Vec3 rot, Vec3 scale);
@@ -54,9 +54,7 @@ private:
 };
 
 
-DLL_API void InitGraphicsEngine();
-
-class DLL_API GraphicsEngineImpl : public GraphicsEngine
+class GraphicsEngineImpl : public GraphicsEngine
 {
 public:
 	GraphicsEngineImpl();

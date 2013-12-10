@@ -112,11 +112,11 @@ void Entity::removeComponent(Component *comp) {
 void Entity::sendMessage(RequestId reqId, Message const & msg) {
 
 	// if there are no registered components, we just skip
-	if (fLocalRequests.size() <= reqId) return;
+	if ((int)fLocalRequests.size() <= reqId) return;
 
 	// just forward to the appropriate registered components
 	vector<RegisteredComponent>& regs = fLocalRequests[reqId];
-	int n = regs.size();
+	unsigned n = regs.size();
 	for (unsigned i = 0; i < n; ++i) {
 		RegisteredComponent& comp = regs[i];
 		if (comp.trackMe) {
@@ -138,7 +138,7 @@ void Entity::registerRequest(RequestId reqId, RegisteredComponent reg) {
 	// TODO OPTIMIZATION
 
 	// if it doesn't exist yet, create it
-	if (fLocalRequests.size() <= reqId) {
+	if ((int)fLocalRequests.size() <= reqId) {
 		fLocalRequests.resize(reqId+1);
 	}
 	fLocalRequests[reqId].push_back(reg);

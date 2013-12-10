@@ -6,9 +6,6 @@
 #include "shared/Vec3.h"
 #include <string>
 
-//DLL_API void InitGraphicsEngine();
-
-
 class DLL_API ModelInstance
 {
 public:

@@ -65,7 +65,7 @@ RequestId EntityManager::getExistingRequestId(ComponentRequestType type, string 
 
 	// if it does exist, but there are no global requests, we don't return it either
 	RequestId id = fRequestToId[type][name];
-	if (fGlobalRequests.size() <= id) return 0;
+	if ((int)fGlobalRequests.size() <= id) return 0;
 
 	// we might have a global request - process it
 	return id;
@@ -160,7 +160,7 @@ void EntityManager::releaseLock(RequestId reqId) {
 void EntityManager::addComponent(EntityId id, Component *component) {
 
 	// make sure the Entity exists
-	if (id < 0 || id >= fEntitys.size() || fEntitys[id] == 0) {
+	if (id < 0 || id >= (int)fEntitys.size() || fEntitys[id] == 0) {
 		stringstream ss;
 		ss << "Failed to add component " << component->toString() << " to Entity " << id << ": it does not exist!";
 		error(ss);
@@ -287,7 +287,7 @@ void EntityManager::registerGlobalRequest(ComponentRequest req, RegisteredCompon
 		}
 
 		// if the request list isn't large enough, we resize it
-		if (fGlobalRequests.size() <= reqId) {
+		if ((int)fGlobalRequests.size() <= reqId) {
 			fGlobalRequests.resize(reqId+1);
 		}
 
@@ -376,7 +376,7 @@ void EntityManager::destroyEntity(EntityId id) {
 	}
 
 	// Entity doesn't exist
-	if (id < 0 || id >= fEntitys.size() || fEntitys[id] == 0) {
+	if (id < 0 || id >= (int)fEntitys.size() || fEntitys[id] == 0) {
 		stringstream ss;
 		ss << "Failed to destroy Entity " << id << ": it does not exist!";
 		error(ss);
@@ -473,7 +473,7 @@ void EntityManager::destroyComponent(Component *comp) {
 void EntityManager::finalizeEntity(EntityId id) {
 
 	// Entity doesn't exist
-	if (id < 0 || id >= fEntitys.size() || fEntitys[id] == 0) {
+	if (id < 0 || id >= (int)fEntitys.size() || fEntitys[id] == 0) {
 		stringstream ss;
 		ss << "Failed to destroy Entity " << id << ": it does not exist!";
 		error(ss);
@@ -755,7 +755,9 @@ Vec3 EntityManager::getEntityPos(EntityId ownerId, ComponentId compId, string na
 		{
 			return this->fEntitys[i]->returnPos();
 		}
-	}	
+	}
+
+	return Vec3(0.0f, 0.0f, 0.0f);
 }
 
 void EntityManager::updateEntityPos(Vec3 pos, EntityId ownerId)
