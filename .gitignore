@@ -2,6 +2,7 @@
 build/
 content/
 *.fxo*
+*.cso
 *.sdf
 *.opensdf
 *.suo

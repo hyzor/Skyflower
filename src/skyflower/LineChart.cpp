@@ -142,11 +142,13 @@ void LineChart::Draw(float startTime, float endTime, float resolution, float tar
 	maxValue = std::max(maxValue, targetValue);
 	minValue = std::min(minValue, targetValue);
 
+	// Add some extra space at the top and bottom of the chart.
+	//float range = maxValue - minValue;
+	//maxValue += range * 0.1;
+	//minValue -= range * 0.1;
+
 	// FIXME: Allow charts that don't start at zero.
 	minValue = 0.0f;
-
-	// FIXME: Add some extra space to the top and bottom of the chart.
-	// Top only for now since the minValue is fixed at zero.
 
 	float scale = m_bitmap->height() / (maxValue - minValue);
 
