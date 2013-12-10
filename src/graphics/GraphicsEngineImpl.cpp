@@ -50,7 +50,7 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 		delete mDirect3D;
 }
 
-bool GraphicsEngineImpl::Init(HWND hWindow)
+bool GraphicsEngineImpl::Init(HWND hWindow, int width, int height)
 {
 	//mD3dWindow = new D3dWindow(hWindow);
 
@@ -59,9 +59,6 @@ bool GraphicsEngineImpl::Init(HWND hWindow)
 
 	//if (!mD3dWindow->Init())
 	//	return false;
-
-	int width = 1024;
-	int height = 768;
 
 	mDirect3D = new Direct3D();
 
@@ -84,7 +81,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow)
 	// Load models
 	mSkinnedModels["Character"] = new GenericSkinnedModel(mDirect3D->GetDevice(),
 		mTextureMgr,
-		"Data\\Models\\Character\\PlaceHolderPlayerexportsettingsTest.dae",
+		"Data\\Models\\Character\\char.dae",
 		L"Data\\Models\\Character\\");
 
 	// -----------------------------------------
@@ -124,6 +121,11 @@ bool GraphicsEngineImpl::Init(HWND hWindow)
 	mDirect3D->OnResize();
 
 	return true;
+}
+
+CameraController* GraphicsEngineImpl::CreateCameraController()
+{
+	return CreateCameraControll(mCamera);
 }
 
 int GraphicsEngineImpl::Run()
@@ -302,8 +304,6 @@ void GraphicsEngineImpl::DeleteInstance(ModelInstance* m)
 
 	delete mi;
 }
-
-
 
 
 ModelInstanceImpl::ModelInstanceImpl(Vec3 pos, Vec3 rot, Vec3 scale)

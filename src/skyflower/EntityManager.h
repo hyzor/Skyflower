@@ -13,6 +13,8 @@
 #include <string>
 #include <sstream>
 
+#include "graphics/GraphicsEngine.h"
+
 
 namespace Cistron {
 
@@ -27,11 +29,12 @@ class EntityManager {
 	public:
 
 		// constructor/destructor
-		EntityManager();
+		EntityManager(GraphicsEngine* gEngine);
 		virtual ~EntityManager();
 
 		// create a new Entity
-		EntityId createEntity(string type);
+		EntityId createEntity(string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
+			float xScale, float yScale, float zScale, string model, bool isVisible);
 
 		// add a new component to an Entity
 		void addComponent(EntityId, Component*);
@@ -122,6 +125,16 @@ class EntityManager {
 		void sendMessageToEntity(string message, string entity); //sends a message to a specific entity
 		bool loadXML(EntityManager * entityManager, string xmlFile);
 
+		Vec3 getEntityPos(EntityId ownerId);
+		Vec3 getEntityRot(EntityId ownerId);
+		Vec3 getEntityScale(EntityId ownerId);
+		bool getEntityVisibility(EntityId ownerId);
+		void updateEntityPos(Vec3 pos, EntityId id);
+		void updateEntityRot(Vec3 rot, EntityId id);
+		void updateEntityScale(Vec3 scale, EntityId id);
+		void updateEntityVisibility(bool isVisible, EntityId id);
+
+
 	private:
 
 		/**
@@ -205,7 +218,7 @@ class EntityManager {
 		void error(stringstream& str);
 
 
-
+		GraphicsEngine* gEngine;
 };
 
 };

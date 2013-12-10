@@ -38,12 +38,13 @@ public:
 
 	void Update();
 
-	uint32_t PrefetchResource(const std::string &resource);
+	uint32_t PrefetchResource(const std::string &name);
 	// resourceHash must be a value returned by PrefetchResource.
 	enum BufferStatus RequestBuffer(uint32_t resourceHash, unsigned int bufferIndex, ALuint *buffer_out);
 
 	unsigned int GetResourceBufferCount(uint32_t resourceHash);
 	bool IsResourceStreaming(uint32_t resourceHash);
+	unsigned int ConvertTimeToBufferIndex(uint32_t resourceHash, float time, uint64_t *sampleOffset_out);
 
 private:
 	std::string m_resourceDir;

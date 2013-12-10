@@ -83,7 +83,7 @@ void Component::addComponent(EntityId objId, Component *c) {
 
 // create an Entity
 EntityId Component::createEntity(string type) {
-	return fEntityManager->createEntity(type);
+	return fEntityManager->createEntity(type, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, "", false);
 }
 
 // finalize an Entity
@@ -294,4 +294,40 @@ void Component::trackMessageRequest(string message) {
 
 	// start tracking
 	fEntityManager->trackRequest(reqId, false, this);
+}
+
+Vec3 Component::getEntityPos()
+{
+	return this->fEntityManager->getEntityPos(this->fOwnerId);
+}
+
+Vec3 Component::getEntityRot()
+{
+	return this->fEntityManager->getEntityRot(this->fOwnerId);
+}
+Vec3 Component::getEntityScale()
+{
+	return this->fEntityManager->getEntityScale(this->fOwnerId);
+}
+bool Component::getEntityVisibility()
+{
+	return this->fEntityManager->getEntityVisibility(this->fOwnerId);
+}
+
+void Component::updateEntityPos(Vec3 pos)
+{
+	this->fEntityManager->updateEntityPos(pos, this->fOwnerId);
+}
+
+void Component::updateEntityRot(Vec3 rot)
+{
+	this->fEntityManager->updateEntityRot(rot, this->fOwnerId);
+}
+void Component::updateEntityScale(Vec3 scale)
+{
+	this->fEntityManager->updateEntityScale(scale, this->fOwnerId);
+}
+void Component::updateEntityVisibility(bool isVisible)
+{
+	this->fEntityManager->updateEntityVisibility(isVisible, this->fOwnerId);
 }

@@ -12,7 +12,8 @@ class Person : public Component {
 public:
 
 	// constructor - age is fixed at creation time
-	Person(string name, int age) : Component("Person"), fName(name), fAge(age) {};
+	Person(string name, int age) : Component("Person"), fName(name), fAge(age) {
+	};
 	virtual ~Person() {};
 
 	// get the age of the person
@@ -41,9 +42,14 @@ private:
 
 	int fAge;
 	string fName;
+	Vec3 pos;
 
 	void printHello(Message const & msg) {
 		cout << "Det är " << this->fName << " som skriver detta meddelandet!" << endl;
+		pos = getEntityPos();
+		cout << "x: " << this->pos.X << " y: " << this->pos.Y << " z: " << this->pos.Z << " " << endl;
+		this->pos.X = 10;
+		updateEntityPos(this->pos);
 	}
 
 	// we receive a next year message - update the age, and let everyone know that our age changed

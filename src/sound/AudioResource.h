@@ -40,7 +40,4 @@ struct AudioResource
 struct AudioResource *CreateAudioResource(const std::string &file);
 void DestroyAudioResource(struct AudioResource *resource);
 
-// Used when seeking
-unsigned int ConvertTimeToBufferIndex(float time, unsigned int *sampleOffset_out);
-
 #endif

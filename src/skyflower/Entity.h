@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "graphics/GraphicsEngine.h"
 
 namespace Cistron {
 
@@ -25,16 +26,22 @@ class Entity {
 	public:
 
 		// constructor/destructor
-		Entity(EntityId id, string type);
+		Entity(GraphicsEngine* gEngine, EntityId id, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
+			 float xScale, float yScale, float zScale, string model, bool isVisible);
 		virtual ~Entity();
-
+		void sendPosToComponent();
 	
 	private:
 
 		// Entity id
 		EntityId fId;
 		string type;
-
+		Vec3 pos;
+		Vec3 rot;
+		Vec3 scale;
+		string model;
+		bool isVisible;
+		ModelInstance* modelInst;
 
 		/**
 		 * COMPONENT MANAGEMENT
@@ -94,12 +101,23 @@ class Entity {
 
 		//my own
 		void sendAMessageToAll(string message);
-		void sendMessageToComponentType(string message, string type);
 		void sendMessageToEntity(string message, EntityId id);
 
 		bool getType(string type);
+		EntityId getEntityId();
+
+		Vec3 returnPos();
+		Vec3 returnRot();
+		Vec3 returnScale();
+		bool returnVisible();
+		void updatePos(Vec3 pos);
+		void updateRot(Vec3 rot);
+		void updateScale(Vec3 scale);
+		void updateVisible(bool isVisible);
 
 
+
+		GraphicsEngine* gEngine;
 };
 
 

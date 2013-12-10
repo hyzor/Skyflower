@@ -1,6 +1,7 @@
 ﻿bin/
 build/
 content/
+*.fxo*
 *.sdf
 *.opensdf
 *.suo

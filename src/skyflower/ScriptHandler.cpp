@@ -54,3 +54,22 @@ int ScriptHandler::Print(lua_State* L)
 
 	return 0;
 }
+
+bool ScriptHandler::getMessage()
+{
+	lua_getglobal(L, "i"); // Hämta globala värdet "i" från lua
+	int i = (int)lua_tonumber(L, 1);
+	lua_pop(L, 1);
+	cout << "Variablen i från lua är = " << i << endl;
+	if (i = 12)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
+
+
+}

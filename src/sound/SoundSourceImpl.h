@@ -8,6 +8,7 @@
 
 #include "Sound/SoundSource.h"
 #include "ResourceCache.h"
+#include "OpenALSourceProxy.h"
 
 class SoundSourceImpl : public SoundSource
 {
@@ -15,9 +16,15 @@ public:
 	SoundSourceImpl(ResourceCache *resourceCache);
 	virtual ~SoundSourceImpl();
 
+	void LendSource(ALuint source);
+	ALuint RevokeSource();
+	bool HasSource() const;
+
+	void ClearBuffers();
+
 	virtual void SetResource(const std::string &name);
 
-	void Update();
+	void Update(float deltaTime);
 
 	virtual void Play();
 	virtual void Pause();
@@ -38,21 +45,15 @@ public:
 	virtual void GetPosition(float output[3]) const;
 
 private:
-	void ClearBuffers();
-
-private:
 	ResourceCache *m_resourceCache;
-
-	ALuint m_source;
 	uint32_t m_resourceHash;
+	OpenALSourceProxy m_sourceProxy;
+
 	unsigned int m_nextBufferIndex;
 	int m_queuedBufferIndices[2];
-
 	bool m_isLastBufferQueued;
-	bool m_isPlaying;
-	bool m_isLooping;
-
-	float m_position[3];
+	int64_t m_pendingSeekSample;
+	float m_pendingSeekTime;
 };
 
 #endif

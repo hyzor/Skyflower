@@ -1,0 +1,300 @@
+#include <cassert>
+#include <cstdio>
+
+#include <AL/al.h>
+
+#include "OpenALSourceProxy.h"
+
+OpenALSourceProxy::OpenALSourceProxy()
+{
+	m_source = 0;
+
+	m_buffer = AL_NONE;
+	m_isPlaying = false;
+	m_isLooping = false;
+	m_isRelativeToListener = false;
+	m_volume = 1.0f;
+	m_pitch = 1.0f;
+
+	m_position[0] = 0.0f;
+	m_position[1] = 0.0f;
+	m_position[2] = 0.0f;
+
+	m_velocity[0] = 0.0f;
+	m_velocity[1] = 0.0f;
+	m_velocity[2] = 0.0f;
+
+	m_time = 0.0f;
+}
+
+OpenALSourceProxy::~OpenALSourceProxy()
+{
+	// Make sure the source has been revoked so we aren't leaking it.
+	assert(!HasSource());
+}
+
+void OpenALSourceProxy::LendSource(ALuint source)
+{
+	assert(!HasSource());
+	assert(source != 0);
+
+	m_source = source;
+	ClearBuffers();
+
+	// Looping will be set when we first set/queue a buffer.
+	alSourcei(m_source, AL_SOURCE_RELATIVE, (m_isRelativeToListener ? AL_TRUE : AL_FALSE));
+	alSourcef(m_source, AL_GAIN, m_volume);
+	alSourcef(m_source, AL_PITCH, m_pitch);
+	alSourcefv(m_source, AL_POSITION, m_position);
+	alSourcefv(m_source, AL_VELOCITY, m_velocity);
+}
+
+ALuint OpenALSourceProxy::RevokeSource()
+{
+	assert(HasSource());
+
+	alGetSourcef(m_source, AL_SEC_OFFSET, &m_time);
+
+	if (m_buffer == AL_NONE) {
+		// FIXME: If we are streaming we need to add the currently playing buffer's start time.
+		assert(0);
+	}
+
+	ClearBuffers();
+
+	ALuint source = m_source;
+	m_source = 0;
+
+	return source;
+}
+
+bool OpenALSourceProxy::HasSource() const
+{
+	return (m_source != 0);
+}
+
+void OpenALSourceProxy::ClearBuffers()
+{
+	if (HasSource()) {
+		// The source must be stopped before we can change any buffers.
+		alSourceStop(m_source);
+
+		// Setting AL_BUFFER also removes any queued buffers.
+		alSourcei(m_source, AL_BUFFER, AL_NONE);
+	}
+
+	m_buffer = AL_NONE;
+}
+
+void OpenALSourceProxy::Update(float deltaTime)
+{
+	if (HasSource() && m_buffer != AL_NONE && m_isPlaying) {
+		ALint state;
+		alGetSourcei(m_source, AL_SOURCE_STATE, &state);
+
+		if (state != AL_PLAYING) {
+			m_isPlaying = false;
+
+			//printf("Reached end of non-streaming non-looping source, stopping\n");
+		}
+	}
+	else if (!HasSource() && m_isPlaying) {
+		m_time += deltaTime;
+
+		// FIXME: Detect if we have reached the end.
+	}
+}
+
+void OpenALSourceProxy::Play()
+{
+	if (HasSource()) {
+		alSourcePlay(m_source);
+	}
+
+	m_isPlaying = true;
+}
+
+void OpenALSourceProxy::Pause()
+{
+	if (HasSource()) {
+		alSourcePause(m_source);
+	}
+
+	m_isPlaying = false;
+}
+
+void OpenALSourceProxy::Seek(float time, uint64_t sample)
+{
+	if (HasSource()) {
+		alSourcei(m_source, AL_SAMPLE_OFFSET, (ALint)sample);
+	}
+	else {
+		m_time = time;
+		//printf("seek without source, time=%i\n", m_time);
+	}
+}
+
+void OpenALSourceProxy::SetBuffer(ALuint buffer)
+{
+	assert(HasSource());
+
+	// The source must be stopped before we can change any buffers.
+	alSourceStop(m_source);
+	alSourcei(m_source, AL_BUFFER, buffer);
+	alSourcei(m_source, AL_LOOPING, (m_isLooping? AL_TRUE : AL_FALSE));
+
+	if (m_isPlaying) {
+		alSourcePlay(m_source);
+	}
+
+	m_buffer = buffer;
+}
+
+void OpenALSourceProxy::SetLooping(bool looping)
+{
+	if (HasSource()) {
+		alSourcei(m_source, AL_LOOPING, ((m_buffer != AL_NONE && looping)? AL_TRUE : AL_FALSE));
+	}
+
+	m_isLooping = looping;
+}
+
+void OpenALSourceProxy::SetRelativeToListener(bool relative)
+{
+	if (HasSource()) {
+		alSourcei(m_source, AL_SOURCE_RELATIVE, (relative ? AL_TRUE : AL_FALSE));
+	}
+
+	m_isRelativeToListener = relative;
+}
+
+void OpenALSourceProxy::SetVolume(float volume)
+{
+	if (HasSource()) {
+		alSourcef(m_source, AL_GAIN, volume);
+	}
+
+	m_volume = volume;
+}
+
+void OpenALSourceProxy::SetPitch(float pitch)
+{
+	if (HasSource()) {
+		alSourcef(m_source, AL_PITCH, pitch);
+	}
+
+	m_pitch = pitch;
+}
+
+void OpenALSourceProxy::SetPosition(const float position[3])
+{
+	if (HasSource()) {
+		alSourcefv(m_source, AL_POSITION, position);
+	}
+
+	m_position[0] = position[0];
+	m_position[1] = position[1];
+	m_position[2] = position[2];
+}
+
+void OpenALSourceProxy::SetVelocity(const float velocity[3])
+{
+	if (HasSource()) {
+		alSourcefv(m_source, AL_VELOCITY, velocity);
+	}
+
+	m_velocity[0] = velocity[0];
+	m_velocity[1] = velocity[1];
+	m_velocity[2] = velocity[2];
+}
+
+ALuint OpenALSourceProxy::GetBuffer() const
+{
+	return m_buffer;
+}
+
+unsigned int OpenALSourceProxy::GetNumQueuedBuffers() const
+{
+	ALint count = 0;
+
+	if (HasSource()) {
+		alGetSourcei(m_source, AL_BUFFERS_QUEUED, &count);
+	}
+
+	return (unsigned int)count;
+}
+
+bool OpenALSourceProxy::IsPlaying() const
+{
+	return m_isPlaying;
+}
+
+bool OpenALSourceProxy::IsLooping() const
+{
+	return m_isLooping;
+}
+
+bool OpenALSourceProxy::IsRelativeToListener() const
+{
+	return m_isRelativeToListener;
+}
+
+float OpenALSourceProxy::GetVolume() const
+{
+	return m_volume;
+}
+
+float OpenALSourceProxy::GetPitch() const
+{
+	return m_pitch;
+}
+
+void OpenALSourceProxy::GetPosition(float output[3]) const
+{
+	output[0] = m_position[0];
+	output[1] = m_position[1];
+	output[2] = m_position[2];
+}
+
+void OpenALSourceProxy::GetVelocity(float output[3]) const
+{
+	output[0] = m_velocity[0];
+	output[1] = m_velocity[1];
+	output[2] = m_velocity[2];
+}
+
+float OpenALSourceProxy::GetPlaybackTime() const
+{
+	assert(!HasSource());
+
+	return m_time;
+}
+
+void OpenALSourceProxy::QueueBuffer(ALuint buffer)
+{
+	assert(HasSource());
+	assert(GetNumQueuedBuffers() < 2);
+
+	alSourceQueueBuffers(m_source, 1, &buffer);
+	alSourcei(m_source, AL_LOOPING, AL_FALSE);
+	
+	if (m_isPlaying) {
+		alSourcePlay(m_source);
+	}
+}
+
+unsigned int OpenALSourceProxy::UnqueueProcessedBuffers()
+{
+	ALint count = 0;
+
+	if (HasSource()) {
+		alGetSourcei(m_source, AL_BUFFERS_PROCESSED, &count);
+
+		assert(count <= 2);
+
+		ALuint buffers[2];
+		alSourceUnqueueBuffers(m_source, count, buffers);
+	}
+
+	return (unsigned int)count;
+}

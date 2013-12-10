@@ -134,13 +134,14 @@ void ResourceCache::Update()
 	// FIXME: Do we want to release unused resources in m_resources?
 }
 
-uint32_t ResourceCache::PrefetchResource(const std::string &resource)
+uint32_t ResourceCache::PrefetchResource(const std::string &name)
 {
-	uint32_t hash = util_hash32_str(resource.c_str());
+	uint32_t hash = util_hash32_str(name.c_str());
 
 	if (!m_resources.count(hash) && !m_resourcesLoading.count(hash)) {
-		std::string path = m_resourceDir + resource;
+		std::string path = m_resourceDir + name;
 		m_resourcesLoading[hash] = true;
+		m_resources[hash] = NULL;
 
 		m_taskQueue->EnqueueTask([this, path, hash]() {
 			AudioResource *resource = CreateAudioResource(path);
@@ -240,6 +241,8 @@ enum BufferStatus ResourceCache::RequestBuffer(uint32_t resourceHash, unsigned i
 
 unsigned int ResourceCache::GetResourceBufferCount(uint32_t resourceHash)
 {
+	assert(m_resources.count(resourceHash));
+
 	AudioResource *resource = m_resources[resourceHash];
 
 	if (!resource) {
@@ -258,4 +261,29 @@ unsigned int ResourceCache::GetResourceBufferCount(uint32_t resourceHash)
 bool ResourceCache::IsResourceStreaming(uint32_t resourceHash)
 {
 	return (GetResourceBufferCount(resourceHash) > 1);
+}
+
+unsigned int ResourceCache::ConvertTimeToBufferIndex(uint32_t resourceHash, float time, uint64_t *sampleOffset_out)
+{
+	assert(m_resources.count(resourceHash));
+
+	AudioResource *resource = m_resources[resourceHash];
+	unsigned int bufferIndex = 0;
+	uint64_t sampleOffset = 0;
+
+	if (resource) {
+		sampleOffset = (uint64_t)(time * resource->sampleRate * resource->channels);
+		sampleOffset = std::min(sampleOffset, resource->totalSamples - 1);
+
+		if (IsResourceStreaming(resourceHash)) {
+			bufferIndex = (unsigned int)(sampleOffset / resource->samplesPerBuffer);
+			sampleOffset -= bufferIndex * resource->samplesPerBuffer;
+		}
+	}
+
+	if (sampleOffset_out) {
+		*sampleOffset_out = sampleOffset;
+	}
+
+	return bufferIndex;
 }

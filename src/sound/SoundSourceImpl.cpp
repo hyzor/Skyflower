@@ -3,59 +3,69 @@
 
 #include "SoundSourceImpl.h"
 #include "ResourceCache.h"
+#include "OpenALSourceProxy.h"
 
 SoundSourceImpl::SoundSourceImpl(ResourceCache *resourceCache)
 {
 	m_resourceCache = resourceCache;
-
-	alGenSources(1, &m_source);
 	m_resourceHash = 0x0;
+
 	m_nextBufferIndex = 0;
 	m_queuedBufferIndices[0] = -1;
 	m_queuedBufferIndices[1] = -1;
-
 	m_isLastBufferQueued = false;
-	m_isPlaying = false;
-	m_isLooping = false;
-
-	m_position[0] = 0.0f;
-	m_position[1] = 0.0f;
-	m_position[2] = 0.0f;
+	m_pendingSeekSample = -1;
+	m_pendingSeekTime = -1.0f;
 }
 
 SoundSourceImpl::~SoundSourceImpl()
 {
+}
+
+void SoundSourceImpl::LendSource(ALuint source)
+{
+	//printf("Lended source %i\n", source);
+
+	float time = m_sourceProxy.GetPlaybackTime();
+	m_sourceProxy.LendSource(source);
+	Seek(time);
+}
+
+ALuint SoundSourceImpl::RevokeSource()
+{
 	ClearBuffers();
 
-	alDeleteSources(1, &m_source);
+	ALuint source = m_sourceProxy.RevokeSource();
+	
+	if (m_pendingSeekSample >= 0) {
+		//printf("SoundSourceImpl::RevokeSource, seeking to %f\n", m_pendingSeekTime);
+
+		m_sourceProxy.Seek(m_pendingSeekTime, (uint64_t)m_pendingSeekSample);
+		m_pendingSeekSample = -1;
+		m_pendingSeekTime = -1.0f;
+	}
+
+	//printf("Revoked source %i\n", source);
+
+	return source;
+}
+
+bool SoundSourceImpl::HasSource() const
+{
+	return m_sourceProxy.HasSource();
 }
 
 void SoundSourceImpl::ClearBuffers()
 {
-	int count = 0;
-	ALuint buffer = AL_NONE;
-
-	// The source must be stopped before we can change any buffers.
-	alSourceStop(m_source);
-
-	alSourcei(m_source, AL_BUFFER, AL_NONE);
-	alGetSourcei(m_source, AL_BUFFERS_QUEUED, &count);
-
-	for (int i = 0; i < count; i++) {
-		alSourceUnqueueBuffers(m_source, 1, &buffer);
-	}
+	m_sourceProxy.ClearBuffers();
 
 	m_queuedBufferIndices[0] = -1;
 	m_queuedBufferIndices[1] = -1;
-
 	m_isLastBufferQueued = false;
 }
 
 void SoundSourceImpl::SetResource(const std::string &name)
 {
-	// The source must be stopped before we can change any buffers.
-	alSourceStop(m_source);
-	// Unload any previous buffers.
 	ClearBuffers();
 
 	m_resourceHash = m_resourceCache->PrefetchResource(name);
@@ -70,77 +80,90 @@ void SoundSourceImpl::SetResource(const std::string &name)
 	}
 }
 
-void SoundSourceImpl::Update()
+void SoundSourceImpl::Update(float deltaTime)
 {
 	if (m_resourceHash == 0x0) {
 		return;
 	}
 
 	bool isStreaming = m_resourceCache->IsResourceStreaming(m_resourceHash);
+
+	if (m_pendingSeekSample >= 0) {
+		bool shouldSeek = true;
+
+		if (m_sourceProxy.HasSource()) {
+			if (!isStreaming && m_sourceProxy.GetBuffer() == AL_NONE) {
+				shouldSeek = false;
+			}
+			else if (isStreaming && m_sourceProxy.GetNumQueuedBuffers() == 0) {
+				shouldSeek = false;
+			}
+		}
+
+		if (shouldSeek) {
+			//printf("Seeking to time=%f\n", m_pendingSeekTime);
+
+			m_sourceProxy.Seek(m_pendingSeekTime, (uint64_t)m_pendingSeekSample);
+			m_pendingSeekSample = -1;
+			m_pendingSeekTime = -1.0f;
+		}
+	}
+
+	m_sourceProxy.Update(deltaTime);
+
+	if (!m_sourceProxy.HasSource()) {
+		return;
+	}
+
 	bool needBuffer = false;
 
 	if (!isStreaming) {
-		ALint sourceState, attachedBuffer;
-		alGetSourcei(m_source, AL_SOURCE_STATE, &sourceState);
-		alGetSourcei(m_source, AL_BUFFER, &attachedBuffer);
-
-		if (attachedBuffer == AL_NONE) {
+		if (m_sourceProxy.GetBuffer() == AL_NONE) {
 			needBuffer = true;
 		}
-		else {
-			// Touch the buffer so it won't get thrown out of the cache.
-			m_resourceCache->RequestBuffer(m_resourceHash, 0, NULL);
 
-			if (m_isPlaying && sourceState != AL_PLAYING) {
-				m_isPlaying = false;
-
-				//printf("Reached end of non-streaming non-looping source, stopping\n");
-			}
-		}
+		// Touch the buffer so it won't get thrown out of the cache.
+		m_resourceCache->RequestBuffer(m_resourceHash, 0, NULL);
 	}
 	else {
-		ALint processedBuffers, queuedBuffers;
-		alGetSourcei(m_source, AL_BUFFERS_PROCESSED, &processedBuffers);
-		alGetSourcei(m_source, AL_BUFFERS_QUEUED, &queuedBuffers);
-
-		assert(processedBuffers <= 2);
-
-		ALuint unqueuedBuffers[2];
-		alSourceUnqueueBuffers(m_source, processedBuffers, unqueuedBuffers);
-
+		unsigned int numProcessedBuffers = m_sourceProxy.UnqueueProcessedBuffers();
 		unsigned int lastBufferIndex = m_resourceCache->GetResourceBufferCount(m_resourceHash) - 1;
 
-		if (processedBuffers > 0) {
-			for (int i = 0; i < processedBuffers; i++) {
+		if (numProcessedBuffers > 0) {
+			// FIXME: Move this to OpenALSourceProxy? (send the bufferIndex with QueueBuffer and the resourceHash(lastBufferIndex) somewhere?)
+			for (unsigned int i = 0; i < numProcessedBuffers; i++) {
 				if (m_queuedBufferIndices[i] == lastBufferIndex) {
 					m_isLastBufferQueued = false;
 
-					if (!m_isLooping && m_isPlaying) {
+					if (!IsLooping() && IsPlaying()) {
 						// We reached the end of a non-looping source, stop playback.
-						m_isPlaying = false;
+						Pause();
 
-						//printf("We just unqueued the last buffer of a non-looping source, stopping\n");
+						printf("We just unqueued the last buffer of a non-looping source, stopping\n");
 					}
 				}
 			}
 			
 			// Move the remaining queued buffers to the start of the array.
-			for (int i = processedBuffers; i < 2; i++) {
-				m_queuedBufferIndices[i - processedBuffers] = m_queuedBufferIndices[i];
+			for (int i = numProcessedBuffers; i < 2; i++) {
+				m_queuedBufferIndices[i - numProcessedBuffers] = m_queuedBufferIndices[i];
 			}
 			// Clear the end of the array.
-			for (int i = 2 - processedBuffers; i < 2; i++) {
+			for (int i = 2 - numProcessedBuffers; i < 2; i++) {
 				m_queuedBufferIndices[i] = -1;
 			}
 		}
 
-		if (queuedBuffers < 2) {
+		if (m_sourceProxy.GetNumQueuedBuffers() < 2) {
+			// FIXME: Also start loading the second buffer if numQueuedBuffers is zero.
 			needBuffer = true;
 		}
 
-		// Touch the queued buffers so they won't get thrown out of the cache.
-		for (int i = 0; i < queuedBuffers; i++) {
-			m_resourceCache->RequestBuffer(m_resourceHash, m_queuedBufferIndices[i], NULL);
+		// Touch the buffers so they won't get thrown out of the cache.
+		for (int i = 0; i < 2; i++) {
+			if (m_queuedBufferIndices[i] != -1) {
+				m_resourceCache->RequestBuffer(m_resourceHash, m_queuedBufferIndices[i], NULL);
+			}
 		}
 	}
 
@@ -149,19 +172,15 @@ void SoundSourceImpl::Update()
 
 		switch (m_resourceCache->RequestBuffer(m_resourceHash, m_nextBufferIndex, &buffer)) {
 		case BufferStatusLoaded:
-			alSourcei(m_source, AL_LOOPING, ((m_isLooping && !isStreaming)? AL_TRUE : AL_FALSE));
-
 			if (!isStreaming) {
-				// The source must be stopped before we can change any buffers.
-				alSourceStop(m_source);
-				alSourcei(m_source, AL_BUFFER, buffer);
+				m_sourceProxy.SetBuffer(buffer);
 			}
 			else {
-				if (!m_isLooping && m_isLastBufferQueued) {
+				if (!IsLooping() && m_isLastBufferQueued) {
 					break;
 				}
 
-				alSourceQueueBuffers(m_source, 1, &buffer);
+				m_sourceProxy.QueueBuffer(buffer);
 
 				for (int i = 0; i < 2; i++) {
 					if (m_queuedBufferIndices[i] == -1) {
@@ -178,10 +197,6 @@ void SoundSourceImpl::Update()
 				}
 			}
 
-			if (m_isPlaying) {
-				Play();
-			}
-
 			break;
 		case BufferStatusLoadingHeaders:
 			//printf("SoundSourceImpl::Update, BufferStatusLoadingHeaders\n");
@@ -190,7 +205,7 @@ void SoundSourceImpl::Update()
 			//printf("SoundSourceImpl::Update, BufferStatusPendingLoad\n");
 			break;
 		case BufferStatusIndexOutOfBounds:
-			printf("SoundSourceImpl::Update, BufferStatusIndexOutOfBounds\n");
+			printf("SoundSourceImpl::Update, BufferStatusIndexOutOfBounds, maxIndex=%i, index=%i\n", m_resourceCache->GetResourceBufferCount(m_resourceHash), m_nextBufferIndex);
 			break;
 		case BufferStatusOutOfMemory:
 			printf("SoundSourceImpl::Update, BufferStatusOutOfMemory\n");
@@ -205,99 +220,81 @@ void SoundSourceImpl::Update()
 
 void SoundSourceImpl::Play()
 {
-	alSourcePlay(m_source);
-	m_isPlaying = true;
+	m_sourceProxy.Play();
 }
 
 void SoundSourceImpl::Pause()
 {
-	alSourcePause(m_source);
-	m_isPlaying = false;
+	m_sourceProxy.Pause();
 }
 
 void SoundSourceImpl::Seek(float time)
 {
-	// FIXME: Implement!
-	assert(0);
+	assert(time >= 0.0f);
 
-#if 0
-	if (m_isLoadingResource)
-	{
-		m_pendingSeek = time;
+	if (m_resourceHash == 0x0) {
 		return;
 	}
 
-	if (!m_resource)
-		return;
+	uint64_t sampleOffset;
+	unsigned int bufferIndex = m_resourceCache->ConvertTimeToBufferIndex(m_resourceHash, time, &sampleOffset);
 
-	size_t sample = std::min(m_resource->GetSampleCountForTime(std::max(time, 0.0f)), m_resource->GetTotalSampleCount() - 1);
+	m_pendingSeekSample = sampleOffset;
+	m_pendingSeekTime = time;
 
-	if (!m_resource->IsStreaming())
-	{
-		alSourcei(m_source, AL_SAMPLE_OFFSET, (ALint)sample);
+	//printf("Queueing seek: time=%f, bufferIndex=%i, sampleOffset=%i\n", time, bufferIndex, sampleOffset);
+
+	if (m_resourceCache->IsResourceStreaming(m_resourceHash) && bufferIndex != m_queuedBufferIndices[0]) {
+		ClearBuffers();
+		m_nextBufferIndex = bufferIndex;
 	}
-	else
-	{
-		if (m_isLoadingBuffer)
-			m_cancelBufferLoading = true;
-
-		ReleaseAllQueuedBuffers();
-		m_nextSample = sample;
-	}
-#endif
 }
 
 bool SoundSourceImpl::IsPlaying() const
 {
-	return m_isPlaying;
+	return m_sourceProxy.IsPlaying();
 }
 
 bool SoundSourceImpl::IsLooping() const
 {
-	return m_isLooping;
+	return m_sourceProxy.IsLooping();
 }
 
 void SoundSourceImpl::SetVolume(float volume)
 {
-	alSourcef(m_source, AL_GAIN, volume);
+	assert(volume >= 0.0f);
+
+	m_sourceProxy.SetVolume(volume);
 }
 
 void SoundSourceImpl::SetLooping(bool looping)
 {
-	m_isLooping = looping;
-
-	if (m_resourceHash && !m_resourceCache->IsResourceStreaming(m_resourceHash)) {
-		alSourcei(m_source, AL_LOOPING, (looping? AL_TRUE : AL_FALSE));
-	}
+	m_sourceProxy.SetLooping(looping);
 }
 
 void SoundSourceImpl::SetPitch(float pitch)
 {
-	alSourcef(m_source, AL_PITCH, pitch);
+	assert(pitch >= 0.0f);
+
+	m_sourceProxy.SetPitch(pitch);
 }
 
 void SoundSourceImpl::SetPosition(const float position[3])
 {
-	alSourcefv(m_source, AL_POSITION, position);
-
-	m_position[0] = position[0];
-	m_position[1] = position[1];
-	m_position[2] = position[2];
+	m_sourceProxy.SetPosition(position);
 }
 
 void SoundSourceImpl::SetVelocity(const float velocity[3])
 {
-	alSourcefv(m_source, AL_VELOCITY, velocity);
+	m_sourceProxy.SetVelocity(velocity);
 }
 
 void SoundSourceImpl::SetIsRelativeToListener(bool relative)
 {
-	alSourcei(m_source, AL_SOURCE_RELATIVE, (relative ? AL_TRUE : AL_FALSE));
+	m_sourceProxy.SetRelativeToListener(relative);
 }
 
 void SoundSourceImpl::GetPosition(float output[3]) const
 {
-	output[0] = m_position[0];
-	output[1] = m_position[1];
-	output[2] = m_position[2];
+	m_sourceProxy.GetPosition(output);
 }

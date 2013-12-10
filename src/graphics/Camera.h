@@ -1,8 +1,12 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#pragma comment (lib, "d3dx9.lib")
+
 #include "d3dUtilities.h"
+#include <D3DX10math.h>
 #include "xnacollision.h"
+#include "shared\Vec3.h"
 
 class Camera
 {
@@ -16,6 +20,8 @@ public:
 
 	void SetPosition(float x, float y, float z);
 	void SetPosition(const XMFLOAT3& v);
+	void SetDirection(Vec3 direction);
+	void Rotate(Vec3 rotation);
 
 	// Get functions
 	XMVECTOR GetRightXM() const;
@@ -53,9 +59,10 @@ public:
 
 	void ComputeFrustum();
 	
-	float Yaw;
-	float Pitch;
-	float Roll;
+	void Yaw(float);
+	void Pitch(float);
+
+	void LookAt(Vec3 at);
 
 private:
 	// Coordinate system relative to world space
