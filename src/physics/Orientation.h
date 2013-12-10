@@ -12,7 +12,7 @@ enum Axis
 	Z
 };
 
-class Orientation
+class DLL_API Orientation
 {
 private:
 	Vec3 position;

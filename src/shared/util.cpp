@@ -6,7 +6,7 @@
 #include <psapi.h>
 #endif
 
-uint64_t GetMemoryUsage()
+DLL_API uint64_t GetMemoryUsage()
 {
 #ifdef PLATFORM_WINDOWS
 	PROCESS_MEMORY_COUNTERS info;
@@ -20,7 +20,7 @@ uint64_t GetMemoryUsage()
 #endif
 }
 
-float GetTime()
+DLL_API float GetTime()
 {
 #ifdef PLATFORM_WINDOWS
 	static LARGE_INTEGER frequency;
