@@ -3,6 +3,9 @@
 
 #include "graphics/Window.h"
 #include "graphics/GraphicsEngine.h"
+#include "shared/util.h"
+#include "PotentialField.h"
+#include "physics/Collision.h"
 
 class Application : WindowListener
 {
