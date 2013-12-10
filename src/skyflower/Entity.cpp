@@ -7,11 +7,30 @@ using namespace Cistron;
 
 
 // constructor/destructor
-Entity::Entity(EntityId id, string type) : fId(id), type(type), fFinalized(false)
+Entity::Entity(GraphicsEngine* gEngine, EntityId id, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
+	float xScale, float yScale, float zScale, string model, bool isVisible) : fId(id), type(type), fFinalized(false)
 {
-	this->pos.X = 1;
-	this->pos.Y = 2;
-	this->pos.Z = 3;
+	this->pos.X = xPos;
+	this->pos.Y = yPos;
+	this->pos.Z = zPos;
+
+	this->rot.X = xRot;
+	this->rot.Y = yRot;
+	this->rot.Z = zRot;
+
+	this->scale.X = xScale;
+	this->scale.Y = yScale;
+	this->scale.Z = zScale;
+
+	this->model = model;
+	this->isVisible = isVisible;
+
+	this->gEngine = gEngine;
+	this->modelInst = this->gEngine->CreateInstance(this->model, Vec3(this->pos.X, this->pos.Y, this->pos.Z));
+	this->modelInst->SetRotation(this->rot);
+	this->modelInst->SetScale(this->scale);
+	this->modelInst->SetVisibility(this->isVisible);
+
 }
 Entity::~Entity() {
 
@@ -22,6 +41,7 @@ Entity::~Entity() {
 			delete (*it2);
 		}
 	}*/
+	this->gEngine->DeleteInstance(this->modelInst);
 }
 
 
@@ -112,11 +132,11 @@ void Entity::removeComponent(Component *comp) {
 void Entity::sendMessage(RequestId reqId, Message const & msg) {
 
 	// if there are no registered components, we just skip
-	if (fLocalRequests.size() <= reqId) return;
+	if ((int)fLocalRequests.size() <= reqId) return;
 
 	// just forward to the appropriate registered components
 	vector<RegisteredComponent>& regs = fLocalRequests[reqId];
-	int n = regs.size();
+	unsigned n = regs.size();
 	for (unsigned i = 0; i < n; ++i) {
 		RegisteredComponent& comp = regs[i];
 		if (comp.trackMe) {
@@ -138,7 +158,7 @@ void Entity::registerRequest(RequestId reqId, RegisteredComponent reg) {
 	// TODO OPTIMIZATION
 
 	// if it doesn't exist yet, create it
-	if (fLocalRequests.size() <= reqId) {
+	if ((int)fLocalRequests.size() <= reqId) {
 		fLocalRequests.resize(reqId+1);
 	}
 	fLocalRequests[reqId].push_back(reg);
@@ -213,8 +233,43 @@ Vec3 Entity::returnPos()
 	return this->pos;
 }
 
+Vec3 Entity::returnRot()
+{
+	return this->rot;
+}
+
+Vec3 Entity::returnScale()
+{
+	return this->scale;
+}
+
+bool Entity::returnVisible()
+{
+	return this->isVisible;
+}
+
 void Entity::updatePos(Vec3 pos)
 {
 	this->pos = pos;
+	this->modelInst->SetPosition(pos);
 	cout << this->pos.X << endl;
 }
+
+void Entity::updateRot(Vec3 rot)
+{
+	this->rot = rot;
+	this->modelInst->SetRotation(rot);
+}
+
+void Entity::updateScale(Vec3 scale)
+{
+	this->scale = scale;
+	this->modelInst->SetScale(scale);
+}
+
+void Entity::updateVisible(bool isVisible)
+{
+	this->isVisible = isVisible;
+	this->modelInst->SetVisibility(isVisible);
+}
+

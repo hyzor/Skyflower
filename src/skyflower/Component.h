@@ -224,7 +224,13 @@ class Component {
 		string toString();
 
 		Vec3 getEntityPos();
+		Vec3 getEntityRot();
+		Vec3 getEntityScale();
+		bool getEntityVisibility();
 		void updateEntityPos(Vec3 pos);
+		void updateEntityRot(Vec3 rot);
+		void updateEntityScale(Vec3 scale);
+		void updateEntityVisibility(bool isVisible);
 
 	private:
 		// set owner

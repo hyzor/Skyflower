@@ -89,5 +89,14 @@
     <ClInclude Include="src\skyflower\DirectInput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\skyflower\Components\Movement.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\Components\Input.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\Components\Render.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

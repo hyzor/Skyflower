@@ -1,3 +1,6 @@
 #include "Components/Messenger.h"
 #include "Components/Person.h"
 #include "Components/Monster.h"
+#include "Components/Movement.h"
+#include "Components/Input.h"
+#include "Components/Render.h"

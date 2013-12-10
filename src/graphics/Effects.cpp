@@ -4,6 +4,8 @@
 // Encapsulates all the effects (.fx files)
 //------------------------------------------------------------------------------------
 
+#include <cstdio>
+
 #include "Effects.h"
 
 //==============================================================================
@@ -13,6 +15,11 @@ Effect::Effect(ID3D11Device* device, const std::wstring& filename)
 {
 	mFX = 0;
 	std::ifstream fin(filename, std::ios::binary);
+
+	if (!fin.is_open()) {
+		printf("Failed to load effect file, CRASHING!\n");
+	}
+
 	fin.seekg(0, std::ios_base::end);
 	int size = (int)fin.tellg();
 	fin.seekg(0, std::ios_base::beg);
@@ -160,9 +167,9 @@ SkyEffect* Effects::SkyFX = 0;
 
 void Effects::InitAll(ID3D11Device* device)
 {
-	BasicFX = new BasicEffect(device, L"Data/FX/Basic.fxo2013");
-	NormalMapFX = new NormalMapEffect(device, L"Data/FX/NormalMap.fxo2013");
-	SkyFX = new SkyEffect(device, L"Data/FX/Sky.fxo2013");
+	BasicFX = new BasicEffect(device, L"../shaders/Basic.fxo2013");
+	NormalMapFX = new NormalMapEffect(device, L"../shaders/NormalMap.fxo2013");
+	SkyFX = new SkyEffect(device, L"../shaders/Sky.fxo2013");
 }
 
 void Effects::DestroyAll()

@@ -10,14 +10,16 @@
 #include "GenericSkinnedModel.h"
 #include "TextureManager.h"
 #include "Camera.h"
+#include "CameraControllImpl.h"
 #include <map>
 #include <string>
 #include "Sky.h"
 
 //#include "AnimatedEntity.h"
 #include "Character.h"
+#include "GraphicsEngine.h"
 
-class DLL_API ModelInstanceImpl : public ModelInstance
+class ModelInstanceImpl : public ModelInstance
 {
 public:
 	ModelInstanceImpl(Vec3 pos, Vec3 rot, Vec3 scale);
@@ -52,15 +54,13 @@ private:
 };
 
 
-DLL_API void InitGraphicsEngine();
-
-class DLL_API GraphicsEngineImpl : public GraphicsEngine
+class GraphicsEngineImpl : public GraphicsEngine
 {
 public:
 	GraphicsEngineImpl();
 	~GraphicsEngineImpl();
 
-	bool Init(HWND hWindow);
+	bool Init(HWND hWindow, int width, int height);
 	int Run();
 	//int DrawScene();
 
@@ -69,6 +69,7 @@ public:
 
 	ModelInstance* CreateInstance(std::string file);
 	ModelInstance* CreateInstance(std::string file, Vec3 pos);
+	CameraController *CreateCameraController();
 	void DeleteInstance(ModelInstance* mi);
 
 	void OnResize();

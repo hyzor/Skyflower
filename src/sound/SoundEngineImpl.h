@@ -1,6 +1,7 @@
 #ifndef SOUND_SOUNDENGINEIMPL_H
 #define SOUND_SOUNDENGINEIMPL_H
 
+#include <stack>
 #include <vector>
 
 #include <AL/al.h>
@@ -39,10 +40,17 @@ private:
 	ALCdevice *m_device;
 	ALCcontext *m_context;
 
+	ALuint m_sourcePool[SOUNDENGINE_SOURCE_POOL_SIZE];
+	std::stack<ALuint> m_availableSources;
+
 	ResourceCache *m_resourceCache;
 	ListenerImpl *m_activeListener;
 
+	float m_timeAccumulationCulling;
+
+	// FIXME: Directly store SoundSourceImpl.
 	std::vector<SoundSource *> m_sources;
+	std::vector<SoundSource *> m_activeSources;
 };
 
 #endif

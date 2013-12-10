@@ -3,7 +3,9 @@
 
 #include <Windows.h>
 
-class GameTimer
+#include "platform.h"
+
+class DLL_API GameTimer
 {
 public:
 	GameTimer(void);

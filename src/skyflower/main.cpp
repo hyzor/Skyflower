@@ -65,7 +65,7 @@ int main(int argc, const char *argv[])
 	PotentialField pf;
 	pf.CreateField(200, 5, Vec3(10, 10, 0));
 	pf.CreateField(500, 3, Vec3(6, 10, 0));
-	pf.CreateField(-20, 100, Vec3(0, 0, 0));
+	pf.CreateField(-20, 100, Vec3(10, 0, 0));
 	Vec3 pos = Vec3(10, 20, 0);
 	for (int i = 0; i < 30; i++)
 	{

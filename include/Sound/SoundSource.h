@@ -19,6 +19,8 @@ public:
 	virtual bool IsPlaying() const = 0;
 	virtual bool IsLooping() const = 0;
 
+	// FIXME: SetReachedEndHandler/SetPlaybackFinishedHandler?
+
 	virtual void SetVolume(float volume) = 0;
 	virtual void SetLooping(bool looping) = 0;
 	virtual void SetPitch(float pitch) = 0;
