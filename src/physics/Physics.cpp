@@ -89,6 +89,8 @@ void Physics::jump(Vec3 &pos)
 	}
 }
 
+
+
 float Physics::lerp(float a, float b, float amount)
 {
 	return a + (b - a) * amount;

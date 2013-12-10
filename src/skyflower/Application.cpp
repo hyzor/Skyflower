@@ -6,7 +6,6 @@
 #include "Sound/SoundEngine.h"
 
 #include "Application.h"
-#include "Cistron.h"
 #include "tinyxml2.h"
 #include "ComponentHeaders.h"
 
@@ -18,6 +17,7 @@ Application::Application()
 {
 	m_window = NULL;
 	m_soundEngine = NULL;
+	this->entityManager = NULL;
 }
 
 Application::~Application()
@@ -39,10 +39,10 @@ void Application::Start()
 	//m_soundEngine = CreateSoundEngine("../../content/sounds/");
 	//assert(m_soundEngine);
 
-	EntityManager *entityManager = new EntityManager();
+	entityManager = new EntityManager(m_graphicsEngine);
 
 	//loading xml-file, creating entities and components to this entityManager
-	//entityManager->loadXML(entityManager, "test2.xml");
+	entityManager->loadXML(entityManager, "test2.xml");
 
 	////sends a message to all components in all entities in that manager
 	//entityManager->sendMessageToAllEntities("Hello");
@@ -54,10 +54,10 @@ void Application::Start()
 
 	CameraController *camera = m_graphicsEngine->CreateCameraController();
 	
-	m_graphicsEngine->CreateInstance("Data\\Models\\duck.obj")->SetVisibility(false);
+	//m_graphicsEngine->CreateInstance("Data\\Models\\duck.obj")->SetVisibility(false);
 
-	ModelInstance* d = m_graphicsEngine->CreateInstance("Data\\Models\\duck.obj", Vec3(-100, 50, 0));
-	d->SetRotation(Vec3(-3.14f/2, 3.14f/4));
+	//ModelInstance* d = m_graphicsEngine->CreateInstance("Data\\Models\\duck.obj", Vec3(-100, 50, 0));
+	//d->SetRotation(Vec3(-3.14f/2, 3.14f/4));
 
 
 
@@ -74,11 +74,11 @@ void Application::Start()
 
 
 
-		d->SetPosition(d->GetPosition() + Vec3(0.01f, 0.0f, 0.0f));
-		Vec3 dir = (d->GetPosition() - camera->GetPosition()).Normalize();
+		//d->SetPosition(d->GetPosition() + Vec3(0.01f, 0.0f, 0.0f));
+		//Vec3 dir = (d->GetPosition() - camera->GetPosition()).Normalize();
 
-		camera->SetDirection(dir);
-		camera->SetPosition(d->GetPosition() - dir * 1000);
+		//camera->SetDirection(dir);
+		//camera->SetPosition(d->GetPosition() - dir * 1000);
 
 
 
@@ -90,7 +90,7 @@ void Application::Start()
 		m_window->PumpMessages();
 	}
 
-	m_graphicsEngine->DeleteInstance(d);
+	//m_graphicsEngine->DeleteInstance(d);
 
 
 
@@ -127,6 +127,24 @@ void Application::OnMouseWheel(int delta)
 
 void Application::OnKeyDown(unsigned short key)
 {
+	switch (key)
+	{
+	case 'W':
+		entityManager->sendMessageToEntity("W", "Player");
+		break;
+	case 'S':
+		entityManager->sendMessageToEntity("S", "Player");
+		break;
+	case 'A':
+		entityManager->sendMessageToEntity("A", "Player");
+		break;
+	case 'D':
+		entityManager->sendMessageToEntity("D", "Player");
+		break;
+	case 'E':
+		entityManager->sendMessageToEntity("E", "Player");
+		break;
+	}
 }
 
 void Application::OnKeyUp(unsigned short key)

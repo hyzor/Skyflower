@@ -15,7 +15,7 @@ const float PI = 3.141592653589f;
 #define DEFAULT_GRAVITY Vec3(0.0f, -9.82f, 0.0f);
 #define DEFAULT_MASS 50.0f; //In KG
 #define DEFAULT_VELOCITY Vec3(0.0f, 0.0f, 0.0f);
-#define DEFAULT_MOVEMENTSPEED 1.0f;
+#define DEFAULT_MOVEMENTSPEED 10.0f;
 #define DEFAULT_JUMP_VELOCITY 10.0f
 
 
@@ -61,6 +61,7 @@ public:
 	float getMass() const;
 	Vec3 getGravity() const;
 	bool isJumping() const { return jumping; }
+	void setJumping(bool value);
 
 private:
 	float lerp(float a, float b, float amount);

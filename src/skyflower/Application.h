@@ -5,6 +5,7 @@
 #include "graphics/InputHandler.h"
 #include "graphics/GraphicsEngine.h"
 #include "Sound/SoundEngine.h"
+#include "Cistron.h"
 
 class Application : WindowListener, InputListener
 {
@@ -33,6 +34,7 @@ private:
 
 	GraphicsEngine *m_graphicsEngine;
 	SoundEngine *m_soundEngine;
+	EntityManager* entityManager;
 
 	bool m_quit;
 };

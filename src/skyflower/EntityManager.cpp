@@ -752,18 +752,16 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 						entityManager->addComponent(player, p1);
 					}
 
-					else if (componentName == "Render")
+					else if (componentName == "Input")
 					{
-						bool isVisible;
-						attr = e->Attribute("isVisible");
+						Input* i = new Input();
+						entityManager->addComponent(player, i);
+					}
 
-						if (attr != NULL)
-						{
-							isVisible = e->BoolAttribute("isVisible");
-						}
-
-						Render* r = new Render();
-						entityManager->addComponent(player, r);
+					else if (componentName == "Movement")
+					{
+						Movement* m = new Movement();
+						entityManager->addComponent(player, m);
 					}
 				}
 			}
@@ -803,7 +801,7 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 
 					}
 
-					if (componentName == "Person")
+					else if (componentName == "Person")
 					{
 						attr = e->Attribute("name");
 						string name = "";
@@ -830,36 +828,9 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 
 					}
 
-					if (componentName == "Movement")
+					else if (componentName == "Movement")
 					{
-						attr = e->Attribute("x");
-						float x = 0.0f, y = 0.0f, z = 0.0f;
-						Vec3 pos;
-
-						if (attr != NULL)
-						{
-							x = e->FloatAttribute("x");
-						}
-						else
-							return false;
-
-						attr = e->Attribute("y");
-						if (attr != NULL)
-						{
-							y = e->FloatAttribute("y");
-						}
-						else
-							return false;
-
-						attr = e->Attribute("z");
-						if (attr != NULL)
-						{
-							z = e->FloatAttribute("z");
-						}
-						else
-							return false;
-
-						Movement* m = new Movement(x, y, z);
+						Movement* m = new Movement();
 						entityManager->addComponent(player2, m);
 					}
 				}
