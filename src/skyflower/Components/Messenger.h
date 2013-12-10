@@ -12,15 +12,12 @@ class Messenger : public Component {
 
 public:
 
-	// name
-	string fName;
-
-	Messenger(string name) : Component("Messenger"), fName(name){};
+	Messenger() : Component("Messenger"){};
 	virtual ~Messenger() {};
 
 	void addedToEntity()
 	{
-		cout << " Monstret med namnet" << this->fName << "har kommit till liv!" << endl;
+		cout << "Messenger lever!" << endl;
 
 		requestMessage("All", &Messenger::printToAll);
 	}
@@ -29,7 +26,7 @@ private:
 
 	void printToAll(Message const & msg)
 	{
-		cout << "Det är " << this->fName << " som skriver detta meddelandet!" << endl;
+		
 	}
 };
 

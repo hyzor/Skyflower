@@ -54,6 +54,8 @@ public:
 	void moveBackward(Vec3 &pos);
 	void moveRight(Vec3 &pos);
 	void moveLeft(Vec3 &pos);
+	void moveUp(Vec3 &pos);
+	void moveDown(Vec3 &pos);
 
 	void setGravity(float x, float y, float z); //call to alter the effects of gravity, default gravity vector is (0, -9.82, 0) (gravity of earth).
 	void setMass(float mass); //not relevant yet

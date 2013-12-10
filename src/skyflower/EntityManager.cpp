@@ -566,16 +566,11 @@ void EntityManager::trackRequest(RequestId reqId, bool local, Component *compone
 //my own
 void EntityManager::sendMessageToAllEntities(string message)
 {
-		this->fEntitys[1]->sendAMessageToAll(message);
+	for (int i = 0; i < this->fIdCounter; i++)
+	{
+		this->fEntitys[i]->sendAMessageToAll(message);
+	}
 }
-
-//void EntityManager::sendMessageToComponentType(string message, string type)
-//{
-//	for (int i = 0; i < this->fIdCounter; i++)
-//	{
-//		this->fEntitys[i]->sendMessageToComponentType(message, type);
-//	}
-//}
 
 void EntityManager::sendMessageToEntity(string message, string entity)
 {
@@ -832,6 +827,130 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 					{
 						Movement* m = new Movement();
 						entityManager->addComponent(player2, m);
+					}
+				}
+			}
+		}
+	}
+	else if (xmlFile == "platform.xml")
+	{
+		//For every entity that is to be created in this EntityManager
+		for (XMLElement* elem = root->FirstChildElement(); elem != NULL; elem = elem->NextSiblingElement())
+		{
+			string elemName = elem->Value();
+			const char* attr;
+
+			//if the entity type is Player
+			if (elemName == "Platform")
+			{
+				float xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale;
+				string model = "";
+				bool isVisible = false;
+
+				attr = elem->Attribute("xPos");
+				if (attr != NULL)
+				{
+					xPos = elem->FloatAttribute("xPos");
+				}
+
+				attr = elem->Attribute("yPos");
+				if (attr != NULL)
+				{
+					yPos = elem->FloatAttribute("yPos");
+				}
+
+				attr = elem->Attribute("zPos");
+				if (attr != NULL)
+				{
+					zPos = elem->FloatAttribute("zPos");
+				}
+
+				attr = elem->Attribute("xRot");
+				if (attr != NULL)
+				{
+					xRot = elem->FloatAttribute("xRot");
+				}
+
+				attr = elem->Attribute("yRot");
+				if (attr != NULL)
+				{
+					yRot = elem->FloatAttribute("yRot");
+				}
+
+				attr = elem->Attribute("zRot");
+				if (attr != NULL)
+				{
+					zRot = elem->FloatAttribute("zRot");
+				}
+
+				attr = elem->Attribute("xScale");
+				if (attr != NULL)
+				{
+					xScale = elem->FloatAttribute("xScale");
+				}
+
+				attr = elem->Attribute("yScale");
+				if (attr != NULL)
+				{
+					yScale = elem->FloatAttribute("yScale");
+				}
+
+				attr = elem->Attribute("zScale");
+				if (attr != NULL)
+				{
+					zScale = elem->FloatAttribute("zScale");
+				}
+
+				attr = elem->Attribute("model");
+				if (attr != NULL)
+				{
+					model = elem->Attribute("model");
+				}
+
+				attr = elem->Attribute("isVisible");
+				if (attr != NULL)
+				{
+					isVisible = elem->BoolAttribute("isVisible");
+				}
+
+				//Creating the Player entity and adding it to the entitymanager
+				EntityId platform = entityManager->createEntity("Platform", xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible);
+
+
+				//Looping through all the components for Player-entity.
+				for (XMLElement* e = elem->FirstChildElement(); e != NULL; e = e->NextSiblingElement())
+				{
+					string componentName = e->Value();
+					if (componentName == "Platform")
+					{
+						bool isMovingUpDown = false;
+						bool isMovingFrontBack = false;
+						cout << "hittade en Platformkomponent!" << endl;
+
+						attr = e->Attribute("isMovingUpDown");
+						if (attr != NULL)
+						{
+							isMovingUpDown = e->BoolAttribute("isMovingUpDown");
+						}
+
+						attr = e->Attribute("isMovingFrontBack");
+						if (attr != NULL)
+						{
+							isMovingFrontBack = e->BoolAttribute("isMovingFrontBack");
+						}
+
+						Platform* p = new Platform(isMovingUpDown, isMovingFrontBack);
+						entityManager->addComponent(platform, p);
+					}
+					else if (componentName == "Movement")
+					{
+						Movement* m = new Movement();
+						entityManager->addComponent(platform, m);
+					}
+					else if (componentName == "Messenger")
+					{
+						Messenger *m = new Messenger();
+						entityManager->addComponent(platform, m);
 					}
 				}
 			}

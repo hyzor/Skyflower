@@ -42,15 +42,14 @@ void Application::Start()
 	entityManager = new EntityManager(m_graphicsEngine);
 
 	//loading xml-file, creating entities and components to this entityManager
-	entityManager->loadXML(entityManager, "test2.xml");
+	//entityManager->loadXML(entityManager, "test2.xml");
+	this->entityManager->loadXML(this->entityManager, "platform.xml");
 
 	////sends a message to all components in all entities in that manager
 	//entityManager->sendMessageToAllEntities("Hello");
 
 	////sends a message to a specific entity, in this case a Player-entity.
 	//entityManager->sendMessageToEntity("Hello", "Player");
-
-
 
 	CameraController *camera = m_graphicsEngine->CreateCameraController();
 	
@@ -72,7 +71,7 @@ void Application::Start()
 		deltaTime = time - oldTime;
 		oldTime = time;
 
-
+		//Sleep(100);
 
 		//d->SetPosition(d->GetPosition() + Vec3(0.01f, 0.0f, 0.0f));
 		//Vec3 dir = (d->GetPosition() - camera->GetPosition()).Normalize();
@@ -80,6 +79,7 @@ void Application::Start()
 		//camera->SetDirection(dir);
 		//camera->SetPosition(d->GetPosition() - dir * 1000);
 
+		//this->entityManager->sendMessageToAllEntities("update");
 
 
 		m_graphicsEngine->DrawScene();

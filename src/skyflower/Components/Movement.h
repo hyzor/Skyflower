@@ -42,6 +42,9 @@ public:
 		requestMessage("MoveLeft", &Movement::moveLeft);
 		requestMessage("MoveRight", &Movement::moveRight);
 		requestMessage("Jump", &Movement::Jump);
+		requestMessage("Update", &Movement::update);
+		requestMessage("moveUpDown", &Movement::moveUpDown);
+		requestMessage("moveFrontBack", &Movement::moveFrontBack);
 	}
 
 	void sendAMessage(string message)
@@ -96,6 +99,26 @@ private:
 		//p->jump(pos);
 
 		//updateEntityPos(pos);
+	}
+
+	void update(Message const& msg)
+	{
+		
+	}
+
+	void moveUpDown(Message const& msg)
+	{
+		cout << "Ska röra mig upp!" << endl;
+		Vec3 pos = getEntityPos();
+		p->moveUp(pos);
+
+		updateEntityPos(pos);
+	}
+
+	void moveFrontBack(Message const& msg)
+	{
+		Vec3 pos = getEntityPos();
+
 	}
 
 

@@ -19,8 +19,6 @@ public:
 	virtual ~Input() {};
 
 
-
-
 	// we are added to an Entity, and thus to the component system
 	void addedToEntity()
 	{

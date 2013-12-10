@@ -204,6 +204,18 @@ void Physics::moveLeft(Vec3 &pos)
 	this->orient.walk(speed, pos);
 }
 
+void Physics::moveUp(Vec3 &pos)
+{
+//Do something
+}
+
+void Physics::moveDown(Vec3 &pos)
+{
+//Do something
+}
+
+
+
 void Physics::updateOrientPos(Vec3 pos)
 {
 	this->orient.setPos(pos);
