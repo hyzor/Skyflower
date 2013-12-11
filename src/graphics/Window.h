@@ -24,6 +24,7 @@ public:
 
 	void SetListener(WindowListener *listener);
 	void SetLiveResize(bool liveResize);
+	void SetCursorVisibility(bool visible);
 
 	bool IsActive() const;
 	HWND GetHandle() const;

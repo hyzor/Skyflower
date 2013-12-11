@@ -131,10 +131,12 @@ void Application::OnWindowResize(unsigned int width, unsigned int height)
 void Application::OnWindowActivate()
 {
 	m_inputHandler->SetMouseCapture(true);
+	m_window->SetCursorVisibility(false);
 }
 
 void Application::OnWindowDeactivate()
 {
+	m_window->SetCursorVisibility(true);
 }
 
 void Application::OnMouseMove(int deltaX, int deltaY)
@@ -144,7 +146,10 @@ void Application::OnMouseMove(int deltaX, int deltaY)
 
 void Application::OnMouseButtonDown(enum MouseButton button)
 {
-	m_inputHandler->SetMouseCapture(true);
+	if (!m_inputHandler->IsMouseCaptured()) {
+		m_inputHandler->SetMouseCapture(true);
+		m_window->SetCursorVisibility(false);
+	}
 }
 
 void Application::OnMouseButtonUp(enum MouseButton button)
@@ -162,6 +167,7 @@ void Application::OnKeyDown(unsigned short key)
 	{
 	case VK_ESCAPE:
 		m_inputHandler->SetMouseCapture(false);
+		m_window->SetCursorVisibility(true);
 		break;
 	case 'W':
 		entityManager->sendMessageToEntity("W", "Player");

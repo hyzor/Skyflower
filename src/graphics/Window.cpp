@@ -122,6 +122,18 @@ void Window::SetLiveResize(bool liveResize)
 	m_liveResize = liveResize;
 }
 
+void Window::SetCursorVisibility(bool visible)
+{
+	if (visible) {
+		while (ShowCursor(true) < 0) {
+		}
+	}
+	else {
+		while (ShowCursor(false) >= 0) {
+		}
+	}
+}
+
 bool Window::IsActive() const
 {
 	return m_active;
