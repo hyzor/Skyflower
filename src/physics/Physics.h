@@ -16,7 +16,7 @@ const float PI = 3.141592653589f;
 #define DEFAULT_MASS 50.0f; //In KG
 #define DEFAULT_VELOCITY Vec3(0.0f, 0.0f, 0.0f);
 #define DEFAULT_MOVEMENTSPEED 10.0f;
-#define DEFAULT_JUMP_VELOCITY 10.0f
+#define DEFAULT_JUMP_VELOCITY 25.0f
 
 
 class DLL_API Physics
@@ -59,6 +59,7 @@ public:
 
 	void setGravity(float x, float y, float z); //call to alter the effects of gravity, default gravity vector is (0, -9.82, 0) (gravity of earth).
 	void setMass(float mass); //not relevant yet
+	void setVelocity(Vec3 vel);
 
 	float getMass() const;
 	Vec3 getGravity() const;

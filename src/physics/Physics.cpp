@@ -70,6 +70,11 @@ void Physics::addGravityCalc(Vec3 &pos, Vec3 &velocity)
 	this->orient.setPos(pos);
 }
 
+void Physics::setVelocity(Vec3 vel)
+{
+	this->velocity = vel;
+}
+
 void Physics::addGravityCalc(Vec3 &pos)
 {
 	Vec3 previousPos = pos;
@@ -86,9 +91,14 @@ void Physics::jump(Vec3 &pos)
 	{
 		jumping = true;
 		velocity.Y += DEFAULT_JUMP_VELOCITY;
+		//pos += velocity;
 	}
 }
 
+void Physics::setJumping(bool jump)
+{
+	jumping = jump;
+}
 
 
 float Physics::lerp(float a, float b, float amount)

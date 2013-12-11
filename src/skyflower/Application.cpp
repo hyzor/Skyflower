@@ -97,7 +97,7 @@ void Application::Start()
 		}
 
 
-		//this->entityManager->sendMessageToAllEntities("update");
+		this->entityManager->sendMessageToEntity("Update", "Player");
 
 
 		m_graphicsEngine->DrawScene();

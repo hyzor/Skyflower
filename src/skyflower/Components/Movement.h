@@ -58,10 +58,11 @@ private:
 
 	void applyGravity(Message const& msg)
 	{
-		//this->p->addGravityCalc(this->pos);
 		Vec3 pos = getEntityPos();
+		p->update(0.001f);
+		this->p->addGravityCalc(pos);
 
-		pos.Y -= 10.0f;
+		//pos.Y -= 0.01f;
 
 		std::vector<CollisionInstance*> instances = Collision::GetInstance()->GetCollisionInstances();
 		Ray r = Ray(pos, Vec3(0, -65, 0));
@@ -75,8 +76,12 @@ private:
 				break;
 			}
 		}
-		if(col) //om kollision flytta tillbaka
+		if (col) //om kollision flytta tillbaka
+		{
 			pos.Y -= (1 - col)*-65;
+			p->setVelocity(Vec3());
+			p->setJumping(false);
+		}
 
 		updateEntityPos(pos);
 	}
@@ -120,16 +125,15 @@ private:
 
 	void Jump(Message const& msg)
 	{
-		//Vec3 pos = getEntityPos();
-		//p->
-		//p->jump(pos);
+		Vec3 pos = getEntityPos();
+		p->jump(pos);
 
-		//updateEntityPos(pos);
+		updateEntityPos(pos);
 	}
 
 	void update(Message const& msg)
 	{
-		
+		applyGravity(msg);
 	}
 
 	void moveUpDown(Message const& msg)
