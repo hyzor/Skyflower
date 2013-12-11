@@ -39,7 +39,8 @@ void Application::Start()
 	m_window->SetListener(this);
 
 	m_inputHandler = m_window->GetInputHandler();
-	m_inputHandler->SetListener(this);
+	m_inputHandler->AddListener(this);
+	m_inputHandler->SetMouseCapture(true);
 
 	// Create graphics engine
 	m_graphicsEngine = CreateGraphicsEngine();
@@ -148,6 +149,9 @@ void Application::OnKeyDown(unsigned short key)
 {
 	switch (key)
 	{
+	case VK_ESCAPE:
+		m_inputHandler->SetMouseCapture(!m_inputHandler->IsMouseCaptured());
+		break;
 	case 'W':
 		entityManager->sendMessageToEntity("W", "Player");
 		break;

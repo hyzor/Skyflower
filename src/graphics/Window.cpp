@@ -82,15 +82,19 @@ Window::Window(const unsigned int width, const unsigned int height, const wchar_
 
 	ShowWindow(m_window, SW_SHOW);
 
+	m_inputHandler = new InputHandler(this);
+	m_liveResize = false;
+	m_isResizing = false;
+	m_didResize = false;
+
 	SetForegroundWindow(m_window);
 	SetFocus(m_window);
 	m_active = true;
-
-	m_inputHandler = new InputHandler(this);
 }
 
 Window::~Window()
 {
+	delete m_inputHandler;
 	DestroyWindow(m_window);
 	UnregisterClass(windowClassName, m_instanceHandle);
 }
@@ -104,11 +108,18 @@ void Window::PumpMessages() const
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
+
+	m_inputHandler->Update();
 }
 
 void Window::SetListener(WindowListener *listener)
 {
 	m_listener = listener;
+}
+
+void Window::SetLiveResize(bool liveResize)
+{
+	m_liveResize = liveResize;
 }
 
 bool Window::IsActive() const
@@ -152,8 +163,23 @@ LRESULT Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	// FIXME: Handle WM_CHAR for text input.
 	switch (uMsg)
 	{
+	case WM_ENTERSIZEMOVE:
+		m_isResizing = true;
+
+		break;
+	case WM_EXITSIZEMOVE:
+		if (m_listener && !m_liveResize && m_didResize)
+			m_listener->OnWindowResize(GetWidth(), GetHeight());
+
+		m_isResizing = false;
+		m_didResize = false;
+
+		break;
 	case WM_SIZE:
-		if (m_listener)
+		if (m_isResizing)
+			m_didResize = true;
+
+		if (m_listener && (m_liveResize || (!m_liveResize && !m_isResizing)))
 			m_listener->OnWindowResize((unsigned int)LOWORD(lParam), (unsigned int)HIWORD(lParam));
 
 		break;
