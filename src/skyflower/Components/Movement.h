@@ -7,6 +7,7 @@
 #include <sstream>
 #include "shared/Vec3.h"
 #include "physics/Physics.h"
+#include "physics/Collision.h"
 using namespace std;
 using namespace Cistron;
 
@@ -58,6 +59,26 @@ private:
 	void applyGravity(Message const& msg)
 	{
 		//this->p->addGravityCalc(this->pos);
+		Vec3 pos = getEntityPos();
+
+		pos.Y -= 10.0f;
+
+		std::vector<CollisionInstance*> instances = Collision::GetInstance()->GetCollisionInstances();
+		Ray r = Ray(pos, Vec3(0, -65, 0));
+		float col = 0;
+		for (int i = 0; i < instances.size(); i++)
+		{
+			float t = instances[i]->Test(r);
+			if (t > 0)
+			{
+				col = t;
+				break;
+			}
+		}
+		if(col) //om kollision flytta tillbaka
+			pos.Y -= (1 - col)*-65;
+
+		updateEntityPos(pos);
 	}
 
 	void moveForward(Message const& msg)
@@ -66,6 +87,8 @@ private:
 		p->moveForward(pos);
 
 		updateEntityPos(pos);
+		applyGravity(msg);
+
 	}
 
 	void moveBackward(Message const& msg)
@@ -74,6 +97,7 @@ private:
 		p->moveBackward(pos);
 
 		updateEntityPos(pos);
+		applyGravity(msg);
 	}
 
 	void moveLeft(Message const& msg)
@@ -82,6 +106,7 @@ private:
 		p->moveLeft(pos);
 
 		updateEntityPos(pos);
+		applyGravity(msg);
 	}
 
 	void moveRight(Message const& msg)
@@ -90,6 +115,7 @@ private:
 		p->moveRight(pos);
 
 		updateEntityPos(pos);
+		applyGravity(msg);
 	}
 
 	void Jump(Message const& msg)

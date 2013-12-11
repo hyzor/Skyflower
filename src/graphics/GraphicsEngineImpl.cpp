@@ -259,9 +259,11 @@ ModelInstance* GraphicsEngineImpl::CreateInstance(std::string file, Vec3 pos)
 {
 	if (mModels.find(file) == mModels.end())
 	{
+		std::stringstream ss;
+		ss << file << ".obj";
 		mModels[file] = new GenericModel(mDirect3D->GetDevice(),
 			mTextureMgr,
-			file,
+			ss.str(),
 			L"Data\\Models\\");
 	}
 

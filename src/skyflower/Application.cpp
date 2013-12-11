@@ -51,8 +51,8 @@ void Application::Start()
 	entityManager = new EntityManager(m_graphicsEngine);
 
 	//loading xml-file, creating entities and components to this entityManager
-	entityManager->loadXML(entityManager, "test2.xml");
-	//this->entityManager->loadXML(this->entityManager, "platform.xml");
+	entityManager->loadXML(entityManager, "test22.xml");
+	entityManager->loadXML(entityManager, "platform2.xml");
 
 	////sends a message to all components in all entities in that manager
 	//entityManager->sendMessageToAllEntities("Hello");

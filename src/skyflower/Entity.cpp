@@ -28,6 +28,7 @@ Entity::Entity(GraphicsEngine* gEngine, EntityId id, string type, float xPos, fl
 	this->isVisible = isVisible;
 
 	this->gEngine = gEngine;
+
 	this->modelInst = this->gEngine->CreateInstance(this->model, Vec3(this->pos.X, this->pos.Y, this->pos.Z));
 	this->modelInst->SetRotation(this->rot);
 	this->modelInst->SetScale(this->scale);

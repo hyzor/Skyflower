@@ -616,7 +616,7 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 	{
 		cout << "3:an här!" << endl;
 	}
-	else if (xmlFile == "test2.xml")
+	else if (xmlFile == "test2.xml" || xmlFile == "test22.xml")
 	{
 		//For every entity that is to be created in this EntityManager
 		for (XMLElement* elem = root->FirstChildElement(); elem != NULL; elem = elem->NextSiblingElement())
@@ -832,7 +832,7 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 			}
 		}
 	}
-	else if (xmlFile == "platform.xml")
+	else if (xmlFile == "platform.xml" || xmlFile == "platform2.xml")
 	{
 		//For every entity that is to be created in this EntityManager
 		for (XMLElement* elem = root->FirstChildElement(); elem != NULL; elem = elem->NextSiblingElement())
@@ -946,6 +946,10 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 					{
 						Movement* m = new Movement();
 						entityManager->addComponent(platform, m);
+					}
+					else if (componentName == "Collision")
+					{
+						Collision::GetInstance()->CreateCollisionInstance(model, Vec3(xPos, yPos, zPos));
 					}
 					else if (componentName == "Messenger")
 					{

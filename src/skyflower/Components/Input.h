@@ -36,6 +36,7 @@ private:
 	{
 		cout << "Pressed W\n";
 		sendMessage("MoveForward");
+		sendMessage("ApplyGravity");
 	}
 
 	void S(const Message& message)
