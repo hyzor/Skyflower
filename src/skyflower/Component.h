@@ -10,6 +10,7 @@
 #include "Cistron.h"
 //#include <boost/any.hpp>
 #include <ostream>
+#include "physics/Collision.h"
 #include "shared/Vec3.h"
 
 
@@ -227,6 +228,7 @@ class Component {
 		Vec3 getEntityRot();
 		Vec3 getEntityScale();
 		bool getEntityVisibility();
+		CollisionInstance* getEntityCollision();
 		void updateEntityPos(Vec3 pos);
 		void updateEntityRot(Vec3 rot);
 		void updateEntityScale(Vec3 scale);

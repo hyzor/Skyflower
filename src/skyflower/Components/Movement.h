@@ -69,11 +69,14 @@ private:
 		float col = 0;
 		for (int i = 0; i < instances.size(); i++)
 		{
-			float t = instances[i]->Test(r);
-			if (t > 0)
+			if (instances[i] != getEntityCollision())
 			{
-				col = t;
-				break;
+				float t = instances[i]->Test(r);
+				if (t > 0)
+				{
+					col = t;
+					break;
+				}
 			}
 		}
 		if (col) //om kollision flytta tillbaka
