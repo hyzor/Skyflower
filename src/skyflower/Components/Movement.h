@@ -89,45 +89,68 @@ private:
 	void moveForward(Message const& msg)
 	{
 		Vec3 pos = getEntityPos();
-		p->moveForward(pos);
+		Vec3 rot = getEntityRot();
 
+		if (p->toDegrees(rot.Y) != -90.0f)
+		{
+			p->resetRot(rot);
+			p->rotateY(rot, -90.0f);
+		}
+		p->moveForward(pos);
 		updateEntityPos(pos);
-		applyGravity(msg);
+		updateEntityRot(rot);
 
 	}
 
 	void moveBackward(Message const& msg)
 	{
 		Vec3 pos = getEntityPos();
+		Vec3 rot = getEntityRot();
+		
+		if (p->toDegrees(rot.Y) != 90.0f)
+		{
+			p->resetRot(rot);
+			p->rotateY(rot, 90.0f);
+		}
 		p->moveBackward(pos);
-
 		updateEntityPos(pos);
-		applyGravity(msg);
+		updateEntityRot(rot);
 	}
 
 	void moveLeft(Message const& msg)
 	{
 		Vec3 pos = getEntityPos();
+		Vec3 rot = getEntityRot();
+
+		if (p->toDegrees(rot.Y) != 180.0f)
+		{
+			p->resetRot(rot);
+			p->rotateY(rot, 180.0f);
+		}
 		p->moveLeft(pos);
 
 		updateEntityPos(pos);
-		applyGravity(msg);
+		updateEntityRot(rot);
 	}
 
 	void moveRight(Message const& msg)
 	{
 		Vec3 pos = getEntityPos();
+		Vec3 rot = getEntityPos();
+		//if (p->toDegrees(rot.Y) != 0.0f)
+		//{
+			p->resetRot(rot);
+		//}
 		p->moveRight(pos);
 
 		updateEntityPos(pos);
-		applyGravity(msg);
+		updateEntityRot(rot);
 	}
 
 	void Jump(Message const& msg)
 	{
 		Vec3 pos = getEntityPos();
 		p->jump(pos);
-
 		updateEntityPos(pos);
 	}
 
@@ -138,7 +161,7 @@ private:
 
 	void moveUpDown(Message const& msg)
 	{
-		cout << "Ska röra mig upp!" << endl;
+		cout << "Ska rï¿½ra mig upp!" << endl;
 		Vec3 pos = getEntityPos();
 		p->moveUp(pos);
 
