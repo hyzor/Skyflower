@@ -62,7 +62,7 @@ void Application::Start()
 	//entityManager->sendMessageToEntity("Hello", "Player");
 
 	camera = m_graphicsEngine->CreateCameraController();
-	camera->RotateCamera(0, 0);
+	Cistron::Component* playerMove = (Movement*)entityManager->getComponent("Player", "Movement");
 
 	//m_graphicsEngine->CreateInstance("Data\\Models\\duck.obj")->SetVisibility(false);
 
@@ -96,8 +96,6 @@ void Application::Start()
 			//frameTimeChart.Draw(time - chartTime, time, 1.0f / 100.0f, (1.0f / 60.0f) * 1000.0f);
 			//memoryChart.Draw(time - chartTime, time, 1.0f / 100.0f, 256.0f);
 		}
-
-
 		this->entityManager->sendMessageToEntity("Update", "Player");
 
 
@@ -143,6 +141,7 @@ void Application::OnMouseButtonUp(enum MouseButton button)
 
 void Application::OnMouseWheel(int delta)
 {
+	camera->Zoom(delta, 50);
 }
 
 void Application::OnKeyDown(unsigned short key)

@@ -5,6 +5,9 @@
 #include "GraphicsEngine.h"
 #include "Camera.h"
 
+#define MAX_ZOOM 100
+#define MIN_ZOOM 700
+
 class DLL_API CameraControllImpl : CameraController
 {
 public:
@@ -17,6 +20,7 @@ public:
 	 void Update();
 	 void Follow(Vec3 target);
 	 void RotateCamera(float mouseX, float mouseY);
+	 void Zoom(float d, float speed);
 	 Vec3 GetPosition();
 	 Vec3 GetDirection();
 private:
