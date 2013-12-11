@@ -1,6 +1,8 @@
 #ifndef SKYFLOWER_CHART_H
 #define SKYFLOWER_CHART_H
 
+#include <string>
+
 #include "shared/platform.h"
 #include <skia/SkCanvas.h>
 #include <skia/SkBitmap.h>
@@ -20,6 +22,7 @@ public:
 	virtual ~LineChart();
 
 	void SetSize(unsigned int width, unsigned int height);
+	void SetUnit(const std::string &unit);
 
 	void AddPoint(float timeStamp, float value);
 	void Clear();
@@ -34,6 +37,8 @@ private:
 	size_t m_dataPointCapacity;
 	size_t m_dataPointStart;
 	size_t m_dataPointEnd;
+
+	std::string m_unit;
 
 
 

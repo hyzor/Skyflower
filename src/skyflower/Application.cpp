@@ -29,9 +29,11 @@ void Application::Start()
 {
 	LineChart frameTimeChart(1024 * 1024);
 	frameTimeChart.SetSize(512, 256);
+	frameTimeChart.SetUnit("ms");
 
 	LineChart memoryChart(1024 * 1024);
 	memoryChart.SetSize(512, 256);
+	memoryChart.SetUnit("MiB");
 
 
 

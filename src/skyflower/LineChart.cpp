@@ -1,11 +1,14 @@
 #include <algorithm>
 #include <cassert>
 #include <cstdio>
+#include <string>
+#include <sstream>
 
 #include "shared/platform.h"
 #include <skia/SkRect.h>
 #include <skia/SkCanvas.h>
 #include <skia/SkBitmap.h>
+#include <skia/SkTypeface.h>
 #include <skia/SkXfermode.h>
 
 #include "LineChart.h"
@@ -19,6 +22,8 @@ LineChart::LineChart(size_t maximumDataPoints)
 	m_dataPointCapacity = maximumDataPoints;
 	m_dataPointStart = 0;
 	m_dataPointEnd = 0;
+
+	m_unit = "";
 
 
 
@@ -53,6 +58,11 @@ void LineChart::SetSize(unsigned int width, unsigned int height)
 	m_canvas = new SkCanvas(*m_bitmap);
 }
 
+void LineChart::SetUnit(const std::string &unit)
+{
+	m_unit = unit;
+}
+
 void LineChart::AddPoint(float timeStamp, float value)
 {
 	m_dataPoints[m_dataPointEnd].timeStamp = timeStamp;
@@ -73,28 +83,10 @@ void LineChart::Clear()
 
 void LineChart::Draw(float startTime, float endTime, float resolution, float targetValue)
 {
-	/*
-	paint.measureText(...);
-	paint.getTextBounds(...);
-	paint.textToGlyphs(...);
-	paint.getFontMetrics(...);
-	*/
-
 	assert(m_canvas);
 	assert(m_bitmap);
 	assert(endTime > startTime);
 	assert(resolution > 0.0f);
-
-	// Clear with transparency.
-	m_canvas->drawColor(SK_ColorTRANSPARENT);
-
-	SkPaint backgroundPaint;
-	backgroundPaint.setColor(SkColorSetARGB(128, 175, 175, 175));
-	backgroundPaint.setStyle(SkPaint::kFill_Style);
-	backgroundPaint.setXfermodeMode(SkXfermode::kSrcOver_Mode);
-
-	// Draw a semi-transparent background.
-	m_canvas->drawRect(SkRect::MakeXYWH(0.0f, 0.0f, (float)m_bitmap->width(), (float)m_bitmap->height()), backgroundPaint);
 
 	SkPath path;
 	float step = m_bitmap->width() / ((endTime - startTime) * (1.0f / resolution));
@@ -113,17 +105,20 @@ void LineChart::Draw(float startTime, float endTime, float resolution, float tar
 
 		timeStamp = m_dataPoints[i].timeStamp;
 
+		// FIXME: Interpolate instead of skipping samples failing (timeStamp - lastTimeStamp) >= resolution
 		if (timeStamp >= startTime && timeStamp <= endTime && (timeStamp - lastTimeStamp) >= resolution) {
+			count++;
+
 			lastTimeStamp = timeStamp;
-			value = (float)m_bitmap->height() - m_dataPoints[i].value;
+			value = m_dataPoints[i].value;
 
 			if (first) {
 				first = false;
 
-				path.moveTo(position, value);
+				path.moveTo(position, (float)m_bitmap->height() - value);
 			}
 			else {
-				path.lineTo(position, value);
+				path.lineTo(position, (float)m_bitmap->height() - value);
 				// cubicTo
 			}
 
@@ -131,39 +126,50 @@ void LineChart::Draw(float startTime, float endTime, float resolution, float tar
 
 			maxValue = std::max(maxValue, value);
 			minValue = std::min(minValue, value);
-
-			count++;
 		}
 	}
 
+	//printf("drawing %d samples out of %d, maxValue=%.1f, minValue=%.1f, lastValue=%.1f\n", count, totalCount, maxValue, minValue, value);
+
 	// Make sure the line is drawn right to the end of the chart.
-	path.lineTo((float)m_bitmap->width(), value);
+	path.lineTo((float)m_bitmap->width(), (float)m_bitmap->height() - value);
 
 	maxValue = std::max(maxValue, targetValue);
 	minValue = std::min(minValue, targetValue);
 
 	// Add some extra space at the top and bottom of the chart.
-	//float range = maxValue - minValue;
-	//maxValue += range * 0.1;
-	//minValue -= range * 0.1;
+	float range = maxValue - minValue;
+	maxValue += range * 0.1f;
+	minValue -= range * 0.1f;
 
 	// FIXME: Allow charts that don't start at zero.
 	minValue = 0.0f;
+	range = maxValue - minValue;
 
-	float scale = m_bitmap->height() / (maxValue - minValue);
+	// Clear the canvas with transparency.
+	m_canvas->clear(SK_ColorTRANSPARENT);
 
-	// Scale the path to fit the canvas.
-	SkMatrix transformation;
-	transformation.setScale(1.0f, scale);
-	transformation.postTranslate(0.0f, m_bitmap->height() * -(scale - 1.0f));
-	path.transform(transformation);
+	SkPaint backgroundPaint;
+	backgroundPaint.setColor(SkColorSetARGB(128, 175, 175, 175));
+	backgroundPaint.setStyle(SkPaint::kFill_Style);
+	backgroundPaint.setXfermodeMode(SkXfermode::kSrcOver_Mode);
+
+	// Draw a semi-transparent background.
+	m_canvas->drawRect(SkRect::MakeXYWH(0.0f, 0.0f, (float)m_bitmap->width(), (float)m_bitmap->height()), backgroundPaint);
 
 	SkPaint pathPaint;
 	pathPaint.setColor(SkColorSetARGB(255, 255, 115, 0));
 	pathPaint.setStyle(SkPaint::kStroke_Style);
 	pathPaint.setStrokeWidth(1.0f);
-	pathPaint.setXfermodeMode(SkXfermode::kSrcOver_Mode);
-	pathPaint.setFlags(SkPaint::kAntiAlias_Flag);
+	//pathPaint.setXfermodeMode(SkXfermode::kSrcOver_Mode);
+	pathPaint.setAntiAlias(true);
+
+	// Scale the path to fit the canvas.
+	float scale = m_bitmap->height() / range;
+	SkMatrix transformation;
+	transformation.setScale(1.0f, scale);
+	transformation.postTranslate(0.0f, m_bitmap->height() * -(scale - 1.0f));
+	path.transform(transformation);
 
 	// Draw the actual data point lines.
 	m_canvas->drawPath(path, pathPaint);
@@ -172,13 +178,39 @@ void LineChart::Draw(float startTime, float endTime, float resolution, float tar
 	linePaint.setColor(SkColorSetARGB(255, 0, 0, 0));
 	linePaint.setStyle(SkPaint::kStroke_Style);
 	linePaint.setStrokeWidth(1.0f);
-	linePaint.setXfermodeMode(SkXfermode::kSrcOver_Mode);
+	//linePaint.setXfermodeMode(SkXfermode::kSrcOver_Mode);
 
 	// Draw the target value line.
-	float lineValue = ((float)m_bitmap->height() - targetValue) * scale + (m_bitmap->height() * -(scale - 1.0f));
-	m_canvas->drawLine(0.0f, lineValue, (float)m_bitmap->width(), lineValue, linePaint);
+	float targetLinePosition = ((float)m_bitmap->height() - targetValue) * scale + (m_bitmap->height() * -(scale - 1.0f));
+	m_canvas->drawLine(0.0f, targetLinePosition, (float)m_bitmap->width(), targetLinePosition, linePaint);
 
-	//printf("Drew %i out of %i samples with %.2f scale\n", count, totalCount, scale);
+	// Draw the labels
+	SkPaint textPaint;
+	textPaint.setAntiAlias(true);
+	//textPaint.setSubpixelText(true);
+	//textPaint.setLCDRenderText(true);
+	textPaint.setTextAlign(SkPaint::kRight_Align);
+	textPaint.setTextSize(10.0f);
+
+	SkTypeface *typeface = SkTypeface::CreateFromName("serif", SkTypeface::kNormal);
+	textPaint.setTypeface(typeface);
+	typeface->unref();
+
+	std::stringstream targetValueStream;
+	targetValueStream.precision(1);
+	targetValueStream << std::fixed << targetValue << m_unit;
+	std::string targetValueString = targetValueStream.str();
+
+	std::stringstream lastValueStream;
+	lastValueStream.precision(1);
+	lastValueStream << std::fixed << value << m_unit;
+	std::string lastValueString = lastValueStream.str();
+
+	//float targetValueTextWidth = textPaint.measureText(targetValueString.c_str(), targetValueString.length());
+	//float lastValueTextWidth = textPaint.measureText(lastValueString.c_str(), lastValueString.length());
+
+	m_canvas->drawText(targetValueString.c_str(), targetValueString.length(), (float)m_bitmap->width(), targetLinePosition, textPaint);
+	m_canvas->drawText(lastValueString.c_str(), lastValueString.length(), (float)m_bitmap->width(), (float)m_bitmap->height() - value, textPaint);
 
 	if (!m_imageEncoder->encodeFile("chart.png", *m_bitmap, 100)) {
 		printf("Failed to encode image!\n");
