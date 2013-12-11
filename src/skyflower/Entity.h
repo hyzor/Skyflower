@@ -33,6 +33,8 @@ class Entity {
 		virtual ~Entity();
 		void sendPosToComponent();
 	
+		const Modules *getModules();
+
 	private:
 
 		// Entity id

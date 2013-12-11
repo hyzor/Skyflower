@@ -1088,3 +1088,15 @@ Component* EntityManager::getComponent(string EntityName, string Component)
 	}
 	return NULL;
 }
+
+Entity *EntityManager::getEntity(EntityId id)
+{
+	// make sure the Entity exists
+	if (id < 0 || id >= (int)fEntitys.size() || fEntitys[id] == 0) {
+		stringstream ss;
+		ss << "Failed to get Entity " << id << ": it does not exist!";
+		error(ss);
+	}
+
+	return fEntitys[id];
+}

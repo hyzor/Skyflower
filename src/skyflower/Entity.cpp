@@ -53,6 +53,10 @@ Entity::~Entity() {
 	this->modules->graphics->DeleteInstance(this->modelInst);
 }
 
+const Modules *Entity::getModules()
+{
+	return this->modules;
+}
 
 // is the Entity finalized
 bool Entity::isFinalized() {

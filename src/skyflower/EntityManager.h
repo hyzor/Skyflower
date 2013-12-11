@@ -139,6 +139,8 @@ class EntityManager {
 		void updateEntityVisibility(bool isVisible, EntityId id);
 		Component* getComponent(string EntityName, string Componenet);
 
+		Entity *getEntity(EntityId id);
+
 	private:
 
 		/**

@@ -7,7 +7,6 @@
 #include <map>
 #include <list>
 #include <functional>
-#include "Cistron.h"
 //#include <boost/any.hpp>
 #include <ostream>
 #include "physics/Collision.h"
@@ -87,7 +86,7 @@ struct RegisteredComponent {
 
 // Entity manager
 class EntityManager;
-
+class Entity;
 
 // a generic component
 class Component {
@@ -207,6 +206,7 @@ class Component {
 
 		// get owner
 		EntityId getOwnerId();
+		Entity *getOwner();
 
 		// get id
 		ComponentId getId();
