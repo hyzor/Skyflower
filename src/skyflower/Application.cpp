@@ -50,7 +50,7 @@ void Application::Start()
 	//m_soundEngine = CreateSoundEngine("../../content/sounds/");
 	//assert(m_soundEngine);
 
-	entityManager = new EntityManager(m_graphicsEngine);
+	entityManager = new EntityManager("../../content/XML/", m_graphicsEngine);
 
 	//loading xml-file, creating entities and components to this entityManager
 	entityManager->loadXML(entityManager, "test22.xml");

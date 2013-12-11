@@ -30,7 +30,7 @@ class EntityManager {
 	public:
 
 		// constructor/destructor
-		EntityManager(GraphicsEngine* gEngine);
+		EntityManager(const std::string &resourceDir, GraphicsEngine* gEngine);
 		virtual ~EntityManager();
 
 		// create a new Entity
@@ -221,6 +221,7 @@ class EntityManager {
 		void error(stringstream& str);
 
 
+		std::string m_resourceDir;
 		GraphicsEngine* gEngine;
 };
 

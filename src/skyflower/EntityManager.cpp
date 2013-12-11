@@ -12,8 +12,9 @@ using std::endl;
 
 
 // constructor/destructor
-EntityManager::EntityManager(GraphicsEngine* gEngine) : fIdCounter(0), fRequestIdCounter(0), fNLocks(0) {
+EntityManager::EntityManager(const std::string &resourceDir, GraphicsEngine* gEngine) : fIdCounter(0), fRequestIdCounter(0), fNLocks(0) {
 
+	m_resourceDir = resourceDir;
 	this->gEngine = gEngine;
 	// because we start counting from 1 for request id's, we add an empty request lock in front
 	fRequestLocks.push_back(RequestLock());
@@ -585,7 +586,7 @@ void EntityManager::sendMessageToEntity(string message, string entity)
 
 bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 {
-	string path = "../../content/XML/" + xmlFile;
+	string path = m_resourceDir + xmlFile;
 
 	XMLDocument doc;
 	doc.LoadFile(path.c_str());
