@@ -260,7 +260,7 @@ void Entity::updatePos(Vec3 pos)
 	this->modelInst->SetPosition(pos);
 	if (this->collInst)
 		this->collInst->Position = pos;
-	cout << this->pos.X << endl;
+	//cout << this->pos.X << endl;
 }
 
 void Entity::updateRot(Vec3 rot)
