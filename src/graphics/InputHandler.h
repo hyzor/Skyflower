@@ -2,6 +2,7 @@
 #define GRAPHICS_INPUTHANDLER_H
 
 #include <climits>
+#include <vector>
 
 #include "shared/platform.h"
 
@@ -33,8 +34,8 @@ class DLL_API InputHandler
 public:
 	virtual ~InputHandler();
 
-	void SetListener(InputListener *listener);
-	InputListener *GetListener() const;
+	void AddListener(InputListener *listener);
+	void RemoveListener(InputListener *listener);
 
 	void Update();
 
@@ -63,8 +64,8 @@ private:
 
 private:
 	Window *m_window;
+	std::vector<InputListener *> m_listeners;
 	bool m_inputDevicesRegistered;
-	InputListener *m_listener;
 	bool m_mouseCaptured;
 
 	bool m_mouseButtonStates[MouseButtonCount];
