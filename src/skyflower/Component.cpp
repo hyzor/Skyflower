@@ -83,7 +83,7 @@ void Component::addComponent(EntityId objId, Component *c) {
 
 // create an Entity
 EntityId Component::createEntity(string type) {
-	return fEntityManager->createEntity(type, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, "", false);
+	return fEntityManager->createEntity(type, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, "", false, false);
 }
 
 // finalize an Entity
@@ -312,6 +312,10 @@ Vec3 Component::getEntityScale()
 bool Component::getEntityVisibility()
 {
 	return this->fEntityManager->getEntityVisibility(this->fOwnerId);
+}
+CollisionInstance* Component::getEntityCollision()
+{
+	return this->fEntityManager->getEntityCollision(this->fOwnerId);
 }
 
 void Component::updateEntityPos(Vec3 pos)

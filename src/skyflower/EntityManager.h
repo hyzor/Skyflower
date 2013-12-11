@@ -35,7 +35,7 @@ class EntityManager {
 
 		// create a new Entity
 		EntityId createEntity(string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
-			float xScale, float yScale, float zScale, string model, bool isVisible);
+			float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible);
 
 		// add a new component to an Entity
 		void addComponent(EntityId, Component*);
@@ -131,6 +131,7 @@ class EntityManager {
 		Vec3 getEntityRot(EntityId ownerId);
 		Vec3 getEntityScale(EntityId ownerId);
 		bool getEntityVisibility(EntityId ownerId);
+		CollisionInstance* getEntityCollision(EntityId ownerId);
 		void updateEntityPos(Vec3 pos, EntityId id);
 		void updateEntityRot(Vec3 rot, EntityId id);
 		void updateEntityScale(Vec3 scale, EntityId id);

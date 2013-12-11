@@ -27,7 +27,7 @@ class Entity {
 
 		// constructor/destructor
 		Entity(GraphicsEngine* gEngine, EntityId id, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
-			 float xScale, float yScale, float zScale, string model, bool isVisible);
+			 float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible);
 		virtual ~Entity();
 		void sendPosToComponent();
 	
@@ -42,6 +42,7 @@ class Entity {
 		string model;
 		bool isVisible;
 		ModelInstance* modelInst;
+		CollisionInstance* collInst;
 
 		/**
 		 * COMPONENT MANAGEMENT
@@ -110,6 +111,7 @@ class Entity {
 		Vec3 returnRot();
 		Vec3 returnScale();
 		bool returnVisible();
+		CollisionInstance* returnCollision();
 		void updatePos(Vec3 pos);
 		void updateRot(Vec3 rot);
 		void updateScale(Vec3 scale);

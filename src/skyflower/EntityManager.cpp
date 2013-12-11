@@ -77,10 +77,10 @@ RequestId EntityManager::getExistingRequestId(ComponentRequestType type, string 
 
 // create a new Entity
 EntityId EntityManager::createEntity(string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
-	float xScale, float yScale, float zScale, string model, bool isVisible) {
+	float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible) {
 
 	// create a new Entity
-	Entity *obj = new Entity(gEngine,fIdCounter, type, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible);
+	Entity *obj = new Entity(gEngine, fIdCounter, type, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible);
 	//cout << "Created Entity " << fIdCounter << endl;
 	++fIdCounter;
 
@@ -697,7 +697,7 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 					isVisible = elem->BoolAttribute("isVisible");
 				}
 				//Creating the Player entity and adding it to the entitymanager
-				EntityId player = entityManager->createEntity("Player", xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible);
+				EntityId player = entityManager->createEntity("Player", xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, false);
 
 
 				//Looping through all the components for Player-entity.
@@ -770,7 +770,7 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 				bool isVisible = false;
 
 				//Creating the Player entity and adding it to the entityManager.
-				EntityId player2 = entityManager->createEntity("Player2", xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible);
+				EntityId player2 = entityManager->createEntity("Player2", xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, false);
 
 				//Looping through all the components for Player2-entity.
 				for (XMLElement* e = elem->FirstChildElement(); e != NULL; e = e->NextSiblingElement())
@@ -846,6 +846,7 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 				float xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale;
 				string model = "";
 				bool isVisible = false;
+				bool isCollidible = false;
 
 				attr = elem->Attribute("xPos");
 				if (attr != NULL)
@@ -913,8 +914,12 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 					isVisible = elem->BoolAttribute("isVisible");
 				}
 
+				attr = elem->Attribute("isCollidible");
+				if (attr != NULL)
+					isCollidible = elem->BoolAttribute("isCollidible");
+
 				//Creating the Player entity and adding it to the entitymanager
-				EntityId platform = entityManager->createEntity("Platform", xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible);
+				EntityId platform = entityManager->createEntity("Platform", xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible);
 
 
 				//Looping through all the components for Player-entity.
@@ -946,10 +951,6 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 					{
 						Movement* m = new Movement();
 						entityManager->addComponent(platform, m);
-					}
-					else if (componentName == "Collision")
-					{
-						Collision::GetInstance()->CreateCollisionInstance(model, Vec3(xPos, yPos, zPos));
 					}
 					else if (componentName == "Messenger")
 					{
@@ -1019,6 +1020,17 @@ bool EntityManager::getEntityVisibility(EntityId ownerId)
 		if (this->fEntitys[i]->getEntityId() == ownerId)
 		{
 			return this->fEntitys[i]->returnVisible();
+		}
+	}
+}
+
+CollisionInstance* EntityManager::getEntityCollision(EntityId ownerId)
+{
+	for (int i = 0; i < this->fIdCounter; i++)
+	{
+		if (this->fEntitys[i]->getEntityId() == ownerId)
+		{
+			return this->fEntitys[i]->returnCollision();
 		}
 	}
 }

@@ -8,7 +8,7 @@ using namespace Cistron;
 
 // constructor/destructor
 Entity::Entity(GraphicsEngine* gEngine, EntityId id, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
-	float xScale, float yScale, float zScale, string model, bool isVisible) : fId(id), type(type), fFinalized(false)
+	float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible) : fId(id), type(type), fFinalized(false)
 {
 	this->type = type;
 
@@ -33,6 +33,11 @@ Entity::Entity(GraphicsEngine* gEngine, EntityId id, string type, float xPos, fl
 	this->modelInst->SetRotation(this->rot);
 	this->modelInst->SetScale(this->scale);
 	this->modelInst->SetVisibility(this->isVisible);
+	
+	if (isCollidible)
+		collInst = Collision::GetInstance()->CreateCollisionInstance(model, pos);
+	else
+		collInst = nullptr;
 
 }
 Entity::~Entity() {
@@ -244,10 +249,17 @@ bool Entity::returnVisible()
 	return this->isVisible;
 }
 
+CollisionInstance* Entity::returnCollision()
+{
+	return this->collInst;
+}
+
 void Entity::updatePos(Vec3 pos)
 {
 	this->pos = pos;
 	this->modelInst->SetPosition(pos);
+	if (this->collInst)
+		this->collInst->Position = pos;
 	cout << this->pos.X << endl;
 }
 
