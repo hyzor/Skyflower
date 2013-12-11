@@ -7,7 +7,7 @@ CameraControllImpl::CameraControllImpl(Camera *c)
 	offset = 700;
 	rot = 0;
 	rotx = 0;
-
+	RotateCamera(0, 0);
 	Vec3 look(camera->GetLook().x, camera->GetLook().y, camera->GetLook().z);
 }
 
@@ -59,11 +59,26 @@ void CameraControllImpl::SetOffset(float offset)
 
 void CameraControllImpl::RotateCamera(float mouseX, float mouseY)
 {
-	//Vec3 o;// = (look*this->offset);
 	o.Y = sin(rotx);
 	o.X = cos(rot)*cos(rotx);
 	o.Z = sin(rot)*cos(rotx);
-	rot += mouseX / 200;
-	rotx += mouseY / 200;
-	//SetPosition(Vec3(target + (o*offset)));
+
+	rot -= mouseX / 200;
+	rotx -= mouseY / 200;
+
+	if (rotx > 1)
+		rotx = 1;
+	else if (rotx < 0)
+		rotx = 0;
+}
+
+void CameraControllImpl::Zoom(float d, float speed)
+{
+	if ((d < 0 && offset < MIN_ZOOM) || (d > 0 && offset > MAX_ZOOM))
+		offset -= d * speed;
+}
+
+float Lerp(float a, float b, float amount)
+{
+	return 0;
 }

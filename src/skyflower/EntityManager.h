@@ -136,7 +136,7 @@ class EntityManager {
 		void updateEntityRot(Vec3 rot, EntityId id);
 		void updateEntityScale(Vec3 scale, EntityId id);
 		void updateEntityVisibility(bool isVisible, EntityId id);
-
+		Component* getComponent(string EntityName, string Componenet);
 
 	private:
 

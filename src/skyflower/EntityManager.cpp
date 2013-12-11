@@ -158,7 +158,6 @@ void EntityManager::releaseLock(RequestId reqId) {
 	}
 }
 
-
 // add a new component to an Entity
 void EntityManager::addComponent(EntityId id, Component *component) {
 
@@ -1077,5 +1076,14 @@ void EntityManager::updateEntityVisibility(bool isVisible, EntityId ownerId)
 	}
 }
 
-
-
+Component* EntityManager::getComponent(string EntityName, string Component)
+{
+	for (int i = 0; i < fEntitys.size(); i++)
+	{
+		if (fEntitys.at(i)->getType() == EntityName)
+		{
+			return fEntitys.at(i)->getComponents(Component).front();
+		}
+	}
+	return NULL;
+}
