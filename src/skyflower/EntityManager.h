@@ -13,6 +13,7 @@
 #include <string>
 #include <sstream>
 
+#include "Application.h"
 #include "graphics/GraphicsEngine.h"
 #include "physics/Collision.h"
 
@@ -30,7 +31,7 @@ class EntityManager {
 	public:
 
 		// constructor/destructor
-		EntityManager(const std::string &resourceDir, GraphicsEngine* gEngine);
+		EntityManager(const std::string &resourceDir, const Modules *modules);
 		virtual ~EntityManager();
 
 		// create a new Entity
@@ -222,7 +223,7 @@ class EntityManager {
 
 
 		std::string m_resourceDir;
-		GraphicsEngine* gEngine;
+		const Modules *modules;
 };
 
 };

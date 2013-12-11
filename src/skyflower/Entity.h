@@ -12,6 +12,8 @@
 
 #include "graphics/GraphicsEngine.h"
 
+struct Modules;
+
 namespace Cistron {
 
 using std::vector;
@@ -26,7 +28,7 @@ class Entity {
 	public:
 
 		// constructor/destructor
-		Entity(GraphicsEngine* gEngine, EntityId id, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
+		Entity(const Modules *modules, EntityId id, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
 			 float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible);
 		virtual ~Entity();
 		void sendPosToComponent();
@@ -119,7 +121,7 @@ class Entity {
 
 
 
-		GraphicsEngine* gEngine;
+		const Modules *modules;
 };
 
 

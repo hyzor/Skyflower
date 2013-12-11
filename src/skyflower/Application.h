@@ -10,6 +10,13 @@
 #include "Sound/SoundEngine.h"
 #include "Cistron.h"
 
+struct Modules
+{
+	InputHandler *input;
+	GraphicsEngine *graphics;
+	SoundEngine *sound;
+};
+
 class Application : WindowListener, InputListener
 {
 public:
