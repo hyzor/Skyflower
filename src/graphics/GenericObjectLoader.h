@@ -18,8 +18,8 @@
 struct GenericMaterial
 {
 	Material mat;
-	std::wstring diffuseMapName;
-	std::wstring normalMapName;
+	std::string diffuseMapName;
+	std::string normalMapName;
 	std::string name;
 };
 

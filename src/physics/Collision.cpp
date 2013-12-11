@@ -25,8 +25,11 @@ CollisionInstance* Collision::CreateCollisionInstance(std::string file, Vec3 pos
 		ret = new CollisionInstance(it->second, pos);
 	else
 	{
+		// FIXME: Don't hardcode this path!
+		std::string path = "../../content/" + file;
+
 		CollisionModel* cm = new CollisionModel();
-		cm->Load(file);
+		cm->Load(path);
 		it = models.begin();
 		models.insert(it, std::pair<std::string, CollisionModel*>(file, cm));
 		ret = new CollisionInstance(cm, pos);

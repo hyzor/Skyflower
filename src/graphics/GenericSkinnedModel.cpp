@@ -1,7 +1,7 @@
 #include "GenericSkinnedModel.h"
 
 
-GenericSkinnedModel::GenericSkinnedModel(ID3D11Device* device, TextureManager* textureMgr, const std::string& fileName, const std::wstring& texturePath)
+GenericSkinnedModel::GenericSkinnedModel(ID3D11Device* device, TextureManager* textureMgr, const std::string& fileName, const std::string& texturePath)
 {
 	std::vector<GenericMaterial> mats;
 
@@ -23,7 +23,7 @@ GenericSkinnedModel::GenericSkinnedModel(ID3D11Device* device, TextureManager* t
 	{
 		mat.push_back(mats[i].mat);
 
-		if (mats[i].diffuseMapName != L"")
+		if (mats[i].diffuseMapName != "")
 		{
 			ID3D11ShaderResourceView* _diffuseMapSRV = textureMgr->CreateTexture(texturePath + mats[i].diffuseMapName);
 			diffuseMapSRV.push_back(_diffuseMapSRV);
@@ -33,7 +33,7 @@ GenericSkinnedModel::GenericSkinnedModel(ID3D11Device* device, TextureManager* t
 			diffuseMapSRV.push_back(NULL);
 		}
 
-		if (mats[i].normalMapName != L"")
+		if (mats[i].normalMapName != "")
 		{
 			ID3D11ShaderResourceView* _normalMapSRV = textureMgr->CreateTexture(texturePath + mats[i].normalMapName);
 			normalMapSRV.push_back(_normalMapSRV);

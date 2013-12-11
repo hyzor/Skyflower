@@ -18,11 +18,11 @@ public:
 
 	void Init(ID3D11Device* device);
 
-	ID3D11ShaderResourceView* CreateTexture(std::wstring fileName);
+	ID3D11ShaderResourceView* CreateTexture(std::string fileName);
 
 private:
 	ID3D11Device* md3dDevice;
-	std::map<std::wstring, ID3D11ShaderResourceView*> mTextureSRV;
+	std::map<std::string, ID3D11ShaderResourceView*> mTextureSRV;
 };
 
 #endif

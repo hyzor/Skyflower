@@ -50,7 +50,7 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 		delete mDirect3D;
 }
 
-bool GraphicsEngineImpl::Init(HWND hWindow, int width, int height)
+bool GraphicsEngineImpl::Init(HWND hWindow, int width, int height, const std::string &resourceDir)
 {
 	//mD3dWindow = new D3dWindow(hWindow);
 
@@ -59,6 +59,8 @@ bool GraphicsEngineImpl::Init(HWND hWindow, int width, int height)
 
 	//if (!mD3dWindow->Init())
 	//	return false;
+
+	mResourceDir = resourceDir;
 
 	mDirect3D = new Direct3D();
 
@@ -81,8 +83,8 @@ bool GraphicsEngineImpl::Init(HWND hWindow, int width, int height)
 	// Load models
 	mSkinnedModels["Character"] = new GenericSkinnedModel(mDirect3D->GetDevice(),
 		mTextureMgr,
-		"Data\\Models\\Character\\char.dae",
-		L"Data\\Models\\Character\\");
+		mResourceDir + "Models\\Character\\char.dae",
+		mResourceDir + "Models\\Character\\");
 
 	// -----------------------------------------
 	// Test model instances
@@ -114,7 +116,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, int width, int height)
 	mDirLights[2].Specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	mDirLights[2].Direction = XMFLOAT3(0.0f, 0.0f, -0.57735f);
 
-	mSky = new Sky(mDirect3D->GetDevice(), L"Data\\Textures\\SkyBox_Space.dds", 5000.0f);
+	mSky = new Sky(mDirect3D->GetDevice(), mTextureMgr, mResourceDir + "Textures\\SkyBox_Space.dds", 5000.0f);
 
 	//mD3dWindow->ShowWindow();
 	//mD3dWindow->OnResize();
@@ -263,8 +265,8 @@ ModelInstance* GraphicsEngineImpl::CreateInstance(std::string file, Vec3 pos)
 		ss << file << ".obj";
 		mModels[file] = new GenericModel(mDirect3D->GetDevice(),
 			mTextureMgr,
-			ss.str(),
-			L"Data\\Models\\");
+			mResourceDir + ss.str(),
+			mResourceDir + "Models\\");
 	}
 
 	ModelInstanceImpl* mi = new ModelInstanceImpl(pos, Vec3(), Vec3(1, 1, 1));

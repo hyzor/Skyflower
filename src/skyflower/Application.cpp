@@ -45,7 +45,7 @@ void Application::Start()
 
 	// Create graphics engine
 	m_graphicsEngine = CreateGraphicsEngine();
-	m_graphicsEngine->Init(m_window->GetHandle(), m_window->GetWidth(), m_window->GetHeight());
+	m_graphicsEngine->Init(m_window->GetHandle(), m_window->GetWidth(), m_window->GetHeight(), "../../content/");
 
 	//m_soundEngine = CreateSoundEngine("../../content/sounds/");
 	//assert(m_soundEngine);
@@ -97,8 +97,8 @@ void Application::Start()
 			//frameTimeChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, (1.0f / 60.0f) * 1000.0f);
 			//memoryChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, 256.0f);
 		}
-		this->entityManager->sendMessageToEntity("Update", "Player");
 
+		this->entityManager->sendMessageToEntity("Update", "Player");
 
 		m_graphicsEngine->DrawScene();
 		m_graphicsEngine->UpdateScene((float)deltaTime);

@@ -9,10 +9,10 @@
 #include "Effects.h"
 #include "Vertex.h"
 
-Sky::Sky(ID3D11Device* device, const std::wstring& cubeMapFileName, float skySphereRadius)
+Sky::Sky(ID3D11Device* device, TextureManager *textureManager, const std::string& cubeMapFileName, float skySphereRadius)
 {
 	// Create texture
-	HR(D3DX11CreateShaderResourceViewFromFile(device, cubeMapFileName.c_str(), 0, 0, &mCubeMapSRV, 0));
+	mCubeMapSRV = textureManager->CreateTexture(cubeMapFileName);
 
 	// Generate sphere
 	GeometryGenerator::MeshData sphere;
@@ -64,7 +64,6 @@ Sky::~Sky(void)
 {
 	ReleaseCOM(mVertexBuffer);
 	ReleaseCOM(mIndexBuffer);
-	ReleaseCOM(mCubeMapSRV);
 }
 
 ID3D11ShaderResourceView* Sky::cubeMapSRV()

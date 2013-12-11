@@ -513,28 +513,26 @@ void GenericObjectLoader::ReadMaterials(const aiScene* scene,
 			if (scene->mMaterials[curMat]->GetTexture(aiTextureType_DIFFUSE, 0, &texPath) == aiReturn_SUCCESS)
 			{
 				std::string texPathStr = texPath.C_Str();
-				std::wstring tmp(texPathStr.begin(), texPathStr.end());
-
 
 				// Remove characters like ".", "/" and "\" from the beginning
 				// of the texture name
-				wchar_t firstChar = tmp.front();
+				char firstChar = texPathStr.front();
 				while (firstChar == '.' || firstChar == '/' || firstChar == '\'')
 				{
-					tmp.erase(tmp.begin(), tmp.begin()+1);
-					firstChar = tmp.front();
+					texPathStr.erase(texPathStr.begin(), texPathStr.begin()+1);
+					firstChar = texPathStr.front();
 				}
 
-				wchar_t curChar;
+				char curChar;
 				int lastSlashIndex = -1;
 				//int fileExtensionIndex = 0;
 				// Remove all character before a slash and then the slash to remove
 				// the absolute path (which will result in only the texture name)
 
 				// But dont remove slashes after the actual texture name!
-				for (UINT i = 0; i < tmp.size(); ++i)
+				for (UINT i = 0; i < texPathStr.size(); ++i)
 				{
-					curChar = tmp[i];
+					curChar = texPathStr[i];
 
 					// File extension found
 					//if (curChar == '.')
@@ -547,18 +545,18 @@ void GenericObjectLoader::ReadMaterials(const aiScene* scene,
 
 				// At least one slash found
 				if (lastSlashIndex != -1)
-					tmp.erase(0, lastSlashIndex+1);
+					texPathStr.erase(0, lastSlashIndex+1);
 
 				// Replace "/" with "\" (when models have folders in their texture name) 
-				for (UINT i = 0; i < tmp.size(); ++i)
+				for (UINT i = 0; i < texPathStr.size(); ++i)
 				{
-					if (tmp[i] == L'/')
+					if (texPathStr[i] == '/')
 					{
-						tmp.replace(i, 1, L"\\");
+						texPathStr.replace(i, 1, "\\");
 					}
 				}
 
-				genMat.diffuseMapName = tmp;
+				genMat.diffuseMapName = texPathStr;
 			}
 
 			// Get normal map
@@ -566,28 +564,26 @@ void GenericObjectLoader::ReadMaterials(const aiScene* scene,
 			if (scene->mMaterials[curMat]->GetTexture(aiTextureType_NORMALS, 0, &normalMapPath) == aiReturn_SUCCESS)
 			{
 				std::string normalMapPathStr = texPath.C_Str();
-				std::wstring tmp(normalMapPathStr.begin(), normalMapPathStr.end());
-
 
 				// Remove characters like ".", "/" and "\" from the beginning
 				// of the texture name
-				wchar_t firstChar = tmp.front();
+				char firstChar = normalMapPathStr.front();
 				while (firstChar == '.' || firstChar == '/' || firstChar == '\'')
 				{
-					tmp.erase(tmp.begin(), tmp.begin()+1);
-					firstChar = tmp.front();
+					normalMapPathStr.erase(normalMapPathStr.begin(), normalMapPathStr.begin()+1);
+					firstChar = normalMapPathStr.front();
 				}
 
 				// Replace "/" with "\" (when models have folders in their texture name) 
-				for (UINT i = 0; i < tmp.size(); ++i)
+				for (UINT i = 0; i < normalMapPathStr.size(); ++i)
 				{
-					if (tmp[i] == L'/')
+					if (normalMapPathStr[i] == '/')
 					{
-						tmp.replace(i, 1, L"\\");
+						normalMapPathStr.replace(i, 1, "\\");
 					}
 				}
 
-				genMat.normalMapName = tmp;
+				genMat.normalMapName = normalMapPathStr;
 			}
 
 			// Push our material into the vector
@@ -606,8 +602,8 @@ void GenericObjectLoader::InitMaterial(GenericMaterial* material)
 	material->mat.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 16.0f);
 	material->mat.Reflect = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
-	material->diffuseMapName = L"";
-	material->normalMapName = L"";
+	material->diffuseMapName = "";
+	material->normalMapName = "";
 	material->name = "";
 }
 

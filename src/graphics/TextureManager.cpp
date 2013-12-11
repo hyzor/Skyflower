@@ -27,7 +27,7 @@ void TextureManager::Init(ID3D11Device* device)
 	md3dDevice = device;
 }
 
-ID3D11ShaderResourceView* TextureManager::CreateTexture(std::wstring fileName)
+ID3D11ShaderResourceView* TextureManager::CreateTexture(std::string fileName)
 {
 	ID3D11ShaderResourceView* srv = 0;
 
@@ -40,7 +40,9 @@ ID3D11ShaderResourceView* TextureManager::CreateTexture(std::wstring fileName)
 	// Otherwise create the new texture
 	else
 	{
-		HR(D3DX11CreateShaderResourceViewFromFile(md3dDevice, fileName.c_str(), 0, 0, &srv, 0));
+		std::wstring path(fileName.begin(), fileName.end());
+
+		HR(D3DX11CreateShaderResourceViewFromFile(md3dDevice, path.c_str(), 0, 0, &srv, 0));
 
 		mTextureSRV[fileName] = srv;
 	}

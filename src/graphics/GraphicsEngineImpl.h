@@ -60,7 +60,7 @@ public:
 	GraphicsEngineImpl();
 	~GraphicsEngineImpl();
 
-	bool Init(HWND hWindow, int width, int height);
+	bool Init(HWND hWindow, int width, int height, const std::string &resourceDir);
 	int Run();
 	//int DrawScene();
 
@@ -80,6 +80,8 @@ public:
 private:
 	Direct3D* mDirect3D;
 	//D3dWindow* mD3dWindow;
+
+	std::string mResourceDir;
 
 	TextureManager* mTextureMgr;
 	GenericModel* mDuckModel;

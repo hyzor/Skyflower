@@ -17,7 +17,7 @@
 class GenericSkinnedModel
 {
 public:
-	GenericSkinnedModel(ID3D11Device* device, TextureManager* textureMgr, const std::string& fileName, const std::wstring& texturePath);
+	GenericSkinnedModel(ID3D11Device* device, TextureManager* textureMgr, const std::string& fileName, const std::string& texturePath);
 	~GenericSkinnedModel(void);
 
 	UINT numMeshes;

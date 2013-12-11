@@ -9,11 +9,12 @@
 
 #include "d3dUtilities.h"
 #include "Camera.h"
+#include "TextureManager.h"
 
 class Sky
 {
 public:
-	Sky(ID3D11Device* device, const std::wstring& cubeMapFileName, float skySphereRadius);
+	Sky(ID3D11Device* device, TextureManager *textureManager, const std::string& cubeMapFileName, float skySphereRadius);
 	~Sky(void);
 
 	ID3D11ShaderResourceView* cubeMapSRV();

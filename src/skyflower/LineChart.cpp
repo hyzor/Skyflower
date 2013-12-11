@@ -102,7 +102,7 @@ void LineChart::Draw(float startTime, float endTime, float resolution, float tar
 	float maxValue = FLT_MIN;
 	float minValue = FLT_MAX;
 	double totalValue = 0.0;
-	int previousIndex;
+	size_t previousIndex;
 	int count = 0;
 	bool first = true;
 
