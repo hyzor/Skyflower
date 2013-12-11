@@ -149,6 +149,9 @@ void Application::OnKeyDown(unsigned short key)
 {
 	switch (key)
 	{
+	case VK_ESCAPE:
+		m_inputHandler->SetMouseCapture(!m_inputHandler->IsMouseCaptured());
+		break;
 	case 'W':
 		entityManager->sendMessageToEntity("W", "Player");
 		break;

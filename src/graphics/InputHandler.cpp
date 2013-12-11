@@ -156,6 +156,10 @@ void InputHandler::OnMouseWheel(int delta)
 
 void InputHandler::OnKeyDown(unsigned short key)
 {
+	// Ignore key-repeat events.
+	if (m_keyStates[key])
+		return;
+
 	m_keyStates[key] = true;
 
 	if (m_listener)

@@ -94,6 +94,7 @@ Window::Window(const unsigned int width, const unsigned int height, const wchar_
 
 Window::~Window()
 {
+	delete m_inputHandler;
 	DestroyWindow(m_window);
 	UnregisterClass(windowClassName, m_instanceHandle);
 }
