@@ -20,7 +20,7 @@ DLL_API uint64_t GetMemoryUsage()
 #endif
 }
 
-DLL_API float GetTime()
+DLL_API double GetTime()
 {
 #ifdef PLATFORM_WINDOWS
 	static LARGE_INTEGER frequency;
@@ -31,7 +31,7 @@ DLL_API float GetTime()
 	LARGE_INTEGER counter;
 	QueryPerformanceCounter(&counter);
 
-	return (float)counter.QuadPart / frequency.QuadPart;
+	return (double)counter.QuadPart / frequency.QuadPart;
 #else
 #error Unsupported OS
 #endif

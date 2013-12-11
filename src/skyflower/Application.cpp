@@ -72,11 +72,11 @@ void Application::Start()
 	//d->SetRotation(Vec3(-3.14f/2, 3.14f/4));
 
 
-	float startTime = GetTime();
-	float chartTime = 10.0f;
+	double startTime = GetTime();
+	double chartTime = 5.0;
 
-	float oldTime = GetTime();
-	float time, deltaTime;
+	double oldTime = GetTime();
+	double time, deltaTime;
 
 	m_quit = false;
 
@@ -89,20 +89,20 @@ void Application::Start()
 		camera->Follow(entityManager->getEntityPos("Player"));
 		camera->Update();
 
-		frameTimeChart.AddPoint(time, deltaTime * 1000.0f);
-		memoryChart.AddPoint(time, (float)(GetMemoryUsage() / (1024 * 1024)));
+		frameTimeChart.AddPoint((float)time, (float)(deltaTime * 1000.0));
+		memoryChart.AddPoint((float)time, GetMemoryUsage() / (1024.0f * 1024.0f));
 		
 		if (time - startTime > chartTime) {
 			startTime = time;
 
-			//frameTimeChart.Draw(time - chartTime, time, 1.0f / 100.0f, (1.0f / 60.0f) * 1000.0f);
-			//memoryChart.Draw(time - chartTime, time, 1.0f / 100.0f, 256.0f);
+			//frameTimeChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, (1.0f / 60.0f) * 1000.0f);
+			//memoryChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, 256.0f);
 		}
 		this->entityManager->sendMessageToEntity("Update", "Player");
 
 
 		m_graphicsEngine->DrawScene();
-		m_graphicsEngine->UpdateScene(deltaTime);
+		m_graphicsEngine->UpdateScene((float)deltaTime);
 
 		//m_soundEngine->Update(deltaTime);
 

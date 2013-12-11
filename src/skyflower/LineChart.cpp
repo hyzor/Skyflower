@@ -13,6 +13,11 @@
 
 #include "LineChart.h"
 
+static float lerp(float x, float y, float a)
+{
+	return x * (1.0f - a) + y * a;
+}
+
 LineChart::LineChart(size_t maximumDataPoints)
 {
 	m_bitmap = NULL;
@@ -89,38 +94,59 @@ void LineChart::Draw(float startTime, float endTime, float resolution, float tar
 	assert(resolution > 0.0f);
 
 	SkPath path;
-	float step = m_bitmap->width() / ((endTime - startTime) * (1.0f / resolution));
+	const struct LineChartDataPoint *point;
+	const struct LineChartDataPoint *previousPoint;
+	float timeRange = endTime - startTime;
+	float nextTimeStamp = startTime;
+	float value, alpha, position;
 	float maxValue = FLT_MIN;
 	float minValue = FLT_MAX;
-	float lastTimeStamp = -10.0f; //FLT_MIN;
-	float timeStamp, value;
 	double totalValue = 0.0;
+	int previousIndex;
 	int count = 0;
 	bool first = true;
 
 	for (size_t i = m_dataPointStart; i != m_dataPointEnd; i = (i + 1) % m_dataPointCapacity) {
-		timeStamp = m_dataPoints[i].timeStamp;
+		point = &m_dataPoints[i];
 
-		// FIXME: Interpolate instead of skipping samples failing (timeStamp - lastTimeStamp) >= resolution
-		if (timeStamp >= startTime && timeStamp <= endTime && (timeStamp - lastTimeStamp) >= resolution) {
-			value = m_dataPoints[i].value;
-			totalValue += value;
+		if (point->timeStamp >= startTime && point->timeStamp <= endTime && point->timeStamp >= nextTimeStamp) {
+			if (first) {
+				nextTimeStamp = point->timeStamp;
+			}
+
+			previousIndex = (i - 1 < 0? m_dataPointCapacity - 1 : i - 1);
+
+			if (previousIndex != m_dataPointStart) {
+				previousPoint = &m_dataPoints[previousIndex];
+
+				alpha = (nextTimeStamp - previousPoint->timeStamp) / (point->timeStamp - previousPoint->timeStamp);
+				value = lerp(previousPoint->value, point->value, alpha);
+			}
+			else {
+				value = point->value;
+			}
+
+			position = ((nextTimeStamp - startTime) / timeRange) * m_bitmap->width();
 
 			if (first) {
 				first = false;
 
-				path.moveTo(count * step, (float)m_bitmap->height() - value);
+				path.moveTo(position, (float)m_bitmap->height() - value);
 			}
 			else {
-				path.lineTo(count * step, (float)m_bitmap->height() - value);
-				// cubicTo
+				path.lineTo(position, (float)m_bitmap->height() - value);
 			}
 
 			maxValue = std::max(maxValue, value);
 			minValue = std::min(minValue, value);
 
-			lastTimeStamp = timeStamp;
 			count++;
+			totalValue += value;
+			nextTimeStamp = point->timeStamp + resolution;
+
+			if (nextTimeStamp > endTime) {
+				break;
+			}
 		}
 	}
 

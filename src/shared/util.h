@@ -10,6 +10,6 @@
 // Returns the application's memory usage in bytes.
 DLL_API uint64_t GetMemoryUsage();
 // Returns the current time in seconds.
-DLL_API float GetTime();
+DLL_API double GetTime();
 
 #endif
