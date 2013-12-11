@@ -21,6 +21,7 @@ public:
 	void PumpMessages() const;
 
 	void SetListener(WindowListener *listener);
+	void SetLiveResize(bool liveResize);
 
 	bool IsActive() const;
 
@@ -40,6 +41,9 @@ private:
 	WindowListener *m_listener;
 	InputHandler *m_inputHandler;
 
+	bool m_liveResize;
+	bool m_isResizing;
+	bool m_didResize;
 	bool m_active;
 };
 
