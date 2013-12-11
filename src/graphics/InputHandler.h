@@ -34,8 +34,9 @@ public:
 	virtual ~InputHandler();
 
 	void SetListener(InputListener *listener);
-
 	InputListener *GetListener() const;
+
+	void Update();
 
 	void SetMouseCapture(bool capture);
 	bool IsMouseCaptured();

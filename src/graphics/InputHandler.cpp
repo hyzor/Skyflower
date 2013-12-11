@@ -58,6 +58,19 @@ InputListener *InputHandler::GetListener() const
 	return m_listener;
 }
 
+void InputHandler::Update()
+{
+	if (m_mouseCaptured && m_window->IsActive()) {
+		POINT point;
+		point.x = m_window->GetWidth() / 2;
+		point.y = m_window->GetHeight() / 2;
+
+		// Convert from window to screen coordinates.
+		ClientToScreen(m_window->GetHandle(), &point);
+		SetCursorPos(point.x, point.y);
+	}
+}
+
 void InputHandler::SetMouseCapture(bool capture)
 {
 	m_mouseCaptured = capture;

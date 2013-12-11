@@ -107,6 +107,8 @@ void Window::PumpMessages() const
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
+
+	m_inputHandler->Update();
 }
 
 void Window::SetListener(WindowListener *listener)

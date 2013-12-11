@@ -40,6 +40,7 @@ void Application::Start()
 
 	m_inputHandler = m_window->GetInputHandler();
 	m_inputHandler->SetListener(this);
+	m_inputHandler->SetMouseCapture(true);
 
 	// Create graphics engine
 	m_graphicsEngine = CreateGraphicsEngine();
