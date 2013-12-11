@@ -26,7 +26,7 @@ void CameraControllImpl::Update(float dt,int mouseX, int mouseY)
 	o.X = cos(rot)*cos(rotx);
 	o.Z = sin(rot)*cos(rotx);
 	rot += deltaMouse.X/1000;
-	rotx += deltaMouse.Y/ 1000;
+	rotx += deltaMouse.Y/1000;
 
 	SetPosition(Vec3(target + (o*offset)));
 

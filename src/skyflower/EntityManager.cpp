@@ -576,7 +576,7 @@ void EntityManager::sendMessageToEntity(string message, string entity)
 {
 	for (int i = 0; i < this->fIdCounter; i++)
 	{
-		if (this->fEntitys[i]->getType(entity))
+		if (this->fEntitys[i]->getType() == entity)
 		{
 			this->fEntitys[i]->sendMessageToEntity(message, this->fEntitys[i]->fId);
 		}
@@ -967,6 +967,19 @@ Vec3 EntityManager::getEntityPos(EntityId ownerId)
 	for (int i = 0; i < this->fIdCounter; i++)
 	{
 		if (this->fEntitys[i]->getEntityId() == ownerId)
+		{
+			return this->fEntitys[i]->returnPos();
+		}
+	}
+
+	return Vec3(0.0f, 0.0f, 0.0f);
+}
+
+Vec3 EntityManager::getEntityPos(string type)
+{
+	for (int i = 0; i < this->fIdCounter; i++)
+	{
+		if (this->fEntitys[i]->getType() == type)
 		{
 			return this->fEntitys[i]->returnPos();
 		}

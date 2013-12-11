@@ -103,7 +103,7 @@ class Entity {
 		void sendAMessageToAll(string message);
 		void sendMessageToEntity(string message, EntityId id);
 
-		bool getType(string type);
+		string getType();
 		EntityId getEntityId();
 
 		Vec3 returnPos();

@@ -10,6 +10,8 @@ using namespace Cistron;
 Entity::Entity(GraphicsEngine* gEngine, EntityId id, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
 	float xScale, float yScale, float zScale, string model, bool isVisible) : fId(id), type(type), fFinalized(false)
 {
+	this->type = type;
+
 	this->pos.X = xPos;
 	this->pos.Y = yPos;
 	this->pos.Z = zPos;
@@ -211,16 +213,9 @@ void Entity::sendMessageToEntity(string message, EntityId id)
 	this->fComponents["Monster"].front()->sendMessageToEntity(id, message);
 }
 
-bool Entity::getType(string type)
+string Entity::getType()
 {
-	if (this->type == type)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return this->type;
 }
 
 EntityId Entity::getEntityId()
