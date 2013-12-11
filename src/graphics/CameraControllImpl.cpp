@@ -63,7 +63,7 @@ void CameraControllImpl::RotateCamera(float mouseX, float mouseY)
 	o.Y = sin(rotx);
 	o.X = cos(rot)*cos(rotx);
 	o.Z = sin(rot)*cos(rotx);
-	rot += mouseX / 1000;
-	rotx += mouseY / 1000;
-	SetPosition(Vec3(target + (o*offset)));
+	rot += mouseX / 200;
+	rotx += mouseY / 200;
+	//SetPosition(Vec3(target + (o*offset)));
 }

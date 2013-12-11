@@ -61,6 +61,7 @@ void Application::Start()
 	//entityManager->sendMessageToEntity("Hello", "Player");
 
 	camera = m_graphicsEngine->CreateCameraController();
+	camera->RotateCamera(0, 0);
 
 	//m_graphicsEngine->CreateInstance("Data\\Models\\duck.obj")->SetVisibility(false);
 
