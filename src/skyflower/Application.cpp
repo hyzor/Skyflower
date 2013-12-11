@@ -42,7 +42,6 @@ void Application::Start()
 
 	m_inputHandler = m_window->GetInputHandler();
 	m_inputHandler->AddListener(this);
-	m_inputHandler->SetMouseCapture(true);
 
 	// Create graphics engine
 	m_graphicsEngine = CreateGraphicsEngine();
@@ -126,6 +125,16 @@ void Application::OnWindowShouldClose()
 
 void Application::OnWindowResize(unsigned int width, unsigned int height)
 {
+	// FIXME: Notify the graphics engine of the resize.
+}
+
+void Application::OnWindowActivate()
+{
+	m_inputHandler->SetMouseCapture(true);
+}
+
+void Application::OnWindowDeactivate()
+{
 }
 
 void Application::OnMouseMove(int deltaX, int deltaY)
@@ -135,6 +144,7 @@ void Application::OnMouseMove(int deltaX, int deltaY)
 
 void Application::OnMouseButtonDown(enum MouseButton button)
 {
+	m_inputHandler->SetMouseCapture(true);
 }
 
 void Application::OnMouseButtonUp(enum MouseButton button)
@@ -151,7 +161,7 @@ void Application::OnKeyDown(unsigned short key)
 	switch (key)
 	{
 	case VK_ESCAPE:
-		m_inputHandler->SetMouseCapture(!m_inputHandler->IsMouseCaptured());
+		m_inputHandler->SetMouseCapture(false);
 		break;
 	case 'W':
 		entityManager->sendMessageToEntity("W", "Player");

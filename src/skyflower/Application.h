@@ -21,6 +21,8 @@ public:
 public: // WindowListener
 	void OnWindowShouldClose();
 	void OnWindowResize(unsigned int width, unsigned int height);
+	void OnWindowActivate();
+	void OnWindowDeactivate();
 
 public: // InputListener
 	void OnMouseMove(int deltaX, int deltaY);

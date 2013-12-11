@@ -10,6 +10,8 @@ class DLL_API WindowListener
 public:
 	virtual void OnWindowShouldClose() = 0;
 	virtual void OnWindowResize(unsigned int width, unsigned int height) = 0;
+	virtual void OnWindowActivate() = 0;
+	virtual void OnWindowDeactivate() = 0;
 };
 
 class DLL_API Window
@@ -18,13 +20,12 @@ public:
 	Window(const unsigned int width, const unsigned int height, const wchar_t *title);
 	virtual ~Window();
 
-	void PumpMessages() const;
+	void PumpMessages();
 
 	void SetListener(WindowListener *listener);
 	void SetLiveResize(bool liveResize);
 
 	bool IsActive() const;
-
 	HWND GetHandle() const;
 	InputHandler *GetInputHandler() const;
 	WindowListener *GetListener() const;

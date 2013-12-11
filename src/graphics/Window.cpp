@@ -99,7 +99,7 @@ Window::~Window()
 	UnregisterClass(windowClassName, m_instanceHandle);
 }
 
-void Window::PumpMessages() const
+void Window::PumpMessages()
 {
 	MSG msg;
 
@@ -189,10 +189,18 @@ LRESULT Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		return 0;
 	case WM_NCACTIVATE:
-		if (wParam == TRUE)
+		if (wParam == TRUE) {
 			m_active = true;
-		else
+
+			if (m_listener)
+				m_listener->OnWindowActivate();
+		}
+		else {
 			m_active = false;
+
+			if (m_listener)
+				m_listener->OnWindowDeactivate();
+		}
 
 		break;
 	case WM_INPUT:
