@@ -23,7 +23,7 @@ float Field::GetWeight(Vec3 pos)
 	float dist = (Pos - pos).Length();
 	if (dist > Size)
 		return 0;
-	float val = (Size-dist)/Size*Weight;
+	float val = ((Size - dist)*Weight) / Size;
 	//if ((Weight > 0 && val < 0) || (Weight < 0 && val > 0))
 		//val = 0;
 	return val;

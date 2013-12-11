@@ -8,6 +8,7 @@
 #include "Application.h"
 #include "tinyxml2.h"
 #include "ComponentHeaders.h"
+#include "LineChart.h"
 
 using namespace std;
 using namespace tinyxml2;
@@ -26,6 +27,14 @@ Application::~Application()
 
 void Application::Start()
 {
+	LineChart frameTimeChart(1024 * 1024);
+	frameTimeChart.SetSize(512, 256);
+
+	LineChart memoryChart(1024 * 1024);
+	memoryChart.SetSize(512, 256);
+
+
+
 	m_window = new Window(1024, 768, L"Skyflower");
 	m_window->SetListener(this);
 
@@ -59,6 +68,8 @@ void Application::Start()
 	//d->SetRotation(Vec3(-3.14f/2, 3.14f/4));
 
 
+	float startTime = GetTime();
+	float chartTime = 10.0f;
 
 	float oldTime = GetTime();
 	float time, deltaTime;
@@ -70,6 +81,20 @@ void Application::Start()
 		time = GetTime();
 		deltaTime = time - oldTime;
 		oldTime = time;
+
+
+
+		frameTimeChart.AddPoint(time, deltaTime * 1000.0f);
+		memoryChart.AddPoint(time, (float)(GetMemoryUsage() / (1024 * 1024)));
+		
+		if (time - startTime > chartTime) {
+			startTime = time;
+
+			//frameTimeChart.Draw(time - chartTime, time, 1.0f / 100.0f, (1.0f / 60.0f) * 1000.0f);
+			//memoryChart.Draw(time - chartTime, time, 1.0f / 100.0f, 256.0f);
+		}
+
+
 
 		//Sleep(100);
 

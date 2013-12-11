@@ -35,18 +35,20 @@ float CollisionInstance::Test(Ray r)
 
 bool CollisionInstance::Test(Triangle t)
 {
-	t.P1 -= Position;
-	t.P2 -= Position;
-	t.P3 -= Position;
-
+	t.P1 -= Position*Vec3(1, 1, -1);
+	t.P2 -= Position*Vec3(1, 1, -1);
+	t.P3 -= Position*Vec3(1, 1, -1);
 	if (!Model->GetTree())
 	{
 		Box tBounds = t.GetBox();
-		if (tBounds.Test(Model->GetBox()))
+		Box b1 = Model->GetBox();
+		if (tBounds.Test(b1))
 		{
+
 			for (int i = 0; i < Model->Triangles(); i++)
 			{
-				if (Model->GetTriangle(i)->Test(t))
+				Triangle* t2 = Model->GetTriangle(i);
+				if (t2->Test(t) != 0)
 					return true;
 			}
 		}
@@ -58,19 +60,42 @@ bool CollisionInstance::Test(Triangle t)
 
 bool CollisionInstance::Test(CollisionInstance* ci)
 {
-	if (ci->Model->GetBox().Test(Model->GetBox()))
+	Box b1 = Model->GetBox();
+	Box b2 = ci->Model->GetBox();
+	b2.Position += ci->Position*Vec3(1, 1, -1) - Position*Vec3(1, 1, -1);
+	if (b1.Test(b2))
 	{
-		if (!Model->GetTree() || !ci->Model->GetTree())
+		//if (!ci->Model->GetTree())
 		{
-			for (int i = 0; i < Model->Triangles(); i++)
+			for (int i = 0; i < ci->Model->Triangles(); i++)
 			{
-				if (Test(*Model->GetTriangle(i)))
+				Triangle* t = ci->Model->GetTriangle(i);
+				Triangle t2 = *t;
+				t2.P1 += ci->Position*Vec3(1, 1, -1);
+				t2.P2 += ci->Position*Vec3(1, 1, -1);
+				t2.P3 += ci->Position*Vec3(1, 1, -1);
+				if (Test(t2))
 					return true;
 			}
 			return false;
 		}
-		else
-			return Model->GetTree()->Test(ci->Model->GetTree());
+		/*else
+		{
+			std::vector<std::vector<Triangle*>*> ts = ci->Model->GetTree()->GetTriangles(b2);
+			for (int i = 0; i < ts.size(); i++)
+			{
+				for (int j = 0; j < ts[i]->size(); j++)
+				{
+					Triangle* t = ts[i]->at(j);
+					Triangle t2 = *t;
+					t2.P1 += ci->Position*Vec3(1, 1, -1);
+					t2.P2 += ci->Position*Vec3(1, 1, -1);
+					t2.P3 += ci->Position*Vec3(1, 1, -1);
+					if (Test(t2))
+						return true;
+				}
+			}
+		}*/
 	}
 	return false;
 }

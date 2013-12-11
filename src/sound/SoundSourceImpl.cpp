@@ -131,6 +131,7 @@ void SoundSourceImpl::Update(float deltaTime)
 
 		if (numProcessedBuffers > 0) {
 			// FIXME: Move this to OpenALSourceProxy? (send the bufferIndex with QueueBuffer and the resourceHash(lastBufferIndex) somewhere?)
+			// What benefit would it bring to move it to OpenALSourceProxy?
 			for (unsigned int i = 0; i < numProcessedBuffers; i++) {
 				if (m_queuedBufferIndices[i] == lastBufferIndex) {
 					m_isLastBufferQueued = false;

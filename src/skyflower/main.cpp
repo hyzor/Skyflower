@@ -6,11 +6,9 @@
 
 //#include "graphics/GraphicsEngine.h"
 #include "shared/platform.h"
-#include "physics/Collision.h"
 #include "physics/Physics.h"
 #include "Application.h"
 #include "ScriptHandler.h"
-#include "PotentialField.h"
 
 //int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 int main(int argc, const char *argv[])

@@ -232,7 +232,7 @@ void GraphicsEngineImpl::DrawScene()
 	mCharacter->Draw(mDirect3D->GetImmediateContext(), mEffects->NormalMapFX->DirLights3TexSkinnedTech, mCamera);
 
 	// Draw sky
-	mSky->draw(mDirect3D->GetImmediateContext(), *mCamera, false);
+	//mSky->draw(mDirect3D->GetImmediateContext(), *mCamera, false);
 
 	// Restore default states
 	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };

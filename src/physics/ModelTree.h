@@ -18,7 +18,12 @@ class ModelTreeNode
 		virtual bool Test(ModelTreeNode* mtp);
 		virtual void Write(std::fstream* outfile, Triangle* first);
 		virtual void Read(std::ifstream* infile, Triangle* first);
+		virtual std::vector<std::vector<Triangle*>*> GetTriangles(Box b);
 		virtual int GetType();
+
+		virtual void SetPosition(Vec3 pos);
+	protected:
+		Vec3 Position;
 };
 
 class ModelTreeParent : public ModelTreeNode
@@ -33,6 +38,7 @@ class ModelTreeParent : public ModelTreeNode
 		bool Test(ModelTreeNode* mtp);
 		void Write(std::fstream* outfile, Triangle* first);
 		void Read(std::ifstream* infile, Triangle* first);
+		std::vector<std::vector<Triangle*>*> GetTriangles(Box b);
 		int GetType();
 	
 		ModelTreeNode* left;
@@ -40,6 +46,8 @@ class ModelTreeParent : public ModelTreeNode
 
 		Vec3 min;
 		Vec3 max;
+
+		void SetPosition(Vec3 pos);
 
 	private:
 		bool InfrontOfPlane(Vec3 point, Vec3 &center, Vec3 &normal);
@@ -56,7 +64,10 @@ class ModelTreeLeaf : public ModelTreeNode
 		bool Test(ModelTreeNode* mtp);
 		void Write(std::fstream* outfile, Triangle* first);
 		void Read(std::ifstream* infile, Triangle* first);
+		std::vector<std::vector<Triangle*>*> GetTriangles(Box b);
 		int GetType();
+
+		void SetPosition(Vec3 pos);
 
 		std::vector<Triangle*> triangles;
 };
