@@ -51,8 +51,8 @@ void Application::Start()
 	entityManager = new EntityManager(m_graphicsEngine);
 
 	//loading xml-file, creating entities and components to this entityManager
-	//entityManager->loadXML(entityManager, "test2.xml");
-	this->entityManager->loadXML(this->entityManager, "platform.xml");
+	entityManager->loadXML(entityManager, "test2.xml");
+	//this->entityManager->loadXML(this->entityManager, "platform.xml");
 
 	////sends a message to all components in all entities in that manager
 	//entityManager->sendMessageToAllEntities("Hello");
@@ -60,8 +60,8 @@ void Application::Start()
 	////sends a message to a specific entity, in this case a Player-entity.
 	//entityManager->sendMessageToEntity("Hello", "Player");
 
-	CameraController *camera = m_graphicsEngine->CreateCameraController();
-	
+	camera = m_graphicsEngine->CreateCameraController();
+
 	//m_graphicsEngine->CreateInstance("Data\\Models\\duck.obj")->SetVisibility(false);
 
 	//ModelInstance* d = m_graphicsEngine->CreateInstance("Data\\Models\\duck.obj", Vec3(-100, 50, 0));
@@ -82,7 +82,8 @@ void Application::Start()
 		deltaTime = time - oldTime;
 		oldTime = time;
 
-
+		camera->Follow(entityManager->getEntityPos("Player"));
+		camera->Update();
 
 		frameTimeChart.AddPoint(time, deltaTime * 1000.0f);
 		memoryChart.AddPoint(time, (float)(GetMemoryUsage() / (1024 * 1024)));
@@ -94,15 +95,6 @@ void Application::Start()
 			//memoryChart.Draw(time - chartTime, time, 1.0f / 100.0f, 256.0f);
 		}
 
-
-
-		//Sleep(100);
-
-		//d->SetPosition(d->GetPosition() + Vec3(0.01f, 0.0f, 0.0f));
-		//Vec3 dir = (d->GetPosition() - camera->GetPosition()).Normalize();
-
-		//camera->SetDirection(dir);
-		//camera->SetPosition(d->GetPosition() - dir * 1000);
 
 		//this->entityManager->sendMessageToAllEntities("update");
 
@@ -136,6 +128,7 @@ void Application::OnWindowResize(unsigned int width, unsigned int height)
 
 void Application::OnMouseMove(int deltaX, int deltaY)
 {
+	camera->RotateCamera(deltaX, deltaY);
 }
 
 void Application::OnMouseButtonDown(enum MouseButton button)

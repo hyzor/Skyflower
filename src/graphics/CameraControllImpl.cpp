@@ -13,29 +13,11 @@ CameraControllImpl::CameraControllImpl(Camera *c)
 
 CameraControllImpl::~CameraControllImpl(){}
 
-void CameraControllImpl::Update(float dt,int mouseX, int mouseY)
+void CameraControllImpl::Update()
 {
-	
-	//camera->Yaw(0.01);
-	Vec3 look(camera->GetLook().x, camera->GetLook().y, camera->GetLook().z);
-	
-	Vec3 deltaMouse = Vec3(mouseX, mouseY)-lastMousePos;
-
-	Vec3 o;// = (look*this->offset);
-	o.Y = sin(rotx);
-	o.X = cos(rot)*cos(rotx);
-	o.Z = sin(rot)*cos(rotx);
-	rot += deltaMouse.X/1000;
-	rotx += deltaMouse.Y/1000;
-
-	SetPosition(Vec3(target + (o*offset)));
-
-	//SetPosition(GetPosition() + Vec3(0.0f, 0.05f, 0.0f));
+	Vec3 pos = GetPosition();
 	camera->LookAt(target);
-	//lookat.Y += 0.1f;
-
-	lastMousePos = Vec3(mouseX, mouseY);
-	
+	SetPosition(Vec3(target + (o*offset)));
 }
 
 void CameraControllImpl::SetDirection(Vec3 direction)
@@ -75,3 +57,13 @@ void CameraControllImpl::SetOffset(float offset)
 	this->offset = offset;
 }
 
+void CameraControllImpl::RotateCamera(float mouseX, float mouseY)
+{
+	//Vec3 o;// = (look*this->offset);
+	o.Y = sin(rotx);
+	o.X = cos(rot)*cos(rotx);
+	o.Z = sin(rot)*cos(rotx);
+	rot += mouseX / 1000;
+	rotx += mouseY / 1000;
+	SetPosition(Vec3(target + (o*offset)));
+}

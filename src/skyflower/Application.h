@@ -38,7 +38,7 @@ private:
 	GraphicsEngine *m_graphicsEngine;
 	SoundEngine *m_soundEngine;
 	EntityManager* entityManager;
-
+	CameraController *camera;
 	bool m_quit;
 };
 

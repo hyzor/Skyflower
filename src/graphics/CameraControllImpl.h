@@ -14,13 +14,14 @@ public:
 	 void SetDirection(Vec3 direction);
 	 void SetOffset(float offset);
 	 void Rotate(Vec3 rot);
-	 void Update(float dt, int mouseX, int mouseY);
+	 void Update();
 	 void Follow(Vec3 target);
+	 void RotateCamera(float mouseX, float mouseY);
 	 Vec3 GetPosition();
 	 Vec3 GetDirection();
 private:
 	Camera* camera;
-	Vec3 lastMousePos;
+	Vec3 o;
 	Vec3 target;
 	float offset;
 
