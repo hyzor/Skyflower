@@ -86,12 +86,18 @@ void Physics::addGravityCalc(Vec3 &pos)
 	pos = previousPos + previousVelocity * this->dt + this->gravity * (this->dt * this->dt) / 2.0f;
 }
 
-void Physics::jump(Vec3 &pos)
+bool Physics::jump(Vec3 &pos)
 {
 	if (!isJumping())
 	{
 		this->jumping = true;
 		velocity.Y += DEFAULT_JUMP_VELOCITY;
+
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 

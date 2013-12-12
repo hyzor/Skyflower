@@ -28,7 +28,7 @@ public:
 		requestMessage("S", &Input::S);
 		requestMessage("A", &Input::A);
 		requestMessage("D", &Input::D);
-		requestMessage("E", &Input::E);
+		requestMessage("Space", &Input::Space);
 	}
 private:
 
@@ -57,9 +57,9 @@ private:
 		sendMessage("MoveRight");
 	}
 
-	void E(const Message& message)
+	void Space(const Message& message)
 	{
-		cout << "Pressed E\n";
+		cout << "Pressed Space\n";
 		sendMessage("Jump");
 	}
 

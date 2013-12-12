@@ -8,6 +8,7 @@
 #include "shared/Vec3.h"
 #include "physics/Physics.h"
 #include "physics/Collision.h"
+#include "Entity.h"
 using namespace std;
 using namespace Cistron;
 
@@ -153,7 +154,13 @@ private:
 	void Jump(Message const& msg)
 	{
 		Vec3 pos = getEntityPos();
-		p->jump(pos);
+
+		if (p->jump(pos))
+		{
+			//float soundPosition[3] = {0.0f, 0.0f, 0.0f};
+			//getOwner()->getModules()->sound->PlaySound("jump.wav", soundPosition, 1.0f, true); 
+		}
+
 		updateEntityPos(pos);
 	}
 

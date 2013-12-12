@@ -37,7 +37,7 @@ public:
 
 
 	void update(float dt); //Call each frame (so far only an update of delta time)
-	void jump(Vec3 &pos); //perform a jump on the given floats that represents a position
+	bool jump(Vec3 &pos); //perform a jump on the given floats that represents a position
 	void addGravityCalc(Vec3 &pos, Vec3 &velocity); //apply gravity the given vector that represents a pos
 	void addGravityCalc(Vec3 &pos); // same story here, only position though
 	void addProjectileCalc(Vec3 &pos, Vec3 &velocity, Vec3 &acceleration);

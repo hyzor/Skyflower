@@ -183,8 +183,8 @@ void Application::OnKeyDown(unsigned short key)
 	case 'D':
 		entityManager->sendMessageToEntity("D", "Player");
 		break;
-	case 'E':
-		entityManager->sendMessageToEntity("E", "Player");
+	case VK_SPACE:
+		entityManager->sendMessageToEntity("Space", "Player");
 		break;
 	}
 }
