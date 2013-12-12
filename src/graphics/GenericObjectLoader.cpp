@@ -523,6 +523,7 @@ void GenericObjectLoader::ReadMaterials(const aiScene* scene,
 					firstChar = texPathStr.front();
 				}
 
+#if 0
 				char curChar;
 				int lastSlashIndex = -1;
 				//int fileExtensionIndex = 0;
@@ -546,6 +547,7 @@ void GenericObjectLoader::ReadMaterials(const aiScene* scene,
 				// At least one slash found
 				if (lastSlashIndex != -1)
 					texPathStr.erase(0, lastSlashIndex+1);
+#endif
 
 				// Replace "/" with "\" (when models have folders in their texture name) 
 				for (UINT i = 0; i < texPathStr.size(); ++i)
