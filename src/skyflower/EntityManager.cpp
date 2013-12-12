@@ -1,5 +1,6 @@
 
 #include "Cistron.h"
+#include "EntityManager.h"
 
 using namespace Cistron;
 using namespace tinyxml2;

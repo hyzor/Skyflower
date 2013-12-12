@@ -13,7 +13,6 @@
 #include <string>
 #include <sstream>
 
-#include "Application.h"
 #include "graphics/GraphicsEngine.h"
 #include "physics/Collision.h"
 

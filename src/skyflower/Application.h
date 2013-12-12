@@ -8,14 +8,9 @@
 #include "PotentialField.h"
 #include "physics/Collision.h"
 #include "Sound/SoundEngine.h"
-#include "Cistron.h"
+#include "EntityManager.h"
 
-struct Modules
-{
-	InputHandler *input;
-	GraphicsEngine *graphics;
-	SoundEngine *sound;
-};
+using namespace Cistron;
 
 class Application : WindowListener, InputListener
 {

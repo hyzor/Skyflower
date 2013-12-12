@@ -9,6 +9,7 @@
 #include <functional>
 //#include <boost/any.hpp>
 #include <ostream>
+#include "Cistron.h"
 #include "physics/Collision.h"
 #include "shared/Vec3.h"
 
@@ -21,11 +22,6 @@ using std::string;
 using std::ostream;
 
 using namespace std::placeholders;
-
-
-// Entity & component id
-typedef int EntityId;
-typedef int ComponentId;
 
 
 // a request ID

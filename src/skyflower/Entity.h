@@ -2,6 +2,7 @@
 #ifndef INC_Entity
 #define INC_Entity
 
+#include "Cistron.h"
 #include "Component.h"
 
 
@@ -12,8 +13,6 @@
 
 #include "graphics/GraphicsEngine.h"
 
-struct Modules;
-
 namespace Cistron {
 
 using std::vector;
@@ -21,6 +20,7 @@ using std::list;
 using std::string;
 using std::tr1::unordered_map;
 
+struct Modules;
 
 // an Entity is a container of components
 class Entity {

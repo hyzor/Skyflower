@@ -1,6 +1,7 @@
-
+#include "Entity.h"
+#include "EntityManager.h"
 #include "Cistron.h"
-#include "Application.h"
+#include "Component.h"
 
 
 using namespace Cistron;
