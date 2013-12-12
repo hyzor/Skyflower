@@ -31,6 +31,7 @@ OpenALSourceProxy::OpenALSourceProxy(const SoundSourceImpl *owner)
 	m_time = 0.0f;
 	m_queuedBufferIndices[0] = -1;
 	m_queuedBufferIndices[1] = -1;
+	m_isLastBufferQueued = false;
 }
 
 OpenALSourceProxy::~OpenALSourceProxy()
@@ -104,6 +105,7 @@ void OpenALSourceProxy::ClearBuffers()
 
 	m_queuedBufferIndices[0] = -1;
 	m_queuedBufferIndices[1] = -1;
+	m_isLastBufferQueued = false;
 }
 
 void OpenALSourceProxy::Update(float deltaTime)
@@ -280,6 +282,12 @@ unsigned int OpenALSourceProxy::GetNumQueuedBuffers() const
 	return (unsigned int)count;
 }
 
+void OpenALSourceProxy::GetQueuedBufferIndices(int queuedBufferIndices_out[2]) const
+{
+	queuedBufferIndices_out[0] = m_queuedBufferIndices[0];
+	queuedBufferIndices_out[1] = m_queuedBufferIndices[1];
+}
+
 bool OpenALSourceProxy::IsPlaying() const
 {
 	return m_isPlaying;
@@ -326,6 +334,11 @@ float OpenALSourceProxy::GetPlaybackTime() const
 	return m_time;
 }
 
+bool OpenALSourceProxy::IsLastBufferQueued() const
+{
+	return m_isLastBufferQueued;
+}
+
 void OpenALSourceProxy::QueueBuffer(ALuint buffer, unsigned int bufferIndex)
 {
 	assert(HasSource());
@@ -345,6 +358,12 @@ void OpenALSourceProxy::QueueBuffer(ALuint buffer, unsigned int bufferIndex)
 		}
 	}
 
+	const struct AudioResourceInfo *info = m_owner->GetResourceInfo();
+
+	if (info && bufferIndex == info->bufferCount - 1) {
+		m_isLastBufferQueued = true;
+	}
+
 	assert(alGetError() == AL_NO_ERROR);
 }
 
@@ -360,6 +379,21 @@ unsigned int OpenALSourceProxy::UnqueueProcessedBuffers()
 		if (count > 0) {
 			ALuint buffers[2];
 			alSourceUnqueueBuffers(m_source, count, buffers);
+
+			const struct AudioResourceInfo *info = m_owner->GetResourceInfo();
+
+			if (info) {
+				for (int i = 0; i < count; i++) {
+					if (m_queuedBufferIndices[i] == info->bufferCount - 1) {
+						m_isLastBufferQueued = false;
+
+						if (!IsLooping() && IsPlaying()) {
+							// We reached the end of a non-looping source, stop playback.
+							Pause();
+						}
+					}
+				}
+			}
 
 			// Move the remaining queued buffers to the start of the array.
 			for (int i = count; i < 2; i++) {

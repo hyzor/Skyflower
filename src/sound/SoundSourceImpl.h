@@ -46,17 +46,11 @@ public:
 	virtual void GetPosition(float output[3]) const;
 
 private:
-	void ClearBuffers();
-
-private:
 	ResourceCache *m_resourceCache;
 	uint32_t m_resourceHash;
 	OpenALSourceProxy m_sourceProxy;
 
 	unsigned int m_nextBufferIndex;
-	// FIXME: Replace with m_sourceProxy->GetQueuedBufferIndices?
-	int m_queuedBufferIndices[2];
-	bool m_isLastBufferQueued;
 	int64_t m_pendingSeekSample;
 	float m_pendingSeekTime;
 };

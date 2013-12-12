@@ -35,6 +35,7 @@ public:
 
 	ALuint GetBuffer() const;
 	unsigned int GetNumQueuedBuffers() const;
+	void GetQueuedBufferIndices(int queuedBufferIndices_out[2]) const;
 	bool IsPlaying() const;
 	bool IsLooping() const;
 	bool IsRelativeToListener() const;
@@ -45,6 +46,7 @@ public:
 	// The playback time is only updated when we don't have a source, therefore it should not
 	// be called when we have a source.
 	float GetPlaybackTime() const;
+	bool IsLastBufferQueued() const;
 
 	void QueueBuffer(ALuint buffer, unsigned int bufferIndex);
 	unsigned int UnqueueProcessedBuffers();
@@ -64,6 +66,7 @@ private:
 
 	float m_time;
 	int m_queuedBufferIndices[2];
+	bool m_isLastBufferQueued;
 };
 
 #endif

@@ -12,24 +12,12 @@ SoundSourceImpl::SoundSourceImpl(ResourceCache *resourceCache) :
 	m_resourceHash = 0x0;
 
 	m_nextBufferIndex = 0;
-	m_queuedBufferIndices[0] = -1;
-	m_queuedBufferIndices[1] = -1;
-	m_isLastBufferQueued = false;
 	m_pendingSeekSample = -1;
 	m_pendingSeekTime = -1.0f;
 }
 
 SoundSourceImpl::~SoundSourceImpl()
 {
-}
-
-void SoundSourceImpl::ClearBuffers()
-{
-	m_sourceProxy.ClearBuffers();
-
-	m_queuedBufferIndices[0] = -1;
-	m_queuedBufferIndices[1] = -1;
-	m_isLastBufferQueued = false;
 }
 
 void SoundSourceImpl::LendSource(ALuint source)
@@ -44,7 +32,6 @@ void SoundSourceImpl::LendSource(ALuint source)
 ALuint SoundSourceImpl::RevokeSource()
 {
 	ALuint source = m_sourceProxy.RevokeSource();
-	ClearBuffers();
 
 	if (m_pendingSeekSample >= 0) {
 		//printf("SoundSourceImpl::RevokeSource, seeking to %f\n", m_pendingSeekTime);
@@ -66,7 +53,7 @@ bool SoundSourceImpl::HasSource() const
 
 void SoundSourceImpl::SetResource(const std::string &name)
 {
-	ClearBuffers();
+	m_sourceProxy.ClearBuffers();
 
 	m_resourceHash = m_resourceCache->PrefetchResource(name);
 	m_nextBufferIndex = 0;
@@ -137,43 +124,20 @@ void SoundSourceImpl::Update(float deltaTime)
 		m_resourceCache->RequestBuffer(m_resourceHash, 0, NULL);
 	}
 	else {
-		unsigned int numProcessedBuffers = m_sourceProxy.UnqueueProcessedBuffers();
-		unsigned int lastBufferIndex = resourceInfo->bufferCount - 1;
-
-		if (numProcessedBuffers > 0) {
-			// FIXME: Move this to OpenALSourceProxy?
-			for (unsigned int i = 0; i < numProcessedBuffers; i++) {
-				if (m_queuedBufferIndices[i] == lastBufferIndex) {
-					m_isLastBufferQueued = false;
-
-					if (!IsLooping() && IsPlaying()) {
-						// We reached the end of a non-looping source, stop playback.
-						Pause();
-
-						//printf("We just unqueued the last buffer of a non-looping source, stopping\n");
-					}
-				}
-			}
-			
-			// Move the remaining queued buffers to the start of the array.
-			for (int i = numProcessedBuffers; i < 2; i++) {
-				m_queuedBufferIndices[i - numProcessedBuffers] = m_queuedBufferIndices[i];
-			}
-			// Clear the end of the array.
-			for (int i = 2 - numProcessedBuffers; i < 2; i++) {
-				m_queuedBufferIndices[i] = -1;
-			}
-		}
-
+		m_sourceProxy.UnqueueProcessedBuffers();
+		
 		if (m_sourceProxy.GetNumQueuedBuffers() < 2) {
 			// FIXME: Also start loading the second buffer if numQueuedBuffers is zero.
 			needBuffer = true;
 		}
 
+		int queuedBufferIndices[2];
+		m_sourceProxy.GetQueuedBufferIndices(queuedBufferIndices);
+
 		// Touch the buffers so they won't get thrown out of the cache.
 		for (int i = 0; i < 2; i++) {
-			if (m_queuedBufferIndices[i] != -1) {
-				m_resourceCache->RequestBuffer(m_resourceHash, m_queuedBufferIndices[i], NULL);
+			if (queuedBufferIndices[i] != -1) {
+				m_resourceCache->RequestBuffer(m_resourceHash, queuedBufferIndices[i], NULL);
 			}
 		}
 	}
@@ -187,25 +151,12 @@ void SoundSourceImpl::Update(float deltaTime)
 				m_sourceProxy.SetBuffer(buffer);
 			}
 			else {
-				if (!IsLooping() && m_isLastBufferQueued) {
+				if (!IsLooping() && m_sourceProxy.IsLastBufferQueued()) {
 					break;
 				}
 
 				m_sourceProxy.QueueBuffer(buffer, m_nextBufferIndex);
-
-				for (int i = 0; i < 2; i++) {
-					if (m_queuedBufferIndices[i] == -1) {
-						m_queuedBufferIndices[i] = m_nextBufferIndex;
-						break;
-					}
-				}
-
-				m_nextBufferIndex++;
-
-				if (m_nextBufferIndex == resourceInfo->bufferCount) {
-					m_isLastBufferQueued = true;
-					m_nextBufferIndex = 0;
-				}
+				m_nextBufferIndex = (m_nextBufferIndex + 1) % resourceInfo->bufferCount;
 			}
 
 			break;
@@ -255,8 +206,11 @@ void SoundSourceImpl::Seek(float time)
 
 	//printf("Queueing seek: time=%f, bufferIndex=%i, sampleOffset=%i\n", time, bufferIndex, sampleOffset);
 
-	if (m_resourceCache->IsResourceStreaming(m_resourceHash) && bufferIndex != m_queuedBufferIndices[0]) {
-		ClearBuffers();
+	int queuedBufferIndices[2];
+	m_sourceProxy.GetQueuedBufferIndices(queuedBufferIndices);
+
+	if (m_resourceCache->IsResourceStreaming(m_resourceHash) && bufferIndex != queuedBufferIndices[0]) {
+		m_sourceProxy.ClearBuffers();
 		m_nextBufferIndex = bufferIndex;
 	}
 }
