@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include <AL/al.h>
 
 #include "ListenerImpl.h"
@@ -56,4 +58,6 @@ void ListenerImpl::ApplyState()
 	alListenerfv(AL_POSITION, m_position);
 	alListenerfv(AL_ORIENTATION, m_orientation);
 	alListenerfv(AL_VELOCITY, m_velocity);
+
+	assert(alGetError() == AL_NO_ERROR);
 }

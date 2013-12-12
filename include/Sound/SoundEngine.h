@@ -19,7 +19,7 @@ public:
 	virtual void DestroySource(SoundSource *source) = 0;
 	virtual void DestroyListener(Listener *listener) = 0;
 
-	virtual void PlaySound(const char *file, const float position[3], float volume, bool relativeToListener = false) = 0;
+	virtual void PlaySound(const std::string &file, const float position[3], float volume, bool relativeToListener = false) = 0;
 
 	virtual void SetActiveListener(Listener *listener) = 0;
 	virtual void SetDopplerFactor(float dopplerFactor) = 0;

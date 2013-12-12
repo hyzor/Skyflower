@@ -11,6 +11,7 @@
 #include "Sound/SoundSource.h"
 #include "Config.h"
 #include "ListenerImpl.h"
+#include "SoundSourceImpl.h"
 #include "ResourceCache.h"
 
 class SoundEngineImpl
@@ -28,7 +29,7 @@ public:
 	virtual void DestroySource(SoundSource *source);
 	virtual void DestroyListener(Listener *listener);
 
-	virtual void PlaySound(const char *file, const float position[3], float volume, bool relativeToListener);
+	virtual void PlaySound(const std::string &file, const float position[3], float volume, bool relativeToListener);
 
 	virtual void SetActiveListener(Listener *listener);
 	virtual void SetDopplerFactor(float dopplerFactor);
@@ -48,9 +49,10 @@ private:
 
 	float m_timeAccumulationCulling;
 
-	// FIXME: Directly store SoundSourceImpl.
-	std::vector<SoundSource *> m_sources;
-	std::vector<SoundSource *> m_activeSources;
+	std::vector<SoundSourceImpl *> m_sources;
+	// Sources created with PlaySound (They are immediately removed when they have finished playing)
+	std::vector<SoundSourceImpl *> m_temporarySources;
+	std::vector<SoundSourceImpl *> m_activeSources;
 };
 
 #endif

@@ -22,6 +22,15 @@ SoundSourceImpl::~SoundSourceImpl()
 {
 }
 
+void SoundSourceImpl::ClearBuffers()
+{
+	m_sourceProxy.ClearBuffers();
+
+	m_queuedBufferIndices[0] = -1;
+	m_queuedBufferIndices[1] = -1;
+	m_isLastBufferQueued = false;
+}
+
 void SoundSourceImpl::LendSource(ALuint source)
 {
 	//printf("Lended source %i\n", source);
@@ -33,10 +42,9 @@ void SoundSourceImpl::LendSource(ALuint source)
 
 ALuint SoundSourceImpl::RevokeSource()
 {
+	ALuint source = m_sourceProxy.RevokeSource();
 	ClearBuffers();
 
-	ALuint source = m_sourceProxy.RevokeSource();
-	
 	if (m_pendingSeekSample >= 0) {
 		//printf("SoundSourceImpl::RevokeSource, seeking to %f\n", m_pendingSeekTime);
 
@@ -53,15 +61,6 @@ ALuint SoundSourceImpl::RevokeSource()
 bool SoundSourceImpl::HasSource() const
 {
 	return m_sourceProxy.HasSource();
-}
-
-void SoundSourceImpl::ClearBuffers()
-{
-	m_sourceProxy.ClearBuffers();
-
-	m_queuedBufferIndices[0] = -1;
-	m_queuedBufferIndices[1] = -1;
-	m_isLastBufferQueued = false;
 }
 
 void SoundSourceImpl::SetResource(const std::string &name)
@@ -261,6 +260,11 @@ bool SoundSourceImpl::IsLooping() const
 	return m_sourceProxy.IsLooping();
 }
 
+bool SoundSourceImpl::IsRelativeToListener() const
+{
+	return m_sourceProxy.IsRelativeToListener();
+}
+
 void SoundSourceImpl::SetVolume(float volume)
 {
 	assert(volume >= 0.0f);
@@ -290,7 +294,7 @@ void SoundSourceImpl::SetVelocity(const float velocity[3])
 	m_sourceProxy.SetVelocity(velocity);
 }
 
-void SoundSourceImpl::SetIsRelativeToListener(bool relative)
+void SoundSourceImpl::SetRelativeToListener(bool relative)
 {
 	m_sourceProxy.SetRelativeToListener(relative);
 }

@@ -12,29 +12,44 @@
 #include "SoundSourceImpl.h"
 #include "TaskQueueWin32.h"
 
-static float vec3_distance_squared(const float vec1[3], const float vec2[3])
+static float vec3_length_squared(const float vec[3])
 {
-	float x = vec2[0] - vec1[0];
-	float y = vec2[1] - vec1[1];
-	float z = vec2[2] - vec1[2];
-
-	return x * x + y * y + z * z;
+	return vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2];
 }
 
-static std::vector<SoundSource *> ApplyCullingDistance(const Listener *listener, const std::vector<SoundSource *> &sources)
+static float vec3_distance_squared(const float vec1[3], const float vec2[3])
 {
-	std::vector<SoundSource *> result;
+	float difference[3] = {
+		vec2[0] - vec1[0],
+		vec2[1] - vec1[1],
+		vec2[2] - vec1[2]
+	};
+
+	return vec3_length_squared(difference);
+}
+
+static std::vector<SoundSourceImpl *> ApplyCullingDistance(const Listener *listener, const std::vector<SoundSourceImpl *> &sources)
+{
+	std::vector<SoundSourceImpl *> result;
 	float listenerPosition[3], sourcePosition[3];
+	float distanceSquared;
 	SoundSourceImpl *source;
 
 	result.reserve(sources.size());
 	listener->GetPosition(listenerPosition);
 
 	for (auto iter = sources.begin(); iter != sources.end(); iter++) {
-		source = (SoundSourceImpl *)(*iter);
+		source = (*iter);
 		source->GetPosition(sourcePosition);
 
-		if (vec3_distance_squared(listenerPosition, sourcePosition) <= (SOUNDENGINE_CULLING_DISTANCE * SOUNDENGINE_CULLING_DISTANCE)) {
+		if (source->IsRelativeToListener()) {
+			distanceSquared = vec3_length_squared(sourcePosition);
+		}
+		else {
+			distanceSquared = vec3_distance_squared(listenerPosition, sourcePosition);
+		}
+
+		if (distanceSquared <= (SOUNDENGINE_CULLING_DISTANCE * SOUNDENGINE_CULLING_DISTANCE)) {
 			result.push_back(source);
 		}
 	}
@@ -97,27 +112,29 @@ bool SoundEngineImpl::Init(const std::string &resourceDir)
 	m_resourceCache = new ResourceCache(resourceDir);
 	m_activeListener = NULL;
 
-	// Make sure we cull directly on the first update. (Don't really need it here, instead set it when creating a source)
-	m_timeAccumulationCulling = FLT_MAX;
+	m_timeAccumulationCulling = 0.0f;
 
 	return true;
 }
 
 void SoundEngineImpl::Release()
 {
-#if 1
-	ALCenum error = alcGetError(m_device);
-
-	if (error != ALC_NO_ERROR) {
-		printf("alcGetError=%s\n", alcGetString(m_device, error));
-	}
-#endif
-
 	SoundSourceImpl *source;
 
 	while (!m_sources.empty()) {
-		source = (SoundSourceImpl *)m_sources.back();
+		source = m_sources.back();
 		m_sources.pop_back();
+
+		if (source->HasSource()) {
+			m_availableSources.push(source->RevokeSource());
+		}
+
+		delete source;
+	}
+
+	while (!m_temporarySources.empty()) {
+		source = m_temporarySources.back();
+		m_temporarySources.pop_back();
 
 		if (source->HasSource()) {
 			m_availableSources.push(source->RevokeSource());
@@ -137,8 +154,11 @@ void SoundEngineImpl::Release()
 
 SoundSource *SoundEngineImpl::CreateSource()
 {
-	SoundSource *source = (SoundSource *)new SoundSourceImpl(m_resourceCache);
+	SoundSourceImpl *source = new SoundSourceImpl(m_resourceCache);
 	m_sources.push_back(source);
+
+	// Perform a cull on the next update.
+	m_timeAccumulationCulling = FLT_MAX;
 
 	return source;
 }
@@ -157,6 +177,13 @@ void SoundEngineImpl::DestroySource(SoundSource *source)
 	}
 
 	SoundSourceImpl *sourceImpl = (SoundSourceImpl *)source;
+
+	for (auto iter = m_activeSources.begin(); iter != m_activeSources.end(); iter++) {
+		if ((*iter) == sourceImpl) {
+			m_activeSources.erase(iter);
+			break;
+		}
+	}
 
 	for (size_t i = 0; i < m_sources.size(); i++) {
 		if (m_sources[i] == sourceImpl) {
@@ -204,10 +231,20 @@ void SoundEngineImpl::SetSpeedOfSound(float speed)
 	alSpeedOfSound(speed);
 }
 
-void SoundEngineImpl::PlaySound(const char *file, const float position[3], float volume, bool relativeToListener)
+void SoundEngineImpl::PlaySound(const std::string &file, const float position[3], float volume, bool relativeToListener)
 {
-	// FIXME: Implement!
-	assert(0);
+	SoundSourceImpl *source = new SoundSourceImpl(m_resourceCache);
+	source->SetResource(file);
+	source->SetPosition(position);
+	source->SetVolume(volume);
+	source->SetRelativeToListener(relativeToListener);
+	source->SetLooping(false);
+	source->Play();
+
+	m_temporarySources.push_back(source);
+
+	// Perform a cull on the next update.
+	m_timeAccumulationCulling = FLT_MAX;
 }
 
 void SoundEngineImpl::Update(float deltaTime)
@@ -224,21 +261,25 @@ void SoundEngineImpl::Update(float deltaTime)
 
 	m_timeAccumulationCulling += deltaTime;
 
-	// FIXME: Directly add newly created sources to m_activeSources if they are within the culling distance.
-	// Or set m_timeAccumulationCulling to FLT_MAX when adding new sources?
-
 	if (m_timeAccumulationCulling >= (1.0f / SOUNDENGINE_CULLING_FREQUENCY)) {
 		m_timeAccumulationCulling = 0.0f;
 
-		std::vector<SoundSource *> previousActiveSources = m_activeSources;
-		m_activeSources = ApplyCullingDistance(m_activeListener, m_sources);
+		// Concatenate m_sources and m_temporarySources to get a list of all sources.
+		std::vector<SoundSourceImpl *> sources = m_sources;
+		sources.reserve(m_sources.size() + m_temporarySources.size());
+		sources.insert(sources.end(), m_temporarySources.begin(), m_temporarySources.end());
 
-		std::vector<SoundSource *> difference;
+		std::vector<SoundSourceImpl *> previousActiveSources = m_activeSources;
+		m_activeSources = ApplyCullingDistance(m_activeListener, sources);
+		// Both containers must be sorted for std::set_difference to work.
+		std::sort(m_activeSources.begin(), m_activeSources.end());
+
+		std::vector<SoundSourceImpl *> difference;
 		std::set_difference(previousActiveSources.begin(), previousActiveSources.end(), m_activeSources.begin(), m_activeSources.end(), std::inserter(difference, difference.begin()));
 
 		// difference contains newly deactivated sources.
 		for (auto iter = difference.begin(); iter != difference.end(); iter++) {
-			source = (SoundSourceImpl *)(*iter);
+			source = (*iter);
 			m_availableSources.push(source->RevokeSource());
 		}
 
@@ -252,22 +293,42 @@ void SoundEngineImpl::Update(float deltaTime)
 				break;
 			}
 
-			source = (SoundSourceImpl *)(*iter);
+			source = (*iter);
 			source->LendSource(m_availableSources.top());
 			m_availableSources.pop();
 		}
+
+		//printf("%i out of %i sources active\n", m_activeSources.size(), sources.size());
 	}
 
 	for (auto iter = m_sources.begin(); iter != m_sources.end(); iter++) {
-		source = (SoundSourceImpl *)(*iter);
+		source = (*iter);
 		source->Update(deltaTime);
 	}
 
-#if 1
-	ALenum error = alGetError();
+	for (size_t i = 0; i < m_temporarySources.size(); i++) {
+		source = m_temporarySources[i];
+		source->Update(deltaTime);
 
-	if (error != AL_NO_ERROR) {
-		printf("alGetError=%s (0x%x)\n", alGetString(error), error);
+		if (!source->IsPlaying()) {
+			m_temporarySources[i] = m_temporarySources.back();
+			m_temporarySources.pop_back();
+
+			if (source->HasSource()) {
+				m_availableSources.push(source->RevokeSource());
+			}
+
+			for (auto iter = m_activeSources.begin(); iter != m_activeSources.end(); iter++) {
+				if ((*iter) == source) {
+					m_activeSources.erase(iter);
+					break;
+				}
+			}
+
+			delete source;
+			i--;
+		}
 	}
-#endif
+
+	assert(alGetError() == AL_NO_ERROR);
 }

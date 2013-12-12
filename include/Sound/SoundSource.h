@@ -18,6 +18,7 @@ public:
 
 	virtual bool IsPlaying() const = 0;
 	virtual bool IsLooping() const = 0;
+	virtual bool IsRelativeToListener() const = 0;
 
 	// FIXME: SetReachedEndHandler/SetPlaybackFinishedHandler?
 
@@ -29,7 +30,7 @@ public:
 	// Used for the doppler effect, should be in the same unit as the speed of sound set in SoundEngine.
 	virtual void SetVelocity(const float velocity[3]) = 0;
 	// Sets whether position and velocity should be relative to the listener or not.
-	virtual void SetIsRelativeToListener(bool relative) = 0;
+	virtual void SetRelativeToListener(bool relative) = 0;
 
 	virtual void GetPosition(float output[3]) const = 0;
 };

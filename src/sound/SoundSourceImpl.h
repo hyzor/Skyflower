@@ -20,8 +20,6 @@ public:
 	ALuint RevokeSource();
 	bool HasSource() const;
 
-	void ClearBuffers();
-
 	virtual void SetResource(const std::string &name);
 
 	void Update(float deltaTime);
@@ -33,6 +31,7 @@ public:
 
 	virtual bool IsPlaying() const;
 	virtual bool IsLooping() const;
+	virtual bool IsRelativeToListener() const;
 
 	virtual void SetVolume(float volume);
 	virtual void SetLooping(bool looping);
@@ -40,9 +39,12 @@ public:
 
 	virtual void SetPosition(const float position[3]);
 	virtual void SetVelocity(const float velocity[3]);
-	virtual void SetIsRelativeToListener(bool relative);
+	virtual void SetRelativeToListener(bool relative);
 
 	virtual void GetPosition(float output[3]) const;
+
+private:
+	void ClearBuffers();
 
 private:
 	ResourceCache *m_resourceCache;

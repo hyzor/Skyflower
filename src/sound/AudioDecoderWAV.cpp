@@ -135,4 +135,6 @@ void AudioDecoderWAVFillBuffer(const struct AudioResource *resource, uint64_t sa
 	uint64_t size = sampleCount * (resource->bitDepth / 8);
 
 	alBufferData(buffer, resource->format, (const void *)(resource->file->data + byteOffset), (ALsizei)size, resource->sampleRate);
+
+	assert(alGetError() == AL_NO_ERROR);
 }

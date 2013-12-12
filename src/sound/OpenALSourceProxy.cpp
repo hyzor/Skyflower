@@ -37,6 +37,7 @@ void OpenALSourceProxy::LendSource(ALuint source)
 {
 	assert(!HasSource());
 	assert(source != 0);
+	assert(alIsSource(source));
 
 	m_source = source;
 	ClearBuffers();
@@ -47,11 +48,14 @@ void OpenALSourceProxy::LendSource(ALuint source)
 	alSourcef(m_source, AL_PITCH, m_pitch);
 	alSourcefv(m_source, AL_POSITION, m_position);
 	alSourcefv(m_source, AL_VELOCITY, m_velocity);
+
+	assert(alGetError() == AL_NO_ERROR);
 }
 
 ALuint OpenALSourceProxy::RevokeSource()
 {
 	assert(HasSource());
+	assert(alIsSource(m_source));
 
 	alGetSourcef(m_source, AL_SEC_OFFSET, &m_time);
 
@@ -60,8 +64,9 @@ ALuint OpenALSourceProxy::RevokeSource()
 		assert(0);
 	}
 
-	ClearBuffers();
+	assert(alGetError() == AL_NO_ERROR);
 
+	ClearBuffers();
 	ALuint source = m_source;
 	m_source = 0;
 
@@ -81,6 +86,8 @@ void OpenALSourceProxy::ClearBuffers()
 
 		// Setting AL_BUFFER also removes any queued buffers.
 		alSourcei(m_source, AL_BUFFER, AL_NONE);
+
+		assert(alGetError() == AL_NO_ERROR);
 	}
 
 	m_buffer = AL_NONE;
@@ -97,6 +104,8 @@ void OpenALSourceProxy::Update(float deltaTime)
 
 			//printf("Reached end of non-streaming non-looping source, stopping\n");
 		}
+
+		assert(alGetError() == AL_NO_ERROR);
 	}
 	else if (!HasSource() && m_isPlaying) {
 		m_time += deltaTime;
@@ -109,6 +118,8 @@ void OpenALSourceProxy::Play()
 {
 	if (HasSource()) {
 		alSourcePlay(m_source);
+
+		assert(alGetError() == AL_NO_ERROR);
 	}
 
 	m_isPlaying = true;
@@ -118,6 +129,8 @@ void OpenALSourceProxy::Pause()
 {
 	if (HasSource()) {
 		alSourcePause(m_source);
+
+		assert(alGetError() == AL_NO_ERROR);
 	}
 
 	m_isPlaying = false;
@@ -127,6 +140,8 @@ void OpenALSourceProxy::Seek(float time, uint64_t sample)
 {
 	if (HasSource()) {
 		alSourcei(m_source, AL_SAMPLE_OFFSET, (ALint)sample);
+
+		assert(alGetError() == AL_NO_ERROR);
 	}
 	else {
 		m_time = time;
@@ -148,12 +163,16 @@ void OpenALSourceProxy::SetBuffer(ALuint buffer)
 	}
 
 	m_buffer = buffer;
+
+	assert(alGetError() == AL_NO_ERROR);
 }
 
 void OpenALSourceProxy::SetLooping(bool looping)
 {
 	if (HasSource()) {
 		alSourcei(m_source, AL_LOOPING, ((m_buffer != AL_NONE && looping)? AL_TRUE : AL_FALSE));
+
+		assert(alGetError() == AL_NO_ERROR);
 	}
 
 	m_isLooping = looping;
@@ -163,6 +182,8 @@ void OpenALSourceProxy::SetRelativeToListener(bool relative)
 {
 	if (HasSource()) {
 		alSourcei(m_source, AL_SOURCE_RELATIVE, (relative ? AL_TRUE : AL_FALSE));
+
+		assert(alGetError() == AL_NO_ERROR);
 	}
 
 	m_isRelativeToListener = relative;
@@ -172,6 +193,8 @@ void OpenALSourceProxy::SetVolume(float volume)
 {
 	if (HasSource()) {
 		alSourcef(m_source, AL_GAIN, volume);
+
+		assert(alGetError() == AL_NO_ERROR);
 	}
 
 	m_volume = volume;
@@ -181,6 +204,8 @@ void OpenALSourceProxy::SetPitch(float pitch)
 {
 	if (HasSource()) {
 		alSourcef(m_source, AL_PITCH, pitch);
+
+		assert(alGetError() == AL_NO_ERROR);
 	}
 
 	m_pitch = pitch;
@@ -190,6 +215,8 @@ void OpenALSourceProxy::SetPosition(const float position[3])
 {
 	if (HasSource()) {
 		alSourcefv(m_source, AL_POSITION, position);
+
+		assert(alGetError() == AL_NO_ERROR);
 	}
 
 	m_position[0] = position[0];
@@ -201,6 +228,8 @@ void OpenALSourceProxy::SetVelocity(const float velocity[3])
 {
 	if (HasSource()) {
 		alSourcefv(m_source, AL_VELOCITY, velocity);
+
+		assert(alGetError() == AL_NO_ERROR);
 	}
 
 	m_velocity[0] = velocity[0];
@@ -219,6 +248,8 @@ unsigned int OpenALSourceProxy::GetNumQueuedBuffers() const
 
 	if (HasSource()) {
 		alGetSourcei(m_source, AL_BUFFERS_QUEUED, &count);
+
+		assert(alGetError() == AL_NO_ERROR);
 	}
 
 	return (unsigned int)count;
@@ -281,6 +312,8 @@ void OpenALSourceProxy::QueueBuffer(ALuint buffer)
 	if (m_isPlaying) {
 		alSourcePlay(m_source);
 	}
+
+	assert(alGetError() == AL_NO_ERROR);
 }
 
 unsigned int OpenALSourceProxy::UnqueueProcessedBuffers()
@@ -294,6 +327,8 @@ unsigned int OpenALSourceProxy::UnqueueProcessedBuffers()
 
 		ALuint buffers[2];
 		alSourceUnqueueBuffers(m_source, count, buffers);
+
+		assert(alGetError() == AL_NO_ERROR);
 	}
 
 	return (unsigned int)count;

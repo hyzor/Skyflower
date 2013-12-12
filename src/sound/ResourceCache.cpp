@@ -105,6 +105,8 @@ ResourceCache::ResourceCache(const std::string &resourceDir)
 
 	alGenBuffers(SOUNDENGINE_BUFFER_POOL_SIZE, m_buffers);
 
+	assert(alGetError() == AL_NO_ERROR);
+
 	for (int i = 0; i < SOUNDENGINE_BUFFER_POOL_SIZE; i++) {
 		m_cacheEntries[i].resourceHash = 0x0;
 		m_cacheEntries[i].bufferIndex = 0;
