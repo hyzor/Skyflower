@@ -37,13 +37,13 @@ void Application::Start()
 	m_graphicsEngine = CreateGraphicsEngine();
 	m_graphicsEngine->Init(m_window->GetHandle(), m_window->GetWidth(), m_window->GetHeight(), "../../content/");
 
-	//m_soundEngine = CreateSoundEngine("../../content/sounds/");
-	//assert(m_soundEngine);
+	m_soundEngine = CreateSoundEngine("../../content/sounds/");
+	assert(m_soundEngine);
 
 	Modules modules;
 	modules.input = m_inputHandler;
 	modules.graphics = m_graphicsEngine;
-	//modules.sound = m_soundEngine;
+	modules.sound = m_soundEngine;
 
 	entityManager = new EntityManager("../../content/XML/", &modules);
 
@@ -64,6 +64,9 @@ void Application::Start()
 
 	//ModelInstance* d = m_graphicsEngine->CreateInstance("Data\\Models\\duck.obj", Vec3(-100, 50, 0));
 	//d->SetRotation(Vec3(-3.14f/2, 3.14f/4));
+
+	Listener *listener = m_soundEngine->CreateListener();
+	m_soundEngine->SetActiveListener(listener);
 
 	LineChart frameTimeChart(1024 * 1024);
 	frameTimeChart.SetSize(512, 256);
@@ -105,7 +108,7 @@ void Application::Start()
 		m_graphicsEngine->DrawScene();
 		m_graphicsEngine->UpdateScene((float)deltaTime);
 
-		//m_soundEngine->Update(deltaTime);
+		m_soundEngine->Update((float)deltaTime);
 
 		m_window->PumpMessages();
 	}
@@ -114,8 +117,9 @@ void Application::Start()
 
 
 
+	m_soundEngine->DestroyListener(listener);
 	delete entityManager;
-	//DestroySoundEngine(m_soundEngine);
+	DestroySoundEngine(m_soundEngine);
 	DestroyGraphicsEngine(m_graphicsEngine);
 	delete m_window;
 }

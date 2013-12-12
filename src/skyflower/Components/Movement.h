@@ -157,8 +157,10 @@ private:
 
 		if (p->jump(pos))
 		{
-			//float soundPosition[3] = {0.0f, 0.0f, 0.0f};
-			//getOwner()->getModules()->sound->PlaySound("jump.wav", soundPosition, 1.0f, true); 
+			if (getOwner()) {
+				float soundPosition[3] = {0.0f, 0.0f, 0.0f};
+				getOwner()->getModules()->sound->PlaySound("player/jump1.wav", soundPosition, 1.0f, true); 
+			}
 		}
 
 		updateEntityPos(pos);
