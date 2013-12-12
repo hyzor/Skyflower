@@ -1003,6 +1003,8 @@ Vec3 EntityManager::getEntityRot(EntityId ownerId)
 			return this->fEntitys[i]->returnRot();
 		}
 	}
+
+	return Vec3(0.0f, 0.0f, 0.0f);
 }
 Vec3 EntityManager::getEntityScale(EntityId ownerId)
 {
@@ -1013,6 +1015,8 @@ Vec3 EntityManager::getEntityScale(EntityId ownerId)
 			return this->fEntitys[i]->returnScale();
 		}
 	}
+
+	return Vec3(1.0f, 1.0f, 1.0f);
 }
 bool EntityManager::getEntityVisibility(EntityId ownerId)
 {
@@ -1023,6 +1027,8 @@ bool EntityManager::getEntityVisibility(EntityId ownerId)
 			return this->fEntitys[i]->returnVisible();
 		}
 	}
+
+	return false;
 }
 
 CollisionInstance* EntityManager::getEntityCollision(EntityId ownerId)
@@ -1034,6 +1040,8 @@ CollisionInstance* EntityManager::getEntityCollision(EntityId ownerId)
 			return this->fEntitys[i]->returnCollision();
 		}
 	}
+
+	return NULL;
 }
 
 void EntityManager::updateEntityPos(Vec3 pos, EntityId ownerId)
@@ -1080,7 +1088,7 @@ void EntityManager::updateEntityVisibility(bool isVisible, EntityId ownerId)
 
 Component* EntityManager::getComponent(string EntityName, string Component)
 {
-	for (int i = 0; i < fEntitys.size(); i++)
+	for (size_t i = 0; i < fEntitys.size(); i++)
 	{
 		if (fEntitys.at(i)->getType() == EntityName)
 		{

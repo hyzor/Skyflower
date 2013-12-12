@@ -68,7 +68,7 @@ private:
 		std::vector<CollisionInstance*> instances = Collision::GetInstance()->GetCollisionInstances();
 		Ray r = Ray(pos, Vec3(0, -65, 0));
 		float col = 0;
-		for (int i = 0; i < instances.size(); i++)
+		for (size_t i = 0; i < instances.size(); i++)
 		{
 			if (instances[i] != getEntityCollision())
 			{

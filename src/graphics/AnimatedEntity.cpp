@@ -65,7 +65,7 @@ void AnimatedEntity::Draw( ID3D11DeviceContext* dc, ID3DX11EffectTechnique* acti
 	//Effects::NormalMapFX->SetShadowMap(shadowMap->getDepthMapSRV());
 	Effects::NormalMapFX->SetTexTransform(XMMatrixScaling(1.0f, 1.0f, 1.0f));
 	//Effects::NormalMapFX->SetBoneTransforms(mInstance.model->skinnedData.Transforms, )
-	Effects::NormalMapFX->SetBoneTransforms(&mInstance.FinalTransforms[0], mInstance.FinalTransforms.size());
+	Effects::NormalMapFX->SetBoneTransforms(&mInstance.FinalTransforms[0], (int)mInstance.FinalTransforms.size());
 
 	for (UINT p = 0; p < techDesc.Passes; ++p)
 	{

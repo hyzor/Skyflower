@@ -9,14 +9,14 @@ GenericSkinnedModel::GenericSkinnedModel(ID3D11Device* device, TextureManager* t
 	GenericObjectLoader objectLoader;
 	objectLoader.loadSkinnedObject(fileName, mats, meshes, skinnedData);
 
-	numMeshes = meshes.size();
-	numMaterials = mats.size();
+	numMeshes = (UINT)meshes.size();
+	numMaterials = (UINT)mats.size();
 
 	// Set vertices and indices for each mesh
 	for (UINT i = 0; i < numMeshes; ++i)
 	{
-		meshes[i].setIndices(device, &meshes[i].mIndices[0], meshes[i].mIndices.size());
-		meshes[i].setVertices(device, &meshes[i].mVertices[0], meshes[i].mVertices.size());
+		meshes[i].setIndices(device, &meshes[i].mIndices[0], (UINT)meshes[i].mIndices.size());
+		meshes[i].setVertices(device, &meshes[i].mVertices[0], (UINT)meshes[i].mVertices.size());
 	}
 
 	for (UINT i = 0; i < numMaterials; ++i)

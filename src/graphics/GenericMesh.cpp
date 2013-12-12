@@ -46,7 +46,7 @@ void Mesh::Draw(ID3D11DeviceContext* deviceContext)
 	deviceContext->IASetIndexBuffer(mIndexBuffer, mIndexBufferFormat, 0);
 
 	deviceContext->DrawIndexed(
-		indices.size(), 
+		(UINT)indices.size(), 
 		0, 
 		0);
 }

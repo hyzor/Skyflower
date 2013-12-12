@@ -28,7 +28,7 @@ Sky::Sky(ID3D11Device* device, TextureManager *textureManager, const std::string
 
 	D3D11_BUFFER_DESC vbd;
 	vbd.Usage = D3D11_USAGE_IMMUTABLE;
-	vbd.ByteWidth = sizeof(XMFLOAT3) * vertices.size();
+	vbd.ByteWidth = (UINT)(sizeof(XMFLOAT3) * vertices.size());
 	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vbd.CPUAccessFlags = 0;
 	vbd.MiscFlags = 0;
@@ -40,7 +40,7 @@ Sky::Sky(ID3D11Device* device, TextureManager *textureManager, const std::string
 	HR(device->CreateBuffer(&vbd, &vinitData, &mVertexBuffer));
 
 
-	mIndexCount = sphere.indices.size();
+	mIndexCount = (UINT)sphere.indices.size();
 
 	D3D11_BUFFER_DESC ibd;
 	ibd.Usage = D3D11_USAGE_IMMUTABLE;

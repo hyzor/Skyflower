@@ -210,7 +210,7 @@ void Camera::Yaw(float degrees)
 	D3DXVECTOR3 right(mRight.x, mRight.y, mRight.z);
 
 	D3DXMATRIX yaw; // create a matrix to hold the rotation
-	D3DXMatrixRotationAxis(&yaw, &up, D3DXToRadian(degrees));
+	D3DXMatrixRotationAxis(&yaw, &up, (float)D3DXToRadian(degrees));
 
 	// Update the view vectors of both the target and camera based on the rotation represented in our yaw matrix
 	D3DXVec3TransformCoord(&dir, &dir, &yaw);

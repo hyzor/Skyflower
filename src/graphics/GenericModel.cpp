@@ -10,14 +10,14 @@ GenericModel::GenericModel(ID3D11Device* device, TextureManager* textureMgr, con
 	//objectLoader.loadObject(fileName, mats, meshes, device);
 	objectLoader.loadObject(fileName, mats, meshes);
 
-	meshCount = meshes.size();
-	materialCount = mats.size();
+	meshCount = (UINT)meshes.size();
+	materialCount = (UINT)mats.size();
 
 	// Set vertices and indices for each mesh
 	for (UINT i = 0; i < meshCount; ++i)
 	{
-		meshes[i].SetIndices(device, &meshes[i].indices[0], meshes[i].indices.size());
-		meshes[i].SetVertices(device, &meshes[i].vertices[0], meshes[i].vertices.size());
+		meshes[i].SetIndices(device, &meshes[i].indices[0], (UINT)meshes[i].indices.size());
+		meshes[i].SetVertices(device, &meshes[i].vertices[0], (UINT)meshes[i].vertices.size());
 
 		//// Push back addresses to all the vertices to the models vector of pointers
 		//for (UINT j = 0; j < meshes[i].vertices.size(); ++j)
@@ -100,7 +100,7 @@ Vertex::Basic32* GenericModel::GetVertex(int index)
 			return &meshes[i].vertices[meshes[i].indices[index]-1];
 		index = i2;*/
 
-		int i2 = index - meshes[i].vertices.size();
+		int i2 = index - (int)meshes[i].vertices.size();
 		if(i2 < 0)
 			return &meshes[i].vertices[index];
 		index = i2;
@@ -115,7 +115,7 @@ int GenericModel::GetVertexCount()
 	/*for (UINT i = 0; i < meshCount; ++i)
 		size += meshes[i].indices.size();*/
 	for (UINT i = 0; i < meshCount; ++i)
-		size += meshes[i].vertices.size();
+		size += (int)meshes[i].vertices.size();
 
 
 	return size-10000;

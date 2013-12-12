@@ -143,7 +143,7 @@ void Application::OnWindowDeactivate()
 
 void Application::OnMouseMove(int deltaX, int deltaY)
 {
-	camera->RotateCamera(deltaX, deltaY);
+	camera->RotateCamera((float)deltaX, (float)deltaY);
 }
 
 void Application::OnMouseButtonDown(enum MouseButton button)
@@ -160,7 +160,7 @@ void Application::OnMouseButtonUp(enum MouseButton button)
 
 void Application::OnMouseWheel(int delta)
 {
-	camera->Zoom(delta, 50);
+	camera->Zoom((float)delta, 50.0f);
 }
 
 void Application::OnKeyDown(unsigned short key)

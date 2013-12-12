@@ -150,7 +150,7 @@ void Entity::sendMessage(RequestId reqId, Message const & msg) {
 
 	// just forward to the appropriate registered components
 	vector<RegisteredComponent>& regs = fLocalRequests[reqId];
-	unsigned n = regs.size();
+	unsigned n = (unsigned)regs.size();
 	for (unsigned i = 0; i < n; ++i) {
 		RegisteredComponent& comp = regs[i];
 		if (comp.trackMe) {

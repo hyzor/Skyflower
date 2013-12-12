@@ -298,10 +298,10 @@ void ModelTreeLeaf::Write(std::fstream* outfile, Triangle* first)
 	int type = GetType();
 	outfile->write((char*)&type, 4);
 
-	int cTriangles = triangles.size();
+	size_t cTriangles = triangles.size();
 	outfile->write((char*)&cTriangles, 4);
 
-	for (int i = 0; i < cTriangles; i++)
+	for (size_t i = 0; i < cTriangles; i++)
 	{
 		int relativeAddress = (int)(triangles[i] - first);
 		outfile->write((char*)&relativeAddress, 4);
@@ -414,13 +414,13 @@ std::vector<std::vector<Triangle*>*> ModelTreeParent::GetTriangles(Box b)
 	if (testright && right)
 	{
 		std::vector<std::vector<Triangle*>*> res = right->GetTriangles(b);
-		for(int i = 0; i < res.size(); i++)
+		for(size_t i = 0; i < res.size(); i++)
 			ret.push_back(res[i]);
 	}
 	if (testleft && left)
 	{
 		std::vector<std::vector<Triangle*>*> res = left->GetTriangles(b);
-		for (int i = 0; i < res.size(); i++)
+		for (size_t i = 0; i < res.size(); i++)
 			ret.push_back(res[i]);
 	}
 	return ret;

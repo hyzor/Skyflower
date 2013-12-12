@@ -46,7 +46,7 @@ void GenericSkinnedMesh::draw(ID3D11DeviceContext* deviceContext)
 	deviceContext->IASetIndexBuffer(mIndexBuffer, mIndexBufferFormat, 0);
 
 	deviceContext->DrawIndexed(
-		mIndices.size(), 
+		(UINT)mIndices.size(), 
 		0, 
 		0);
 }

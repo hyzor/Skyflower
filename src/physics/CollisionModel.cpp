@@ -74,7 +74,7 @@ Triangle* CollisionModel::GetTriangle(int index)
 
 int CollisionModel::Triangles()
 {
-	return triangles.size();
+	return (int)triangles.size();
 }
 
 ModelTreeParent* CollisionModel::GetTree()
@@ -108,10 +108,10 @@ void CollisionModel::SaveTree(std::string file)
 	
 	outfile.write((char*)&bounds, sizeof(Box));
 
-	int tCount = triangles.size();
+	size_t tCount = triangles.size();
 	outfile.write((char*)&tCount, 4);
 
-	for (int i = 0; i < tCount; i++)
+	for (size_t i = 0; i < tCount; i++)
 		outfile.write((char*)&triangles[i], 12*3); //12 size of vec3, 3 vec3 in triangle
 
 	tree->Write(&outfile, &triangles[0]);
