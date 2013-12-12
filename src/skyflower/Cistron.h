@@ -3,7 +3,7 @@
 #define INC_CISTRON
 
 #include "graphics/GraphicsEngine.h"
-#include "graphics/InputHandler.h"
+#include "InputHandler.h"
 #include "Sound/SoundEngine.h"
 
 // IMPORTANT!

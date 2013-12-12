@@ -24,11 +24,13 @@
     <ClCompile Include="src\skyflower\Entity.cpp" />
     <ClCompile Include="src\skyflower\EntityManager.cpp" />
     <ClCompile Include="src\skyflower\Field.cpp" />
+    <ClCompile Include="src\skyflower\InputHandler.cpp" />
     <ClCompile Include="src\skyflower\LineChart.cpp" />
     <ClCompile Include="src\skyflower\main.cpp" />
     <ClCompile Include="src\skyflower\PotentialField.cpp" />
     <ClCompile Include="src\skyflower\ScriptHandler.cpp" />
     <ClCompile Include="src\skyflower\tinyxml2.cpp" />
+    <ClCompile Include="src\skyflower\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\skyflower\Application.h" />
@@ -46,10 +48,12 @@
     <ClInclude Include="src\skyflower\Entity.h" />
     <ClInclude Include="src\skyflower\EntityManager.h" />
     <ClInclude Include="src\skyflower\Field.h" />
+    <ClInclude Include="src\skyflower\InputHandler.h" />
     <ClInclude Include="src\skyflower\LineChart.h" />
     <ClInclude Include="src\skyflower\PotentialField.h" />
     <ClInclude Include="src\skyflower\ScriptHandler.h" />
     <ClInclude Include="src\skyflower\tinyxml2.h" />
+    <ClInclude Include="src\skyflower\Window.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{37AF7357-6F98-4587-BA3E-CBEF4F9D14A3}</ProjectGuid>

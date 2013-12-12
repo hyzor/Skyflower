@@ -1,8 +1,8 @@
 #ifndef SKYFLOWER_APPLICATION
 #define SKYFLOWER_APPLICATION
 
-#include "graphics/Window.h"
-#include "graphics/InputHandler.h"
+#include "Window.h"
+#include "InputHandler.h"
 #include "graphics/GraphicsEngine.h"
 #include "shared/util.h"
 #include "PotentialField.h"

@@ -5,7 +5,7 @@
 
 #include "InputHandler.h"
 
-class DLL_API WindowListener
+class WindowListener
 {
 public:
 	virtual void OnWindowShouldClose() = 0;
@@ -14,7 +14,7 @@ public:
 	virtual void OnWindowDeactivate() = 0;
 };
 
-class DLL_API Window
+class Window
 {
 public:
 	Window(const unsigned int width, const unsigned int height, const wchar_t *title);

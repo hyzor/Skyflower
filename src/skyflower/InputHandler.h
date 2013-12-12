@@ -16,7 +16,7 @@ enum MouseButton
 	MouseButtonCount
 };
 
-class DLL_API InputListener
+class InputListener
 {
 public:
 	virtual void OnMouseMove(int deltaX, int deltaY) = 0;
@@ -29,7 +29,7 @@ public:
 	virtual void OnKeyUp(unsigned short key) = 0;
 };
 
-class DLL_API InputHandler
+class InputHandler
 {
 public:
 	virtual ~InputHandler();

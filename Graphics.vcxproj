@@ -36,13 +36,11 @@
     <ClCompile Include="src\graphics\GeometryGenerator.cpp" />
     <ClCompile Include="src\graphics\GraphicsEngine.cpp" />
     <ClCompile Include="src\graphics\GraphicsEngineImpl.cpp" />
-    <ClCompile Include="src\graphics\InputHandler.cpp" />
     <ClCompile Include="src\graphics\MathHelper.cpp" />
     <ClCompile Include="src\graphics\SkinnedData.cpp" />
     <ClCompile Include="src\graphics\Sky.cpp" />
     <ClCompile Include="src\graphics\TextureManager.cpp" />
     <ClCompile Include="src\graphics\Vertex.cpp" />
-    <ClCompile Include="src\graphics\Window.cpp" />
     <ClCompile Include="src\graphics\xnacollision.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -64,14 +62,12 @@
     <ClInclude Include="src\graphics\GeometryGenerator.h" />
     <ClInclude Include="src\graphics\GraphicsEngine.h" />
     <ClInclude Include="src\graphics\GraphicsEngineImpl.h" />
-    <ClInclude Include="src\graphics\InputHandler.h" />
     <ClInclude Include="src\graphics\LightDef.h" />
     <ClInclude Include="src\graphics\MathHelper.h" />
     <ClInclude Include="src\graphics\SkinnedData.h" />
     <ClInclude Include="src\graphics\Sky.h" />
     <ClInclude Include="src\graphics\TextureManager.h" />
     <ClInclude Include="src\graphics\Vertex.h" />
-    <ClInclude Include="src\graphics\Window.h" />
     <ClInclude Include="src\graphics\xnacollision.h" />
   </ItemGroup>
   <ItemGroup>
