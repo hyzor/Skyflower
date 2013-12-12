@@ -7,6 +7,7 @@
 #include <AL/al.h>
 
 #include "Sound/SoundSource.h"
+#include "AudioResource.h"
 #include "ResourceCache.h"
 #include "OpenALSourceProxy.h"
 
@@ -21,6 +22,7 @@ public:
 	bool HasSource() const;
 
 	virtual void SetResource(const std::string &name);
+	const struct AudioResourceInfo *GetResourceInfo() const;
 
 	void Update(float deltaTime);
 
@@ -52,6 +54,7 @@ private:
 	OpenALSourceProxy m_sourceProxy;
 
 	unsigned int m_nextBufferIndex;
+	// FIXME: Replace with m_sourceProxy->GetQueuedBufferIndices?
 	int m_queuedBufferIndices[2];
 	bool m_isLastBufferQueued;
 	int64_t m_pendingSeekSample;

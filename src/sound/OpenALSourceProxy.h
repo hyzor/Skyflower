@@ -5,10 +5,12 @@
 
 #include <AL/al.h>
 
+class SoundSourceImpl;
+
 class OpenALSourceProxy
 {
 public:
-	OpenALSourceProxy();
+	OpenALSourceProxy(const SoundSourceImpl *owner);
 	virtual ~OpenALSourceProxy();
 
 	void LendSource(ALuint source);
@@ -44,10 +46,11 @@ public:
 	// be called when we have a source.
 	float GetPlaybackTime() const;
 
-	void QueueBuffer(ALuint buffer);
+	void QueueBuffer(ALuint buffer, unsigned int bufferIndex);
 	unsigned int UnqueueProcessedBuffers();
 
 private:
+	const SoundSourceImpl *m_owner;
 	ALuint m_source;
 
 	ALuint m_buffer;
@@ -60,6 +63,7 @@ private:
 	float m_velocity[3];
 
 	float m_time;
+	int m_queuedBufferIndices[2];
 };
 
 #endif

@@ -93,8 +93,7 @@ bool AudioDecoderWAVInit(struct AudioResource *resource)
 	} while (dataHeader->fourcc != FOURCC('d', 'a', 't', 'a'));
 
 	uint64_t totalSamples = dataHeader->size / (bitDepth / 8);
-	//bool shouldStream = (dataHeader->size > SOUNDENGINE_STREAM_THRESHOLD_SIZE? true : false);
-	bool shouldStream = false;
+	bool shouldStream = (dataHeader->size > SOUNDENGINE_STREAM_THRESHOLD_SIZE? true : false);
 
 	struct WAVDecoderContext *context = new struct WAVDecoderContext;
 	context->dataOffset = (buffer - resource->file->data) + sizeof(struct ChunkHeader);

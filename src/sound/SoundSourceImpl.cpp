@@ -5,7 +5,8 @@
 #include "ResourceCache.h"
 #include "OpenALSourceProxy.h"
 
-SoundSourceImpl::SoundSourceImpl(ResourceCache *resourceCache)
+SoundSourceImpl::SoundSourceImpl(ResourceCache *resourceCache) :
+	m_sourceProxy(this)
 {
 	m_resourceCache = resourceCache;
 	m_resourceHash = 0x0;
@@ -79,6 +80,11 @@ void SoundSourceImpl::SetResource(const std::string &name)
 	}
 }
 
+const struct AudioResourceInfo *SoundSourceImpl::GetResourceInfo() const
+{
+	return m_resourceCache->GetResourceInfo(m_resourceHash);
+}
+
 void SoundSourceImpl::Update(float deltaTime)
 {
 	if (m_resourceHash == 0x0) {
@@ -86,6 +92,11 @@ void SoundSourceImpl::Update(float deltaTime)
 	}
 
 	const struct AudioResourceInfo *resourceInfo = m_resourceCache->GetResourceInfo(m_resourceHash);
+
+	if (!resourceInfo) {
+		return;
+	}
+
 	bool isStreaming = m_resourceCache->IsResourceStreaming(m_resourceHash);
 
 	if (m_pendingSeekSample >= 0) {
@@ -130,8 +141,7 @@ void SoundSourceImpl::Update(float deltaTime)
 		unsigned int lastBufferIndex = resourceInfo->bufferCount - 1;
 
 		if (numProcessedBuffers > 0) {
-			// FIXME: Move this to OpenALSourceProxy? (send the bufferIndex with QueueBuffer and the resourceHash(lastBufferIndex) somewhere?)
-			// What benefit would it bring to move it to OpenALSourceProxy?
+			// FIXME: Move this to OpenALSourceProxy?
 			for (unsigned int i = 0; i < numProcessedBuffers; i++) {
 				if (m_queuedBufferIndices[i] == lastBufferIndex) {
 					m_isLastBufferQueued = false;
@@ -140,7 +150,7 @@ void SoundSourceImpl::Update(float deltaTime)
 						// We reached the end of a non-looping source, stop playback.
 						Pause();
 
-						printf("We just unqueued the last buffer of a non-looping source, stopping\n");
+						//printf("We just unqueued the last buffer of a non-looping source, stopping\n");
 					}
 				}
 			}
@@ -181,7 +191,7 @@ void SoundSourceImpl::Update(float deltaTime)
 					break;
 				}
 
-				m_sourceProxy.QueueBuffer(buffer);
+				m_sourceProxy.QueueBuffer(buffer, m_nextBufferIndex);
 
 				for (int i = 0; i < 2; i++) {
 					if (m_queuedBufferIndices[i] == -1) {

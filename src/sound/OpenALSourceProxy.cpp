@@ -4,9 +4,13 @@
 #include <AL/al.h>
 
 #include "OpenALSourceProxy.h"
+#include "SoundSourceImpl.h"
 
-OpenALSourceProxy::OpenALSourceProxy()
+OpenALSourceProxy::OpenALSourceProxy(const SoundSourceImpl *owner)
 {
+	assert(owner);
+
+	m_owner = owner;
 	m_source = 0;
 
 	m_buffer = AL_NONE;
@@ -25,6 +29,8 @@ OpenALSourceProxy::OpenALSourceProxy()
 	m_velocity[2] = 0.0f;
 
 	m_time = 0.0f;
+	m_queuedBufferIndices[0] = -1;
+	m_queuedBufferIndices[1] = -1;
 }
 
 OpenALSourceProxy::~OpenALSourceProxy()
@@ -60,8 +66,12 @@ ALuint OpenALSourceProxy::RevokeSource()
 	alGetSourcef(m_source, AL_SEC_OFFSET, &m_time);
 
 	if (m_buffer == AL_NONE) {
-		// FIXME: If we are streaming we need to add the currently playing buffer's start time.
-		assert(0);
+		const struct AudioResourceInfo *info = m_owner->GetResourceInfo();
+
+		if (info) {
+			uint64_t sampleOffset = m_queuedBufferIndices[0] * info->samplesPerBuffer;
+			m_time += (float)sampleOffset / (info->sampleRate * info->channels);
+		}
 	}
 
 	assert(alGetError() == AL_NO_ERROR);
@@ -91,10 +101,19 @@ void OpenALSourceProxy::ClearBuffers()
 	}
 
 	m_buffer = AL_NONE;
+
+	m_queuedBufferIndices[0] = -1;
+	m_queuedBufferIndices[1] = -1;
 }
 
 void OpenALSourceProxy::Update(float deltaTime)
 {
+	const struct AudioResourceInfo *info = m_owner->GetResourceInfo();
+
+	if (!info) {
+		return;
+	}
+
 	if (HasSource() && m_buffer != AL_NONE && m_isPlaying) {
 		ALint state;
 		alGetSourcei(m_source, AL_SOURCE_STATE, &state);
@@ -110,7 +129,13 @@ void OpenALSourceProxy::Update(float deltaTime)
 	else if (!HasSource() && m_isPlaying) {
 		m_time += deltaTime;
 
-		// FIXME: Detect if we have reached the end.
+		if (m_time >= info->duration) {
+			m_time = 0.0f;
+
+			if (!m_isLooping) {
+				Pause();
+			}
+		}
 	}
 }
 
@@ -301,7 +326,7 @@ float OpenALSourceProxy::GetPlaybackTime() const
 	return m_time;
 }
 
-void OpenALSourceProxy::QueueBuffer(ALuint buffer)
+void OpenALSourceProxy::QueueBuffer(ALuint buffer, unsigned int bufferIndex)
 {
 	assert(HasSource());
 	assert(GetNumQueuedBuffers() < 2);
@@ -311,6 +336,13 @@ void OpenALSourceProxy::QueueBuffer(ALuint buffer)
 	
 	if (m_isPlaying) {
 		alSourcePlay(m_source);
+	}
+
+	for (int i = 0; i < 2; i++) {
+		if (m_queuedBufferIndices[i] == -1) {
+			m_queuedBufferIndices[i] = bufferIndex;
+			break;
+		}
 	}
 
 	assert(alGetError() == AL_NO_ERROR);
@@ -325,8 +357,19 @@ unsigned int OpenALSourceProxy::UnqueueProcessedBuffers()
 
 		assert(count <= 2);
 
-		ALuint buffers[2];
-		alSourceUnqueueBuffers(m_source, count, buffers);
+		if (count > 0) {
+			ALuint buffers[2];
+			alSourceUnqueueBuffers(m_source, count, buffers);
+
+			// Move the remaining queued buffers to the start of the array.
+			for (int i = count; i < 2; i++) {
+				m_queuedBufferIndices[i - count] = m_queuedBufferIndices[i];
+			}
+			// Clear the end of the array.
+			for (int i = 2 - count; i < 2; i++) {
+				m_queuedBufferIndices[i] = -1;
+			}
+		}
 
 		assert(alGetError() == AL_NO_ERROR);
 	}

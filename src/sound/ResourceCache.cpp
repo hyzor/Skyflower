@@ -232,6 +232,7 @@ enum BufferStatus ResourceCache::RequestBuffer(uint32_t resourceHash, unsigned i
 	uint64_t sampleCount = std::min(resource->info.samplesPerBuffer, resource->info.totalSamples - sampleOffset);
 	ALuint buffer = m_cacheEntries[slot].buffer;
 	// FIXME: Unload the previous buffer data?
+	// alBufferData(buffer, AL_FORMAT_MONO8, NULL, 0, 0);
 
 	m_taskQueue->EnqueueTask([this, slot, resource, buffer, sampleOffset, sampleCount]() {
 		audioDecoders[resource->decoder].fillBuffer(resource, sampleOffset, sampleCount, buffer);
@@ -245,19 +246,24 @@ const struct AudioResourceInfo *ResourceCache::GetResourceInfo(uint32_t resource
 {
 	assert(m_resources.count(resourceHash));
 
-	static const struct AudioResourceInfo dummyInfo = {};
 	AudioResource *resource = m_resources[resourceHash];
 	
-	if (resource) {
-		return &resource->info;
+	if (!resource) {
+		return NULL;
 	}
 
-	return &dummyInfo;
+	return &resource->info;
 }
 
 bool ResourceCache::IsResourceStreaming(uint32_t resourceHash)
 {
-	return (GetResourceInfo(resourceHash)->bufferCount > 1);
+	const struct AudioResourceInfo *info = GetResourceInfo(resourceHash);
+
+	if (!info) {
+		return false;
+	}
+
+	return (info->bufferCount > 1);
 }
 
 unsigned int ResourceCache::ConvertTimeToBufferIndex(uint32_t resourceHash, float time, uint64_t *sampleOffset_out)

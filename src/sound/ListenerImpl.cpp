@@ -7,6 +7,18 @@
 ListenerImpl::ListenerImpl()
 {
 	m_volume = 1.0f;
+
+	m_position[0] = 0.0f;
+	m_position[1] = 0.0f;
+	m_position[2] = 0.0f;
+
+	m_orientation[0] = 0.0f;
+	m_orientation[1] = 0.0f;
+	m_orientation[2] = -1.0f;
+	m_orientation[3] = 0.0f;
+	m_orientation[4] = 1.0f;
+	m_orientation[5] = 0.0f;
+
 	m_velocity[0] = 0.0f;
 	m_velocity[1] = 0.0f;
 	m_velocity[2] = 0.0f;

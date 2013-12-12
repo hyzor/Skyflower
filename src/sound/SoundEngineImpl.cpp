@@ -54,10 +54,6 @@ static std::vector<SoundSourceImpl *> ApplyCullingDistance(const Listener *liste
 		}
 	}
 
-	if (sources.size() - result.size() > 0) {
-		//printf("Culled %u sound sources\n", sources.size() - result.size());
-	}
-
 	return result;
 }
 
@@ -298,7 +294,7 @@ void SoundEngineImpl::Update(float deltaTime)
 			m_availableSources.pop();
 		}
 
-		//printf("%i out of %i sources active\n", m_activeSources.size(), sources.size());
+		//printf("%i out of %i sources survived culling.\n", m_activeSources.size(), sources.size());
 	}
 
 	for (auto iter = m_sources.begin(); iter != m_sources.end(); iter++) {
