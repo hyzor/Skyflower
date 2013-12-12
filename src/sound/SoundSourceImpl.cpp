@@ -85,6 +85,7 @@ void SoundSourceImpl::Update(float deltaTime)
 		return;
 	}
 
+	const struct AudioResourceInfo *resourceInfo = m_resourceCache->GetResourceInfo(m_resourceHash);
 	bool isStreaming = m_resourceCache->IsResourceStreaming(m_resourceHash);
 
 	if (m_pendingSeekSample >= 0) {
@@ -126,7 +127,7 @@ void SoundSourceImpl::Update(float deltaTime)
 	}
 	else {
 		unsigned int numProcessedBuffers = m_sourceProxy.UnqueueProcessedBuffers();
-		unsigned int lastBufferIndex = m_resourceCache->GetResourceBufferCount(m_resourceHash) - 1;
+		unsigned int lastBufferIndex = resourceInfo->bufferCount - 1;
 
 		if (numProcessedBuffers > 0) {
 			// FIXME: Move this to OpenALSourceProxy? (send the bufferIndex with QueueBuffer and the resourceHash(lastBufferIndex) somewhere?)
@@ -191,7 +192,7 @@ void SoundSourceImpl::Update(float deltaTime)
 
 				m_nextBufferIndex++;
 
-				if (m_nextBufferIndex == m_resourceCache->GetResourceBufferCount(m_resourceHash)) {
+				if (m_nextBufferIndex == resourceInfo->bufferCount) {
 					m_isLastBufferQueued = true;
 					m_nextBufferIndex = 0;
 				}
@@ -205,7 +206,7 @@ void SoundSourceImpl::Update(float deltaTime)
 			//printf("SoundSourceImpl::Update, BufferStatusPendingLoad\n");
 			break;
 		case BufferStatusIndexOutOfBounds:
-			printf("SoundSourceImpl::Update, BufferStatusIndexOutOfBounds, maxIndex=%i, index=%i\n", m_resourceCache->GetResourceBufferCount(m_resourceHash), m_nextBufferIndex);
+			printf("SoundSourceImpl::Update, BufferStatusIndexOutOfBounds, maxIndex=%i, index=%i\n", resourceInfo->bufferCount, m_nextBufferIndex);
 			break;
 		case BufferStatusOutOfMemory:
 			printf("SoundSourceImpl::Update, BufferStatusOutOfMemory\n");

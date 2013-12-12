@@ -180,7 +180,7 @@ enum BufferStatus ResourceCache::RequestBuffer(uint32_t resourceHash, unsigned i
 		return BufferStatusInvalidFile;
 	}
 
-	if (bufferIndex * resource->samplesPerBuffer >= resource->totalSamples) {
+	if (bufferIndex * resource->info.samplesPerBuffer >= resource->info.totalSamples) {
 		return BufferStatusIndexOutOfBounds;
 	}
 
@@ -228,8 +228,8 @@ enum BufferStatus ResourceCache::RequestBuffer(uint32_t resourceHash, unsigned i
 	m_cacheEntries[slot].bufferIndex = bufferIndex;
 	m_cacheEntries[slot].lastRequestedFrame = m_currentFrame;
 
-	uint64_t sampleOffset = bufferIndex * resource->samplesPerBuffer;
-	uint64_t sampleCount = std::min(resource->samplesPerBuffer, resource->totalSamples - sampleOffset);
+	uint64_t sampleOffset = bufferIndex * resource->info.samplesPerBuffer;
+	uint64_t sampleCount = std::min(resource->info.samplesPerBuffer, resource->info.totalSamples - sampleOffset);
 	ALuint buffer = m_cacheEntries[slot].buffer;
 	// FIXME: Unload the previous buffer data?
 
@@ -241,28 +241,23 @@ enum BufferStatus ResourceCache::RequestBuffer(uint32_t resourceHash, unsigned i
 	return BufferStatusPendingLoad;
 }
 
-unsigned int ResourceCache::GetResourceBufferCount(uint32_t resourceHash)
+const struct AudioResourceInfo *ResourceCache::GetResourceInfo(uint32_t resourceHash)
 {
 	assert(m_resources.count(resourceHash));
 
+	static const struct AudioResourceInfo dummyInfo = {};
 	AudioResource *resource = m_resources[resourceHash];
-
-	if (!resource) {
-		return 0;
+	
+	if (resource) {
+		return &resource->info;
 	}
 
-	unsigned int result = (unsigned int)(resource->totalSamples / resource->samplesPerBuffer);
-
-	if (resource->totalSamples % resource->samplesPerBuffer > 0) {
-		result++;
-	}
-
-	return result;
+	return &dummyInfo;
 }
 
 bool ResourceCache::IsResourceStreaming(uint32_t resourceHash)
 {
-	return (GetResourceBufferCount(resourceHash) > 1);
+	return (GetResourceInfo(resourceHash)->bufferCount > 1);
 }
 
 unsigned int ResourceCache::ConvertTimeToBufferIndex(uint32_t resourceHash, float time, uint64_t *sampleOffset_out)
@@ -274,12 +269,12 @@ unsigned int ResourceCache::ConvertTimeToBufferIndex(uint32_t resourceHash, floa
 	uint64_t sampleOffset = 0;
 
 	if (resource) {
-		sampleOffset = (uint64_t)(time * resource->sampleRate * resource->channels);
-		sampleOffset = std::min(sampleOffset, resource->totalSamples - 1);
+		sampleOffset = (uint64_t)(time * resource->info.sampleRate * resource->info.channels);
+		sampleOffset = std::min(sampleOffset, resource->info.totalSamples - 1);
 
 		if (IsResourceStreaming(resourceHash)) {
-			bufferIndex = (unsigned int)(sampleOffset / resource->samplesPerBuffer);
-			sampleOffset -= bufferIndex * resource->samplesPerBuffer;
+			bufferIndex = (unsigned int)(sampleOffset / resource->info.samplesPerBuffer);
+			sampleOffset -= bufferIndex * resource->info.samplesPerBuffer;
 		}
 	}
 

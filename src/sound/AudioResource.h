@@ -22,11 +22,8 @@ struct MemoryMappedFile
 	HANDLE fileMapping;
 };
 
-struct AudioResource
+struct AudioResourceInfo
 {
-	enum AudioDecoders decoder;
-	struct MemoryMappedFile *file;
-
 	// Filled in by AudioDecoder.init
 	ALenum format;
 	uint64_t totalSamples;
@@ -34,6 +31,18 @@ struct AudioResource
 	unsigned int channels;
 	unsigned int sampleRate;
 	unsigned int bitDepth;
+
+	// These fields are derived from the above fields.
+	float duration;
+	unsigned int bufferCount;
+};
+
+struct AudioResource
+{
+	enum AudioDecoders decoder;
+	struct MemoryMappedFile *file;
+
+	struct AudioResourceInfo info;
 	void *context;
 };
 

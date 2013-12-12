@@ -42,9 +42,7 @@ public:
 	// resourceHash must be a value returned by PrefetchResource.
 	enum BufferStatus RequestBuffer(uint32_t resourceHash, unsigned int bufferIndex, ALuint *buffer_out);
 
-	// FIXME: Replace with a GetResourceInfo that returns a struct with bufferCount, duration, etc.
-	unsigned int GetResourceBufferCount(uint32_t resourceHash);
-
+	const struct AudioResourceInfo *GetResourceInfo(uint32_t resourceHash);
 	bool IsResourceStreaming(uint32_t resourceHash);
 	unsigned int ConvertTimeToBufferIndex(uint32_t resourceHash, float time, uint64_t *sampleOffset_out);
 

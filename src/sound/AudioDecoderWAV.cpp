@@ -99,12 +99,12 @@ bool AudioDecoderWAVInit(struct AudioResource *resource)
 	struct WAVDecoderContext *context = new struct WAVDecoderContext;
 	context->dataOffset = (buffer - resource->file->data) + sizeof(struct ChunkHeader);
 
-	resource->format = bufferFormat;
-	resource->totalSamples = totalSamples;
-	resource->samplesPerBuffer = (shouldStream? std::min((uint64_t)(SOUNDENGINE_STREAM_BUFFER_SIZE * sampleRate * channels), totalSamples) : totalSamples);
-	resource->channels = channels;
-	resource->sampleRate = sampleRate;
-	resource->bitDepth = bitDepth;
+	resource->info.format = bufferFormat;
+	resource->info.totalSamples = totalSamples;
+	resource->info.samplesPerBuffer = (shouldStream? std::min((uint64_t)(SOUNDENGINE_STREAM_BUFFER_SIZE * sampleRate * channels), totalSamples) : totalSamples);
+	resource->info.channels = channels;
+	resource->info.sampleRate = sampleRate;
+	resource->info.bitDepth = bitDepth;
 	resource->context = (void *)context;
 
 	//printf("AudioDecoderWAV, shouldStream=%d, bufferCount=%d, channels=%d, sampleRate=%d, bitDepth=%d\n", shouldStream, (int)ceil(resource->totalSamples / (float)resource->samplesPerBuffer), channels, sampleRate, bitDepth);
@@ -126,15 +126,15 @@ void AudioDecoderWAVRelease(struct AudioResource *resource)
 void AudioDecoderWAVFillBuffer(const struct AudioResource *resource, uint64_t sampleOffset, uint64_t sampleCount, ALuint buffer)
 {
 	assert(resource);
-	assert(sampleOffset + sampleCount <= resource->totalSamples);
+	assert(sampleOffset + sampleCount <= resource->info.totalSamples);
 	assert(alIsBuffer(buffer));
 
 	struct WAVDecoderContext *context = (struct WAVDecoderContext *)resource->context;
 
-	uint64_t byteOffset = context->dataOffset + sampleOffset * (resource->bitDepth / 8);
-	uint64_t size = sampleCount * (resource->bitDepth / 8);
+	uint64_t byteOffset = context->dataOffset + sampleOffset * (resource->info.bitDepth / 8);
+	uint64_t size = sampleCount * (resource->info.bitDepth / 8);
 
-	alBufferData(buffer, resource->format, (const void *)(resource->file->data + byteOffset), (ALsizei)size, resource->sampleRate);
+	alBufferData(buffer, resource->info.format, (const void *)(resource->file->data + byteOffset), (ALsizei)size, resource->info.sampleRate);
 
 	assert(alGetError() == AL_NO_ERROR);
 }

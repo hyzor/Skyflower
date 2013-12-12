@@ -81,11 +81,18 @@ struct AudioResource *CreateAudioResource(const std::string &file)
 		return NULL;
 	}
 
-	assert(resource->totalSamples > 0);
-	assert(resource->samplesPerBuffer > 0);
-	assert(resource->channels > 0);
-	assert(resource->sampleRate > 0);
-	assert(resource->bitDepth > 0);
+	assert(resource->info.totalSamples > 0);
+	assert(resource->info.samplesPerBuffer > 0);
+	assert(resource->info.channels > 0);
+	assert(resource->info.sampleRate > 0);
+	assert(resource->info.bitDepth > 0);
+
+	resource->info.duration = ((float)resource->info.totalSamples / resource->info.channels) / resource->info.sampleRate;
+	resource->info.bufferCount = (unsigned int)(resource->info.totalSamples / resource->info.samplesPerBuffer);
+
+	if (resource->info.totalSamples % resource->info.samplesPerBuffer > 0) {
+		resource->info.bufferCount++;
+	}
 
 	return resource;
 }
