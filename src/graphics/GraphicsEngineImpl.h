@@ -3,7 +3,6 @@
 
 #include "shared/platform.h"
 #include "Direct3D.h"
-#include "D3dWindow.h"
 #include "GraphicsEngine.h"
 #include "Effects.h"
 #include "GenericModel.h"

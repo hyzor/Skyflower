@@ -43,7 +43,6 @@
     <ClInclude Include="src\skyflower\Components\Movement.h" />
     <ClInclude Include="src\skyflower\Components\Person.h" />
     <ClInclude Include="src\skyflower\Components\Platform.h" />
-    <ClInclude Include="src\skyflower\DirectInput.h" />
     <ClInclude Include="src\skyflower\Components\Render.h" />
     <ClInclude Include="src\skyflower\Entity.h" />
     <ClInclude Include="src\skyflower\EntityManager.h" />

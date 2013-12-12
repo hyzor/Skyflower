@@ -25,7 +25,6 @@
     <ClCompile Include="src\graphics\CameraControllImpl.cpp" />
     <ClCompile Include="src\graphics\Character.cpp" />
     <ClCompile Include="src\graphics\d3dUtilities.cpp" />
-    <ClCompile Include="src\graphics\D3dWindow.cpp" />
     <ClCompile Include="src\graphics\Direct3D.cpp" />
     <ClCompile Include="src\graphics\Effects.cpp" />
     <ClCompile Include="src\graphics\GenericMesh.cpp" />
@@ -50,7 +49,6 @@
     <ClInclude Include="src\graphics\CameraControllImpl.h" />
     <ClInclude Include="src\graphics\Character.h" />
     <ClInclude Include="src\graphics\d3dUtilities.h" />
-    <ClInclude Include="src\graphics\D3dWindow.h" />
     <ClInclude Include="src\graphics\d3dx11effect.h" />
     <ClInclude Include="src\graphics\Direct3D.h" />
     <ClInclude Include="src\graphics\Effects.h" />
