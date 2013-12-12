@@ -27,16 +27,6 @@ Application::~Application()
 
 void Application::Start()
 {
-	LineChart frameTimeChart(1024 * 1024);
-	frameTimeChart.SetSize(512, 256);
-	frameTimeChart.SetUnit("ms");
-
-	LineChart memoryChart(1024 * 1024);
-	memoryChart.SetSize(512, 256);
-	memoryChart.SetUnit("MiB");
-
-
-
 	m_window = new Window(1024, 768, L"Skyflower");
 	m_window->SetListener(this);
 
@@ -50,7 +40,12 @@ void Application::Start()
 	//m_soundEngine = CreateSoundEngine("../../content/sounds/");
 	//assert(m_soundEngine);
 
-	entityManager = new EntityManager("../../content/XML/", m_graphicsEngine);
+	Modules modules;
+	modules.input = m_inputHandler;
+	modules.graphics = m_graphicsEngine;
+	//modules.sound = m_soundEngine;
+
+	entityManager = new EntityManager("../../content/XML/", &modules);
 
 	//loading xml-file, creating entities and components to this entityManager
 	entityManager->loadXML(entityManager, "test22.xml");
@@ -70,6 +65,13 @@ void Application::Start()
 	//ModelInstance* d = m_graphicsEngine->CreateInstance("Data\\Models\\duck.obj", Vec3(-100, 50, 0));
 	//d->SetRotation(Vec3(-3.14f/2, 3.14f/4));
 
+	LineChart frameTimeChart(1024 * 1024);
+	frameTimeChart.SetSize(512, 256);
+	frameTimeChart.SetUnit("ms");
+
+	LineChart memoryChart(1024 * 1024);
+	memoryChart.SetSize(512, 256);
+	memoryChart.SetUnit("MiB");
 
 	double startTime = GetTime();
 	double chartTime = 5.0;

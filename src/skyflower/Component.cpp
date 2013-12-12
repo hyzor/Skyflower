@@ -1,6 +1,6 @@
 
-//#include "Component.h"
-//#include "EntityManager.h"
+#include "Component.h"
+#include "EntityManager.h"
 #include "Cistron.h"
 
 using namespace Cistron;
@@ -39,6 +39,12 @@ bool Component::isValid() {
 EntityId Component::getOwnerId() {
 	return fOwnerId;
 }
+
+Entity *Component::getOwner()
+{
+	return fEntityManager->getEntity(fOwnerId);
+}
+
 void Component::setOwner(EntityId id) {
 
 	// set the owner

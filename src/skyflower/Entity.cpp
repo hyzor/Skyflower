@@ -1,5 +1,7 @@
-
+#include "Entity.h"
+#include "EntityManager.h"
 #include "Cistron.h"
+#include "Component.h"
 
 
 using namespace Cistron;
@@ -7,7 +9,7 @@ using namespace Cistron;
 
 
 // constructor/destructor
-Entity::Entity(GraphicsEngine* gEngine, EntityId id, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
+Entity::Entity(const Modules *modules, EntityId id, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
 	float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible) : fId(id), type(type), fFinalized(false)
 {
 	this->type = type;
@@ -27,9 +29,9 @@ Entity::Entity(GraphicsEngine* gEngine, EntityId id, string type, float xPos, fl
 	this->model = model;
 	this->isVisible = isVisible;
 
-	this->gEngine = gEngine;
+	this->modules = modules;
 
-	this->modelInst = this->gEngine->CreateInstance(this->model, Vec3(this->pos.X, this->pos.Y, this->pos.Z));
+	this->modelInst = this->modules->graphics->CreateInstance(this->model, Vec3(this->pos.X, this->pos.Y, this->pos.Z));
 	this->modelInst->SetRotation(this->rot);
 	this->modelInst->SetScale(this->scale);
 	this->modelInst->SetVisibility(this->isVisible);
@@ -49,9 +51,13 @@ Entity::~Entity() {
 			delete (*it2);
 		}
 	}*/
-	this->gEngine->DeleteInstance(this->modelInst);
+	this->modules->graphics->DeleteInstance(this->modelInst);
 }
 
+const Modules *Entity::getModules()
+{
+	return this->modules;
+}
 
 // is the Entity finalized
 bool Entity::isFinalized() {

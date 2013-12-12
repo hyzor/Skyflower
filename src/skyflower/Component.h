@@ -7,9 +7,9 @@
 #include <map>
 #include <list>
 #include <functional>
-#include "Cistron.h"
 //#include <boost/any.hpp>
 #include <ostream>
+#include "Cistron.h"
 #include "physics/Collision.h"
 #include "shared/Vec3.h"
 
@@ -22,11 +22,6 @@ using std::string;
 using std::ostream;
 
 using namespace std::placeholders;
-
-
-// Entity & component id
-typedef int EntityId;
-typedef int ComponentId;
 
 
 // a request ID
@@ -87,7 +82,7 @@ struct RegisteredComponent {
 
 // Entity manager
 class EntityManager;
-
+class Entity;
 
 // a generic component
 class Component {
@@ -207,6 +202,7 @@ class Component {
 
 		// get owner
 		EntityId getOwnerId();
+		Entity *getOwner();
 
 		// get id
 		ComponentId getId();

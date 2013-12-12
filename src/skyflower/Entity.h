@@ -2,6 +2,7 @@
 #ifndef INC_Entity
 #define INC_Entity
 
+#include "Cistron.h"
 #include "Component.h"
 
 
@@ -19,6 +20,7 @@ using std::list;
 using std::string;
 using std::tr1::unordered_map;
 
+struct Modules;
 
 // an Entity is a container of components
 class Entity {
@@ -26,11 +28,13 @@ class Entity {
 	public:
 
 		// constructor/destructor
-		Entity(GraphicsEngine* gEngine, EntityId id, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
+		Entity(const Modules *modules, EntityId id, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
 			 float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible);
 		virtual ~Entity();
 		void sendPosToComponent();
 	
+		const Modules *getModules();
+
 	private:
 
 		// Entity id
@@ -119,7 +123,7 @@ class Entity {
 
 
 
-		GraphicsEngine* gEngine;
+		const Modules *modules;
 };
 
 

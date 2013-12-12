@@ -1,5 +1,6 @@
 
 #include "Cistron.h"
+#include "EntityManager.h"
 
 using namespace Cistron;
 using namespace tinyxml2;
@@ -12,10 +13,10 @@ using std::endl;
 
 
 // constructor/destructor
-EntityManager::EntityManager(const std::string &resourceDir, GraphicsEngine* gEngine) : fIdCounter(0), fRequestIdCounter(0), fNLocks(0) {
+EntityManager::EntityManager(const std::string &resourceDir, const Modules *modules) : fIdCounter(0), fRequestIdCounter(0), fNLocks(0) {
 
 	m_resourceDir = resourceDir;
-	this->gEngine = gEngine;
+	this->modules = modules;
 	// because we start counting from 1 for request id's, we add an empty request lock in front
 	fRequestLocks.push_back(RequestLock());
 }
@@ -81,7 +82,7 @@ EntityId EntityManager::createEntity(string type, float xPos, float yPos, float 
 	float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible) {
 
 	// create a new Entity
-	Entity *obj = new Entity(gEngine, fIdCounter, type, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible);
+	Entity *obj = new Entity(modules, fIdCounter, type, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible);
 	//cout << "Created Entity " << fIdCounter << endl;
 	++fIdCounter;
 
@@ -1087,4 +1088,16 @@ Component* EntityManager::getComponent(string EntityName, string Component)
 		}
 	}
 	return NULL;
+}
+
+Entity *EntityManager::getEntity(EntityId id)
+{
+	// make sure the Entity exists
+	if (id < 0 || id >= (int)fEntitys.size() || fEntitys[id] == 0) {
+		stringstream ss;
+		ss << "Failed to get Entity " << id << ": it does not exist!";
+		error(ss);
+	}
+
+	return fEntitys[id];
 }

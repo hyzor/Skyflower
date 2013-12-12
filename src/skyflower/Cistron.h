@@ -2,6 +2,10 @@
 #ifndef INC_CISTRON
 #define INC_CISTRON
 
+#include "graphics/GraphicsEngine.h"
+#include "graphics/InputHandler.h"
+#include "Sound/SoundEngine.h"
+
 // IMPORTANT!
 // decide below which version you want - a version using boost::any or a version using a simple void pointer
 
@@ -12,8 +16,19 @@
 // boostless version - uses plain void pointer
 #define Payload void*
 
-#include "Component.h"
-#include "Entity.h"
-#include "EntityManager.h"
+namespace Cistron {
+
+// Entity & component id
+typedef int EntityId;
+typedef int ComponentId;
+
+struct Modules
+{
+	InputHandler *input;
+	GraphicsEngine *graphics;
+	SoundEngine *sound;
+};
+
+};
 
 #endif

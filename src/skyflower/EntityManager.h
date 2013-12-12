@@ -30,7 +30,7 @@ class EntityManager {
 	public:
 
 		// constructor/destructor
-		EntityManager(const std::string &resourceDir, GraphicsEngine* gEngine);
+		EntityManager(const std::string &resourceDir, const Modules *modules);
 		virtual ~EntityManager();
 
 		// create a new Entity
@@ -138,6 +138,8 @@ class EntityManager {
 		void updateEntityVisibility(bool isVisible, EntityId id);
 		Component* getComponent(string EntityName, string Componenet);
 
+		Entity *getEntity(EntityId id);
+
 	private:
 
 		/**
@@ -222,7 +224,7 @@ class EntityManager {
 
 
 		std::string m_resourceDir;
-		GraphicsEngine* gEngine;
+		const Modules *modules;
 };
 
 };
