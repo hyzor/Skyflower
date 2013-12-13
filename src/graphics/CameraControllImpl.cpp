@@ -1,13 +1,19 @@
 #include "CameraControllImpl.h"
 #include <D3DX10math.h>
 D3DXMATRIX rotate;
+static float Lerp(float a, float b, float amount)
+{
+	return a + (b - a) * amount;
+}
 CameraControllImpl::CameraControllImpl(Camera *c)
 {
 	this->camera = c;
-	offset = 700;
-	rot = 0;
-	rotx = 0;
-	RotateCamera(0, 0);
+	offset = MIN_ZOOM;
+	yaw = 0;
+	pitch = 0;
+	targetPitch = 0;
+	targetYaw = 0;
+	//RotateCamera(0, 0);
 	Vec3 look(camera->GetLook().x, camera->GetLook().y, camera->GetLook().z);
 }
 
@@ -15,7 +21,13 @@ CameraControllImpl::~CameraControllImpl(){}
 
 void CameraControllImpl::Update()
 {
-	Vec3 pos = GetPosition();
+	pitch = Lerp(pitch, targetPitch, 0.002);
+	yaw = Lerp(yaw, targetYaw, 0.002);
+
+	o.Y = sin(pitch);
+	o.X = cos(yaw)*cos(pitch);
+	o.Z = sin(yaw)*cos(pitch);
+
 	camera->LookAt(target);
 	SetPosition(Vec3(target + (o*offset)));
 }
@@ -50,6 +62,7 @@ Vec3 CameraControllImpl::GetDirection()
 void CameraControllImpl::Follow(Vec3 target)
 {
 	this->target = target;
+	this->target.Y += 10;
 }
 
 void CameraControllImpl::SetOffset(float offset)
@@ -59,17 +72,13 @@ void CameraControllImpl::SetOffset(float offset)
 
 void CameraControllImpl::RotateCamera(float mouseX, float mouseY)
 {
-	o.Y = sin(rotx);
-	o.X = cos(rot)*cos(rotx);
-	o.Z = sin(rot)*cos(rotx);
-
-	rot -= mouseX / 200;
-	rotx -= mouseY / 200;
-
-	if (rotx > 1)
-		rotx = 1;
-	else if (rotx < 0)
-		rotx = 0;
+	targetYaw -= mouseX / 200;
+	targetPitch -= mouseY / 200;
+	
+	if (targetPitch > 1)
+		targetPitch = 1;
+	else if (targetPitch < 0)
+		targetPitch = 0;
 }
 
 void CameraControllImpl::Zoom(float d, float speed)
@@ -78,7 +87,3 @@ void CameraControllImpl::Zoom(float d, float speed)
 		offset -= d * speed;
 }
 
-float Lerp(float a, float b, float amount)
-{
-	return 0;
-}

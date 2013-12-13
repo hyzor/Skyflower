@@ -65,8 +65,8 @@ Entity::~Entity() {
 			delete (*it2);
 		}
 	}*/
-	this->modules->graphics->DeleteInstance(this->modelInst);
-	this->modules->graphics->DeleteInstance(this->AnimInst);
+	//this->modules->graphics->DeleteInstance(this->modelInst);
+	//this->modules->graphics->DeleteInstance(this->AnimInst);
 }
 
 const Modules *Entity::getModules()

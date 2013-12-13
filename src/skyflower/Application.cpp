@@ -49,7 +49,7 @@ void Application::Start()
 
 	//loading xml-file, creating entities and components to this entityManager
 	entityManager->loadXML(entityManager, "test22.xml");
-	//entityManager->loadXML(entityManager, "platform2.xml");
+	entityManager->loadXML(entityManager, "platform2.xml");
 
 	//Lindas test
 	//entityManager->loadXML(entityManager, "platform.xml");
@@ -96,7 +96,7 @@ void Application::Start()
 		deltaTime = time - oldTime;
 		oldTime = time;
 
-		camera->Follow(entityManager->getEntityPos("Platform"));
+		camera->Follow(entityManager->getEntityPos("Player"));
 		camera->Update();
 
 		frameTimeChart.AddPoint((float)time, (float)(deltaTime * 1000.0));
@@ -177,7 +177,7 @@ void Application::OnMouseButtonUp(enum MouseButton button)
 
 void Application::OnMouseWheel(int delta)
 {
-	camera->Zoom((float)delta, 50.0f);
+	camera->Zoom((float)delta, 10.0f);
 }
 
 void Application::OnKeyDown(unsigned short key)
