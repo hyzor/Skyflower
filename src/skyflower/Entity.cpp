@@ -222,7 +222,7 @@ void Entity::sendAMessageToAll(string message)
 
 void Entity::sendMessageToEntity(string message, EntityId id)
 {
-	this->fComponents["Monster"].front()->sendMessageToEntity(id, message);
+	this->fComponents["Messenger"].front()->sendMessageToEntity(id, message);
 }
 
 string Entity::getType()

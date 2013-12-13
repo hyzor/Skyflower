@@ -931,6 +931,7 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 					{
 						bool isMovingUpDown = false;
 						bool isMovingFrontBack = false;
+						bool isMovingSideways = false;
 						cout << "hittade en Platformkomponent!" << endl;
 
 						attr = e->Attribute("isMovingUpDown");
@@ -945,7 +946,13 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 							isMovingFrontBack = e->BoolAttribute("isMovingFrontBack");
 						}
 
-						Platform* p = new Platform(isMovingUpDown, isMovingFrontBack);
+						attr = e->Attribute("isMovingSideways");
+						if (attr != NULL)
+						{
+							isMovingSideways = e->BoolAttribute("isMovingSideways");
+						}
+
+						Platform* p = new Platform(xPos, yPos, zPos, isMovingUpDown, isMovingFrontBack, isMovingSideways);
 						entityManager->addComponent(platform, p);
 					}
 					else if (componentName == "Movement")

@@ -20,6 +20,7 @@ public:
 		cout << "Messenger lever!" << endl;
 
 		requestMessage("All", &Messenger::printToAll);
+		requestMessage("update", &Messenger::update);
 	}
 
 private:
@@ -27,6 +28,10 @@ private:
 	void printToAll(Message const & msg)
 	{
 		
+	}
+	void update(Message const & msg)
+	{
+		sendMessageToEntity(this->getOwnerId(), "update");
 	}
 };
 

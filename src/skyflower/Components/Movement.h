@@ -45,8 +45,12 @@ public:
 		requestMessage("MoveRight", &Movement::moveRight);
 		requestMessage("Jump", &Movement::Jump);
 		requestMessage("Update", &Movement::update);
-		requestMessage("moveUpDown", &Movement::moveUpDown);
-		requestMessage("moveFrontBack", &Movement::moveFrontBack);
+		requestMessage("movePlatformUp", &Movement::movePlatformUp);
+		requestMessage("movePlatformDown", &Movement::movePlatformDown);
+		requestMessage("movePlatformFront", &Movement::movePlatformFront);
+		requestMessage("movePlatformBack", &Movement::movePlatformBack);
+		requestMessage("movePlatformLeft", &Movement::movePlatformLeft);
+		requestMessage("movePlatformRight", &Movement::movePlatformRight);
 	}
 
 	void sendAMessage(string message)
@@ -171,19 +175,58 @@ private:
 		applyGravity(msg);
 	}
 
-	void moveUpDown(Message const& msg)
+	void movePlatformUp(Message const& msg)
 	{
 		cout << "Ska rï¿½ra mig upp!" << endl;
 		Vec3 pos = getEntityPos();
-		p->moveUp(pos);
+		pos.Y += 1;
 
 		updateEntityPos(pos);
 	}
 
-	void moveFrontBack(Message const& msg)
+	void movePlatformDown(Message const& msg)
 	{
+		cout << "Ska röra mig ner!" << endl;
 		Vec3 pos = getEntityPos();
+		pos.Y -= 1;
 
+		updateEntityPos(pos);
+	}
+
+	void movePlatformFront(Message const& msg)
+	{
+		cout << "Ska röra mig upp!" << endl;
+		Vec3 pos = getEntityPos();
+		pos.Z += 1;
+
+		updateEntityPos(pos);
+	}
+
+	void movePlatformBack(Message const& msg)
+	{
+		cout << "Ska röra mig upp!" << endl;
+		Vec3 pos = getEntityPos();
+		pos.Z -= 1;
+
+		updateEntityPos(pos);
+	}
+
+	void movePlatformLeft(Message const& msg)
+	{
+		cout << "Ska röra mig upp!" << endl;
+		Vec3 pos = getEntityPos();
+		pos.X -= 1;
+
+		updateEntityPos(pos);
+	}
+
+	void movePlatformRight(Message const& msg)
+	{
+		cout << "Ska röra mig upp!" << endl;
+		Vec3 pos = getEntityPos();
+		pos.X += 1;
+
+		updateEntityPos(pos);
 	}
 
 
