@@ -216,13 +216,17 @@ void Entity::sendAMessageToAll(string message)
 	//}
 
 	//första komponenten med namnet messanger
-	//this->fComponents["Monster"].front()->sendMessage("Hello");
-	this->fComponents["Messenger"].front()->sendMessage(message);
+	this->fComponents["Monster"].front()->sendMessage("Hello");
+	//if (this->fComponents["Messenger"].front() != NULL)
+	//{
+	//	this->fComponents["Messenger"].front()->sendMessage(message);
+	//}
+
 }
 
 void Entity::sendMessageToEntity(string message, EntityId id)
 {
-	this->fComponents["Messenger"].front()->sendMessageToEntity(id, message);
+	this->fComponents["Monster"].front()->sendMessageToEntity(id, message);
 }
 
 string Entity::getType()

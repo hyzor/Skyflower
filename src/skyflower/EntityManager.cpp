@@ -965,6 +965,23 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 						Messenger *m = new Messenger();
 						entityManager->addComponent(platform, m);
 					}
+					else if (componentName == "Monster")
+					{
+						attr = e->Attribute("name");
+
+						string name = "";
+						if (attr != NULL)
+						{
+							name = e->Attribute("name");
+						}
+						else
+							return false;
+
+						//create the Monster component and add that component to the Player entity
+						Monster *m1 = new Monster(name);
+						entityManager->addComponent(platform, m1);
+
+					}
 				}
 			}
 		}

@@ -197,7 +197,7 @@ private:
 	{
 		cout << "Ska röra mig upp!" << endl;
 		Vec3 pos = getEntityPos();
-		pos.Z += 1;
+		pos.X += 1;
 
 		updateEntityPos(pos);
 	}
@@ -206,7 +206,7 @@ private:
 	{
 		cout << "Ska röra mig upp!" << endl;
 		Vec3 pos = getEntityPos();
-		pos.Z -= 1;
+		pos.X -= 1;
 
 		updateEntityPos(pos);
 	}

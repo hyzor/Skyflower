@@ -49,7 +49,10 @@ void Application::Start()
 
 	//loading xml-file, creating entities and components to this entityManager
 	entityManager->loadXML(entityManager, "test22.xml");
-	entityManager->loadXML(entityManager, "platform2.xml");
+	//entityManager->loadXML(entityManager, "platform2.xml");
+
+	//Lindas test
+	entityManager->loadXML(entityManager, "platform.xml");
 
 	////sends a message to all components in all entities in that manager
 	//entityManager->sendMessageToAllEntities("Hello");
@@ -90,7 +93,7 @@ void Application::Start()
 		deltaTime = time - oldTime;
 		oldTime = time;
 
-		camera->Follow(entityManager->getEntityPos("Player"));
+		camera->Follow(entityManager->getEntityPos("Platform"));
 		camera->Update();
 
 		frameTimeChart.AddPoint((float)time, (float)(deltaTime * 1000.0));
@@ -103,7 +106,14 @@ void Application::Start()
 			//memoryChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, 256.0f);
 		}
 
+
 		this->entityManager->sendMessageToEntity("Update", "Player");
+
+
+		//Lindas test
+		Sleep(100);
+		this->entityManager->sendMessageToEntity("update", "Platform");
+		////this->entityManager->sendMessageToAllEntities("update");
 
 		m_graphicsEngine->DrawScene();
 		m_graphicsEngine->UpdateScene((float)deltaTime);

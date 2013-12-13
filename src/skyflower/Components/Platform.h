@@ -15,12 +15,18 @@ class Platform : public Component {
 public:
 
 	// constructor - age is fixed at creation time
-	Platform(float xPos, float yPos, float zPos, bool isMovingUpDown, bool isMovingFrontBack, bool isMovingSideways) : Component("Movement"), isMovingUpDown(isMovingUpDown), isMovingFrontBack(), isMovingSideways(isMovingSideways)
+	Platform(float xPos, float yPos, float zPos, bool isMovingUpDown, bool isMovingFrontBack, bool isMovingSideways) : Component("Movement"), isMovingUpDown(isMovingUpDown), isMovingFrontBack(isMovingFrontBack), isMovingSideways(isMovingSideways)
 	{
 		this->p = new Physics();
 		this->startPos.X = xPos;
 		this->startPos.Y = yPos;
 		this->startPos.Z = zPos;
+		this->isMovingUp = true;
+		this->isMovingDown = false;
+		this->isMovingFront = true;
+		this->isMovingBack = false;
+		this->isMovingLeft = true;
+		this->isMovingRight = false;
 		this->maxMove = 10;
 
 	};
@@ -78,18 +84,50 @@ private:
 					sendMessageToEntity(this->getOwnerId(), "movePlatformUp");
 				}
 			}
-			else
+			else if (isMovingDown)
 			{
 				//if moving too far down
 				if (temp.Y < this->startPos.Y - this->maxMove)
 				{
 					sendMessageToEntity(this->getOwnerId(), "movePlatformUp");
-					this->isMovingUp = false;
-					this->isMovingDown = true;
+					this->isMovingUp = true;
+					this->isMovingDown = false;
 				}
 				else
 				{
 					sendMessageToEntity(this->getOwnerId(), "movePlatformDown");
+				}
+			}
+		}
+		if (this->isMovingFrontBack)
+		{
+			Vec3 temp = this->getEntityPos();
+			if (isMovingFront)
+			{
+				//if moving too much forward
+				if (temp.X > this->startPos.X + this->maxMove)
+				{
+					sendMessageToEntity(this->getOwnerId(), "movePlatformBack");
+					this->isMovingFront = false;
+					this->isMovingBack = true;
+				}
+				else
+				{
+					sendMessageToEntity(this->getOwnerId(), "movePlatformFront");
+				}
+			}
+			else if (isMovingBack)
+			{
+				//if moving too far down
+				if (temp.X < this->startPos.X - this->maxMove)
+				{
+					sendMessageToEntity(this->getOwnerId(), "movePlatformFront");
+					this->isMovingFront = true;
+					this->isMovingBack = false;
+				}
+				else
+				{
+					sendMessageToEntity(this->getOwnerId(), "movePlatformBack");
 				}
 			}
 		}
