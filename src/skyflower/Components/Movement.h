@@ -161,9 +161,12 @@ private:
 
 		if (p->jump(pos))
 		{
-			if (getOwner()) {
+			Entity *owner = getOwner();
+
+			if (owner)
+			{
 				float soundPosition[3] = {0.0f, 0.0f, 0.0f};
-				getOwner()->getModules()->sound->PlaySound("player/jump1.wav", soundPosition, 1.0f, true); 
+				owner->getModules()->sound->PlaySound("player/jump1.wav", soundPosition, 1.0f, true); 
 			}
 		}
 

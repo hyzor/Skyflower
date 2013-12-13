@@ -68,7 +68,10 @@ void Application::Start()
 	//ModelInstance* d = m_graphicsEngine->CreateInstance("Data\\Models\\duck.obj", Vec3(-100, 50, 0));
 	//d->SetRotation(Vec3(-3.14f/2, 3.14f/4));
 
+	float listenerForward[3] = {0.0f, 0.0f, 1.0f};
+	float listenerUp[3] = {0.0f, 1.0f, 0.0f};
 	Listener *listener = m_soundEngine->CreateListener();
+	listener->SetOrientation(listenerForward, listenerUp);
 	m_soundEngine->SetActiveListener(listener);
 
 	LineChart frameTimeChart(1024 * 1024);
