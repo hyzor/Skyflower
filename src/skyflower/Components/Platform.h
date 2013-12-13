@@ -66,7 +66,6 @@ private:
 
 	void update(Message const& msg)
 	{
-		cout << "got update message!" << endl;
 		if (this->isMovingUpDown)
 		{
 			Vec3 temp = this->getEntityPos();
@@ -128,6 +127,38 @@ private:
 				else
 				{
 					sendMessageToEntity(this->getOwnerId(), "movePlatformBack");
+				}
+			}
+		}
+		if (this->isMovingSideways)
+		{
+			Vec3 temp = this->getEntityPos();
+			if (isMovingRight)
+			{
+				//if moving too much forward
+				if (temp.Z > this->startPos.Z + this->maxMove)
+				{
+					sendMessageToEntity(this->getOwnerId(), "movePlatformLeft");
+					this->isMovingRight = false;
+					this->isMovingLeft = true;
+				}
+				else
+				{
+					sendMessageToEntity(this->getOwnerId(), "movePlatformRight");
+				}
+			}
+			else if (isMovingLeft)
+			{
+				//if moving too far down
+				if (temp.Z < this->startPos.Z - this->maxMove)
+				{
+					sendMessageToEntity(this->getOwnerId(), "movePlatformRight");
+					this->isMovingRight = true;
+					this->isMovingLeft = false;
+				}
+				else
+				{
+					sendMessageToEntity(this->getOwnerId(), "movePlatformLeft");
 				}
 			}
 		}

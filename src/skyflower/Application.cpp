@@ -52,7 +52,7 @@ void Application::Start()
 	//entityManager->loadXML(entityManager, "platform2.xml");
 
 	//Lindas test
-	entityManager->loadXML(entityManager, "platform.xml");
+	//entityManager->loadXML(entityManager, "platform.xml");
 
 	////sends a message to all components in all entities in that manager
 	//entityManager->sendMessageToAllEntities("Hello");
@@ -111,8 +111,8 @@ void Application::Start()
 
 
 		//Lindas test
-		Sleep(100);
-		this->entityManager->sendMessageToEntity("update", "Platform");
+		//Sleep(100);
+		//this->entityManager->sendMessageToEntity("update", "Platform");
 		////this->entityManager->sendMessageToAllEntities("update");
 
 		m_graphicsEngine->DrawScene();
