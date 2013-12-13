@@ -20,6 +20,13 @@ static const std::string footstepSounds[] = {
 	"player/footstep2.wav",
 	"player/footstep3.wav",
 	"player/footstep4.wav",
+	"player/footstep5.wav",
+	"player/footstep6.wav",
+	"player/footstep7.wav",
+	"player/footstep8.wav",
+	"player/footstep9.wav",
+	"player/footstep10.wav",
+	"player/footstep11.wav"
 };
 
 class FootstepsComponent : public Component
