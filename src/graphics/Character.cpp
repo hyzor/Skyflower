@@ -24,7 +24,7 @@ Character::~Character()
 
 void Character::Draw(ID3D11DeviceContext* dc, ID3DX11EffectTechnique* activeTech, Camera* camera)
 {
-	mAnimEntity->Draw(dc, activeTech, camera);
+	//mAnimEntity->Draw(dc, activeTech, camera);
 }
 
 void Character::Update(float dt)

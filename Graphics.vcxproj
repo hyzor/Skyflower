@@ -35,6 +35,7 @@
     <ClCompile Include="src\graphics\GeometryGenerator.cpp" />
     <ClCompile Include="src\graphics\GraphicsEngine.cpp" />
     <ClCompile Include="src\graphics\GraphicsEngineImpl.cpp" />
+    <ClCompile Include="src\graphics\InstanceImpl.cpp" />
     <ClCompile Include="src\graphics\MathHelper.cpp" />
     <ClCompile Include="src\graphics\SkinnedData.cpp" />
     <ClCompile Include="src\graphics\Sky.cpp" />
@@ -60,6 +61,8 @@
     <ClInclude Include="src\graphics\GeometryGenerator.h" />
     <ClInclude Include="src\graphics\GraphicsEngine.h" />
     <ClInclude Include="src\graphics\GraphicsEngineImpl.h" />
+    <ClInclude Include="src\graphics\Instance.h" />
+    <ClInclude Include="src\graphics\InstanceImpl.h" />
     <ClInclude Include="src\graphics\LightDef.h" />
     <ClInclude Include="src\graphics\MathHelper.h" />
     <ClInclude Include="src\graphics\SkinnedData.h" />

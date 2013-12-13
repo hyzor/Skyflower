@@ -10,7 +10,7 @@ using namespace Cistron;
 
 // constructor/destructor
 Entity::Entity(const Modules *modules, EntityId id, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
-	float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible) : fId(id), type(type), fFinalized(false)
+	float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated) : fId(id), type(type), fFinalized(false)
 {
 	this->type = type;
 
@@ -31,10 +31,24 @@ Entity::Entity(const Modules *modules, EntityId id, string type, float xPos, flo
 
 	this->modules = modules;
 
-	this->modelInst = this->modules->graphics->CreateInstance(this->model, Vec3(this->pos.X, this->pos.Y, this->pos.Z));
-	this->modelInst->SetRotation(this->rot);
-	this->modelInst->SetScale(this->scale);
-	this->modelInst->SetVisibility(this->isVisible);
+	if (isVisible)
+	{
+		if (!isAnimated)
+		{
+			this->modelInst = this->modules->graphics->CreateInstance(this->model, Vec3(this->pos.X, this->pos.Y, this->pos.Z));
+			this->modelInst->SetRotation(this->rot);
+			this->modelInst->SetScale(this->scale);
+			this->modelInst->SetVisibility(this->isVisible);
+		}
+		else
+		{
+			this->AnimInst = this->modules->graphics->CreateAnimatedInstance(this->model);
+			this->AnimInst->SetPosition(Vec3(this->pos.X, this->pos.Y, this->pos.Z));
+			this->AnimInst->SetRotation(this->rot);
+			this->AnimInst->SetScale(this->scale);
+			this->AnimInst->SetVisibility(this->isVisible);
+		}
+	}
 	
 	if (isCollidible)
 		collInst = Collision::GetInstance()->CreateCollisionInstance(model, pos);
@@ -52,6 +66,7 @@ Entity::~Entity() {
 		}
 	}*/
 	this->modules->graphics->DeleteInstance(this->modelInst);
+	this->modules->graphics->DeleteInstance(this->AnimInst);
 }
 
 const Modules *Entity::getModules()
@@ -263,7 +278,10 @@ CollisionInstance* Entity::returnCollision()
 void Entity::updatePos(Vec3 pos)
 {
 	this->pos = pos;
-	this->modelInst->SetPosition(pos);
+	if(this->modelInst)
+		this->modelInst->SetPosition(pos);
+	if (this->AnimInst)
+		this->AnimInst->SetPosition(pos);
 	if (this->collInst)
 		this->collInst->Position = pos;
 	//cout << this->pos.X << endl;
@@ -272,7 +290,10 @@ void Entity::updatePos(Vec3 pos)
 void Entity::updateRot(Vec3 rot)
 {
 	this->rot = rot;
-	this->modelInst->SetRotation(rot);
+	if(this->modelInst)
+		this->modelInst->SetRotation(rot);
+	if (this->AnimInst)
+		this->AnimInst->SetRotation(rot);
 }
 
 void Entity::updateScale(Vec3 scale)

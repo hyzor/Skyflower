@@ -84,6 +84,9 @@
     <ClCompile Include="src\graphics\CameraControllImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\graphics\InstanceImpl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\graphics\xnacollision.h">
@@ -156,6 +159,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics\CameraControllImpl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\Instance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\InstanceImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

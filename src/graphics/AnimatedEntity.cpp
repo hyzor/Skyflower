@@ -27,7 +27,7 @@ AnimatedEntity::~AnimatedEntity(void)
 {
 }
 
-void AnimatedEntity::Draw( ID3D11DeviceContext* dc, ID3DX11EffectTechnique* activeTech, Camera* mCamera)
+void AnimatedEntity::Draw( ID3D11DeviceContext* dc, ID3DX11EffectTechnique* activeTech, Camera* mCamera, XMMATRIX &world)
 {
 	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	dc->IASetInputLayout(InputLayouts::PosNormalTexTanSkinned);
@@ -35,7 +35,6 @@ void AnimatedEntity::Draw( ID3D11DeviceContext* dc, ID3DX11EffectTechnique* acti
 	UINT stride = sizeof(Vertex::PosNormalTexTanSkinned);
 	UINT offset = 0;
 
-	XMMATRIX world;
 	XMMATRIX worldInvTranspose;
 	XMMATRIX worldViewProj;
 
@@ -53,7 +52,6 @@ void AnimatedEntity::Draw( ID3D11DeviceContext* dc, ID3DX11EffectTechnique* acti
 	D3DX11_TECHNIQUE_DESC techDesc;
 	activeTech->GetDesc(&techDesc);
 
-	world = XMLoadFloat4x4(&mInstance.world);
 	worldInvTranspose = MathHelper::InverseTranspose(world);
 	worldViewProj = world*view*proj;
 
@@ -92,16 +90,16 @@ void AnimatedEntity::SetPosition(XMFLOAT3 pos)
 {
 	this->Position = pos;
 
-	XMMATRIX modelScale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
+	/*XMMATRIX modelScale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
 	XMMATRIX modelRot = XMMatrixRotationY(0.0f);
 	XMMATRIX modelOffset = XMMatrixTranslation(Position.x, Position.y, Position.z);
-	XMStoreFloat4x4(&mInstance.world, modelScale*modelRot*modelOffset);
+	XMStoreFloat4x4(&mInstance.world, modelScale*modelRot*modelOffset);*/
 }
 
 void AnimatedEntity::RotateXYZ(XMFLOAT3 rot, float yaw, XMVECTOR Up)
 {
-	XMMATRIX modelRot = XMMatrixRotationX(rot.x) * XMMatrixRotationY(rot.y) * XMMatrixRotationZ(rot.z) * XMMatrixRotationAxis(Up, yaw);
+	/*XMMATRIX modelRot = XMMatrixRotationX(rot.x) * XMMatrixRotationY(rot.y) * XMMatrixRotationZ(rot.z) * XMMatrixRotationAxis(Up, yaw);
 	XMMATRIX modelScale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
 	XMMATRIX modelOffset = XMMatrixTranslation(Position.x, Position.y, Position.z);
-	XMStoreFloat4x4(&mInstance.world, modelScale*modelRot*modelOffset);
+	XMStoreFloat4x4(&mInstance.world, modelScale*modelRot*modelOffset);*/
 }

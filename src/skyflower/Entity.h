@@ -29,7 +29,7 @@ class Entity {
 
 		// constructor/destructor
 		Entity(const Modules *modules, EntityId id, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
-			 float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible);
+			 float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated);
 		virtual ~Entity();
 		void sendPosToComponent();
 	
@@ -46,6 +46,7 @@ class Entity {
 		string model;
 		bool isVisible;
 		ModelInstance* modelInst;
+		AnimatedInstance* AnimInst;
 		CollisionInstance* collInst;
 
 		/**

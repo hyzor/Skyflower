@@ -17,40 +17,8 @@
 //#include "AnimatedEntity.h"
 #include "Character.h"
 #include "GraphicsEngine.h"
+#include "InstanceImpl.h"
 
-class ModelInstanceImpl : public ModelInstance
-{
-public:
-	ModelInstanceImpl(Vec3 pos, Vec3 rot, Vec3 scale);
-	~ModelInstanceImpl();
-
-	bool IsVisible();
-	Vec3 GetPosition();
-	Vec3 GetRotation();
-	Vec3 GetScale();
-
-	void SetVisibility(bool visible);
-	void SetPosition(Vec3 pos);
-	void SetRotation(Vec3 rot);
-	void SetScale(Vec3 scale);
-	void Set(Vec3 pos, Vec3 rot, Vec3 scale);
-
-	XMMATRIX GetWorld();
-
-	GenericModel* model;
-
-private:
-	XMFLOAT4X4 modelOffset;
-	XMFLOAT4X4 modelRot;
-	XMFLOAT4X4 modelScale;
-	XMFLOAT4X4 modelWorld;
-
-	bool isVisible;
-	Vec3 pos;
-	Vec3 rot;
-	Vec3 scale;
-
-};
 
 
 class GraphicsEngineImpl : public GraphicsEngine
@@ -70,6 +38,9 @@ public:
 	ModelInstance* CreateInstance(std::string file, Vec3 pos);
 	CameraController *CreateCameraController();
 	void DeleteInstance(ModelInstance* mi);
+
+	AnimatedInstance* CreateAnimatedInstance(std::string file);
+	void DeleteInstance(AnimatedInstance* ai);
 
 	void OnResize();
 
@@ -94,6 +65,7 @@ private:
 	std::map<std::string, GenericSkinnedModel*> mSkinnedModels;
 
 	std::vector<ModelInstanceImpl*> mInstances;
+	std::vector<AnimatedInstanceImpl*> mAnimatedInstances;
 	//std::vector<GenericSkinnedModelInstance> mSkinnedInstances;
 
 	AnimatedEntity* mAnimatedEntity;

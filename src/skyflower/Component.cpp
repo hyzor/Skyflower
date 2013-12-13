@@ -89,7 +89,7 @@ void Component::addComponent(EntityId objId, Component *c) {
 
 // create an Entity
 EntityId Component::createEntity(string type) {
-	return fEntityManager->createEntity(type, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, "", false, false);
+	return fEntityManager->createEntity(type, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, "", false, false, false);
 }
 
 // finalize an Entity

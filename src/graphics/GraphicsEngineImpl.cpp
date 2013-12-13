@@ -22,6 +22,12 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 			delete mInstances[i];
 	}
 
+	for (unsigned int i = 0; i < mAnimatedInstances.size(); i++)
+	{
+		if (mAnimatedInstances[i])
+			delete mAnimatedInstances[i];
+	}
+
 	for (auto& it(mSkinnedModels.begin()); it != mSkinnedModels.end(); ++it)
 	{
 		if (it->second)
@@ -231,7 +237,13 @@ void GraphicsEngineImpl::DrawScene()
 	mEffects->NormalMapFX->SetDirLights(mDirLights);
 
 	// Draw animated character
-	mCharacter->Draw(mDirect3D->GetImmediateContext(), mEffects->NormalMapFX->DirLights3TexSkinnedTech, mCamera);
+	for (UINT i = 0; i < mAnimatedInstances.size(); ++i)
+	{
+		if (mAnimatedInstances[i]->IsVisible())
+		{
+			mAnimatedInstances[i]->model->Draw(mDirect3D->GetImmediateContext(), mEffects->NormalMapFX->DirLights3TexSkinnedTech, mCamera, mAnimatedInstances[i]->GetWorld());
+		}
+	}
 
 	// Draw sky
 	mSky->draw(mDirect3D->GetImmediateContext(), *mCamera, false);
@@ -251,7 +263,12 @@ void GraphicsEngineImpl::UpdateScene(float dt)
 
 	mCamera->UpdateViewMatrix();
 
-	mCharacter->Update(dt);
+
+	for (int i = 0; i < mAnimatedInstances.size(); i++)
+	{
+		mAnimatedInstances[i]->model->SetKeyFrameInterval(mAnimatedInstances[i]->model->mAnimations[mAnimatedInstances[i]->model->mCurAnim].FrameStart, mAnimatedInstances[i]->model->mAnimations[mAnimatedInstances[i]->model->mCurAnim].FrameEnd);
+		mAnimatedInstances[i]->model->Update(dt);
+	}
 }
 ModelInstance* GraphicsEngineImpl::CreateInstance(std::string file)
 {
@@ -310,103 +327,63 @@ void GraphicsEngineImpl::DeleteInstance(ModelInstance* m)
 }
 
 
-ModelInstanceImpl::ModelInstanceImpl(Vec3 pos, Vec3 rot, Vec3 scale)
+AnimatedInstance* GraphicsEngineImpl::CreateAnimatedInstance(std::string file)
 {
-	this->isVisible = true;
-	Set(pos, rot, scale);
+	if (mModels.find(file) == mModels.end())
+	{
+		std::stringstream ss;
+		ss << file << ".dae";
+		mSkinnedModels[file] = new GenericSkinnedModel(mDirect3D->GetDevice(),
+			mTextureMgr,
+			mResourceDir + ss.str(),
+			mResourceDir + "Models\\Character\\");
+	}
+
+	AnimatedInstanceImpl* mi = new AnimatedInstanceImpl(Vec3(), Vec3(), Vec3(1, 1, 1));
+	mi->model = new AnimatedEntity(mSkinnedModels[file], XMFLOAT3(0,0,0));
+
+	// Cache animation keyframes
+	mi->model->mAnimations.push_back(AnimatedEntity::Animation(0, 51 + 15, 51 + 15));
+	mi->model->mAnimations.push_back(AnimatedEntity::Animation(1, 1, 24 + 7));
+	mi->model->mAnimations.push_back(AnimatedEntity::Animation(2, 1, 24 + 7));
+	mi->model->mAnimations.push_back(AnimatedEntity::Animation(3, 30 + 7, 49 + 10));
+	mi->model->mAnimations.push_back(AnimatedEntity::Animation(4, 51 + 15, 75 + 20));
+	mi->model->mAnimations.push_back(AnimatedEntity::Animation(5, 81 + 20, 105 + 25));
+
+	mi->model->mCurAnim = 1;
+
+	mAnimatedInstances.push_back(mi);
+	return mi;
 }
-
-ModelInstanceImpl::~ModelInstanceImpl()
+void GraphicsEngineImpl::DeleteInstance(AnimatedInstance* ai)
 {
-}
+	AnimatedInstanceImpl* mi = (AnimatedInstanceImpl*)ai;
 
-void ModelInstanceImpl::SetPosition(Vec3 pos)
-{
-	this->pos = pos;
+	bool found = false;
+	int index = -1;
+	for (unsigned int i = 0; i < mAnimatedInstances.size(); i++)
+	{
+		if (mi == mAnimatedInstances[i])
+			index = i;
+		else if (mi->model->mInstance.model == mAnimatedInstances[i]->model->mInstance.model)
+			found = true;
+	}
 
-	XMMATRIX offset = XMMatrixTranslation(pos.X, pos.Y, pos.Z);
-	XMMATRIX rot = XMLoadFloat4x4(&modelRot);
-	XMMATRIX scale = XMLoadFloat4x4(&modelScale);
+	if (index != -1)
+		mInstances.erase(mInstances.begin() + index);
 
-	XMMATRIX world = scale*rot*offset;
+	if (!found) //delete model if no other instance uses it
+	{
+		for (std::map<std::string, GenericSkinnedModel*>::iterator it = mSkinnedModels.begin(); it != mSkinnedModels.end(); it++)
+		{
+			if (it->second == mi->model->mInstance.model)
+			{
+				mSkinnedModels.erase(it);
+				break;
+			}
+		}
+		delete mi->model;
+	}
 
-	XMStoreFloat4x4(&modelOffset, offset);
-	XMStoreFloat4x4(&modelWorld, world);
-}
-
-void ModelInstanceImpl::SetRotation(Vec3 rot)
-{
-	this->rot = rot;
-
-	XMMATRIX offset = XMLoadFloat4x4(&modelOffset);
-	XMMATRIX scale = XMLoadFloat4x4(&modelScale);
-
-	XMMATRIX mrot = XMMatrixRotationX(rot.X);
-	mrot *= XMMatrixRotationY(rot.Y);
-	mrot *= XMMatrixRotationZ(rot.Z);
-
-	XMMATRIX world = scale*mrot*offset;
-
-	XMStoreFloat4x4(&modelRot, mrot);
-	XMStoreFloat4x4(&modelWorld, world);
-}
-
-void ModelInstanceImpl::SetScale(Vec3 scale)
-{
-	this->scale = scale;
-
-	XMMATRIX offset = XMLoadFloat4x4(&modelOffset);
-	XMMATRIX rot = XMLoadFloat4x4(&modelRot);
-	XMMATRIX mscale = XMMatrixScaling(scale.X, scale.Y, scale.Z);
-
-	XMMATRIX world = mscale*rot*offset;
-
-	XMStoreFloat4x4(&modelScale, mscale);
-	XMStoreFloat4x4(&modelWorld, world);
-}
-
-void ModelInstanceImpl::Set(Vec3 pos, Vec3 rot, Vec3 scale)
-{
-	this->pos = pos;
-	this->rot = rot;
-	this->scale = scale;
-
-	XMMATRIX offset = XMMatrixTranslation(pos.X, pos.Y, pos.Z);
-	XMMATRIX mrot = XMMatrixRotationX(rot.X);
-	mrot *= XMMatrixRotationY(rot.Y);
-	mrot *= XMMatrixRotationZ(rot.Z);
-	XMMATRIX mscale = XMMatrixScaling(scale.X, scale.Y, scale.Z);
-
-	XMMATRIX world = mscale*mrot*offset;
-
-	XMStoreFloat4x4(&modelOffset, offset);
-	XMStoreFloat4x4(&modelRot, mrot);
-	XMStoreFloat4x4(&modelScale, mscale);
-	XMStoreFloat4x4(&modelWorld, world);
-}
-
-void ModelInstanceImpl::SetVisibility(bool visible)
-{
-	isVisible = visible;
-}
-bool ModelInstanceImpl::IsVisible()
-{
-	return isVisible;
-}
-Vec3 ModelInstanceImpl::GetPosition()
-{
-	return pos;
-}
-Vec3 ModelInstanceImpl::GetRotation()
-{
-	return rot;
-}
-Vec3 ModelInstanceImpl::GetScale()
-{
-	return scale;
-}
-
-XMMATRIX ModelInstanceImpl::GetWorld()
-{
-	return XMLoadFloat4x4(&modelWorld);
+	delete mi;
 }
