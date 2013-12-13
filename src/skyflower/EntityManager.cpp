@@ -931,6 +931,7 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 					{
 						bool isMovingUpDown = false;
 						bool isMovingFrontBack = false;
+						bool isMovingSideways = false;
 						cout << "hittade en Platformkomponent!" << endl;
 
 						attr = e->Attribute("isMovingUpDown");
@@ -945,7 +946,13 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 							isMovingFrontBack = e->BoolAttribute("isMovingFrontBack");
 						}
 
-						Platform* p = new Platform(isMovingUpDown, isMovingFrontBack);
+						attr = e->Attribute("isMovingSideways");
+						if (attr != NULL)
+						{
+							isMovingSideways = e->BoolAttribute("isMovingSideways");
+						}
+
+						Platform* p = new Platform(xPos, yPos, zPos, isMovingUpDown, isMovingFrontBack, isMovingSideways);
 						entityManager->addComponent(platform, p);
 					}
 					else if (componentName == "Movement")
@@ -957,6 +964,23 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 					{
 						Messenger *m = new Messenger();
 						entityManager->addComponent(platform, m);
+					}
+					else if (componentName == "Monster")
+					{
+						attr = e->Attribute("name");
+
+						string name = "";
+						if (attr != NULL)
+						{
+							name = e->Attribute("name");
+						}
+						else
+							return false;
+
+						//create the Monster component and add that component to the Player entity
+						Monster *m1 = new Monster(name);
+						entityManager->addComponent(platform, m1);
+
 					}
 				}
 			}

@@ -5,3 +5,5 @@
 #include "Components/Input.h"
 #include "Components/Render.h"
 #include "Components/Platform.h"
+#include "Components/Listener.h"
+#include "Components/Footsteps.h"

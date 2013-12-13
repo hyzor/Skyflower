@@ -49,7 +49,10 @@ void Application::Start()
 
 	//loading xml-file, creating entities and components to this entityManager
 	entityManager->loadXML(entityManager, "test22.xml");
-	entityManager->loadXML(entityManager, "platform2.xml");
+	//entityManager->loadXML(entityManager, "platform2.xml");
+
+	//Lindas test
+	//entityManager->loadXML(entityManager, "platform.xml");
 
 	////sends a message to all components in all entities in that manager
 	//entityManager->sendMessageToAllEntities("Hello");
@@ -65,7 +68,10 @@ void Application::Start()
 	//ModelInstance* d = m_graphicsEngine->CreateInstance("Data\\Models\\duck.obj", Vec3(-100, 50, 0));
 	//d->SetRotation(Vec3(-3.14f/2, 3.14f/4));
 
+	float listenerForward[3] = {0.0f, 0.0f, 1.0f};
+	float listenerUp[3] = {0.0f, 1.0f, 0.0f};
 	Listener *listener = m_soundEngine->CreateListener();
+	listener->SetOrientation(listenerForward, listenerUp);
 	m_soundEngine->SetActiveListener(listener);
 
 	LineChart frameTimeChart(1024 * 1024);
@@ -90,7 +96,7 @@ void Application::Start()
 		deltaTime = time - oldTime;
 		oldTime = time;
 
-		camera->Follow(entityManager->getEntityPos("Player"));
+		camera->Follow(entityManager->getEntityPos("Platform"));
 		camera->Update();
 
 		frameTimeChart.AddPoint((float)time, (float)(deltaTime * 1000.0));
@@ -103,7 +109,14 @@ void Application::Start()
 			//memoryChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, 256.0f);
 		}
 
+
 		this->entityManager->sendMessageToEntity("Update", "Player");
+
+
+		//Lindas test
+		//Sleep(100);
+		//this->entityManager->sendMessageToEntity("update", "Platform");
+		////this->entityManager->sendMessageToAllEntities("update");
 
 		m_graphicsEngine->DrawScene();
 		m_graphicsEngine->UpdateScene((float)deltaTime);

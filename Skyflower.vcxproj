@@ -37,7 +37,9 @@
     <ClInclude Include="src\skyflower\Cistron.h" />
     <ClInclude Include="src\skyflower\Component.h" />
     <ClInclude Include="src\skyflower\ComponentHeaders.h" />
+    <ClInclude Include="src\skyflower\Components\Footsteps.h" />
     <ClInclude Include="src\skyflower\Components\Input.h" />
+    <ClInclude Include="src\skyflower\Components\Listener.h" />
     <ClInclude Include="src\skyflower\Components\Messenger.h" />
     <ClInclude Include="src\skyflower\Components\Monster.h" />
     <ClInclude Include="src\skyflower\Components\Movement.h" />
