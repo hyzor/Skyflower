@@ -10,6 +10,7 @@
 enum AudioDecoders
 {
 	AudioDecoderWAV = 0,
+	AudioDecoderOpus,
 	AudioDecoderCount
 };
 

@@ -106,7 +106,7 @@ bool AudioDecoderWAVInit(struct AudioResource *resource)
 	resource->info.bitDepth = bitDepth;
 	resource->context = (void *)context;
 
-	//printf("AudioDecoderWAV, shouldStream=%d, bufferCount=%d, channels=%d, sampleRate=%d, bitDepth=%d\n", shouldStream, (int)ceil(resource->totalSamples / (float)resource->samplesPerBuffer), channels, sampleRate, bitDepth);
+	//printf("AudioDecoderWAV, shouldStream=%d, bufferCount=%d, channels=%d, sampleRate=%d, bitDepth=%d\n", shouldStream, (int)ceil(resource->info.totalSamples / (float)resource->info.samplesPerBuffer), channels, sampleRate, bitDepth);
 
 	return true;
 }

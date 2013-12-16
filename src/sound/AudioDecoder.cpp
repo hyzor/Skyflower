@@ -1,7 +1,8 @@
 #include "AudioDecoder.h"
 #include "AudioDecoderWAV.h"
+#include "AudioDecoderOpus.h"
 
 const struct AudioDecoder audioDecoders[AudioDecoderCount] = {
-	// AudioDecoderWAV
-	{ AudioDecoderWAVInit, AudioDecoderWAVRelease, AudioDecoderWAVFillBuffer }
+	{ AudioDecoderWAVInit,  AudioDecoderWAVRelease,  AudioDecoderWAVFillBuffer },
+	{ AudioDecoderOpusInit, AudioDecoderOpusRelease, AudioDecoderOpusFillBuffer }
 };
