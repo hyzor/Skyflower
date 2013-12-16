@@ -27,7 +27,7 @@ public:
 		this->isMovingBack = false;
 		this->isMovingLeft = true;
 		this->isMovingRight = false;
-		this->maxMove = 10;
+		this->maxMove = 20;
 
 	};
 	virtual ~Platform() { delete this->p; };

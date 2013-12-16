@@ -36,8 +36,6 @@ public:
 
 		//requestMessage("NextYear", &Movement::nextYear);
 
-	
-		requestMessage("CheckCollision", &Movement::checkCollision);
 		//requestMessage("CheckInput", &Movement::inputMovement);
 		requestMessage("MoveForward", &Movement::moveForward);
 		requestMessage("MoveBackward", &Movement::moveBackward);
@@ -52,21 +50,10 @@ public:
 		requestMessage("movePlatformRight", &Movement::movePlatformRight);
 	}
 
-	void sendAMessage(string message)
-	{
-		//cout << "hej det är jag som ropar på denna funktionen: " << this->fName << endl;
-		sendMessage(message);
-	}
-private:
-	Physics* p;
-
-	void applyGravity()
+	void update(float deltaTime)
 	{
 		Vec3 pos = getEntityPos();
-		p->update(0.001f);
-		this->p->addGravityCalc(pos);
-
-		//pos.Y -= 0.01f;
+		p->update(deltaTime);
 
 		std::vector<CollisionInstance*> instances = Collision::GetInstance()->GetCollisionInstances();
 		Ray r = Ray(pos+Vec3(0,5,0), Vec3(0, -5, 0));
@@ -93,10 +80,13 @@ private:
 		updateEntityPos(pos);
 	}
 
-	void checkCollision(Message const& msg)
+	void sendAMessage(string message)
 	{
-		applyGravity();
+		//cout << "hej det är jag som ropar på denna funktionen: " << this->fName << endl;
+		sendMessage(message);
 	}
+private:
+	Physics* p;
 
 	void moveForward(Message const& msg)
 	{
@@ -177,16 +167,11 @@ private:
 		updateEntityPos(pos);
 	}
 
-	void update(float deltaTime)
-	{
-		applyGravity();
-	}
-
 	void movePlatformUp(Message const& msg)
 	{
 		//cout << "Ska rï¿½ra mig upp!" << endl;
 		Vec3 pos = getEntityPos();
-		pos.Y += 1;
+		pos.Y += 0.1;
 
 		updateEntityPos(pos);
 	}
@@ -195,7 +180,7 @@ private:
 	{
 		//cout << "Ska röra mig ner!" << endl;
 		Vec3 pos = getEntityPos();
-		pos.Y -= 1;
+		pos.Y -= 0.1;
 
 		updateEntityPos(pos);
 	}
@@ -204,7 +189,7 @@ private:
 	{
 		//cout << "Ska röra mig fram!" << endl;
 		Vec3 pos = getEntityPos();
-		pos.X += 1;
+		pos.X += 0.1;
 
 		updateEntityPos(pos);
 	}
@@ -213,7 +198,7 @@ private:
 	{
 		//cout << "Ska röra mig bak!" << endl;
 		Vec3 pos = getEntityPos();
-		pos.X -= 1;
+		pos.X -= 0.1;
 
 		updateEntityPos(pos);
 	}
@@ -222,7 +207,7 @@ private:
 	{
 		//cout << "Ska röra mig vänster!" << endl;
 		Vec3 pos = getEntityPos();
-		pos.Z -= 1;
+		pos.Z -= 0.1;
 
 		updateEntityPos(pos);
 	}
@@ -231,7 +216,7 @@ private:
 	{
 		//cout << "Ska röra mig höger!" << endl;
 		Vec3 pos = getEntityPos();
-		pos.Z += 1;
+		pos.Z += 0.1;
 
 		updateEntityPos(pos);
 	}

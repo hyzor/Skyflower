@@ -48,17 +48,9 @@ void Application::Start()
 	entityManager = new EntityManager("../../content/XML/", &modules);
 
 	//loading xml-file, creating entities and components to this entityManager
-	entityManager->loadXML(entityManager, "test22.xml");
-	entityManager->loadXML(entityManager, "platform2.xml");
-
-	//Lindas test
-	//entityManager->loadXML(entityManager, "platform.xml");
-
-	////sends a message to all components in all entities in that manager
-	//entityManager->sendMessageToAllEntities("Hello");
-
-	////sends a message to a specific entity, in this case a Player-entity.
-	//entityManager->sendMessageToEntity("Hello", "Player");
+	//entityManager->loadXML(entityManager, "test22.xml");
+	entityManager->loadXML2("test22.xml");
+	entityManager->loadXML2("platform.xml");
 
 	camera = m_graphicsEngine->CreateCameraController();
 	Cistron::Component* playerMove = (Movement*)entityManager->getComponent("Player", "Movement");
@@ -111,11 +103,6 @@ void Application::Start()
 
 		this->entityManager->update((float)deltaTime);
 
-		//Lindas test
-		//Sleep(100);
-		//this->entityManager->sendMessageToEntity("update", "Platform");
-		////this->entityManager->sendMessageToAllEntities("update");
-
 		m_graphicsEngine->DrawScene();
 		m_graphicsEngine->UpdateScene((float)deltaTime);
 
@@ -125,8 +112,6 @@ void Application::Start()
 	}
 
 	//m_graphicsEngine->DeleteInstance(d);
-
-
 
 	m_soundEngine->DestroyListener(listener);
 	delete entityManager;
