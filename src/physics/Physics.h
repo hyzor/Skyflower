@@ -19,7 +19,7 @@ const float PI = 3.141592653589f;
 #define DEFAULT_JUMP_VELOCITY 25.0f
 
 
-class DLL_API Physics
+class DLL_API Physics // NOTE: THIS IS A GREAT, BIG MESS ATM. DO THE FIXARINO
 {
 private:
 	Vec3 gravity;
@@ -41,16 +41,14 @@ public:
 	void addGravityCalc(Vec3 &pos, Vec3 &velocity); //apply gravity the given vector that represents a pos
 	void addGravityCalc(Vec3 &pos); // same story here, only position though
 	void addProjectileCalc(Vec3 &pos, Vec3 &velocity, Vec3 &acceleration);
-	void moveForward(Vec3 &pos, float speed);
-	void moveBackward(Vec3 &pos, float speed);
-	void moveRight(Vec3 &pos, float speed);
-	void moveLeft(Vec3 &pos, float speed);
-	void moveForward(Vec3 &pos);
-	void moveBackward(Vec3 &pos);
-	void moveRight(Vec3 &pos);
-	void moveLeft(Vec3 &pos);
+	void walk(Vec3 &pos, float speed);
+	void walk(Vec3 &pos);
+	void strafe(Vec3 &pos, float speed);
+	void strafe(Vec3 &pos);
 	void moveUp(Vec3 &pos);
 	void moveDown(Vec3 &pos);
+	void moveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, Vec3 &rot, float angleY);
+	void moveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, float speed,Vec3 &rot, float angleY);
 	void rotateX(Vec3 &rot, float angleX);
 	void rotateY(Vec3 &rot, float angleY);
 	void rotateZ(Vec3 &rot, float angleZ);
@@ -60,10 +58,15 @@ public:
 	void setMass(float mass); //not relevant yet
 	void setVelocity(Vec3 vel);
 	void setJumping(bool value);
+	void setOrientation(Vec3 look, Vec3 right, Vec3 up);
+
 
 	float getMass() const;
 	Vec3 getGravity() const;
 	bool isJumping() const { return jumping; }
+	Vec3 getLook() const;
+	Vec3 getRight() const;
+	Vec3 getUp() const;
 
 	static float toRadians(float degrees);
 	static float toDegrees(float radians);
@@ -72,7 +75,6 @@ public:
 
 private:
 	float lerp(float a, float b, float amount);
-	void updateOrientPos(Vec3 pos);
 };
 
 

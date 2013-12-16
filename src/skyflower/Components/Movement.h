@@ -23,6 +23,7 @@ public:
 		this->isMovingBackward = false;
 		this->isMovingLeft = false;
 		this->isMovingRight = false;
+		this->camLook = Vec3(0.0f, 0.0f, 0.0f);
 	}
 	virtual ~Movement()
 	{
@@ -59,36 +60,39 @@ public:
 		p->update(deltaTime);
 
 		if (this->isMovingForward) {
-			if (p->toDegrees(rot.Y) != -90.0f) {
+			/*if (p->toDegrees(rot.Y) != -90.0f) {
 				p->resetRot(rot);
 				p->rotateY(rot, -90.0f);
-			}
+			}*/
 
-			p->moveForward(pos, DEFAULT_MOVEMENTSPEED * deltaTime);
+			p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 0.0f);
 		}
 		else if (this->isMovingBackward) {
-			if (p->toDegrees(rot.Y) != 90.0f) {
+			/*if (p->toDegrees(rot.Y) != 90.0f) {
 				p->resetRot(rot);
 				p->rotateY(rot, 90.0f);
-			}
+			}*/
 
-			p->moveBackward(pos, DEFAULT_MOVEMENTSPEED * deltaTime);
+			p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 180.0f);
+			//p->moveBackward(pos, DEFAULT_MOVEMENTSPEED * deltaTime);
 		}
 		else if (this->isMovingLeft) {
-			if (p->toDegrees(rot.Y) != 180.0f) {
+			/*if (p->toDegrees(rot.Y) != 180.0f) {
 				p->resetRot(rot);
 				p->rotateY(rot, 180.0f);
-			}
+			}*/
 
-			p->moveLeft(pos, DEFAULT_MOVEMENTSPEED * deltaTime);
+			p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, -90.0f);
+			//p->moveLeft(pos, DEFAULT_MOVEMENTSPEED * deltaTime);
 		}
 		else if (this->isMovingRight) {
-			if (p->toDegrees(rot.Y) != 0.0f) {
+			/*if (p->toDegrees(rot.Y) != 0.0f) {
 				p->resetRot(rot);
 				p->rotateY(rot, 0.0f);
-			}
+			}*/
 
-			p->moveRight(pos, DEFAULT_MOVEMENTSPEED * deltaTime);
+			p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 90.0f);
+		//	p->moveRight(pos, DEFAULT_MOVEMENTSPEED * deltaTime);
 		}
 
 		std::vector<CollisionInstance*> instances = Collision::GetInstance()->GetCollisionInstances();
@@ -123,12 +127,21 @@ public:
 		sendMessage(message);
 	}
 
+	void setCamera(Vec3 look, Vec3 right, Vec3 up)
+	{
+		if (p)
+		{
+			this->camLook = look;
+		}
+	}
+
 private:
 	Physics* p;
 	bool isMovingForward;
 	bool isMovingBackward;
 	bool isMovingLeft;
 	bool isMovingRight;
+	Vec3 camLook;
 
 	void startMoveForward(Message const& msg)
 	{

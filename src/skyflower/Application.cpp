@@ -65,10 +65,9 @@ void Application::Start()
 	entityManager->loadXML2("platform.xml");
 	entityManager->loadXML2("block22.xml");
 
-	Cistron::Component* playerMove = (Movement*)entityManager->getComponent("Player", "Movement");
-
+	camera = m_graphicsEngine->CreateCameraController();
 	//m_graphicsEngine->CreateInstance("Data\\Models\\duck.obj")->SetVisibility(false);
-
+	Movement* playerMove = (Movement*)entityManager->getComponent("player", "Movement");
 	//ModelInstance* d = m_graphicsEngine->CreateInstance("Data\\Models\\duck.obj", Vec3(-100, 50, 0));
 	//d->SetRotation(Vec3(-3.14f/2, 3.14f/4));
 
@@ -95,7 +94,9 @@ void Application::Start()
 		oldTime = time;
 
 		camera->Follow(entityManager->getEntityPos("Player"));
+		playerMove->setCamera(camera->GetLook(), camera->GetRight(), camera->GetUp());
 		camera->Update();
+
 
 		frameTimeChart.AddPoint((float)time, (float)(deltaTime * 1000.0));
 		memoryChart.AddPoint((float)time, GetMemoryUsage() / (1024.0f * 1024.0f));

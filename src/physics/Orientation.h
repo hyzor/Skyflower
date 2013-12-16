@@ -18,6 +18,7 @@ private:
 	Vec3 right;
 	Vec3 up;
 	Vec3 look;
+	Vec3 rotRelativeCam;
 public:
 	Orientation();
 	Orientation(const Orientation &other);
@@ -32,9 +33,13 @@ public:
 	void rotateAxis(Vec3 &rot, Vec3 axis, float angle);
 	void resetRotationXYZ(Vec3 &rot, int Axis); // the enum "Axis"
 
+	void setOrientation(Vec3 look, Vec3 right, Vec3 up);
+	void setRotRelativeCam(Vec3 rot);
+
 	Vec3 getLook() const;
 	Vec3 getRight() const;
 	Vec3 getUp() const;
+	Vec3 getRotRelativeCam() const;
 };
 
 #endif
