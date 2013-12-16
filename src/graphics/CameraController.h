@@ -15,6 +15,9 @@ public:
 	virtual void Follow(Vec3 target) = 0;
 	virtual Vec3 GetPosition() = 0;
 	virtual Vec3 GetDirection() = 0;
+	virtual Vec3 GetLook() = 0;
+	virtual Vec3 GetRight() = 0;
+	virtual Vec3 GetUp() = 0;
 	virtual void RotateCamera(float mouseX, float mouseY) = 0;
 	virtual void Zoom(float, float speed) = 0;
 };

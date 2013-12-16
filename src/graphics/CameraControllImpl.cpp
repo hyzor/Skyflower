@@ -59,6 +59,34 @@ Vec3 CameraControllImpl::GetDirection()
 	return Vec3::Zero();
 }
 
+Vec3 CameraControllImpl::GetLook()
+{
+	//Vec3 look;
+	//look.X = camera->GetLook().x;
+	//look.Y = camera->GetLook().y;
+	//look.Z = camera->GetLook().z;
+	//return look.Normalize();
+	return o*-1.0f;
+}
+
+Vec3 CameraControllImpl::GetRight()
+{
+	Vec3 right;
+	right.X = camera->GetRight().x;
+	right.Y = camera->GetRight().y;
+	right.Z = camera->GetRight().z;
+	return right;
+}
+
+Vec3 CameraControllImpl::GetUp()
+{
+	Vec3 up;
+	up.X = camera->GetUp().x;
+	up.Y = camera->GetUp().y;
+	up.Z = camera->GetUp().z;
+	return up;
+}
+
 void CameraControllImpl::Follow(Vec3 target)
 {
 	this->target = target;

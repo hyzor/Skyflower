@@ -24,8 +24,6 @@ public:
 	// we are added to an Entity, and thus to the component system
 	void addedToEntity()
 	{
-		cout << "An inputcomponent was added to the system." << endl;
-
 		Entity *owner = getOwner();
 		assert(owner);
 		owner->getModules()->input->AddListener(this);

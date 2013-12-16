@@ -7,3 +7,4 @@
 #include "Components/Footsteps.h"
 #include "Components/AI.h"
 #include "Components/Gravity.h"
+#include "Components/Rotating.h"

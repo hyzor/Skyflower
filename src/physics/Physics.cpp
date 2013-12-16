@@ -56,6 +56,21 @@ Vec3 Physics::getGravity() const
 	return this->gravity;
 }
 
+Vec3 Physics::getLook() const
+{
+	return this->orient.getLook();
+}
+
+Vec3 Physics::getRight() const
+{
+	return this->orient.getRight();
+}
+
+Vec3 Physics::getUp() const
+{
+	return this->orient.getUp();
+}
+
 void Physics::update(float dt)
 {
 	this->dt = dt;
@@ -114,113 +129,102 @@ float Physics::lerp(float a, float b, float amount)
 	return a + (b - a) * amount;
 }
 
-void Physics::moveForward(Vec3 &pos, float speed)
+void Physics::walk(Vec3 &pos, float speed)
 {
-	/*if (this->orient.getRotY() != toRadians(0.0f))
-	{
-		this->orient.resetRotationXYZ(Axis::Y);
-	}
-	this->orient.setPos(pos);*/
 	this->orient.walk(speed, pos);
 }
 
-void Physics::moveBackward(Vec3 &pos, float speed)
-{
-	/*if (this->orient.getRotY() != toRadians(180.0f) && this->orient.getRotY() != toRadians(0.0f))
-	{
-		this->orient.resetRotationXYZ(Axis::Y);
-	}
-	if (this->orient.getRotY() == toRadians(0.0f))
-	{
-		this->orient.rotateY(toRadians(180.0f));
-	}
-	this->orient.setPos(pos);*/
-	this->orient.walk(speed, pos);
-}
-
-void Physics::moveRight(Vec3 &pos, float speed)
-{
-	/*if (this->orient.getRotY() != toRadians(90.0f) && this->orient.getRotY() != toRadians(0.0f))
-	{
-		this->orient.resetRotationXYZ(Axis::Y);
-	}
-	if (this->orient.getRotY() == toRadians(0.0f))
-	{
-		this->orient.rotateY(toRadians(90.0f));
-	}
-	this->orient.setPos(pos);*/
-	this->orient.walk(speed, pos);
-}
-
-void Physics::moveLeft(Vec3 &pos, float speed)
-{
-	/*if (this->orient.getRotY() != toRadians(-90.0f) && this->orient.getRotY() != toRadians(0.0f))
-	{
-		this->orient.resetRotationXYZ(Axis::Y);
-	}
-	if (this->orient.getRotY() == toRadians(0.0f))
-	{
-		this->orient.rotateY(toRadians(-90.0f));
-	}
-	this->orient.setPos(pos);*/
-	this->orient.walk(speed, pos);
-}
-
-void Physics::moveForward(Vec3 &pos)
+void Physics::walk(Vec3 &pos)
 {
 	float speed = DEFAULT_MOVEMENTSPEED;
-	/*if (this->orient.getRotY() != toRadians(0.0f))
-	{
-		this->orient.resetRotationXYZ(Axis::Y);
-	}
-	this->orient.setPos(pos);*/
 	this->orient.walk(speed, pos);
 }
 
-void Physics::moveBackward(Vec3 &pos)
+void Physics::strafe(Vec3 &pos, float speed)
+{
+	this->orient.strafe(speed, pos);
+}
+void Physics::strafe(Vec3 &pos)
 {
 	float speed = DEFAULT_MOVEMENTSPEED;
-	/*if (this->orient.getRotY() != toRadians(180.0f) && this->orient.getRotY() != toRadians(0.0f))
-	{
-		this->orient.resetRotationXYZ(Axis::Y);
-	}
-	if (this->orient.getRotY() == toRadians(0.0f))
-	{
-		this->orient.rotateY(toRadians(180.0f));
-	}
-	this->orient.setPos(pos);*/
-	this->orient.walk(speed, pos);
+	this->orient.strafe(speed, pos);
 }
 
-void Physics::moveRight(Vec3 &pos)
+void Physics::moveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, Vec3 &rot, float angleY)
 {
+	if (relativeVec != Vec3(0.0f, 0.0f, 0.0f))
+	{
+		Vec3 cRot, eLook, eRight, eUp, rVec, normal, cross;
+		float s, c, angle;
+
+		eLook = this->orient.getLook();
+		eRight = this->orient.getRight();
+		eUp = this->orient.getUp();
+		rVec = relativeVec;
+
+		rVec.Y = 0;
+		rVec.Normalize();
+		s = eLook.Cross(rVec).Length();
+		c = eLook.Dot(rVec);
+
+		angle = atan2f(s, c);
+
+		normal = eLook.Cross(rVec);
+		cross = normal.Cross(rVec);
+		if (normal.Y < 0.0f)
+		{
+			angle = -angle;
+		}
+
+		if (this->orient.getRotRelativeCam().Y != toDegrees(angleY))
+		{
+			this->orient.setRotRelativeCam(Vec3(0.0f, toRadians(angleY), 0.0f));
+			angle += toRadians(angleY);
+		}
+
+		this->rotateY(rot, toDegrees(angle));
+	}
 	float speed = DEFAULT_MOVEMENTSPEED;
-	/*if (this->orient.getRotY() != toRadians(90.0f) && this->orient.getRotY() != toRadians(0.0f))
-	{
-		this->orient.resetRotationXYZ(Axis::Y);
-	}
-	if (this->orient.getRotY() == toRadians(0.0f))
-	{
-		this->orient.rotateY(toRadians(90.0f));
-	}
-	this->orient.setPos(pos);*/
-	this->orient.walk(speed, pos);
+	this->walk(pos);
 }
 
-void Physics::moveLeft(Vec3 &pos)
+void Physics::moveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, float speed, Vec3 &rot, float angleY)
 {
-	float speed = DEFAULT_MOVEMENTSPEED;
-	/*if (this->orient.getRotY() != toRadians(-90.0f) && this->orient.getRotY() != toRadians(0.0f))
+	if (relativeVec != Vec3(0.0f, 0.0f, 0.0f))
 	{
-		this->orient.resetRotationXYZ(Axis::Y);
-	}
-	if (this->orient.getRotY() == toRadians(0.0f))
-	{
-		this->orient.rotateY(toRadians(-90.0f));
-	}
-	this->orient.setPos(pos);*/
-	this->orient.walk(speed, pos);
+		Vec3 cRot, eLook, eRight, eUp, rVec, normal, cross;
+		float s, c, angle;
+
+		eLook = this->orient.getLook();
+		eRight = this->orient.getRight();
+		eUp = this->orient.getUp();
+		rVec = relativeVec;
+
+		rVec.Y = 0;
+		rVec.Normalize();
+		s = eLook.Cross(rVec).Length();
+		c = eLook.Dot(rVec);
+
+		angle = atan2f(s, c);
+
+		normal = eLook.Cross(rVec);
+		cross = normal.Cross(rVec);
+		if (normal.Y < 0.0f)
+		{
+			angle = -angle;
+		}
+
+		if (this->orient.getRotRelativeCam().Y != toDegrees(angleY))
+		{
+			this->orient.setRotRelativeCam(Vec3(0.0f, toRadians(angleY), 0.0f));
+			angle += toRadians(angleY);
+		}
+
+		this->rotateY(rot, toDegrees(angle));
+	} 
+	this->walk(pos, speed);
 }
+
 
 float Physics::toRadians(float degrees)
 {
@@ -265,6 +269,11 @@ void Physics::resetRot(Vec3 &rot)
 	this->orient.resetRotationXYZ(rot, X);
 	this->orient.resetRotationXYZ(rot, Y);
 	this->orient.resetRotationXYZ(rot, Z);
+}
+
+void Physics::setOrientation(Vec3 look, Vec3 right, Vec3 up)
+{
+	this->orient.setOrientation(look, right, up);
 }
 
 void Physics::moveUp(Vec3 &pos)

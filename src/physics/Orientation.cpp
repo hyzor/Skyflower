@@ -6,9 +6,14 @@ Orientation::Orientation()
 	//this->right = Vec3(1.0f, 0.0f, 0.0f);
 	//this->up = Vec3(0.0f, 1.0f, 0.0f);
 
-	this->look = Vec3(1.0f, 0.0f, 0.0f); //remember to correct walk/move to correspond to the right/up/look
-	this->right = Vec3(0.0f, 0.0f, -1.0f);
+	this->look = Vec3(0.0f, 0.0f, -1.0f);
+	this->right = Vec3(-1.0f, 0.0f, 0.0f);
 	this->up = Vec3(0.0f, 1.0f, 0.0f);
+	this->rotRelativeCam = Vec3(0.0f, 0.0f, 0.0f);
+
+	//this->look = Vec3(1.0f, 0.0f, 0.0f); //remember to correct walk/move to correspond to the right/up/look
+	//this->right = Vec3(0.0f, 0.0f, -1.0f);
+	//this->up = Vec3(0.0f, 1.0f, 0.0f);
 }
 
 Orientation::Orientation(const Orientation &other)
@@ -78,6 +83,7 @@ void Orientation::rotateX(Vec3 &rot, float angle)
 void Orientation::rotateY(Vec3 &rot, float angle)
 {
 	rot.Y += angle;
+	//rot.Y = angle;
 
 	DirectX::XMMATRIX mRotY;
 	mRotY = DirectX::XMMatrixRotationY(angle);
@@ -178,6 +184,18 @@ void Orientation::resetRotationXYZ(Vec3 &rot, int Axis)
 	this->up = Vec3(0.0f, 1.0f, 0.0f);
 }
 
+void Orientation::setOrientation(Vec3 look, Vec3 right, Vec3 up)
+{
+	this->look = look;
+	this->right = right;
+	this->up = up;
+}
+
+void Orientation::setRotRelativeCam(Vec3 rot)
+{
+	this->rotRelativeCam = rot;
+}
+
 Vec3 Orientation::getLook() const
 {
 	return this->look;
@@ -191,4 +209,9 @@ Vec3 Orientation::getRight() const
 Vec3 Orientation::getUp() const
 {
 	return this->up;
+}
+
+Vec3 Orientation::getRotRelativeCam() const
+{
+	return this->rotRelativeCam;
 }

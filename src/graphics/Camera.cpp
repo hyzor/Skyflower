@@ -47,7 +47,7 @@ XMVECTOR Camera::GetRightXM() const
 
 XMFLOAT3 Camera::GetRight() const
 {
-	return mRight;
+	return XMFLOAT3(mView(0, 0), mView(0, 1), mView(0, 2));
 }
 
 XMVECTOR Camera::GetUpXM() const
@@ -57,7 +57,7 @@ XMVECTOR Camera::GetUpXM() const
 
 XMFLOAT3 Camera::GetUp() const
 {
-	return mUp;
+	return XMFLOAT3(mView(1, 0), mView(1, 1), mView(1, 2));
 }
 
 XMVECTOR Camera::GetLookXM() const
@@ -66,7 +66,7 @@ XMVECTOR Camera::GetLookXM() const
 }
 
 XMFLOAT3 Camera::GetLook() const
-{
+{ 
 	return mLook;
 }
 
@@ -241,6 +241,7 @@ void Camera::LookAt(Vec3 at)
 	XMMATRIX view = XMMatrixLookAtLH(position, lookat, up);// D3DXToRadian(degrees));
 	XMStoreFloat4x4(&mView, view);
 
+	mLook = XMFLOAT3(at.X - mPosition.x, at.Y - mPosition.y, at.Z - mPosition.z);
 	// Update the view vectors of both the target and camera based on the rotation represented in our yaw matrix
 	/*D3DXVec3TransformCoord(&dir, &dir, &yaw);
 	//D3DXVec3TransformCoord(&tarView, &tarView, &yaw);

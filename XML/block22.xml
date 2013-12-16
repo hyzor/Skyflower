@@ -1,10 +1,11 @@
 <?xml version="1.0" ?>
 <root>
-    <Platform xPos="7.0" yPos="0.0" zPos="7.0" 
+    <Platform entityName="block22" xPos="7.0" yPos="0.0" zPos="7.0" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="1" yScale="1.0" zScale="1.0"
 		model="Models/Blocks/WoodBlock"
 		isVisible="1"
+		isAnimated="0"
 		isCollidible="1">
 		<Messenger/>
 	</Platform>
