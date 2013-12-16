@@ -143,7 +143,8 @@ void Application::OnWindowDeactivate()
 
 void Application::OnMouseMove(int deltaX, int deltaY)
 {
-	camera->RotateCamera((float)deltaX, (float)deltaY);
+	if (camera)
+		camera->RotateCamera((float)deltaX, (float)deltaY);
 }
 
 void Application::OnMouseButtonDown(enum MouseButton button)
