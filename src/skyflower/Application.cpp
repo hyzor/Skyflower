@@ -101,8 +101,6 @@ void Application::Start()
 		m_window->PumpMessages();
 	}
 
-	//m_graphicsEngine->DeleteInstance(d);
-
 	delete entityManager;
 	DestroySoundEngine(m_soundEngine);
 	DestroyGraphicsEngine(m_graphicsEngine);
