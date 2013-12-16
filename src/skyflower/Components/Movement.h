@@ -45,12 +45,6 @@ public:
 		requestMessage("StopMoveRight", &Movement::stopMoveRight);
 
 		requestMessage("Jump", &Movement::Jump);
-		requestMessage("movePlatformUp", &Movement::movePlatformUp);
-		requestMessage("movePlatformDown", &Movement::movePlatformDown);
-		requestMessage("movePlatformFront", &Movement::movePlatformFront);
-		requestMessage("movePlatformBack", &Movement::movePlatformBack);
-		requestMessage("movePlatformLeft", &Movement::movePlatformLeft);
-		requestMessage("movePlatformRight", &Movement::movePlatformRight);
 	}
 
 	void removeFromEntity()
@@ -183,60 +177,6 @@ private:
 				owner->getModules()->sound->PlaySound("player/jump1.wav", soundPosition, 1.0f, true); 
 			}
 		}
-
-		updateEntityPos(pos);
-	}
-
-	void movePlatformUp(Message const& msg)
-	{
-		//cout << "Ska rï¿½ra mig upp!" << endl;
-		Vec3 pos = getEntityPos();
-		pos.Y += 0.01f;
-
-		updateEntityPos(pos);
-	}
-
-	void movePlatformDown(Message const& msg)
-	{
-		//cout << "Ska röra mig ner!" << endl;
-		Vec3 pos = getEntityPos();
-		pos.Y -= 0.01f;
-
-		updateEntityPos(pos);
-	}
-
-	void movePlatformFront(Message const& msg)
-	{
-		//cout << "Ska röra mig fram!" << endl;
-		Vec3 pos = getEntityPos();
-		pos.X += 0.01f;
-
-		updateEntityPos(pos);
-	}
-
-	void movePlatformBack(Message const& msg)
-	{
-		//cout << "Ska röra mig bak!" << endl;
-		Vec3 pos = getEntityPos();
-		pos.X -= 0.01f;
-
-		updateEntityPos(pos);
-	}
-
-	void movePlatformLeft(Message const& msg)
-	{
-		//cout << "Ska röra mig vänster!" << endl;
-		Vec3 pos = getEntityPos();
-		pos.Z -= 0.01f;
-
-		updateEntityPos(pos);
-	}
-
-	void movePlatformRight(Message const& msg)
-	{
-		//cout << "Ska röra mig höger!" << endl;
-		Vec3 pos = getEntityPos();
-		pos.Z += 0.01f;
 
 		updateEntityPos(pos);
 	}

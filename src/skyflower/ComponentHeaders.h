@@ -2,7 +2,7 @@
 #include "Components/Movement.h"
 #include "Components/Input.h"
 #include "Components/Render.h"
-#include "Components/Platform.h"
+#include "Components/OscillatePosition.h"
 #include "Components/Listener.h"
 #include "Components/Footsteps.h"
 #include "Components/AI.h"

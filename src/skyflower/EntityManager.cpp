@@ -1189,45 +1189,46 @@ bool EntityManager::loadXML2(string xmlFile)
 		{
 			string componentName = e->Value();
 
-			if (componentName == "Platform")
+			if (componentName == "OscillatePosition")
 			{
-				bool isMovingUpDown = false;
-				bool isMovingFrontBack = false;
-				bool isMovingSideways = false;
-				cout << "hittade en Platformkomponent!" << endl;
+				float xDir = 0.0f;
+				float yDir = 0.0f;
+				float zDir = 0.0f;
+				float speed = 0.0f;
+				float travelDistance = 0.0f;
 
-				attr = e->Attribute("isMovingUpDown");
+				attr = e->Attribute("xDir");
 				if (attr != NULL)
-				{
-					isMovingUpDown = e->BoolAttribute("isMovingUpDown");
-				}
+					xDir = e->FloatAttribute("xDir");
 				else
-				{
-					cout << "failed loading attribute for isMovingUpDown in file " << xmlFile << endl;
-				}
+					cout << "failed loading attribute for xDir in file " << xmlFile << endl;
 
-				attr = e->Attribute("isMovingFrontBack");
+				attr = e->Attribute("yDir");
 				if (attr != NULL)
-				{
-					isMovingFrontBack = e->BoolAttribute("isMovingFrontBack");
-				}
+					yDir = e->FloatAttribute("yDir");
 				else
-				{
-					cout << "failed loading attribute for isMovingFrontBack in file " << xmlFile << endl;
-				}
+					cout << "failed loading attribute for yDir in file " << xmlFile << endl;
 
-				attr = e->Attribute("isMovingSideways");
+				attr = e->Attribute("zDir");
 				if (attr != NULL)
-				{
-					isMovingSideways = e->BoolAttribute("isMovingSideways");
-				}
+					zDir = e->FloatAttribute("zDir");
 				else
-				{
-					cout << "failed loading attribute for isMovingSideways in file " << xmlFile << endl;
-				}
+					cout << "failed loading attribute for zDir in file " << xmlFile << endl;
 
-				Platform* p = new Platform(xPos, yPos, zPos, isMovingUpDown, isMovingFrontBack, isMovingSideways);
-				this->addComponent(entity, p);
+				attr = e->Attribute("speed");
+				if (attr != NULL)
+					speed = e->FloatAttribute("speed");
+				else
+					cout << "failed loading attribute for speed in file " << xmlFile << endl;
+
+				attr = e->Attribute("travelDistance");
+				if (attr != NULL)
+					travelDistance = e->FloatAttribute("travelDistance");
+				else
+					cout << "failed loading attribute for speed in file " << xmlFile << endl;
+
+				OscillatePositionComponent *component = new OscillatePositionComponent(Vec3(xDir, yDir, zDir), speed, travelDistance);
+				this->addComponent(entity, component);
 			}
 			else if (componentName == "Movement")
 			{
