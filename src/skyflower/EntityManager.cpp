@@ -700,7 +700,7 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 					isVisible = elem->BoolAttribute("isVisible");
 				}
 				//Creating the Player entity and adding it to the entitymanager
-				EntityId player = entityManager->createEntity("Player", xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, false, true);
+				EntityId player = entityManager->createEntity("Player", xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, false, false);
 
 
 				//Looping through all the components for Player-entity.
