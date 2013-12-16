@@ -60,39 +60,32 @@ public:
 		p->update(deltaTime);
 
 		if (this->isMovingForward) {
-			/*if (p->toDegrees(rot.Y) != -90.0f) {
-				p->resetRot(rot);
-				p->rotateY(rot, -90.0f);
-			}*/
-
-			p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 0.0f);
+			if (this->isMovingLeft) {
+				p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 0.0f - 45.0f);
+			}
+			else if (this->isMovingRight) {
+				p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 0.0f + 45.0f);
+			}
+			else {
+				p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 0.0f);
+			}
 		}
 		else if (this->isMovingBackward) {
-			/*if (p->toDegrees(rot.Y) != 90.0f) {
-				p->resetRot(rot);
-				p->rotateY(rot, 90.0f);
-			}*/
-
-			p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 180.0f);
-			//p->moveBackward(pos, DEFAULT_MOVEMENTSPEED * deltaTime);
+			if (this->isMovingLeft) {
+				p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 180.0f + 45.0f);
+			}
+			else if (this->isMovingRight) {
+				p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 180.0f - 45.0f);
+			}
+			else {
+				p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 180.0f);
+			}
 		}
 		else if (this->isMovingLeft) {
-			/*if (p->toDegrees(rot.Y) != 180.0f) {
-				p->resetRot(rot);
-				p->rotateY(rot, 180.0f);
-			}*/
-
 			p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, -90.0f);
-			//p->moveLeft(pos, DEFAULT_MOVEMENTSPEED * deltaTime);
 		}
 		else if (this->isMovingRight) {
-			/*if (p->toDegrees(rot.Y) != 0.0f) {
-				p->resetRot(rot);
-				p->rotateY(rot, 0.0f);
-			}*/
-
 			p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 90.0f);
-		//	p->moveRight(pos, DEFAULT_MOVEMENTSPEED * deltaTime);
 		}
 
 		std::vector<CollisionInstance*> instances = Collision::GetInstance()->GetCollisionInstances();
