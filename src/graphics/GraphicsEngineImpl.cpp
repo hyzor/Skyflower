@@ -254,6 +254,7 @@ void GraphicsEngineImpl::DrawScene()
 	mDirect3D->GetImmediateContext()->OMSetDepthStencilState(0, 0);
 	mDirect3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
 
+	// Wait for V-sync (1, 0)
 	HR(mDirect3D->GetSwapChain()->Present(0, 0));
 }
 

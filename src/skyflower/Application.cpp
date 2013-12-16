@@ -44,12 +44,14 @@ void Application::Start()
 	modules.input = m_inputHandler;
 	modules.graphics = m_graphicsEngine;
 	modules.sound = m_soundEngine;
+	modules.potentialField = new PotentialField();
 
 	entityManager = new EntityManager("../../content/XML/", &modules);
 
 	//loading xml-file, creating entities and components to this entityManager
 	entityManager->loadXML(entityManager, "test22.xml");
 	entityManager->loadXML(entityManager, "platform2.xml");
+	entityManager->loadXML(entityManager, "block22.xml");
 
 	//Lindas test
 	//entityManager->loadXML(entityManager, "platform.xml");

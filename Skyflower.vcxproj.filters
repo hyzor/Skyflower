@@ -122,5 +122,8 @@
     <ClInclude Include="src\skyflower\Components\Footsteps.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="src\skyflower\Components\AI.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

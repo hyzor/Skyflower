@@ -843,7 +843,7 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 			}
 		}
 	}
-	else if (xmlFile == "platform.xml" || xmlFile == "platform2.xml")
+	else if (xmlFile == "platform.xml" || xmlFile == "platform2.xml" || xmlFile == "block22.xml")
 	{
 		//For every entity that is to be created in this EntityManager
 		for (XMLElement* elem = root->FirstChildElement(); elem != NULL; elem = elem->NextSiblingElement())
@@ -968,6 +968,11 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 					else if (componentName == "Movement")
 					{
 						Movement* m = new Movement();
+						entityManager->addComponent(platform, m);
+					}
+					else if (componentName == "AI")
+					{
+						AI* m = new AI();
 						entityManager->addComponent(platform, m);
 					}
 					else if (componentName == "Messenger")

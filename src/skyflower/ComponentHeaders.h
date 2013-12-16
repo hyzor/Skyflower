@@ -7,3 +7,4 @@
 #include "Components/Platform.h"
 #include "Components/Listener.h"
 #include "Components/Footsteps.h"
+#include "Components/AI.h"
