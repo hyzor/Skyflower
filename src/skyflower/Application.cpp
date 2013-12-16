@@ -48,28 +48,12 @@ void Application::Start()
 	modules.potentialField = new PotentialField();
 
 	entityManager = new EntityManager("../../XML/", &modules);
-
-	//loading xml-file, creating entities and components to this entityManager
-
-
-	//Lindas test
-	//entityManager->loadXML(entityManager, "platform.xml");
-
-	////sends a message to all components in all entities in that manager
-	//entityManager->sendMessageToAllEntities("Hello");
-
-	////sends a message to a specific entity, in this case a Player-entity.
-	//entityManager->sendMessageToEntity("Hello", "Player");
-	//entityManager->loadXML(entityManager, "test22.xml");
 	entityManager->loadXML2("player.xml");
 	entityManager->loadXML2("platform.xml");
 	entityManager->loadXML2("block22.xml");
 
 	camera = m_graphicsEngine->CreateCameraController();
-	//m_graphicsEngine->CreateInstance("Data\\Models\\duck.obj")->SetVisibility(false);
 	Movement* playerMove = (Movement*)entityManager->getComponent("player", "Movement");
-	//ModelInstance* d = m_graphicsEngine->CreateInstance("Data\\Models\\duck.obj", Vec3(-100, 50, 0));
-	//d->SetRotation(Vec3(-3.14f/2, 3.14f/4));
 
 	LineChart frameTimeChart(1024 * 1024);
 	frameTimeChart.SetSize(512, 256);
@@ -93,11 +77,6 @@ void Application::Start()
 		deltaTime = time - oldTime;
 		oldTime = time;
 
-		camera->Follow(entityManager->getEntityPos("Player"));
-		playerMove->setCamera(camera->GetLook(), camera->GetRight(), camera->GetUp());
-		camera->Update();
-
-
 		frameTimeChart.AddPoint((float)time, (float)(deltaTime * 1000.0));
 		memoryChart.AddPoint((float)time, GetMemoryUsage() / (1024.0f * 1024.0f));
 		
@@ -107,6 +86,10 @@ void Application::Start()
 			//frameTimeChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, (1.0f / 60.0f) * 1000.0f);
 			//memoryChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, 256.0f);
 		}
+
+		camera->Follow(entityManager->getEntityPos("player"));
+		playerMove->setCamera(camera->GetLook(), camera->GetRight(), camera->GetUp());
+		camera->Update();
 
 		this->entityManager->update((float)deltaTime);
 
