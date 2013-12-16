@@ -93,6 +93,8 @@ bool Physics::jump(Vec3 &pos)
 		this->jumping = true;
 		velocity.Y += DEFAULT_JUMP_VELOCITY;
 
+		pos += velocity*dt;
+
 		return true;
 	}
 	else

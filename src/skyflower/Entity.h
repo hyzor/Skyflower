@@ -13,6 +13,7 @@
 
 #include "graphics/GraphicsEngine.h"
 #include "physics/Physics.h"
+#include "PotentialField.h"
 
 namespace Cistron {
 
@@ -52,6 +53,7 @@ class Entity {
 		ModelInstance* modelInst;
 		AnimatedInstance* AnimInst;
 		CollisionInstance* collInst;
+		Field* field;
 		Physics* physics;
 
 		/**

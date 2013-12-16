@@ -65,7 +65,7 @@ void Application::Start()
 	entityManager->loadXML2("platform.xml");
 	entityManager->loadXML2("block22.xml");
 
-	Cistron::Component* playerMove = (Movement*)entityManager->getComponent("Player", "Movement");
+	Cistron::Component* playerMove = (Movement*)entityManager->getComponent("player", "Movement");
 
 	//m_graphicsEngine->CreateInstance("Data\\Models\\duck.obj")->SetVisibility(false);
 

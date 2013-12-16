@@ -22,9 +22,19 @@ bool Box::Test(Box b)
 	return Test(*this, b);
 }
 
+bool Box::Test(Vec3 v)
+{
+	return Test(*this, v);
+}
+
 bool Box::Test(Box b1, Box b2)
 {
 	return (b1.Position.X + b1.Size.X > b2.Position.X && b1.Position.X < b2.Position.X + b2.Size.X) && (b1.Position.Y + b1.Size.Y > b2.Position.Y && b1.Position.Y < b2.Position.Y + b2.Size.Y) && (b1.Position.Z + b1.Size.Z > b2.Position.Z && b1.Position.Z < b2.Position.Z + b2.Size.Z);
+}
+
+bool Box::Test(Box b1, Vec3 v)
+{
+	return v.X < b1.Position.X + b1.Size.X && v.X > b1.Position.X && v.Y < b1.Position.Y + b1.Size.Y && v.Y > b1.Position.Y;
 }
 
 Vec3 Box::Center()

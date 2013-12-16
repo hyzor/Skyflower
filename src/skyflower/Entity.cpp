@@ -62,9 +62,15 @@ Entity::Entity(const Modules *modules, EntityId id, string type, float xPos, flo
 	}
 	
 	if (isCollidible && !isAnimated)
+	{
 		collInst = Collision::GetInstance()->CreateCollisionInstance(model, pos);
+		field = this->modules->potentialField->CreateField(model, pos);
+	}
 	else
+	{
 		collInst = nullptr;
+		field = nullptr;
+	}
 
 }
 Entity::~Entity() {
@@ -326,6 +332,8 @@ void Entity::updatePos(Vec3 pos)
 		this->AnimInst->SetPosition(pos);
 	if (this->collInst)
 		this->collInst->Position = pos;
+	if (this->field)
+		this->field->Move(pos);
 	//cout << this->pos.X << endl;
 }
 
