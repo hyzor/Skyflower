@@ -68,32 +68,26 @@ private:
 
 	void W()
 	{
-		cout << "Pressed W\n";
 		sendMessage("MoveForward");
-		sendMessage("ApplyGravity");
 	}
 
 	void S()
 	{
-		cout << "Pressed S\n";
 		sendMessage("MoveBackward");
 	}
 
 	void A()
 	{
-		cout << "Pressed A\n";
 		sendMessage("MoveLeft");
 	}
 
 	void D()
 	{
-		cout << "Pressed D\n";
 		sendMessage("MoveRight");
 	}
 
 	void Space()
 	{
-		cout << "Pressed Space\n";
 		sendMessage("Jump");
 	}
 

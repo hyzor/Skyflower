@@ -184,7 +184,7 @@ private:
 
 	void movePlatformUp(Message const& msg)
 	{
-		cout << "Ska rï¿½ra mig upp!" << endl;
+		//cout << "Ska rï¿½ra mig upp!" << endl;
 		Vec3 pos = getEntityPos();
 		pos.Y += 1;
 
@@ -193,7 +193,7 @@ private:
 
 	void movePlatformDown(Message const& msg)
 	{
-		cout << "Ska röra mig ner!" << endl;
+		//cout << "Ska röra mig ner!" << endl;
 		Vec3 pos = getEntityPos();
 		pos.Y -= 1;
 
@@ -202,7 +202,7 @@ private:
 
 	void movePlatformFront(Message const& msg)
 	{
-		cout << "Ska röra mig fram!" << endl;
+		//cout << "Ska röra mig fram!" << endl;
 		Vec3 pos = getEntityPos();
 		pos.X += 1;
 
@@ -211,7 +211,7 @@ private:
 
 	void movePlatformBack(Message const& msg)
 	{
-		cout << "Ska röra mig bak!" << endl;
+		//cout << "Ska röra mig bak!" << endl;
 		Vec3 pos = getEntityPos();
 		pos.X -= 1;
 
@@ -220,7 +220,7 @@ private:
 
 	void movePlatformLeft(Message const& msg)
 	{
-		cout << "Ska röra mig vänster!" << endl;
+		//cout << "Ska röra mig vänster!" << endl;
 		Vec3 pos = getEntityPos();
 		pos.Z -= 1;
 
@@ -229,7 +229,7 @@ private:
 
 	void movePlatformRight(Message const& msg)
 	{
-		cout << "Ska röra mig höger!" << endl;
+		//cout << "Ska röra mig höger!" << endl;
 		Vec3 pos = getEntityPos();
 		pos.Z += 1;
 
