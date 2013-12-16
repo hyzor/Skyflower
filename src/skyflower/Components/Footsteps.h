@@ -45,15 +45,13 @@ public:
 		m_oldPosition = getEntityPos();
 		m_oldPosition.Y = 0.0f;
 		m_distanceTraveled = 0.0f;
-
-		requestMessage("Update", &FootstepsComponent::update);
 	}
 
 private:
 	Vec3 m_oldPosition;
 	float m_distanceTraveled;
 
-	void update(Message const& msg)
+	void update(float deltaTime)
 	{
 		Vec3 position = getEntityPos();
 		position.Y = 0.0f;

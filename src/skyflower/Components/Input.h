@@ -2,12 +2,14 @@
 #define SKYFLOWER_INPUT_H
 
 #include "Cistron.h"
+#include "Entity.h"
 #include <string>
 #include <iostream>
+#include <cassert>
 using namespace std;
 using namespace Cistron;
 
-class Input : public Component {
+class Input : public Component, InputListener {
 
 public:
 
@@ -24,40 +26,72 @@ public:
 	{
 		cout << "An inputcomponent was added to the system." << endl;
 
-		requestMessage("W", &Input::W);
-		requestMessage("S", &Input::S);
-		requestMessage("A", &Input::A);
-		requestMessage("D", &Input::D);
-		requestMessage("Space", &Input::Space);
+		Entity *owner = getOwner();
+		assert(owner);
+		owner->getModules()->input->AddListener(this);
 	}
+
+	void removeFromEntity()
+	{
+		Entity *owner = getOwner();
+		assert(owner);
+		owner->getModules()->input->RemoveListener(this);
+	}
+
+	void OnKeyDown(unsigned short key)
+	{
+		switch (key)
+		{
+		case 'W':
+			W();
+			break;
+		case 'S':
+			S();
+			break;
+		case 'A':
+			A();
+			break;
+		case 'D':
+			D();
+			break;
+		case VK_SPACE:
+			Space();
+			break;
+		}
+	}
+
+	void OnKeyUp(unsigned short key)
+	{
+	}
+
 private:
 
-	void W(const Message& message)
+	void W()
 	{
 		cout << "Pressed W\n";
 		sendMessage("MoveForward");
 		sendMessage("ApplyGravity");
 	}
 
-	void S(const Message& message)
+	void S()
 	{
 		cout << "Pressed S\n";
 		sendMessage("MoveBackward");
 	}
 
-	void A(const Message& message)
+	void A()
 	{
 		cout << "Pressed A\n";
 		sendMessage("MoveLeft");
 	}
 
-	void D(const Message& message)
+	void D()
 	{
 		cout << "Pressed D\n";
 		sendMessage("MoveRight");
 	}
 
-	void Space(const Message& message)
+	void Space()
 	{
 		cout << "Pressed Space\n";
 		sendMessage("Jump");

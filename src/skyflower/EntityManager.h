@@ -33,6 +33,8 @@ class EntityManager {
 		EntityManager(const std::string &resourceDir, const Modules *modules);
 		virtual ~EntityManager();
 
+		void update(float deltaTime);
+
 		// create a new Entity
 		EntityId createEntity(string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
 			float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated);

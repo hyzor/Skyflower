@@ -34,8 +34,6 @@ public:
 
 		m_listener = owner->getModules()->sound->CreateListener();
 		owner->getModules()->sound->SetActiveListener(m_listener);
-
-		requestMessage("Update", &ListenerComponent::update);
 	}
 
 	void removeFromEntity()
@@ -50,7 +48,7 @@ public:
 private:
 	Listener *m_listener;
 
-	void update(Message const& msg)
+	void update(float deltaTime)
 	{
 		Vec3 position = getEntityPos();
 		Vec3 rotation = getEntityRot();

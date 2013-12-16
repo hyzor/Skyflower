@@ -79,6 +79,17 @@ Entity::~Entity() {
 	//this->modules->graphics->DeleteInstance(this->AnimInst);
 }
 
+void Entity::update(float deltaTime)
+{
+	list<Component *> components = getComponents();
+
+	for (auto iter = components.begin(); iter != components.end(); iter++)
+	{
+		if ((*iter) != NULL)
+			(*iter)->update(deltaTime);
+	}
+}
+
 const Modules *Entity::getModules()
 {
 	return this->modules;

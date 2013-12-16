@@ -19,14 +19,14 @@ enum MouseButton
 class InputListener
 {
 public:
-	virtual void OnMouseMove(int deltaX, int deltaY) = 0;
-	virtual void OnMouseButtonDown(enum MouseButton button) = 0;
-	virtual void OnMouseButtonUp(enum MouseButton button) = 0;
-	virtual void OnMouseWheel(int delta) = 0;
+	virtual void OnMouseMove(int deltaX, int deltaY) {};
+	virtual void OnMouseButtonDown(enum MouseButton button) {};
+	virtual void OnMouseButtonUp(enum MouseButton button) {};
+	virtual void OnMouseWheel(int delta) {};
 
 	// key is one of the virtual-key codes listed at http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731(v=vs.85).aspx
-	virtual void OnKeyDown(unsigned short key) = 0;
-	virtual void OnKeyUp(unsigned short key) = 0;
+	virtual void OnKeyDown(unsigned short key) {};
+	virtual void OnKeyUp(unsigned short key) {};
 };
 
 class InputHandler
