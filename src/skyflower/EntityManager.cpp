@@ -1015,7 +1015,7 @@ bool EntityManager::loadXML2(string xmlFile)
 
 	if (doc.LoadFile(path.c_str()) != XML_NO_ERROR)
 	{
-		cout << "Error opening file: " << xmlFile << endl;
+		cout << "Error reading/parsing file: " << xmlFile << endl;
 		return false;
 	}
 

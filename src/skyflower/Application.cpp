@@ -61,7 +61,7 @@ void Application::Start()
 	////sends a message to a specific entity, in this case a Player-entity.
 	//entityManager->sendMessageToEntity("Hello", "Player");
 	//entityManager->loadXML(entityManager, "test22.xml");
-	entityManager->loadXML2("test22.xml");
+	entityManager->loadXML2("player.xml");
 	entityManager->loadXML2("platform.xml");
 	entityManager->loadXML2("block22.xml");
 
