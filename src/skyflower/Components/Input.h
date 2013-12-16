@@ -43,54 +43,45 @@ public:
 		switch (key)
 		{
 		case 'W':
-			W();
+			sendMessage("StartMoveForward");
 			break;
 		case 'S':
-			S();
+			sendMessage("StartMoveBackward");
 			break;
 		case 'A':
-			A();
+			sendMessage("StartMoveLeft");
 			break;
 		case 'D':
-			D();
+			sendMessage("StartMoveRight");
 			break;
 		case VK_SPACE:
-			Space();
+			sendMessage("Jump");
+			break;
+		default:
 			break;
 		}
 	}
 
 	void OnKeyUp(unsigned short key)
 	{
+		switch (key)
+		{
+		case 'W':
+			sendMessage("StopMoveForward");
+			break;
+		case 'S':
+			sendMessage("StopMoveBackward");
+			break;
+		case 'A':
+			sendMessage("StopMoveLeft");
+			break;
+		case 'D':
+			sendMessage("StopMoveRight");
+			break;
+		default:
+			break;
+		}
 	}
-
-private:
-
-	void W()
-	{
-		sendMessage("MoveForward");
-	}
-
-	void S()
-	{
-		sendMessage("MoveBackward");
-	}
-
-	void A()
-	{
-		sendMessage("MoveLeft");
-	}
-
-	void D()
-	{
-		sendMessage("MoveRight");
-	}
-
-	void Space()
-	{
-		sendMessage("Jump");
-	}
-
 };
 
 #endif

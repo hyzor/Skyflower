@@ -20,6 +20,11 @@ public:
 	Movement() : Component("Movement")
 	{ 
 		this->p = new Physics();
+
+		this->isMovingForward = false;
+		this->isMovingBackward = false;
+		this->isMovingLeft = false;
+		this->isMovingRight = false;
 	};
 	virtual ~Movement() { delete this->p; };
 
@@ -32,15 +37,15 @@ public:
 
 		cout << "A movementcomponent was added to the system." << endl;
 
-		//requestMessage("Hello", &Movement::printHello);
+		requestMessage("StartMoveForward", &Movement::startMoveForward);
+		requestMessage("StartMoveBackward", &Movement::startMoveBackward);
+		requestMessage("StartMoveLeft", &Movement::startMoveLeft);
+		requestMessage("StartMoveRight", &Movement::startMoveRight);
+		requestMessage("StopMoveForward", &Movement::stopMoveForward);
+		requestMessage("StopMoveBackward", &Movement::stopMoveBackward);
+		requestMessage("StopMoveLeft", &Movement::stopMoveLeft);
+		requestMessage("StopMoveRight", &Movement::stopMoveRight);
 
-		//requestMessage("NextYear", &Movement::nextYear);
-
-		//requestMessage("CheckInput", &Movement::inputMovement);
-		requestMessage("MoveForward", &Movement::moveForward);
-		requestMessage("MoveBackward", &Movement::moveBackward);
-		requestMessage("MoveLeft", &Movement::moveLeft);
-		requestMessage("MoveRight", &Movement::moveRight);
 		requestMessage("Jump", &Movement::Jump);
 		requestMessage("movePlatformUp", &Movement::movePlatformUp);
 		requestMessage("movePlatformDown", &Movement::movePlatformDown);
@@ -53,7 +58,41 @@ public:
 	void update(float deltaTime)
 	{
 		Vec3 pos = getEntityPos();
+		Vec3 rot = getEntityRot();
 		p->update(deltaTime);
+
+		if (this->isMovingForward) {
+			if (p->toDegrees(rot.Y) != -90.0f) {
+				p->resetRot(rot);
+				p->rotateY(rot, -90.0f);
+			}
+
+			p->moveForward(pos, DEFAULT_MOVEMENTSPEED * deltaTime);
+		}
+		else if (this->isMovingBackward) {
+			if (p->toDegrees(rot.Y) != 90.0f) {
+				p->resetRot(rot);
+				p->rotateY(rot, 90.0f);
+			}
+
+			p->moveBackward(pos, DEFAULT_MOVEMENTSPEED * deltaTime);
+		}
+		else if (this->isMovingLeft) {
+			if (p->toDegrees(rot.Y) != 180.0f) {
+				p->resetRot(rot);
+				p->rotateY(rot, 180.0f);
+			}
+
+			p->moveLeft(pos, DEFAULT_MOVEMENTSPEED * deltaTime);
+		}
+		else if (this->isMovingRight) {
+			if (p->toDegrees(rot.Y) != 0.0f) {
+				p->resetRot(rot);
+				p->rotateY(rot, 0.0f);
+			}
+
+			p->moveRight(pos, DEFAULT_MOVEMENTSPEED * deltaTime);
+		}
 
 		std::vector<CollisionInstance*> instances = Collision::GetInstance()->GetCollisionInstances();
 		Ray r = Ray(pos+Vec3(0,5,0), Vec3(0, -5, 0));
@@ -78,6 +117,7 @@ public:
 		}
 
 		updateEntityPos(pos);
+		updateEntityRot(rot);
 	}
 
 	void sendAMessage(string message)
@@ -85,68 +125,45 @@ public:
 		//cout << "hej det är jag som ropar på denna funktionen: " << this->fName << endl;
 		sendMessage(message);
 	}
+
 private:
 	Physics* p;
+	bool isMovingForward;
+	bool isMovingBackward;
+	bool isMovingLeft;
+	bool isMovingRight;
 
-	void moveForward(Message const& msg)
+	void startMoveForward(Message const& msg)
 	{
-		Vec3 pos = getEntityPos();
-		Vec3 rot = getEntityRot();
-
-		if (p->toDegrees(rot.Y) != -90.0f)
-		{
-			p->resetRot(rot);
-			p->rotateY(rot, -90.0f);
-		}
-		p->moveForward(pos);
-		updateEntityPos(pos);
-		updateEntityRot(rot);
-
+		this->isMovingForward = true;
 	}
-
-	void moveBackward(Message const& msg)
+	void startMoveBackward(Message const& msg)
 	{
-		Vec3 pos = getEntityPos();
-		Vec3 rot = getEntityRot();
-		
-		if (p->toDegrees(rot.Y) != 90.0f)
-		{
-			p->resetRot(rot);
-			p->rotateY(rot, 90.0f);
-		}
-		p->moveBackward(pos);
-		updateEntityPos(pos);
-		updateEntityRot(rot);
+		this->isMovingBackward = true;
 	}
-
-	void moveLeft(Message const& msg)
+	void startMoveLeft(Message const& msg)
 	{
-		Vec3 pos = getEntityPos();
-		Vec3 rot = getEntityRot();
-
-		if (p->toDegrees(rot.Y) != 180.0f)
-		{
-			p->resetRot(rot);
-			p->rotateY(rot, 180.0f);
-		}
-		p->moveLeft(pos);
-
-		updateEntityPos(pos);
-		updateEntityRot(rot);
+		this->isMovingLeft = true;
 	}
-
-	void moveRight(Message const& msg)
+	void startMoveRight(Message const& msg)
 	{
-		Vec3 pos = getEntityPos();
-		Vec3 rot = getEntityPos();
-		//if (p->toDegrees(rot.Y) != 0.0f)
-		//{
-			p->resetRot(rot);
-		//}
-		p->moveRight(pos);
-
-		updateEntityPos(pos);
-		updateEntityRot(rot);
+		this->isMovingRight = true;
+	}
+	void stopMoveForward(Message const& msg)
+	{
+		this->isMovingForward = false;
+	}
+	void stopMoveBackward(Message const& msg)
+	{
+		this->isMovingBackward = false;
+	}
+	void stopMoveLeft(Message const& msg)
+	{
+		this->isMovingLeft = false;
+	}
+	void stopMoveRight(Message const& msg)
+	{
+		this->isMovingRight = false;
 	}
 
 	void Jump(Message const& msg)
@@ -171,7 +188,7 @@ private:
 	{
 		//cout << "Ska rï¿½ra mig upp!" << endl;
 		Vec3 pos = getEntityPos();
-		pos.Y += 0.1;
+		pos.Y += 0.1f;
 
 		updateEntityPos(pos);
 	}
@@ -180,7 +197,7 @@ private:
 	{
 		//cout << "Ska röra mig ner!" << endl;
 		Vec3 pos = getEntityPos();
-		pos.Y -= 0.1;
+		pos.Y -= 0.1f;
 
 		updateEntityPos(pos);
 	}
@@ -189,7 +206,7 @@ private:
 	{
 		//cout << "Ska röra mig fram!" << endl;
 		Vec3 pos = getEntityPos();
-		pos.X += 0.1;
+		pos.X += 0.1f;
 
 		updateEntityPos(pos);
 	}
@@ -198,7 +215,7 @@ private:
 	{
 		//cout << "Ska röra mig bak!" << endl;
 		Vec3 pos = getEntityPos();
-		pos.X -= 0.1;
+		pos.X -= 0.1f;
 
 		updateEntityPos(pos);
 	}
@@ -207,7 +224,7 @@ private:
 	{
 		//cout << "Ska röra mig vänster!" << endl;
 		Vec3 pos = getEntityPos();
-		pos.Z -= 0.1;
+		pos.Z -= 0.1f;
 
 		updateEntityPos(pos);
 	}
@@ -216,12 +233,10 @@ private:
 	{
 		//cout << "Ska röra mig höger!" << endl;
 		Vec3 pos = getEntityPos();
-		pos.Z += 0.1;
+		pos.Z += 0.1f;
 
 		updateEntityPos(pos);
 	}
-
-
 };
 
 #endif
