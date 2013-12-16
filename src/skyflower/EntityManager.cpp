@@ -1058,7 +1058,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for xPos in file " << xmlFile << endl;
+			cout << "failed loading attribute for xPos for entity " << entityName << " in file " << xmlFile << endl;
 		}
 
 		attr = elem->Attribute("yPos");
@@ -1068,7 +1068,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for yPos in file " << xmlFile << endl;
+			cout << "failed loading attribute for yPos for entity " << entityName << " in file " << xmlFile << endl;
 		}
 
 		attr = elem->Attribute("zPos");
@@ -1078,7 +1078,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for zPos in file " << xmlFile << endl;
+			cout << "failed loading attribute for zPos for entity " << entityName << " in file " << xmlFile << endl;
 		}
 
 		attr = elem->Attribute("xRot");
@@ -1088,7 +1088,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for xRot in file " << xmlFile << endl;
+			cout << "failed loading attribute for xRot for entity " << entityName << " in file " << xmlFile << endl;
 		}
 
 		attr = elem->Attribute("yRot");
@@ -1098,7 +1098,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for yRot in file " << xmlFile << endl;
+			cout << "failed loading attribute for yRot for entity " << entityName << " in file " << xmlFile << endl;
 		}
 
 		attr = elem->Attribute("zRot");
@@ -1108,7 +1108,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for zRot in file " << xmlFile << endl;
+			cout << "failed loading attribute for zRot for entity " << entityName << " in file " << xmlFile << endl;
 		}
 
 		attr = elem->Attribute("xScale");
@@ -1118,7 +1118,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for xScale in file " << xmlFile << endl;
+			cout << "failed loading attribute for xScale for entity " << entityName << " in file " << xmlFile << endl;
 		}
 
 		attr = elem->Attribute("yScale");
@@ -1128,7 +1128,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for yScale in file " << xmlFile << endl;
+			cout << "failed loading attribute for yScale for entity " << entityName << " in file " << xmlFile << endl;
 		}
 
 		attr = elem->Attribute("zScale");
@@ -1138,7 +1138,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for zScale in file " << xmlFile << endl;
+			cout << "failed loading attribute for zScale for entity " << entityName << " in file " << xmlFile << endl;
 		}
 
 		attr = elem->Attribute("model");
@@ -1148,7 +1148,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for model in file " << xmlFile << endl;
+			cout << "failed loading attribute for model for entity " << entityName << " in file " << xmlFile << endl;
 		}
 
 		attr = elem->Attribute("isVisible");
@@ -1158,7 +1158,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for isVisible in file " << xmlFile << endl;
+			cout << "failed loading attribute for isVisible for entity " << entityName << " in file " << xmlFile << endl;
 		}
 
 		attr = elem->Attribute("isCollidible");
@@ -1168,7 +1168,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for isCollidible in file " << xmlFile << endl;
+			cout << "failed loading attribute for isCollidible for entity " << entityName << " in file " << xmlFile << endl;
 		}
 		
 		attr = elem->Attribute("isAnimated");
@@ -1178,7 +1178,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for isAnimated in file " << xmlFile << endl;
+			cout << "failed loading attribute for isAnimated for entity " << entityName << " in file " << xmlFile << endl;
 		}
 
 		//Creating the Player entity and adding it to the entitymanager
@@ -1201,31 +1201,31 @@ bool EntityManager::loadXML2(string xmlFile)
 				if (attr != NULL)
 					xDir = e->FloatAttribute("xDir");
 				else
-					cout << "failed loading attribute for xDir in file " << xmlFile << endl;
+					cout << "failed loading attribute for xDir for entity " << entityName << " in file " << xmlFile << endl;
 
 				attr = e->Attribute("yDir");
 				if (attr != NULL)
 					yDir = e->FloatAttribute("yDir");
 				else
-					cout << "failed loading attribute for yDir in file " << xmlFile << endl;
+					cout << "failed loading attribute for yDir for entity " << entityName << " in file " << xmlFile << endl;
 
 				attr = e->Attribute("zDir");
 				if (attr != NULL)
 					zDir = e->FloatAttribute("zDir");
 				else
-					cout << "failed loading attribute for zDir in file " << xmlFile << endl;
+					cout << "failed loading attribute for zDir for entity " << entityName << " in file " << xmlFile << endl;
 
 				attr = e->Attribute("speed");
 				if (attr != NULL)
 					speed = e->FloatAttribute("speed");
 				else
-					cout << "failed loading attribute for speed in file " << xmlFile << endl;
+					cout << "failed loading attribute for speed for entity " << entityName << " in file " << xmlFile << endl;
 
 				attr = e->Attribute("travelDistance");
 				if (attr != NULL)
 					travelDistance = e->FloatAttribute("travelDistance");
 				else
-					cout << "failed loading attribute for speed in file " << xmlFile << endl;
+					cout << "failed loading attribute for speed for entity " << entityName << " in file " << xmlFile << endl;
 
 				OscillatePositionComponent *component = new OscillatePositionComponent(Vec3(xDir, yDir, zDir), speed, travelDistance);
 				this->addComponent(entity, component);
@@ -1262,7 +1262,7 @@ bool EntityManager::loadXML2(string xmlFile)
 			}
 			else
 			{
-				cout << "Unknown component with name " << componentName << " in file " << xmlFile << endl;
+				cout << "Unknown component with name " << componentName << " in entity " << entityName << " in file " << xmlFile << endl;
 			}
 		}
 	}

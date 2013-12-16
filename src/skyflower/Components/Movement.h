@@ -31,9 +31,6 @@ public:
 
 	// we are added to an Entity, and thus to the component system
 	void addedToEntity() {
-
-		cout << "A movementcomponent was added to the system." << endl;
-
 		this->p = getOwner()->getPhysics();
 
 		requestMessage("StartMoveForward", &Movement::startMoveForward);
