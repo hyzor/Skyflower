@@ -33,6 +33,7 @@ class Entity {
 		virtual ~Entity();
 		void sendPosToComponent();
 	
+		void update(float deltaTime);
 		const Modules *getModules();
 
 	private:

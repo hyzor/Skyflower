@@ -39,6 +39,14 @@ EntityManager::~EntityManager() {
 	}
 }
 
+void EntityManager::update(float deltaTime)
+{
+	for (auto iter = this->fEntitys.begin(); iter != this->fEntitys.end(); iter++)
+	{
+		if ((*iter) != NULL)
+			(*iter)->update(deltaTime);
+	}
+}
 
 // generate a unique request id or return one if it already exists
 RequestId EntityManager::getMessageRequestId(ComponentRequestType type, string name) {

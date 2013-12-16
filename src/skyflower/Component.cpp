@@ -249,6 +249,12 @@ void Component::addedToEntity() {
 
 void Component::removeFromEntity()
 {
+	// does nothing by default
+}
+
+void Component::update(float deltaTime)
+{
+	// does nothing by default
 }
 
 // register a unique name

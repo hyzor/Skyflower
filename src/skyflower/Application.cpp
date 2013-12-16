@@ -109,9 +109,7 @@ void Application::Start()
 			//memoryChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, 256.0f);
 		}
 
-
-		this->entityManager->sendMessageToEntity("Update", "Player");
-
+		this->entityManager->update(deltaTime);
 
 		//Lindas test
 		//Sleep(100);

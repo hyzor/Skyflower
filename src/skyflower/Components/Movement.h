@@ -37,14 +37,13 @@ public:
 		//requestMessage("NextYear", &Movement::nextYear);
 
 	
-		requestMessage("CheckCollision", &Movement::applyGravity);
+		requestMessage("CheckCollision", &Movement::checkCollision);
 		//requestMessage("CheckInput", &Movement::inputMovement);
 		requestMessage("MoveForward", &Movement::moveForward);
 		requestMessage("MoveBackward", &Movement::moveBackward);
 		requestMessage("MoveLeft", &Movement::moveLeft);
 		requestMessage("MoveRight", &Movement::moveRight);
 		requestMessage("Jump", &Movement::Jump);
-		requestMessage("Update", &Movement::update);
 		requestMessage("movePlatformUp", &Movement::movePlatformUp);
 		requestMessage("movePlatformDown", &Movement::movePlatformDown);
 		requestMessage("movePlatformFront", &Movement::movePlatformFront);
@@ -61,7 +60,7 @@ public:
 private:
 	Physics* p;
 
-	void applyGravity(Message const& msg)
+	void applyGravity()
 	{
 		Vec3 pos = getEntityPos();
 		p->update(0.001f);
@@ -92,6 +91,11 @@ private:
 		}
 
 		updateEntityPos(pos);
+	}
+
+	void checkCollision(Message const& msg)
+	{
+		applyGravity();
 	}
 
 	void moveForward(Message const& msg)
@@ -173,9 +177,9 @@ private:
 		updateEntityPos(pos);
 	}
 
-	void update(Message const& msg)
+	void update(float deltaTime)
 	{
-		applyGravity(msg);
+		applyGravity();
 	}
 
 	void movePlatformUp(Message const& msg)

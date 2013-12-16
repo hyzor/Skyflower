@@ -96,6 +96,7 @@ class Component {
 		// function called when the component is added to an Entity
 		virtual void addedToEntity();
 		virtual void removeFromEntity();
+		virtual void update(float deltaTime);
 
 		// register a unique name for the Entity
 		void registerName(string s);

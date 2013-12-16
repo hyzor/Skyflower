@@ -40,8 +40,6 @@ public:
 	void addedToEntity() {
 
 		cout << "A platformcomponent was added to the system." << endl;
-
-		requestMessage("update", &Platform::update);
 	}
 
 	void sendAMessage(string message)
@@ -64,7 +62,7 @@ private:
 	bool isMovingRight;
 
 
-	void update(Message const& msg)
+	void update(float deltaTime)
 	{
 		if (this->isMovingUpDown)
 		{
