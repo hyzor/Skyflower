@@ -109,7 +109,7 @@ void Application::Start()
 			//memoryChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, 256.0f);
 		}
 
-		this->entityManager->update(deltaTime);
+		this->entityManager->update((float)deltaTime);
 
 		//Lindas test
 		//Sleep(100);
@@ -186,20 +186,7 @@ void Application::OnKeyDown(unsigned short key)
 		m_inputHandler->SetMouseCapture(false);
 		m_window->SetCursorVisibility(true);
 		break;
-	case 'W':
-		entityManager->sendMessageToEntity("W", "Player");
-		break;
-	case 'S':
-		entityManager->sendMessageToEntity("S", "Player");
-		break;
-	case 'A':
-		entityManager->sendMessageToEntity("A", "Player");
-		break;
-	case 'D':
-		entityManager->sendMessageToEntity("D", "Player");
-		break;
-	case VK_SPACE:
-		entityManager->sendMessageToEntity("Space", "Player");
+	default:
 		break;
 	}
 }
