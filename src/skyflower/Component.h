@@ -95,6 +95,7 @@ class Component {
 
 		// function called when the component is added to an Entity
 		virtual void addedToEntity();
+		virtual void removeFromEntity();
 
 		// register a unique name for the Entity
 		void registerName(string s);
@@ -232,13 +233,15 @@ class Component {
 
 	private:
 		// set owner
-		void setOwner(EntityId id);
+		void setOwnerId(EntityId id);
+		void setOwner(Entity *owner);
 
 		// set destroyed
 		void setDestroyed();
 
 		// Entity id
 		EntityId fOwnerId;
+		Entity *fOwner;
 
 		// Entity manager
 		EntityManager *fEntityManager;

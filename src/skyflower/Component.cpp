@@ -42,10 +42,10 @@ EntityId Component::getOwnerId() {
 
 Entity *Component::getOwner()
 {
-	return fEntityManager->getEntity(fOwnerId);
+	return fOwner;
 }
 
-void Component::setOwner(EntityId id) {
+void Component::setOwnerId(EntityId id) {
 
 	// set the owner
 	fOwnerId = id;
@@ -53,6 +53,16 @@ void Component::setOwner(EntityId id) {
 	// respond to ping requests
 	requestMessage("ping", &Component::processPing);
 }
+
+void Component::setOwner(Entity *owner) {
+
+	// set the owner
+	fOwner = owner;
+
+	// respond to ping requests
+	requestMessage("ping", &Component::processPing);
+}
+
 void Component::setDestroyed() {
 	fDestroyed = true;
 }
@@ -237,6 +247,9 @@ void Component::addedToEntity() {
 	// does nothing by default
 }
 
+void Component::removeFromEntity()
+{
+}
 
 // register a unique name
 void Component::registerName(string s) {

@@ -184,7 +184,8 @@ void EntityManager::addComponent(EntityId id, Component *component) {
 	component->fEntityManager = this;
 
 	// set the owner of the component
-	component->setOwner(id);
+	component->setOwnerId(id);
+	component->setOwner(obj);
 
 	// we add the component
 	if (!obj->addComponent(component)) {
@@ -440,6 +441,7 @@ void EntityManager::destroyComponent(Component *comp) {
 		}
 	}
 
+	comp->removeFromEntity();
 	// remove its own local requests - only if the Entity itself wasn't removed yet
 	fEntitys[comp->getOwnerId()]->removeComponent(comp);
 

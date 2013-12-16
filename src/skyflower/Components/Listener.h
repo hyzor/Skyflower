@@ -24,11 +24,6 @@ public:
 
 	virtual ~ListenerComponent()
 	{
-		Entity *owner = getOwner();
-
-		assert(owner);
-
-		owner->getModules()->sound->DestroyListener(m_listener);
 	}
 
 	void addedToEntity()
@@ -41,6 +36,15 @@ public:
 		owner->getModules()->sound->SetActiveListener(m_listener);
 
 		requestMessage("Update", &ListenerComponent::update);
+	}
+
+	void removeFromEntity()
+	{
+		Entity *owner = getOwner();
+
+		assert(owner);
+
+		owner->getModules()->sound->DestroyListener(m_listener);
 	}
 
 private:
