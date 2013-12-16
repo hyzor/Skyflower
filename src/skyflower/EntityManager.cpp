@@ -1011,15 +1011,11 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 bool EntityManager::loadXML2(string xmlFile)
 {
 	string path = m_resourceDir + xmlFile;
-
 	XMLDocument doc;
-	doc.LoadFile(path.c_str());
 
-	//Try to open the file
-	FILE *fp = fopen(path.c_str(), "r");
-	if (!fp)
+	if (doc.LoadFile(path.c_str()) != XML_NO_ERROR)
 	{
-		cout << "Error opening text file: " << xmlFile << endl;
+		cout << "Error opening file: " << xmlFile << endl;
 		return false;
 	}
 
@@ -1052,7 +1048,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for entityName" << endl;
+			cout << "failed loading attribute for entityName in file " << xmlFile << endl;
 		}
 
 		attr = elem->Attribute("xPos");
@@ -1062,7 +1058,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for xPos" << endl;
+			cout << "failed loading attribute for xPos in file " << xmlFile << endl;
 		}
 
 		attr = elem->Attribute("yPos");
@@ -1072,7 +1068,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for yPos" << endl;
+			cout << "failed loading attribute for yPos in file " << xmlFile << endl;
 		}
 
 		attr = elem->Attribute("zPos");
@@ -1082,7 +1078,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for zPos" << endl;
+			cout << "failed loading attribute for zPos in file " << xmlFile << endl;
 		}
 
 		attr = elem->Attribute("xRot");
@@ -1092,7 +1088,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for xRot" << endl;
+			cout << "failed loading attribute for xRot in file " << xmlFile << endl;
 		}
 
 		attr = elem->Attribute("yRot");
@@ -1102,7 +1098,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for yRot" << endl;
+			cout << "failed loading attribute for yRot in file " << xmlFile << endl;
 		}
 
 		attr = elem->Attribute("zRot");
@@ -1112,7 +1108,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for zRot" << endl;
+			cout << "failed loading attribute for zRot in file " << xmlFile << endl;
 		}
 
 		attr = elem->Attribute("xScale");
@@ -1122,7 +1118,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for xScale" << endl;
+			cout << "failed loading attribute for xScale in file " << xmlFile << endl;
 		}
 
 		attr = elem->Attribute("yScale");
@@ -1132,7 +1128,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for yScale" << endl;
+			cout << "failed loading attribute for yScale in file " << xmlFile << endl;
 		}
 
 		attr = elem->Attribute("zScale");
@@ -1142,7 +1138,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for zScale" << endl;
+			cout << "failed loading attribute for zScale in file " << xmlFile << endl;
 		}
 
 		attr = elem->Attribute("model");
@@ -1152,7 +1148,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for model" << endl;
+			cout << "failed loading attribute for model in file " << xmlFile << endl;
 		}
 
 		attr = elem->Attribute("isVisible");
@@ -1162,7 +1158,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for isVisible" << endl;
+			cout << "failed loading attribute for isVisible in file " << xmlFile << endl;
 		}
 
 		attr = elem->Attribute("isCollidible");
@@ -1172,7 +1168,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for isCollidible" << endl;
+			cout << "failed loading attribute for isCollidible in file " << xmlFile << endl;
 		}
 		
 		attr = elem->Attribute("isAnimated");
@@ -1182,7 +1178,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		}
 		else
 		{
-			cout << "failed loading attribute for isAnimated" << endl;
+			cout << "failed loading attribute for isAnimated in file " << xmlFile << endl;
 		}
 
 		//Creating the Player entity and adding it to the entitymanager
@@ -1207,7 +1203,7 @@ bool EntityManager::loadXML2(string xmlFile)
 				}
 				else
 				{
-					cout << "failed loading attribute for isMovingUpDown" << endl;
+					cout << "failed loading attribute for isMovingUpDown in file " << xmlFile << endl;
 				}
 
 				attr = e->Attribute("isMovingFrontBack");
@@ -1217,7 +1213,7 @@ bool EntityManager::loadXML2(string xmlFile)
 				}
 				else
 				{
-					cout << "failed loading attribute for isMovingFrontBack" << endl;
+					cout << "failed loading attribute for isMovingFrontBack in file " << xmlFile << endl;
 				}
 
 				attr = e->Attribute("isMovingSideways");
@@ -1227,7 +1223,7 @@ bool EntityManager::loadXML2(string xmlFile)
 				}
 				else
 				{
-					cout << "failed loading attribute for isMovingSideways" << endl;
+					cout << "failed loading attribute for isMovingSideways in file " << xmlFile << endl;
 				}
 
 				Platform* p = new Platform(xPos, yPos, zPos, isMovingUpDown, isMovingFrontBack, isMovingSideways);
@@ -1252,6 +1248,10 @@ bool EntityManager::loadXML2(string xmlFile)
 			{
 				Input* i = new Input();
 				this->addComponent(entity, i);
+			}
+			else
+			{
+				cout << "Unknown component with name " << componentName << " in file " << xmlFile << endl;
 			}
 		}
 	}
