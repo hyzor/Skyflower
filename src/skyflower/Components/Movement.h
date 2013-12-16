@@ -70,7 +70,7 @@ private:
 		//pos.Y -= 0.01f;
 
 		std::vector<CollisionInstance*> instances = Collision::GetInstance()->GetCollisionInstances();
-		Ray r = Ray(pos, Vec3(0, -12, 0));
+		Ray r = Ray(pos+Vec3(0,5,0), Vec3(0, -5, 0));
 		float col = 0;
 		for (size_t i = 0; i < instances.size(); i++)
 		{
@@ -86,7 +86,7 @@ private:
 		}
 		if (col) //om kollision flytta tillbaka
 		{
-			pos.Y -= (1 - col)*-65;
+			pos.Y -= (1 - col)*r.Dir.Y;
 			p->setVelocity(Vec3());
 			p->setJumping(false);
 		}

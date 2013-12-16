@@ -280,6 +280,7 @@ ModelInstance* GraphicsEngineImpl::CreateInstance(std::string file, Vec3 pos)
 	{
 		std::stringstream ss;
 		ss << file << ".obj";
+		std::string obj = ss.str();
 		mModels[file] = new GenericModel(mDirect3D->GetDevice(),
 			mTextureMgr,
 			mResourceDir + ss.str(),
@@ -342,15 +343,7 @@ AnimatedInstance* GraphicsEngineImpl::CreateAnimatedInstance(std::string file)
 	AnimatedInstanceImpl* mi = new AnimatedInstanceImpl(Vec3(), Vec3(), Vec3(1, 1, 1));
 	mi->model = new AnimatedEntity(mSkinnedModels[file], XMFLOAT3(0,0,0));
 
-	// Cache animation keyframes
-	mi->model->mAnimations.push_back(AnimatedEntity::Animation(0, 51 + 15, 51 + 15));
-	mi->model->mAnimations.push_back(AnimatedEntity::Animation(1, 1, 24 + 7));
-	mi->model->mAnimations.push_back(AnimatedEntity::Animation(2, 1, 24 + 7));
-	mi->model->mAnimations.push_back(AnimatedEntity::Animation(3, 30 + 7, 49 + 10));
-	mi->model->mAnimations.push_back(AnimatedEntity::Animation(4, 51 + 15, 75 + 20));
-	mi->model->mAnimations.push_back(AnimatedEntity::Animation(5, 81 + 20, 105 + 25));
-
-	mi->model->mCurAnim = 1;
+	
 
 	mAnimatedInstances.push_back(mi);
 	return mi;

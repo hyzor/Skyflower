@@ -120,9 +120,9 @@ float ModelTreeParent::Test(Ray &r)
 
 	//test side
 	float hit = 0;
-	if (testright)
+	if (testright && right)
 		hit = right->Test(r);
-	if (testleft)
+	if (testleft && left)
 		hit = left->Test(r);
 	return hit;
 }

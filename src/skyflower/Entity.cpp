@@ -47,6 +47,16 @@ Entity::Entity(const Modules *modules, EntityId id, string type, float xPos, flo
 			this->AnimInst->SetRotation(this->rot);
 			this->AnimInst->SetScale(this->scale);
 			this->AnimInst->SetVisibility(this->isVisible);
+
+			// Cache animation keyframes
+			this->AnimInst->CreateAnimation(0, 51 + 15, 51 + 15);
+			this->AnimInst->CreateAnimation(1, 1, 24 + 7);
+			this->AnimInst->CreateAnimation(2, 1, 24 + 7);
+			this->AnimInst->CreateAnimation(3, 30 + 7, 49 + 10);
+			this->AnimInst->CreateAnimation(4, 51 + 15, 75 + 20);
+			this->AnimInst->CreateAnimation(5, 81 + 20, 105 + 25);
+
+			this->AnimInst->SetAnimation(1);
 		}
 	}
 	

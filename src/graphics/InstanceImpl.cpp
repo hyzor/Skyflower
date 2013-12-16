@@ -219,3 +219,14 @@ XMMATRIX AnimatedInstanceImpl::GetWorld()
 {
 	return XMLoadFloat4x4(&modelWorld);
 }
+
+
+void AnimatedInstanceImpl::CreateAnimation(int id, int start, int frames)
+{
+	model->mAnimations.push_back(AnimatedEntity::Animation(id, start, frames));
+}
+
+void AnimatedInstanceImpl::SetAnimation(int id)
+{
+	model->mCurAnim = id;
+}

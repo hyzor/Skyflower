@@ -58,6 +58,9 @@ public:
 	void SetScale(Vec3 scale);
 	void Set(Vec3 pos, Vec3 rot, Vec3 scale);
 
+	void CreateAnimation(int id, int start, int frames);
+	void SetAnimation(int id);
+
 	XMMATRIX GetWorld();
 
 	AnimatedEntity* model;
