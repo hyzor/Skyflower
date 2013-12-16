@@ -60,7 +60,7 @@ Entity::Entity(const Modules *modules, EntityId id, string type, float xPos, flo
 		}
 	}
 	
-	if (isCollidible)
+	if (isCollidible && !isAnimated)
 		collInst = Collision::GetInstance()->CreateCollisionInstance(model, pos);
 	else
 		collInst = nullptr;
@@ -252,7 +252,13 @@ void Entity::sendAMessageToAll(string message)
 	//}
 
 	//första komponenten med namnet messanger
-	this->fComponents["Monster"].front()->sendMessage("Hello");
+	//this->fComponents["Monster"].front()->sendMessage(message);
+	if (this->fComponents.count("Messenger") != 0)
+	{
+		this->fComponents["Messenger"].front()->sendMessage(message);
+	}
+
+
 	//if (this->fComponents["Messenger"].front() != NULL)
 	//{
 	//	this->fComponents["Messenger"].front()->sendMessage(message);
@@ -262,7 +268,10 @@ void Entity::sendAMessageToAll(string message)
 
 void Entity::sendMessageToEntity(string message, EntityId id)
 {
-	this->fComponents["Monster"].front()->sendMessageToEntity(id, message);
+	if (this->fComponents.count("Messenger") != 0)
+	{
+		this->fComponents["Messenger"].front()->sendMessageToEntity(id, message);
+	}
 }
 
 string Entity::getType()

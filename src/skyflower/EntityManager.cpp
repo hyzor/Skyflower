@@ -1,6 +1,7 @@
 
 #include "Cistron.h"
 #include "EntityManager.h"
+#include "ComponentHeaders.h"
 
 using namespace Cistron;
 using namespace tinyxml2;
@@ -594,7 +595,7 @@ void EntityManager::sendMessageToEntity(string message, string entity)
 	}
 }
 
-
+/*
 bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 {
 	string path = m_resourceDir + xmlFile;
@@ -708,7 +709,7 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 					isVisible = elem->BoolAttribute("isVisible");
 				}
 				//Creating the Player entity and adding it to the entitymanager
-				EntityId player = entityManager->createEntity("Player", xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, false, true);
+				EntityId player = entityManager->createEntity("Player", xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, false, false);
 
 
 				//Looping through all the components for Player-entity.
@@ -1005,6 +1006,257 @@ bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 	doc.Clear();
 
 	return true;
+}*/
+
+bool EntityManager::loadXML2(string xmlFile)
+{
+	string path = m_resourceDir + xmlFile;
+
+	XMLDocument doc;
+	doc.LoadFile(path.c_str());
+
+	//Try to open the file
+	FILE *fp = fopen(path.c_str(), "r");
+	if (!fp)
+	{
+		cout << "Error opening text file: " << xmlFile << endl;
+		return false;
+	}
+
+	//Find the root element
+	XMLElement* root = doc.FirstChildElement();
+	if (root == NULL)
+	{
+		cout << "Failed to load file: " << xmlFile << " No root element." << endl;
+		doc.Clear();
+		return false;
+	}
+
+	//For every entity that is to be created in this EntityManager
+	for (XMLElement* elem = root->FirstChildElement(); elem != NULL; elem = elem->NextSiblingElement())
+	{
+		string elemName = elem->Value();
+		const char* attr;
+
+		float xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale;
+		string model = "";
+		string entityName = "";
+		bool isVisible = false;
+		bool isCollidible = false;
+		bool isAnimated = false;
+
+		attr = elem->Attribute("entityName");
+		if (attr != NULL)
+		{
+			entityName = elem->Attribute("entityName");
+		}
+		else
+		{
+			cout << "failed loading attribute for entityName" << endl;
+		}
+
+		attr = elem->Attribute("xPos");
+		if (attr != NULL)
+		{
+			xPos = elem->FloatAttribute("xPos");
+		}
+		else
+		{
+			cout << "failed loading attribute for xPos" << endl;
+		}
+
+		attr = elem->Attribute("yPos");
+		if (attr != NULL)
+		{
+			yPos = elem->FloatAttribute("yPos");
+		}
+		else
+		{
+			cout << "failed loading attribute for yPos" << endl;
+		}
+
+		attr = elem->Attribute("zPos");
+		if (attr != NULL)
+		{
+			zPos = elem->FloatAttribute("zPos");
+		}
+		else
+		{
+			cout << "failed loading attribute for zPos" << endl;
+		}
+
+		attr = elem->Attribute("xRot");
+		if (attr != NULL)
+		{
+			xRot = elem->FloatAttribute("xRot");
+		}
+		else
+		{
+			cout << "failed loading attribute for xRot" << endl;
+		}
+
+		attr = elem->Attribute("yRot");
+		if (attr != NULL)
+		{
+			yRot = elem->FloatAttribute("yRot");
+		}
+		else
+		{
+			cout << "failed loading attribute for yRot" << endl;
+		}
+
+		attr = elem->Attribute("zRot");
+		if (attr != NULL)
+		{
+			zRot = elem->FloatAttribute("zRot");
+		}
+		else
+		{
+			cout << "failed loading attribute for zRot" << endl;
+		}
+
+		attr = elem->Attribute("xScale");
+		if (attr != NULL)
+		{
+			xScale = elem->FloatAttribute("xScale");
+		}
+		else
+		{
+			cout << "failed loading attribute for xScale" << endl;
+		}
+
+		attr = elem->Attribute("yScale");
+		if (attr != NULL)
+		{
+			yScale = elem->FloatAttribute("yScale");
+		}
+		else
+		{
+			cout << "failed loading attribute for yScale" << endl;
+		}
+
+		attr = elem->Attribute("zScale");
+		if (attr != NULL)
+		{
+			zScale = elem->FloatAttribute("zScale");
+		}
+		else
+		{
+			cout << "failed loading attribute for zScale" << endl;
+		}
+
+		attr = elem->Attribute("model");
+		if (attr != NULL)
+		{
+			model = elem->Attribute("model");
+		}
+		else
+		{
+			cout << "failed loading attribute for model" << endl;
+		}
+
+		attr = elem->Attribute("isVisible");
+		if (attr != NULL)
+		{
+			isVisible = elem->BoolAttribute("isVisible");
+		}
+		else
+		{
+			cout << "failed loading attribute for isVisible" << endl;
+		}
+
+		attr = elem->Attribute("isCollidible");
+		if (attr != NULL)
+		{
+			isCollidible = elem->BoolAttribute("isCollidible");
+		}
+		else
+		{
+			cout << "failed loading attribute for isCollidible" << endl;
+		}
+		
+		attr = elem->Attribute("isAnimated");
+		if (attr != NULL)
+		{
+			isAnimated = elem->BoolAttribute("isAnimated");
+		}
+		else
+		{
+			cout << "failed loading attribute for isAnimated" << endl;
+		}
+
+		//Creating the Player entity and adding it to the entitymanager
+		EntityId entity = this->createEntity(entityName, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, isAnimated);
+		
+		//Looping through all the components for Player-entity.
+		for (XMLElement* e = elem->FirstChildElement(); e != NULL; e = e->NextSiblingElement())
+		{
+			string componentName = e->Value();
+
+			if (componentName == "Platform")
+			{
+				bool isMovingUpDown = false;
+				bool isMovingFrontBack = false;
+				bool isMovingSideways = false;
+				cout << "hittade en Platformkomponent!" << endl;
+
+				attr = e->Attribute("isMovingUpDown");
+				if (attr != NULL)
+				{
+					isMovingUpDown = e->BoolAttribute("isMovingUpDown");
+				}
+				else
+				{
+					cout << "failed loading attribute for isMovingUpDown" << endl;
+				}
+
+				attr = e->Attribute("isMovingFrontBack");
+				if (attr != NULL)
+				{
+					isMovingFrontBack = e->BoolAttribute("isMovingFrontBack");
+				}
+				else
+				{
+					cout << "failed loading attribute for isMovingFrontBack" << endl;
+				}
+
+				attr = e->Attribute("isMovingSideways");
+				if (attr != NULL)
+				{
+					isMovingSideways = e->BoolAttribute("isMovingSideways");
+				}
+				else
+				{
+					cout << "failed loading attribute for isMovingSideways" << endl;
+				}
+
+				Platform* p = new Platform(xPos, yPos, zPos, isMovingUpDown, isMovingFrontBack, isMovingSideways);
+				this->addComponent(entity, p);
+			}
+			else if (componentName == "Movement")
+			{
+				Movement* m = new Movement();
+				this->addComponent(entity, m);
+			}
+			else if (componentName == "Gravity")
+			{
+				GravityComponent* m = new GravityComponent();
+				this->addComponent(entity, m);
+			}
+			else if (componentName == "Messenger")
+			{
+				Messenger *m = new Messenger();
+				this->addComponent(entity, m);
+			}
+			else if (componentName == "Input")
+			{
+				Input* i = new Input();
+				this->addComponent(entity, i);
+			}
+		}
+	}
+
+	return true;
 }
 
 Vec3 EntityManager::getEntityPos(EntityId ownerId)
@@ -1147,4 +1399,9 @@ Entity *EntityManager::getEntity(EntityId id)
 	}
 
 	return fEntitys[id];
+}
+
+EntityId EntityManager::getNrOfEntities()
+{
+	return this->fIdCounter;
 }

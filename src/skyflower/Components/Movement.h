@@ -20,6 +20,11 @@ public:
 	Movement() : Component("Movement")
 	{ 
 		this->p = new Physics();
+
+		this->isMovingForward = false;
+		this->isMovingBackward = false;
+		this->isMovingLeft = false;
+		this->isMovingRight = false;
 	};
 	virtual ~Movement() { delete this->p; };
 
@@ -32,17 +37,15 @@ public:
 
 		cout << "A movementcomponent was added to the system." << endl;
 
-		//requestMessage("Hello", &Movement::printHello);
+		requestMessage("StartMoveForward", &Movement::startMoveForward);
+		requestMessage("StartMoveBackward", &Movement::startMoveBackward);
+		requestMessage("StartMoveLeft", &Movement::startMoveLeft);
+		requestMessage("StartMoveRight", &Movement::startMoveRight);
+		requestMessage("StopMoveForward", &Movement::stopMoveForward);
+		requestMessage("StopMoveBackward", &Movement::stopMoveBackward);
+		requestMessage("StopMoveLeft", &Movement::stopMoveLeft);
+		requestMessage("StopMoveRight", &Movement::stopMoveRight);
 
-		//requestMessage("NextYear", &Movement::nextYear);
-
-	
-		requestMessage("CheckCollision", &Movement::checkCollision);
-		//requestMessage("CheckInput", &Movement::inputMovement);
-		requestMessage("MoveForward", &Movement::moveForward);
-		requestMessage("MoveBackward", &Movement::moveBackward);
-		requestMessage("MoveLeft", &Movement::moveLeft);
-		requestMessage("MoveRight", &Movement::moveRight);
 		requestMessage("Jump", &Movement::Jump);
 		requestMessage("movePlatformUp", &Movement::movePlatformUp);
 		requestMessage("movePlatformDown", &Movement::movePlatformDown);
@@ -52,21 +55,44 @@ public:
 		requestMessage("movePlatformRight", &Movement::movePlatformRight);
 	}
 
-	void sendAMessage(string message)
-	{
-		//cout << "hej det är jag som ropar på denna funktionen: " << this->fName << endl;
-		sendMessage(message);
-	}
-private:
-	Physics* p;
-
-	void applyGravity()
+	void update(float deltaTime)
 	{
 		Vec3 pos = getEntityPos();
-		p->update(0.001f);
-		this->p->addGravityCalc(pos);
+		Vec3 rot = getEntityRot();
+		p->update(deltaTime);
 
-		//pos.Y -= 0.01f;
+		if (this->isMovingForward) {
+			if (p->toDegrees(rot.Y) != -90.0f) {
+				p->resetRot(rot);
+				p->rotateY(rot, -90.0f);
+			}
+
+			p->moveForward(pos, DEFAULT_MOVEMENTSPEED * deltaTime);
+		}
+		else if (this->isMovingBackward) {
+			if (p->toDegrees(rot.Y) != 90.0f) {
+				p->resetRot(rot);
+				p->rotateY(rot, 90.0f);
+			}
+
+			p->moveBackward(pos, DEFAULT_MOVEMENTSPEED * deltaTime);
+		}
+		else if (this->isMovingLeft) {
+			if (p->toDegrees(rot.Y) != 180.0f) {
+				p->resetRot(rot);
+				p->rotateY(rot, 180.0f);
+			}
+
+			p->moveLeft(pos, DEFAULT_MOVEMENTSPEED * deltaTime);
+		}
+		else if (this->isMovingRight) {
+			if (p->toDegrees(rot.Y) != 0.0f) {
+				p->resetRot(rot);
+				p->rotateY(rot, 0.0f);
+			}
+
+			p->moveRight(pos, DEFAULT_MOVEMENTSPEED * deltaTime);
+		}
 
 		std::vector<CollisionInstance*> instances = Collision::GetInstance()->GetCollisionInstances();
 		Ray r = Ray(pos+Vec3(0,5,0), Vec3(0, -5, 0));
@@ -91,72 +117,53 @@ private:
 		}
 
 		updateEntityPos(pos);
-	}
-
-	void checkCollision(Message const& msg)
-	{
-		applyGravity();
-	}
-
-	void moveForward(Message const& msg)
-	{
-		Vec3 pos = getEntityPos();
-		Vec3 rot = getEntityRot();
-
-		if (p->toDegrees(rot.Y) != -90.0f)
-		{
-			p->resetRot(rot);
-			p->rotateY(rot, -90.0f);
-		}
-		p->moveForward(pos);
-		updateEntityPos(pos);
-		updateEntityRot(rot);
-
-	}
-
-	void moveBackward(Message const& msg)
-	{
-		Vec3 pos = getEntityPos();
-		Vec3 rot = getEntityRot();
-		
-		if (p->toDegrees(rot.Y) != 90.0f)
-		{
-			p->resetRot(rot);
-			p->rotateY(rot, 90.0f);
-		}
-		p->moveBackward(pos);
-		updateEntityPos(pos);
 		updateEntityRot(rot);
 	}
 
-	void moveLeft(Message const& msg)
+	void sendAMessage(string message)
 	{
-		Vec3 pos = getEntityPos();
-		Vec3 rot = getEntityRot();
-
-		if (p->toDegrees(rot.Y) != 180.0f)
-		{
-			p->resetRot(rot);
-			p->rotateY(rot, 180.0f);
-		}
-		p->moveLeft(pos);
-
-		updateEntityPos(pos);
-		updateEntityRot(rot);
+		//cout << "hej det är jag som ropar på denna funktionen: " << this->fName << endl;
+		sendMessage(message);
 	}
 
-	void moveRight(Message const& msg)
-	{
-		Vec3 pos = getEntityPos();
-		Vec3 rot = getEntityPos();
-		//if (p->toDegrees(rot.Y) != 0.0f)
-		//{
-			p->resetRot(rot);
-		//}
-		p->moveRight(pos);
+private:
+	Physics* p;
+	bool isMovingForward;
+	bool isMovingBackward;
+	bool isMovingLeft;
+	bool isMovingRight;
 
-		updateEntityPos(pos);
-		updateEntityRot(rot);
+	void startMoveForward(Message const& msg)
+	{
+		this->isMovingForward = true;
+	}
+	void startMoveBackward(Message const& msg)
+	{
+		this->isMovingBackward = true;
+	}
+	void startMoveLeft(Message const& msg)
+	{
+		this->isMovingLeft = true;
+	}
+	void startMoveRight(Message const& msg)
+	{
+		this->isMovingRight = true;
+	}
+	void stopMoveForward(Message const& msg)
+	{
+		this->isMovingForward = false;
+	}
+	void stopMoveBackward(Message const& msg)
+	{
+		this->isMovingBackward = false;
+	}
+	void stopMoveLeft(Message const& msg)
+	{
+		this->isMovingLeft = false;
+	}
+	void stopMoveRight(Message const& msg)
+	{
+		this->isMovingRight = false;
 	}
 
 	void Jump(Message const& msg)
@@ -177,16 +184,11 @@ private:
 		updateEntityPos(pos);
 	}
 
-	void update(float deltaTime)
-	{
-		applyGravity();
-	}
-
 	void movePlatformUp(Message const& msg)
 	{
 		//cout << "Ska rï¿½ra mig upp!" << endl;
 		Vec3 pos = getEntityPos();
-		pos.Y += 1;
+		pos.Y += 0.01f;
 
 		updateEntityPos(pos);
 	}
@@ -195,7 +197,7 @@ private:
 	{
 		//cout << "Ska röra mig ner!" << endl;
 		Vec3 pos = getEntityPos();
-		pos.Y -= 1;
+		pos.Y -= 0.01f;
 
 		updateEntityPos(pos);
 	}
@@ -204,7 +206,7 @@ private:
 	{
 		//cout << "Ska röra mig fram!" << endl;
 		Vec3 pos = getEntityPos();
-		pos.X += 1;
+		pos.X += 0.01f;
 
 		updateEntityPos(pos);
 	}
@@ -213,7 +215,7 @@ private:
 	{
 		//cout << "Ska röra mig bak!" << endl;
 		Vec3 pos = getEntityPos();
-		pos.X -= 1;
+		pos.X -= 0.01f;
 
 		updateEntityPos(pos);
 	}
@@ -222,7 +224,7 @@ private:
 	{
 		//cout << "Ska röra mig vänster!" << endl;
 		Vec3 pos = getEntityPos();
-		pos.Z -= 1;
+		pos.Z -= 0.01f;
 
 		updateEntityPos(pos);
 	}
@@ -231,12 +233,10 @@ private:
 	{
 		//cout << "Ska röra mig höger!" << endl;
 		Vec3 pos = getEntityPos();
-		pos.Z += 1;
+		pos.Z += 0.01f;
 
 		updateEntityPos(pos);
 	}
-
-
 };
 
 #endif

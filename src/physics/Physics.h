@@ -12,11 +12,11 @@
 
 const float PI = 3.141592653589f;
 
-#define DEFAULT_GRAVITY Vec3(0.0f, -9.82f, 0.0f);
-#define DEFAULT_MASS 50.0f; //In KG
-#define DEFAULT_VELOCITY Vec3(0.0f, 0.0f, 0.0f);
-#define DEFAULT_MOVEMENTSPEED 10.0f;
-#define DEFAULT_JUMP_VELOCITY 25.0f;
+#define DEFAULT_GRAVITY Vec3(0.0f, -9.82f, 0.0f)
+#define DEFAULT_MASS 50.0f //In KG
+#define DEFAULT_VELOCITY Vec3(0.0f, 0.0f, 0.0f)
+#define DEFAULT_MOVEMENTSPEED 100.0f
+#define DEFAULT_JUMP_VELOCITY 25.0f
 
 
 class DLL_API Physics

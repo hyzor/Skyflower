@@ -43,54 +43,46 @@ public:
 		switch (key)
 		{
 		case 'W':
-			W();
+			sendMessageToEntity(this->getOwnerId(), "StartMoveForward");
 			break;
 		case 'S':
-			S();
+			sendMessageToEntity(this->getOwnerId(), "StartMoveBackward");
 			break;
 		case 'A':
-			A();
+			sendMessageToEntity(this->getOwnerId(), "StartMoveLeft");
 			break;
 		case 'D':
-			D();
+			sendMessageToEntity(this->getOwnerId(), "StartMoveRight");
 			break;
 		case VK_SPACE:
-			Space();
+			sendMessageToEntity(this->getOwnerId(), "Jump");
+			break;
+		default:
 			break;
 		}
 	}
 
 	void OnKeyUp(unsigned short key)
 	{
+		switch (key)
+		{
+		case 'W':
+			//sendMessage("StopMoveForward");
+			sendMessageToEntity(this->getOwnerId(), "StopMoveForward");
+			break;
+		case 'S':
+			sendMessageToEntity(this->getOwnerId(), "StopMoveBackward");
+			break;
+		case 'A':
+			sendMessageToEntity(this->getOwnerId(), "StopMoveLeft");
+			break;
+		case 'D':
+			sendMessageToEntity(this->getOwnerId(), "StopMoveRight");
+			break;
+		default:
+			break;
+		}
 	}
-
-private:
-
-	void W()
-	{
-		sendMessage("MoveForward");
-	}
-
-	void S()
-	{
-		sendMessage("MoveBackward");
-	}
-
-	void A()
-	{
-		sendMessage("MoveLeft");
-	}
-
-	void D()
-	{
-		sendMessage("MoveRight");
-	}
-
-	void Space()
-	{
-		sendMessage("Jump");
-	}
-
 };
 
 #endif

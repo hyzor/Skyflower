@@ -170,6 +170,7 @@
     <ClInclude Include="src\physics\Ray.h" />
     <ClInclude Include="src\physics\Sphere.h" />
     <ClInclude Include="src\physics\Triangle.h" />
+    <ClInclude Include="src\skyflower\Components\Gravity.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

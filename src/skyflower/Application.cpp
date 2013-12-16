@@ -36,6 +36,7 @@ void Application::Start()
 	// Create graphics engine
 	m_graphicsEngine = CreateGraphicsEngine();
 	m_graphicsEngine->Init(m_window->GetHandle(), m_window->GetWidth(), m_window->GetHeight(), "../../content/");
+	camera = m_graphicsEngine->CreateCameraController();
 
 	m_soundEngine = CreateSoundEngine("../../content/sounds/");
 	assert(m_soundEngine);
@@ -49,9 +50,7 @@ void Application::Start()
 	entityManager = new EntityManager("../../content/XML/", &modules);
 
 	//loading xml-file, creating entities and components to this entityManager
-	entityManager->loadXML(entityManager, "test22.xml");
-	entityManager->loadXML(entityManager, "platform2.xml");
-	entityManager->loadXML(entityManager, "block22.xml");
+
 
 	//Lindas test
 	//entityManager->loadXML(entityManager, "platform.xml");
@@ -61,8 +60,11 @@ void Application::Start()
 
 	////sends a message to a specific entity, in this case a Player-entity.
 	//entityManager->sendMessageToEntity("Hello", "Player");
+	//entityManager->loadXML(entityManager, "test22.xml");
+	entityManager->loadXML2("test22.xml");
+	entityManager->loadXML2("platform.xml");
+	entityManager->loadXML2("block22.xml");
 
-	camera = m_graphicsEngine->CreateCameraController();
 	Cistron::Component* playerMove = (Movement*)entityManager->getComponent("Player", "Movement");
 
 	//m_graphicsEngine->CreateInstance("Data\\Models\\duck.obj")->SetVisibility(false);
@@ -113,11 +115,6 @@ void Application::Start()
 
 		this->entityManager->update((float)deltaTime);
 
-		//Lindas test
-		//Sleep(100);
-		//this->entityManager->sendMessageToEntity("update", "Platform");
-		////this->entityManager->sendMessageToAllEntities("update");
-
 		m_graphicsEngine->DrawScene();
 		m_graphicsEngine->UpdateScene((float)deltaTime);
 
@@ -127,8 +124,6 @@ void Application::Start()
 	}
 
 	//m_graphicsEngine->DeleteInstance(d);
-
-
 
 	m_soundEngine->DestroyListener(listener);
 	delete entityManager;

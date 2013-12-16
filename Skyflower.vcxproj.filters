@@ -89,12 +89,6 @@
     <ClInclude Include="src\skyflower\Components\Messenger.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="src\skyflower\Components\Monster.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="src\skyflower\Components\Person.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
     <ClInclude Include="src\skyflower\Components\Movement.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
