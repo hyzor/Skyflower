@@ -1230,6 +1230,33 @@ bool EntityManager::loadXML2(string xmlFile)
 				OscillatePositionComponent *component = new OscillatePositionComponent(Vec3(xDir, yDir, zDir), speed, travelDistance);
 				this->addComponent(entity, component);
 			}
+			else if (componentName == "Rotating")
+			{
+				float yawSpeed = 0.0f;
+				float pitchSpeed = 0.0f;
+				float rollSpeed = 0.0f;
+
+				attr = e->Attribute("yawSpeed");
+				if (attr != NULL)
+					yawSpeed = e->FloatAttribute("yawSpeed");
+				else
+					cout << "failed loading attribute for yawSpeed for entity " << entityName << " in file " << xmlFile << endl;
+
+				attr = e->Attribute("pitchSpeed");
+				if (attr != NULL)
+					pitchSpeed = e->FloatAttribute("pitchSpeed");
+				else
+					cout << "failed loading attribute for pitchSpeed for entity " << entityName << " in file " << xmlFile << endl;
+
+				attr = e->Attribute("rollSpeed");
+				if (attr != NULL)
+					rollSpeed = e->FloatAttribute("rollSpeed");
+				else
+					cout << "failed loading attribute for rollSpeed for entity " << entityName << " in file " << xmlFile << endl;
+
+				RotatingComponent *component = new RotatingComponent(yawSpeed, pitchSpeed, rollSpeed);
+				this->addComponent(entity, component);
+			}
 			else if (componentName == "Movement")
 			{
 				Movement* m = new Movement();

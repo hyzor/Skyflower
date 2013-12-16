@@ -122,5 +122,8 @@
     <ClInclude Include="src\skyflower\Components\OscillatePosition.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="src\skyflower\Components\Rotating.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
