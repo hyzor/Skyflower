@@ -264,7 +264,7 @@ void GraphicsEngineImpl::UpdateScene(float dt)
 	mCamera->UpdateViewMatrix();
 
 
-	for (int i = 0; i < mAnimatedInstances.size(); i++)
+	for (size_t i = 0; i < mAnimatedInstances.size(); i++)
 	{
 		mAnimatedInstances[i]->model->SetKeyFrameInterval(mAnimatedInstances[i]->model->mAnimations[mAnimatedInstances[i]->model->mCurAnim].FrameStart, mAnimatedInstances[i]->model->mAnimations[mAnimatedInstances[i]->model->mCurAnim].FrameEnd);
 		mAnimatedInstances[i]->model->Update(dt);

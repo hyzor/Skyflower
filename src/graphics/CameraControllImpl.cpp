@@ -21,8 +21,8 @@ CameraControllImpl::~CameraControllImpl(){}
 
 void CameraControllImpl::Update()
 {
-	pitch = Lerp(pitch, targetPitch, 0.002);
-	yaw = Lerp(yaw, targetYaw, 0.002);
+	pitch = Lerp(pitch, targetPitch, 0.002f);
+	yaw = Lerp(yaw, targetYaw, 0.002f);
 
 	o.Y = sin(pitch);
 	o.X = cos(yaw)*cos(pitch);
