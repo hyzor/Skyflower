@@ -28,6 +28,7 @@ bool AudioDecoderOpusInit(struct AudioResource *resource)
 	// Opus is fixed at 16-bit and 48kHz sample rate.
 	unsigned int bitDepth = 16;
 	unsigned int sampleRate = 48000;
+	// FIXME: Fix and enable streaming.
 	//bool shouldStream = (resource->file->size > SOUNDENGINE_STREAM_THRESHOLD_SIZE? true : false);
 	bool shouldStream = false;
 
@@ -70,19 +71,21 @@ void AudioDecoderOpusFillBuffer(const struct AudioResource *resource, uint64_t s
 	}
 
 	// FIXME: Don't alloc this every time.
+	// We can't have a single reusable buffer per file since this can be called from multiple threads and
+	// if they all share a single buffer they would overwrite each other's samples.
 	int16_t *data = new int16_t[(size_t)sampleCount];
-	int samplesWritten = 0;
+	int samplesRead = 0;
 	
-	while (samplesWritten < sampleCount) {
-		int result = op_read(opus, data + samplesWritten, (int)sampleCount - samplesWritten, NULL);
+	while (samplesRead < sampleCount) {
+		int result = op_read(opus, data + samplesRead, (int)sampleCount - samplesRead, NULL);
 
 		assert(result > 0);
 
 		// op_read returns the number of samples written per channel.
-		samplesWritten += result * resource->info.channels;
+		samplesRead += result * resource->info.channels;
 	}
 
-	alBufferData(buffer, resource->info.format, (const void *)data, (ALsizei)(sampleCount * 2), resource->info.sampleRate);
+	alBufferData(buffer, resource->info.format, (const void *)data, (ALsizei)(sampleCount * sizeof(uint16_t)), resource->info.sampleRate);
 	delete[] data;
 
 	assert(alGetError() == AL_NO_ERROR);
