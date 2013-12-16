@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<root>
+    <Player x="0">
+		<Monster name="Hubbe" />
+		<Person name="Ulf" age="22" />
+	</Player>
+	<Player2>
+		<Monster name="Hejsan" />
+		<Monster name="Svejsan" />
+		<Monster name="Hallojsan" />
+		<Movement x="1.1" y="0.5" z="0.33"/>
+		<Render xPos="1.1" yPos="0.5" zPos="0.33" />
+	</Player2>
+</root>

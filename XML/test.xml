@@ -1,0 +1,5 @@
+<root>
+    <pCube1 id="1" Type="object" Animated="0" x="-3.64831018255" y="2.08769710578" z="7.58176094487"/>
+    <pPyramid1 id="2" Type="object" Animated="0" x="-1.85545484475" y="0.0" z="-20.8037571279"/>
+    <pPlane1 id="3" Type="object" Animated="0" x="-0.00662605000455" y="0.0" z="-0.0426455239865"/>
+</root>

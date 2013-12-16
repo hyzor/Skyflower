@@ -1,0 +1,4 @@
+<root>
+    <abc entityName="asd1" id="1" isCollidible="1" xScale="10.0" yScale="10.0" zScale="10.0" xRot="0.0" yRot="0.0" zRot="0.0" isVisible="1" Type="object" isAnimated="0" xPos="0" yPos="0" zPos="0" model="Models/Placeholders/Platform/subvarld15"/>
+	
+</root>

@@ -47,7 +47,7 @@ void Application::Start()
 	modules.sound = m_soundEngine;
 	modules.potentialField = new PotentialField();
 
-	entityManager = new EntityManager("../../content/XML/", &modules);
+	entityManager = new EntityManager("../../XML/", &modules);
 
 	//loading xml-file, creating entities and components to this entityManager
 

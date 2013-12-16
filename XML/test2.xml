@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<root>
+    <Player xPos="0.0" yPos="0.0" zPos="0.0" 
+		xRot="-1.57" yRot="0.0" zRot="0.0" 
+		xScale="1" yScale="1.0" zScale="1.0"
+		model="Models\\duck.obj"
+		isVisible="1">
+		<Monster name="Hubbe" />
+		<Person name="Ulf" age="22" />
+		<Movement />
+		<Input />
+	</Player>
+	<Player2>
+		<Monster name="Hejsan" />
+		<Monster name="Svejsan" />
+		<Monster name="Hallojsan" />
+		<Movement />		
+	</Player2>
+</root>
