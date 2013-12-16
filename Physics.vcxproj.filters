@@ -77,8 +77,5 @@
     <ClInclude Include="src\physics\Orientation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\skyflower\Components\Gravity.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

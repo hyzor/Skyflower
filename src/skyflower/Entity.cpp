@@ -28,6 +28,7 @@ Entity::Entity(const Modules *modules, EntityId id, string type, float xPos, flo
 
 	this->model = model;
 	this->isVisible = isVisible;
+	this->physics = new Physics();
 
 	this->modules = modules;
 
@@ -77,6 +78,8 @@ Entity::~Entity() {
 	}*/
 	//this->modules->graphics->DeleteInstance(this->modelInst);
 	//this->modules->graphics->DeleteInstance(this->AnimInst);
+
+	delete this->physics;
 }
 
 void Entity::update(float deltaTime)
@@ -93,6 +96,11 @@ void Entity::update(float deltaTime)
 const Modules *Entity::getModules()
 {
 	return this->modules;
+}
+
+Physics* Entity::getPhysics()
+{
+	return this->physics;
 }
 
 // is the Entity finalized

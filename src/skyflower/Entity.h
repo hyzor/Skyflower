@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "graphics/GraphicsEngine.h"
+#include "physics/Physics.h"
 
 namespace Cistron {
 
@@ -34,7 +35,9 @@ class Entity {
 		void sendPosToComponent();
 	
 		void update(float deltaTime);
+
 		const Modules *getModules();
+		Physics* getPhysics();
 
 	private:
 
@@ -49,6 +52,7 @@ class Entity {
 		ModelInstance* modelInst;
 		AnimatedInstance* AnimInst;
 		CollisionInstance* collInst;
+		Physics* physics;
 
 		/**
 		 * COMPONENT MANAGEMENT

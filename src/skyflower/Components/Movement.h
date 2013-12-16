@@ -19,23 +19,21 @@ public:
 	// constructor - age is fixed at creation time
 	Movement() : Component("Movement")
 	{ 
-		this->p = new Physics();
-
 		this->isMovingForward = false;
 		this->isMovingBackward = false;
 		this->isMovingLeft = false;
 		this->isMovingRight = false;
-	};
-	virtual ~Movement() { delete this->p; };
-
-	Physics* getPhysicsInstance() { return this->p; };
-
-
+	}
+	virtual ~Movement()
+	{
+	}
 
 	// we are added to an Entity, and thus to the component system
 	void addedToEntity() {
 
 		cout << "A movementcomponent was added to the system." << endl;
+
+		this->p = getOwner()->getPhysics();
 
 		requestMessage("StartMoveForward", &Movement::startMoveForward);
 		requestMessage("StartMoveBackward", &Movement::startMoveBackward);
@@ -53,6 +51,11 @@ public:
 		requestMessage("movePlatformBack", &Movement::movePlatformBack);
 		requestMessage("movePlatformLeft", &Movement::movePlatformLeft);
 		requestMessage("movePlatformRight", &Movement::movePlatformRight);
+	}
+
+	void removeFromEntity()
+	{
+		this->p = NULL;
 	}
 
 	void update(float deltaTime)

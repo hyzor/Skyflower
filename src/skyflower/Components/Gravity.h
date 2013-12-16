@@ -16,17 +16,21 @@ class GravityComponent : public Component {
 
 public:
 	GravityComponent() : Component("Gravity")
-	{ 
-		this->p = new Physics();
-	};
+	{
+	}
 
-	virtual ~GravityComponent() { delete this->p; };
+	virtual ~GravityComponent()
+	{
+	}
 
-	Physics* getPhysicsInstance() { return this->p; };
+	void addedToEntity()
+	{
+		this->p = getOwner()->getPhysics();
+	}
 
-	// we are added to an Entity, and thus to the component system
-	void addedToEntity() {
-		cout << "A gravity component was added to the system." << endl;
+	void removeFromEntity()
+	{
+		this->p = NULL;
 	}
 
 	void update(float deltaTime)
