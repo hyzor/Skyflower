@@ -43,19 +43,19 @@ public:
 		switch (key)
 		{
 		case 'W':
-			sendMessage("StartMoveForward");
+			sendMessageToEntity(this->getOwnerId(), "StartMoveForward");
 			break;
 		case 'S':
-			sendMessage("StartMoveBackward");
+			sendMessageToEntity(this->getOwnerId(), "StartMoveBackward");
 			break;
 		case 'A':
-			sendMessage("StartMoveLeft");
+			sendMessageToEntity(this->getOwnerId(), "StartMoveLeft");
 			break;
 		case 'D':
-			sendMessage("StartMoveRight");
+			sendMessageToEntity(this->getOwnerId(), "StartMoveRight");
 			break;
 		case VK_SPACE:
-			sendMessage("Jump");
+			sendMessageToEntity(this->getOwnerId(), "Jump");
 			break;
 		default:
 			break;
@@ -67,16 +67,17 @@ public:
 		switch (key)
 		{
 		case 'W':
-			sendMessage("StopMoveForward");
+			//sendMessage("StopMoveForward");
+			sendMessageToEntity(this->getOwnerId(), "StopMoveForward");
 			break;
 		case 'S':
-			sendMessage("StopMoveBackward");
+			sendMessageToEntity(this->getOwnerId(), "StopMoveBackward");
 			break;
 		case 'A':
-			sendMessage("StopMoveLeft");
+			sendMessageToEntity(this->getOwnerId(), "StopMoveLeft");
 			break;
 		case 'D':
-			sendMessage("StopMoveRight");
+			sendMessageToEntity(this->getOwnerId(), "StopMoveRight");
 			break;
 		default:
 			break;

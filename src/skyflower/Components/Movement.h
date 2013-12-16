@@ -188,7 +188,7 @@ private:
 	{
 		//cout << "Ska rï¿½ra mig upp!" << endl;
 		Vec3 pos = getEntityPos();
-		pos.Y += 0.1f;
+		pos.Y += 0.01f;
 
 		updateEntityPos(pos);
 	}
@@ -197,7 +197,7 @@ private:
 	{
 		//cout << "Ska röra mig ner!" << endl;
 		Vec3 pos = getEntityPos();
-		pos.Y -= 0.1f;
+		pos.Y -= 0.01f;
 
 		updateEntityPos(pos);
 	}
@@ -206,7 +206,7 @@ private:
 	{
 		//cout << "Ska röra mig fram!" << endl;
 		Vec3 pos = getEntityPos();
-		pos.X += 0.1f;
+		pos.X += 0.01f;
 
 		updateEntityPos(pos);
 	}
@@ -215,7 +215,7 @@ private:
 	{
 		//cout << "Ska röra mig bak!" << endl;
 		Vec3 pos = getEntityPos();
-		pos.X -= 0.1f;
+		pos.X -= 0.01f;
 
 		updateEntityPos(pos);
 	}
@@ -224,7 +224,7 @@ private:
 	{
 		//cout << "Ska röra mig vänster!" << endl;
 		Vec3 pos = getEntityPos();
-		pos.Z -= 0.1f;
+		pos.Z -= 0.01f;
 
 		updateEntityPos(pos);
 	}
@@ -233,7 +233,7 @@ private:
 	{
 		//cout << "Ska röra mig höger!" << endl;
 		Vec3 pos = getEntityPos();
-		pos.Z += 0.1f;
+		pos.Z += 0.01f;
 
 		updateEntityPos(pos);
 	}
