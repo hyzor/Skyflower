@@ -1239,6 +1239,16 @@ bool EntityManager::loadXML2(string xmlFile)
 				GravityComponent* m = new GravityComponent();
 				this->addComponent(entity, m);
 			}
+			else if (componentName == "Listener")
+			{
+				ListenerComponent* m = new ListenerComponent();
+				this->addComponent(entity, m);
+			}
+			else if (componentName == "Footsteps")
+			{
+				FootstepsComponent* m = new FootstepsComponent();
+				this->addComponent(entity, m);
+			}
 			else if (componentName == "Messenger")
 			{
 				Messenger *m = new Messenger();

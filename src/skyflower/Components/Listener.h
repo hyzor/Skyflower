@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cstdio>
 
+#include "shared/util.h"
 #include "shared/Vec3.h"
 #include "Sound/SoundEngine.h"
 #include "Sound/Listener.h"

@@ -47,19 +47,19 @@ public:
 		m_distanceTraveled = 0.0f;
 	}
 
-private:
-	Vec3 m_oldPosition;
-	float m_distanceTraveled;
-
 	void update(float deltaTime)
 	{
+		if (getOwner()->getPhysics()->isJumping()) {
+			return;
+		}
+
 		Vec3 position = getEntityPos();
 		position.Y = 0.0f;
 
 		m_distanceTraveled += (position - m_oldPosition).Length();
 		m_oldPosition = position;
 
-		if (m_distanceTraveled >= 1.0f) {
+		if (m_distanceTraveled >= 30.0f) {
 			m_distanceTraveled = 0.0f;
 			Entity *owner = getOwner();
 
@@ -68,6 +68,10 @@ private:
 			}
 		}
 	}
+
+private:
+	Vec3 m_oldPosition;
+	float m_distanceTraveled;
 };
 
 #endif

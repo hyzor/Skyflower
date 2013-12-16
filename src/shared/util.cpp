@@ -1,3 +1,5 @@
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <cstdint>
 
 #include "platform.h"
@@ -35,4 +37,9 @@ DLL_API double GetTime()
 #else
 #error Unsupported OS
 #endif
+}
+
+DLL_API float DegreesToRadians(float degrees)
+{
+	return (float)(degrees * (M_PI / 180.0));
 }

@@ -12,4 +12,6 @@ DLL_API uint64_t GetMemoryUsage();
 // Returns the current time in seconds.
 DLL_API double GetTime();
 
+DLL_API float DegreesToRadians(float degrees);
+
 #endif
