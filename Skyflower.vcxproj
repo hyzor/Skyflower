@@ -41,9 +41,7 @@
     <ClInclude Include="src\skyflower\Components\Input.h" />
     <ClInclude Include="src\skyflower\Components\Listener.h" />
     <ClInclude Include="src\skyflower\Components\Messenger.h" />
-    <ClInclude Include="src\skyflower\Components\Monster.h" />
     <ClInclude Include="src\skyflower\Components\Movement.h" />
-    <ClInclude Include="src\skyflower\Components\Person.h" />
     <ClInclude Include="src\skyflower\Components\Platform.h" />
     <ClInclude Include="src\skyflower\Components\Render.h" />
     <ClInclude Include="src\skyflower\Entity.h" />

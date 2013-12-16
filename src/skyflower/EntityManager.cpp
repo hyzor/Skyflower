@@ -1243,61 +1243,12 @@ bool EntityManager::loadXML2(string xmlFile)
 				Messenger *m = new Messenger();
 				this->addComponent(entity, m);
 			}
-			else if (componentName == "Monster")
-			{
-				attr = e->Attribute("name");
-
-				string name = "";
-				if (attr != NULL)
-				{
-					name = e->Attribute("name");
-				}
-				else
-				{
-					cout << "failed loading attribute for name" << endl;
-				}
-
-				//create the Monster component and add that component to the Player entity
-				Monster *m = new Monster(name);
-				this->addComponent(entity, m);
-
-			}
 			else if (componentName == "Input")
 			{
 				Input* i = new Input();
 				this->addComponent(entity, i);
 			}
-			else if (componentName == "Person")
-			{
-				attr = e->Attribute("name");
-				string name = "";
-				if (attr != NULL)
-				{
-					name = e->Attribute("name");
-				}
-				else
-				{
-					cout << "failed loading attribute for name" << endl;
-				};
-
-				attr = e->Attribute("age");
-				int age = 0;
-				if (attr != NULL)
-				{
-					int *age2 = 0;
-					age = e->IntAttribute("age");
-				}
-				else
-				{
-					cout << "failed loading attribute for age" << endl;
-				}
-
-				Person *p1 = new Person(name, age);
-				this->addComponent(entity, p1);
-
-			}
 		}
-
 	}
 
 	return true;
