@@ -228,15 +228,16 @@ enum BufferStatus ResourceCache::RequestBuffer(uint32_t resourceHash, unsigned i
 	m_cacheEntries[slot].bufferIndex = bufferIndex;
 	m_cacheEntries[slot].lastRequestedFrame = m_currentFrame;
 
+	bool *cacheEntryLoading = &m_cacheEntryLoading[slot];
 	uint64_t sampleOffset = bufferIndex * resource->info.samplesPerBuffer;
 	uint64_t sampleCount = std::min(resource->info.samplesPerBuffer, resource->info.totalSamples - sampleOffset);
 	ALuint buffer = m_cacheEntries[slot].buffer;
 	// FIXME: Unload the previous buffer data?
 	// alBufferData(buffer, AL_FORMAT_MONO8, NULL, 0, 0);
 
-	m_taskQueue->EnqueueTask([this, slot, resource, buffer, sampleOffset, sampleCount]() {
+	m_taskQueue->EnqueueTask([resource, sampleOffset, sampleCount, buffer, cacheEntryLoading]() {
 		audioDecoders[resource->decoder].fillBuffer(resource, sampleOffset, sampleCount, buffer);
-		m_cacheEntryLoading[slot] = false;
+		*cacheEntryLoading = false;
 	});
 
 	return BufferStatusPendingLoad;

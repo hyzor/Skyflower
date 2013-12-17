@@ -39,7 +39,8 @@ bool AudioDecoderOpusInit(struct AudioResource *resource)
 	// Opus is fixed at 48kHz sample rate and outputs 32-bit floating point values.
 	unsigned int sampleRate = 48000;
 	unsigned int bitDepth = 32;
-	// FIXME: Fix the clicking noise when streaming.
+	// FIXME: Fix the clicking noise when streaming. It is also present when streaming
+	// wav, so they problem does not lie here.
 	bool shouldStream = ((totalSamples * (bitDepth / 8)) > SOUNDENGINE_STREAM_THRESHOLD_SIZE? true : false);
 	uint64_t samplesPerBuffer = (shouldStream? std::min((int64_t)(SOUNDENGINE_STREAM_BUFFER_SIZE * sampleRate * channels), totalSamples) : totalSamples);
 
