@@ -64,6 +64,8 @@ void Application::Start()
 	camera = m_graphicsEngine->CreateCameraController();
 	Movement* playerMove = (Movement*)entityManager->getComponent("player", "Movement");
 
+	entityManager->sendMessageToEntity("ActivateListener", "player");
+
 	LineChart frameTimeChart(1024 * 1024);
 	frameTimeChart.SetSize(512, 256);
 	frameTimeChart.SetUnit("ms");
