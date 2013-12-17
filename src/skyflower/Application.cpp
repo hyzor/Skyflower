@@ -95,7 +95,7 @@ void Application::Start()
 
 		camera->Follow(entityManager->getEntityPos("player"));
 		playerMove->setCamera(camera->GetLook(), camera->GetRight(), camera->GetUp());
-		camera->Update();
+		camera->Update((float)deltaTime);
 
 		this->entityManager->update((float)deltaTime);
 

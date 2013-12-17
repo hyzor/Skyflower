@@ -19,10 +19,10 @@ CameraControllImpl::CameraControllImpl(Camera *c)
 
 CameraControllImpl::~CameraControllImpl(){}
 
-void CameraControllImpl::Update()
+void CameraControllImpl::Update(float dt)
 {
-	pitch = Lerp(pitch, targetPitch, 0.002f);
-	yaw = Lerp(yaw, targetYaw, 0.002f);
+	pitch = Lerp(pitch, targetPitch, dt*5);
+	yaw = Lerp(yaw, targetYaw, dt*5);
 
 	o.Y = sin(pitch);
 	o.X = cos(yaw)*cos(pitch);
@@ -100,9 +100,11 @@ void CameraControllImpl::SetOffset(float offset)
 
 void CameraControllImpl::RotateCamera(float mouseX, float mouseY)
 {
-	targetYaw -= mouseX / 200;
-	targetPitch -= mouseY / 200;
-	
+	if (targetYaw - yaw < 1 && targetYaw - yaw > -1)
+	{
+		targetYaw -= mouseX / 350;
+		targetPitch -= mouseY / 200;
+	}
 	if (targetPitch > 1)
 		targetPitch = 1;
 	else if (targetPitch < 0)

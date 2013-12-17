@@ -17,7 +17,7 @@ public:
 	 void SetDirection(Vec3 direction);
 	 void SetOffset(float offset);
 	 void Rotate(Vec3 rot);
-	 void Update();
+	 void Update(float dt);
 	 void Follow(Vec3 target);
 	 void RotateCamera(float mouseX, float mouseY);
 	 void Zoom(float d, float speed);
