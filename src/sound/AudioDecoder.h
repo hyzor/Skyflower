@@ -23,5 +23,6 @@ struct AudioDecoder
 };
 
 extern const struct AudioDecoder audioDecoders[AudioDecoderCount];
+extern const struct AudioDecoder audioDecoderSineWave;
 
 #endif

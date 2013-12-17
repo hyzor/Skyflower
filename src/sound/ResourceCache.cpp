@@ -236,7 +236,7 @@ enum BufferStatus ResourceCache::RequestBuffer(uint32_t resourceHash, unsigned i
 	// alBufferData(buffer, AL_FORMAT_MONO8, NULL, 0, 0);
 
 	m_taskQueue->EnqueueTask([resource, sampleOffset, sampleCount, buffer, cacheEntryLoading]() {
-		audioDecoders[resource->decoder].fillBuffer(resource, sampleOffset, sampleCount, buffer);
+		resource->decoder->fillBuffer(resource, sampleOffset, sampleCount, buffer);
 		*cacheEntryLoading = false;
 	});
 
