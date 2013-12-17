@@ -90,6 +90,10 @@ bool SoundEngineImpl::Init(const std::string &resourceDir)
 	alcMakeContextCurrent(m_context);
 
 	printf("OpenAL '%s' running on '%s'\n", alGetString(AL_VERSION), alGetString(AL_RENDERER));
+	//printf("Available OpenAL extensions: %s\n", alGetString(AL_EXTENSIONS));
+
+	// AL_EXT_float32 is required by the opus decoder.
+	assert(alIsExtensionPresent("AL_EXT_float32"));
 
 #if 1
 	ALCenum error = alcGetError(m_device);

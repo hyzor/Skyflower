@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <cstdio>
 
+#include <AL/alext.h>
 #include <opusfile.h>
 
 #include "AudioDecoderOpus.h"
@@ -16,7 +17,7 @@ struct OpusDecoderContext
 	Mutex *mutex;
 	// In number of samples.
 	size_t bufferSize;
-	int16_t *buffer;
+	float *buffer;
 };
 
 bool AudioDecoderOpusInit(struct AudioResource *resource)
@@ -35,14 +36,11 @@ bool AudioDecoderOpusInit(struct AudioResource *resource)
 		return false;
 	}
 
-	// Opus is fixed at 16-bit and 48kHz sample rate.
-	unsigned int bitDepth = 16;
+	// Opus is fixed at 48kHz sample rate and outputs 32-bit floating point values.
 	unsigned int sampleRate = 48000;
-
-	// FIXME: Fix the clicking noise when streaming and enable it again.
-	//bool shouldStream = ((totalSamples * (bitDepth / 8)) > SOUNDENGINE_STREAM_THRESHOLD_SIZE? true : false);
-	bool shouldStream = false;
-
+	unsigned int bitDepth = 32;
+	// FIXME: Fix the clicking noise when streaming.
+	bool shouldStream = ((totalSamples * (bitDepth / 8)) > SOUNDENGINE_STREAM_THRESHOLD_SIZE? true : false);
 	uint64_t samplesPerBuffer = (shouldStream? std::min((int64_t)(SOUNDENGINE_STREAM_BUFFER_SIZE * sampleRate * channels), totalSamples) : totalSamples);
 
 	struct OpusDecoderContext *context = new struct OpusDecoderContext;
@@ -53,10 +51,10 @@ bool AudioDecoderOpusInit(struct AudioResource *resource)
 
 	if (shouldStream) {
 		context->bufferSize = (size_t)samplesPerBuffer;
-		context->buffer = new int16_t[context->bufferSize];
+		context->buffer = new float[context->bufferSize];
 	}
 
-	resource->info.format = (channels == 1? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16);
+	resource->info.format = (channels == 1? AL_FORMAT_MONO_FLOAT32 : AL_FORMAT_STEREO_FLOAT32);
 	resource->info.totalSamples = totalSamples;
 	resource->info.samplesPerBuffer = samplesPerBuffer;
 	resource->info.channels = channels;
@@ -105,7 +103,7 @@ void AudioDecoderOpusFillBuffer(const struct AudioResource *resource, uint64_t s
 	}
 
 	int samplesRead = 0;
-	int16_t *data;
+	float *data;
 
 	if (context->buffer) {
 		assert(context->bufferSize >= sampleCount);
@@ -113,11 +111,11 @@ void AudioDecoderOpusFillBuffer(const struct AudioResource *resource, uint64_t s
 		data = context->buffer;
 	}
 	else {
-		data = new int16_t[(size_t)sampleCount];
+		data = new float[(size_t)sampleCount];
 	}
 
 	while (samplesRead < sampleCount) {
-		int result = op_read(context->opus, data + samplesRead, (int)sampleCount - samplesRead, NULL);
+		int result = op_read_float(context->opus, data + samplesRead, (int)sampleCount - samplesRead, NULL);
 
 		assert(result > 0);
 
@@ -127,7 +125,7 @@ void AudioDecoderOpusFillBuffer(const struct AudioResource *resource, uint64_t s
 
 	assert(samplesRead <= sampleCount);
 
-	alBufferData(buffer, resource->info.format, (const void *)data, (ALsizei)(samplesRead * sizeof(uint16_t)), resource->info.sampleRate);
+	alBufferData(buffer, resource->info.format, (const void *)data, (ALsizei)(samplesRead * sizeof(*data)), resource->info.sampleRate);
 
 	if (!context->buffer) {
 		delete[] data;
