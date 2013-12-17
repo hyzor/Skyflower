@@ -91,6 +91,15 @@ RequestId EntityManager::getExistingRequestId(ComponentRequestType type, string 
 EntityId EntityManager::createEntity(string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
 	float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated) {
 
+	vector<Entity*> temp;
+	for (unsigned int i = 0; i < fEntitys.size(); i++)
+	{
+		if (fEntitys.at(i) != NULL)
+		{
+			temp.push_back(fEntitys.at(i));
+		}
+	}
+	fEntitys = temp;
 	// create a new Entity
 	Entity *obj = new Entity(modules, fIdCounter, type, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, isAnimated);
 	//cout << "Created Entity " << fIdCounter << endl;
@@ -407,6 +416,7 @@ void EntityManager::destroyEntity(EntityId id) {
 	//cout << "Destroyed Entity " << id << endl;
 	delete fEntitys[id];
 	fEntitys[id] = 0;
+	fIdCounter--;
 }
 
 
@@ -1184,7 +1194,7 @@ bool EntityManager::loadXML2(string xmlFile)
 
 		//Creating the Player entity and adding it to the entitymanager
 		EntityId entity = this->createEntity(entityName, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, isAnimated);
-		
+
 		//Looping through all the components for Player-entity.
 		for (XMLElement* e = elem->FirstChildElement(); e != NULL; e = e->NextSiblingElement())
 		{

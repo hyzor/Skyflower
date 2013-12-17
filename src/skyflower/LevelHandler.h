@@ -22,7 +22,7 @@ public:
 	int completedCount() const;
 	void levelCompleted();
 	int levelCount() const;
-
+	int currentLevel() const;
 private:
 	void _init(vector<char*> LevelXMLs);
 

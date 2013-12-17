@@ -34,11 +34,16 @@ class Entity {
 			 float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated);
 		virtual ~Entity();
 		void sendPosToComponent();
-	
 		void update(float deltaTime);
 
 		const Modules *getModules();
 		Physics* getPhysics();
+
+		template <typename T>
+		T getComponent(string Type)
+		{
+			return (T)fComponents[Type].front();
+		}
 
 	private:
 
@@ -131,7 +136,7 @@ class Entity {
 		void updateScale(Vec3 scale);
 		void updateVisible(bool isVisible);
 
-
+		
 
 		const Modules *modules;
 };

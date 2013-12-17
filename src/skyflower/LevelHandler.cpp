@@ -1,4 +1,5 @@
 #include "LevelHandler.h"
+#include "ScriptHandler.h"
 
 LevelHandler::LevelHandler(vector<char*> levelXMLs, EntityManager *entityManager)
 {
@@ -11,7 +12,7 @@ LevelHandler::~LevelHandler(){}
 
 void LevelHandler::_init(vector<char*> levelXMLs)
 {
-	for (int i = 0; i < levelXMLs.size(); i++)
+	for (unsigned int i = 0; i < levelXMLs.size(); i++)
 	{
 		Level curr(i, levelXMLs.at(i));
 		this->_levels.push_back(curr);
@@ -20,12 +21,19 @@ void LevelHandler::_init(vector<char*> levelXMLs)
 
 void LevelHandler::load(int id)
 {
-	_entityManager->loadXML(_entityManager,_levels.at(id)._path);
+	int nrEntities = _entityManager->getNrOfEntities();
+	for (int i = 1; i < nrEntities; i++)
+	{
+		_entityManager->destroyEntity(i);
+	
+	}
+	_entityManager->loadXML2(_levels.at(id)._path);
 	_current = id;
 }
 
 bool LevelHandler::isCompleted(int id) const
 {
+	
 	return _levels.at(id)._completed;
 }
 
@@ -37,7 +45,7 @@ void LevelHandler::levelCompleted()
 int LevelHandler::completedCount() const
 {
 	int completed = 0;
-	for (int i = 0; i < _levels.size(); i++)
+	for (unsigned int i = 0; i < _levels.size(); i++)
 	{
 		if (_levels.at(i)._completed)
 		{
@@ -50,4 +58,9 @@ int LevelHandler::completedCount() const
 int LevelHandler::levelCount() const
 {
 	return this->_levels.size();
+}
+
+int LevelHandler::currentLevel() const
+{
+	return this->_current;
 }

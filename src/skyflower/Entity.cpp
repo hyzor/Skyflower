@@ -82,9 +82,12 @@ Entity::~Entity() {
 			delete (*it2);
 		}
 	}*/
-	//this->modules->graphics->DeleteInstance(this->modelInst);
-	//this->modules->graphics->DeleteInstance(this->AnimInst);
+	if (modelInst)
+		this->modules->graphics->DeleteInstance(this->modelInst);
 
+	//if (AnimInst)
+		//this->modules->graphics->DeleteInstance(this->AnimInst);
+	
 	delete this->physics;
 }
 
@@ -375,4 +378,3 @@ void Entity::updateVisible(bool isVisible)
 	this->isVisible = isVisible;
 	this->modelInst->SetVisibility(isVisible);
 }
-

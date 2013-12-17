@@ -25,6 +25,9 @@
     <ClCompile Include="src\skyflower\EntityManager.cpp" />
     <ClCompile Include="src\skyflower\Field.cpp" />
     <ClCompile Include="src\skyflower\InputHandler.cpp" />
+    <ClCompile Include="src\skyflower\LevelHandler.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="src\skyflower\LineChart.cpp" />
     <ClCompile Include="src\skyflower\main.cpp" />
     <ClCompile Include="src\skyflower\PotentialField.cpp" />
@@ -42,6 +45,7 @@
     <ClInclude Include="src\skyflower\Components\Gravity.h" />
     <ClInclude Include="src\skyflower\Components\Input.h" />
     <ClInclude Include="src\skyflower\Components\Listener.h" />
+    <ClInclude Include="src\skyflower\Components\LUAScript.h" />
     <ClInclude Include="src\skyflower\Components\Messenger.h" />
     <ClInclude Include="src\skyflower\Components\Movement.h" />
     <ClInclude Include="src\skyflower\Components\OscillatePosition.h" />
@@ -52,6 +56,9 @@
     <ClInclude Include="src\skyflower\EntityManager.h" />
     <ClInclude Include="src\skyflower\Field.h" />
     <ClInclude Include="src\skyflower\InputHandler.h" />
+    <ClInclude Include="src\skyflower\LevelHandler.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="src\skyflower\LineChart.h" />
     <ClInclude Include="src\skyflower\PotentialField.h" />
     <ClInclude Include="src\skyflower\ScriptHandler.h" />
