@@ -6,7 +6,6 @@
 #include <DirectXMath.h>
 #include <ctime>
 #include "shared/Vec3.h"
-//#include "Vec3.h"
 #include <math.h>
 #include "Orientation.h"
 
@@ -18,55 +17,80 @@ const float PI = 3.141592653589f;
 #define DEFAULT_MOVEMENTSPEED 100.0f
 #define DEFAULT_JUMP_VELOCITY 100.0f
 
-
-class DLL_API Physics // NOTE: THIS IS A GREAT, BIG MESS ATM. DO THE FIXARINO
+//Currently sort of a helper class, to be held by each entity to make sure that the velocity and other entity-specific data are kept by and manipulated only by the right entity
+class DLL_API Physics
 {
 private:
+	//used for jumping and gravity calculation
 	Vec3 gravity;
 	Vec3 velocity;
+
+	//not relevant yet
 	float mass;
 	float projectileAngle;
+	
 	float dt;
+
+	//used to keep track of an entitys state regarding jumping, in order tp prevent/enable it dynamically
 	bool jumping;
+
+	//A simple class that keeps track of and manipulates the orientation (meaning rotation, look/right and up -vectors) of the entity holding the physics instance
 	Orientation orient;
 public:
+	//basic constructors
 	Physics();
 	Physics(Vec3 pos);
 	Physics(const Physics& other);
 	virtual ~Physics();
 
+	//Call each frame, updates delta and orientation
+	void update(float dt);
 
-	void update(float dt); //Call each frame (so far only an update of delta time)
-	bool jump(Vec3 &pos); //perform a jump on the given floats that represents a position
-	void addGravityCalc(Vec3 &pos, Vec3 &velocity); //apply gravity the given vector that represents a pos
-	void addGravityCalc(Vec3 &pos); // same story here, only position though
+	//perform a jump on the given vector that represents a position by increasing velocity in Y-axis
+	bool jump(Vec3 &pos); 
+
+	//apply gravity the given vector that represents a position
+	void addGravityCalc(Vec3 &pos, Vec3 &velocity); 
+	void addGravityCalc(Vec3 &pos);
+
+	//to be used for projectile calculations
 	void addProjectileCalc(Vec3 &pos, Vec3 &velocity, Vec3 &acceleration);
+
+	//walk along the look vector kept in Orientation
 	void walk(Vec3 &pos, float speed);
 	void walk(Vec3 &pos);
+
+	//walk along the right vector kept in Orientation
 	void strafe(Vec3 &pos, float speed);
 	void strafe(Vec3 &pos);
+
 	void moveUp(Vec3 &pos);
 	void moveDown(Vec3 &pos);
+
+	//rotate in relation to given vector plus an offset (angle)
 	void moveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, Vec3 &rot, float angleY);
 	void moveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, float speed,Vec3 &rot, float angleY);
+	
+	//rotate the different vectors in Orientation
 	void rotateX(Vec3 &rot, float angleX);
 	void rotateY(Vec3 &rot, float angleY);
 	void rotateZ(Vec3 &rot, float angleZ);
 	void resetRot(Vec3 &rot);
 
-	void setGravity(float x, float y, float z); //call to alter the effects of gravity, default gravity vector is (0, -9.82, 0) (gravity of earth).
-	void setMass(float mass); //not relevant yet
+	//set parameters of calculations, achieveing different effects. And other setfunctions
+	void setGravity(float x, float y, float z); 
+	void setMass(float mass); 
 	void setVelocity(Vec3 vel);
 	void setJumping(bool value);
 	void setOrientation(Vec3 look, Vec3 right, Vec3 up);
 
-
+	//Standard getfunctions.
 	float getMass() const;
 	Vec3 getGravity() const;
 	bool isJumping() const { return jumping; }
-	Vec3 getLook() const;
-	Vec3 getRight() const;
-	Vec3 getUp() const;
+	Vec3 getLook() const; //Fetched from Orientation
+	Vec3 getRight() const; //Fetched from Orientation
+	Vec3 getUp() const; //Fetched from Orientation
 
 	static float toRadians(float degrees);
 	static float toDegrees(float radians);

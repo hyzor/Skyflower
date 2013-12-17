@@ -55,6 +55,8 @@ public:
 		Vec3 pos = getEntityPos();
 		Vec3 rot = getEntityRot();
 		p->update(deltaTime);
+		
+
 
 		if (this->isMovingForward) {
 			if (this->isMovingLeft) {
