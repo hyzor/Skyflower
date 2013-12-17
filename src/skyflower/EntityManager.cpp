@@ -1454,32 +1454,68 @@ void EntityManager::handleCollision()
 {
 	//cout << " " << endl;
 	for (int i = 0; i < this->fIdCounter; i++)
-	{
+	{		
+		
 		if (fEntitys[i]->hasComponents("Gravity"))
 		{
 			Vec3 pos = fEntitys[i]->returnPos();
-			Ray r = Ray(pos + Vec3(0, 5, 0), Vec3(0, -5, 0));
+			Ray feet = Ray(pos + Vec3(0, 5, 0), Vec3(0, -5, 0));
 
-			float col = 0;
+			Ray left = Ray(pos + Vec3(0, 3, 0), Vec3(10, 0, 0));
+			Ray back = Ray(pos + Vec3(0, 3, 0), Vec3(0, 0, 10));
+			Ray right = Ray(pos + Vec3(0, 3, 0), Vec3(-10, 0, 0));
+			Ray front = Ray(pos + Vec3(0, 3, 0), Vec3(0, 0, 10));
+
+			float colfeet = 0;
+			float colleft = 0;
+			float colback = 0;
+			float colright = 0;
+			float colfront = 0;
 			for (int j = 0; j < this->fIdCounter; j++)
 			{
 				if (fEntitys[j]->collInst && i != j)
 				{
-					float t = fEntitys[j]->collInst->Test(r);
+					float t = fEntitys[j]->collInst->Test(feet);
 					if (t > 0)
-					{
-						col = t;
-						break;
-					}
+						colfeet = t;
+
+					t = fEntitys[j]->collInst->Test(left);
+					if (t > 0)
+						colleft = t;
+
+					t = fEntitys[j]->collInst->Test(back);
+					if (t > 0)
+						colback = t;
+
+					t = fEntitys[j]->collInst->Test(right);
+					if (t > 0)
+						colright = t;
+
+					t = fEntitys[j]->collInst->Test(front);
+					if (t > 0)
+						colfront = t;
 				}
 			}
 
-			if (col) //om kollision flytta tillbaka
+			if (colfeet) //om kollision flytta tillbaka
 			{
-				fEntitys[i]->updatePos(fEntitys[i]->returnPos() - Vec3(0.0f, (1 - col)*r.Dir.Y, 0.0f));
+				fEntitys[i]->updatePos(fEntitys[i]->returnPos() - Vec3(0.0f, (1 - colfeet)*feet.Dir.Y, 0.0f));
 				fEntitys[i]->physics->setVelocity(Vec3());
 				fEntitys[i]->physics->setJumping(false);
 			}
+
+			if (colleft > 0)
+				fEntitys[i]->updatePos(fEntitys[i]->returnPos() - left.Dir*(1 - colleft));
+			if (colback > 0)
+				fEntitys[i]->updatePos(fEntitys[i]->returnPos() - back.Dir*(1 - colback));
+			if (colright > 0)
+				fEntitys[i]->updatePos(fEntitys[i]->returnPos() - right.Dir*(1 - colright));
+			if (colfront > 0)   
+				fEntitys[i]->updatePos(fEntitys[i]->returnPos() - front.Dir*(1 - colfront));
+			//if (colback > 0)
+				//fEntitys[i]->updatePos(fEntitys[i]->returnPos() - Vec3(0.0f, 0.0f, (1 - colback)*back.Dir.Z));
+			//else if(colright > 0)
+				//fEntitys[i]->updatePos(fEntitys[i]->returnPos() - Vec3((1-colright)*right.Dir.X, 0.0f, 0.0f));
 		}
 		if (fEntitys[i]->hasComponents("AI"))
 		{
