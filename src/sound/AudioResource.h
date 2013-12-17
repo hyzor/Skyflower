@@ -39,7 +39,7 @@ struct AudioResourceInfo
 
 struct AudioResource
 {
-	enum AudioDecoders decoder;
+	const struct AudioDecoder *decoder;
 	struct MemoryMappedFile *file;
 
 	struct AudioResourceInfo info;
