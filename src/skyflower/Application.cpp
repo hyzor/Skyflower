@@ -48,7 +48,8 @@ void Application::Start()
 	modules.potentialField = new PotentialField();
 
 	entityManager = new EntityManager("../../XML/", &modules);
-	entityManager->loadXML2("player2.xml");
+	entityManager->loadXML2("player.xml");
+	//entityManager->loadXML2("player2.xml");
 	entityManager->loadXML2("platform.xml");
 	entityManager->loadXML2("block22.xml");
 	//entityManager->loadXML2("TriggerTest.xml");
