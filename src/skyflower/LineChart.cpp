@@ -98,7 +98,7 @@ void LineChart::Draw(float startTime, float endTime, float resolution, float tar
 	const struct LineChartDataPoint *previousPoint;
 	float timeRange = endTime - startTime;
 	float nextTimeStamp = startTime;
-	float value, alpha, position;
+	float value, alpha, difference, position;
 	float maxValue = FLT_MIN;
 	float minValue = FLT_MAX;
 	double totalValue = 0.0;
@@ -112,18 +112,21 @@ void LineChart::Draw(float startTime, float endTime, float resolution, float tar
 		if (point->timeStamp >= startTime && point->timeStamp <= endTime && point->timeStamp >= nextTimeStamp) {
 			if (first) {
 				nextTimeStamp = point->timeStamp;
-			}
-
-			previousIndex = (i - 1 < 0? m_dataPointCapacity - 1 : i - 1);
-
-			if (previousIndex != m_dataPointStart) {
-				previousPoint = &m_dataPoints[previousIndex];
-
-				alpha = (nextTimeStamp - previousPoint->timeStamp) / (point->timeStamp - previousPoint->timeStamp);
-				value = lerp(previousPoint->value, point->value, alpha);
+				value = point->value;
 			}
 			else {
-				value = point->value;
+				previousIndex = (i - 1 < 0? m_dataPointCapacity - 1 : i - 1);
+				previousPoint = &m_dataPoints[previousIndex];
+
+				difference = point->timeStamp - previousPoint->timeStamp;
+
+				if (difference > 0.0) {
+					alpha = (nextTimeStamp - previousPoint->timeStamp) / difference;
+					value = lerp(previousPoint->value, point->value, alpha);
+				}
+				else {
+					value = point->value;
+				}
 			}
 
 			position = ((nextTimeStamp - startTime) / timeRange) * m_bitmap->width();
