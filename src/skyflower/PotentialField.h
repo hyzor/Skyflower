@@ -9,6 +9,7 @@
 #include <fstream>
 #include "Field.h"
 #include "Physics/Triangle.h"
+#include "Physics/Collision.h"
 #include "Physics/Box.h"
 
 class PotentialField
@@ -21,7 +22,8 @@ class PotentialField
 		Field* CreateField(std::string file, Vec3 pos);
 		void DeleteField(Field* f);
 
-		Vec3 GetDir(Vec3 pos);
+		Vec3 GetDir(Vec3 pos, CollisionInstance* standon, Field* ignore);
+		float GetWeight(Vec3 pos, Field* ignore);
 		float GetWeight(Vec3 pos);
 	private:
 

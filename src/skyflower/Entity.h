@@ -69,6 +69,8 @@ class Entity {
 		// get a component
 		list<Component*> getComponents(string name);
 
+		bool hasComponents(string name);
+
 		// get all components
 		list<Component*> getComponents();
 

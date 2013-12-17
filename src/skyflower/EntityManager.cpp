@@ -47,6 +47,7 @@ void EntityManager::update(float deltaTime)
 		if ((*iter) != NULL)
 			(*iter)->update(deltaTime);
 	}
+	handleCollision();
 }
 
 // generate a unique request id or return one if it already exists
@@ -1267,6 +1268,11 @@ bool EntityManager::loadXML2(string xmlFile)
 				GravityComponent* m = new GravityComponent();
 				this->addComponent(entity, m);
 			}
+			else if (componentName == "AI")
+			{
+				AI* m = new AI();
+				this->addComponent(entity, m);
+			}
 			else if (componentName == "Listener")
 			{
 				ListenerComponent* m = new ListenerComponent();
@@ -1449,15 +1455,91 @@ void EntityManager::handleCollision()
 	//cout << " " << endl;
 	for (int i = 0; i < this->fIdCounter; i++)
 	{
-		for (int j = i+1; j < this->fIdCounter; j++)
+		if (fEntitys[i]->hasComponents("Gravity"))
 		{
-			if (this->fEntitys[i]->collInst != nullptr && i != j && this->fEntitys[j]->collInst != nullptr)
+			Vec3 pos = fEntitys[i]->returnPos();
+			Ray r = Ray(pos + Vec3(0, 5, 0), Vec3(0, -5, 0));
+
+			float col = 0;
+			for (int j = 0; j < this->fIdCounter; j++)
+			{
+				if (fEntitys[j]->collInst && i != j)
+				{
+					float t = fEntitys[j]->collInst->Test(r);
+					if (t > 0)
+					{
+						col = t;
+						break;
+					}
+				}
+			}
+
+			if (col) //om kollision flytta tillbaka
+			{
+				fEntitys[i]->updatePos(fEntitys[i]->returnPos() - Vec3(0.0f, (1 - col)*r.Dir.Y, 0.0f));
+				fEntitys[i]->physics->setVelocity(Vec3());
+				fEntitys[i]->physics->setJumping(false);
+			}
+		}
+		if (fEntitys[i]->hasComponents("AI"))
+		{
+			Vec3 pos = fEntitys[i]->returnPos();
+			Ray r = Ray(pos + Vec3(0, 15, 0), Vec3(0, -30, 0));
+
+			//find platform
+			Entity* col = nullptr;
+			for (int j = 0; j < this->fIdCounter; j++)
+			{
+				if (fEntitys[j]->collInst && i != j)
+				{
+					float t = fEntitys[j]->collInst->Test(r);
+					if (t > 0)
+					{
+						col = fEntitys[j];
+						break;
+					}
+				}
+			}
+
+			//find taget
+			Entity* p = nullptr;
+			for (int j = 0; j < this->fIdCounter; j++)
+			{
+				if (fEntitys[j]->getType() == "player")
+				{
+					p = fEntitys[j];
+					break;
+				}
+			}
+
+
+
+
+			Field* target = modules->potentialField->CreateField(-1000, 1000, p->returnPos());
+
+			Vec3 dir;
+			if(col)
+				dir = modules->potentialField->GetDir(pos, col->collInst, col->field);
+			else
+				dir = modules->potentialField->GetDir(pos, nullptr, nullptr);
+
+			
+			fEntitys[i]->updatePos(fEntitys[i]->returnPos() + dir);
+
+			modules->potentialField->DeleteField(target);
+
+		}
+
+		/*for (int j = i+1; j < this->fIdCounter; j++)
+		{
+			/*if (this->fEntitys[i]->collInst != nullptr && i != j && this->fEntitys[j]->collInst != nullptr)
 			{
 				if (this->fEntitys[i]->collInst->Test(this->fEntitys[j]->collInst))
 				{
 					//cout << "kollision!" << endl;
 				}
 			}
-		}
+			
+		}*/
 	}
 }

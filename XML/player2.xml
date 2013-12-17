@@ -11,5 +11,6 @@
 			<Listener />
 			<Footsteps />
 			<Messenger />
+			<Gravity />
 	</Entity>
 </root>

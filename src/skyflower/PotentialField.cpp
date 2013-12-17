@@ -23,7 +23,7 @@ Field* PotentialField::CreateField(std::string file, Vec3 pos)
 {
 	//load obj
 	std::stringstream ss;
-	ss << file << ".obj";
+	ss << "../../content/" << file << ".obj";
 	std::ifstream infile(ss.str());
 	std::string line;
 
@@ -87,36 +87,39 @@ void PotentialField::DeleteField(Field* f)
 
 float PotentialField::GetWeight(Vec3 pos)
 {
+	return GetWeight(pos, nullptr);
+}
+
+float PotentialField::GetWeight(Vec3 pos, Field* ignore)
+{
 	float weight = 0;
 	for (unsigned int i = 0; i < fields.size(); i++)
-		weight += fields[i]->GetWeight(pos);
+	{
+		if (fields[i] != ignore)
+			weight += fields[i]->GetWeight(pos);
+	}
 	return weight;
 }
 
-Vec3 PotentialField::GetDir(Vec3 pos)
+Vec3 PotentialField::GetDir(Vec3 pos, CollisionInstance* standon, Field* ignore)
 {
 	Vec3 dir;
 	float minWeight = 9999999;
 	for (int i = 0; i < 15; i++)
 	{
-		Vec3 ranDir = Vec3((rand() % 200) / 100.0f - 1, (rand() % 200) / 100.0f - 1, 0.0f).Normalize();
+		Vec3 ranDir = Vec3((rand() % 200) / 100.0f - 1, 0.0f, (rand() % 200) / 100.0f - 1).Normalize();
 		
-		float weight = GetWeight(pos + ranDir);
+		float weight = GetWeight(pos + ranDir, ignore);
 
 		if (weight < minWeight)
 		{
 			//check if safe to walk
-			bool safe = false;
-			for (unsigned int i = 0; i < fields.size(); i++)
+			if (!standon)
 			{
-				if (fields[i]->GetSafe().Test(pos + ranDir))
-				{
-					safe = true;
-					break;
-				}
+				minWeight = weight;
+				dir = ranDir;
 			}
-
-			if (safe)
+			else if (standon->Test(Ray(pos + ranDir*3 + Vec3(0, 15, 0), Vec3(0, -30, 0))))
 			{
 				minWeight = weight;
 				dir = ranDir;
