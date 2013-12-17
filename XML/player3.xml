@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<root>
+    <AI entityName="player" xPos="30.0" yPos="10.0" zPos="30.0" 
+		xRot="0.0" yRot="0.0" zRot="0.0" 
+		xScale="1" yScale="1.0" zScale="1.0"
+		model="Models\\Enemies\\Puncher\\Puncha"
+		isVisible="1" isCollidible ="1" isAnimated="0">
+			<Input />
+			<Movement />
+			<Gravity />
+			<Listener />
+			<Footsteps />
+			<Messenger />
+	</AI>
+</root>

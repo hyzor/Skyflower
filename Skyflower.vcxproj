@@ -47,6 +47,7 @@
     <ClInclude Include="src\skyflower\Components\OscillatePosition.h" />
     <ClInclude Include="src\skyflower\Components\Render.h" />
     <ClInclude Include="src\skyflower\Components\Rotating.h" />
+    <ClInclude Include="src\skyflower\Components\Trigger.h" />
     <ClInclude Include="src\skyflower\Entity.h" />
     <ClInclude Include="src\skyflower\EntityManager.h" />
     <ClInclude Include="src\skyflower\Field.h" />

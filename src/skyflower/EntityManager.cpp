@@ -1443,3 +1443,21 @@ EntityId EntityManager::getNrOfEntities()
 {
 	return this->fIdCounter;
 }
+
+void EntityManager::handleCollision()
+{
+	//cout << " " << endl;
+	for (int i = 0; i < this->fIdCounter; i++)
+	{
+		for (int j = i+1; j < this->fIdCounter; j++)
+		{
+			if (this->fEntitys[i]->collInst != nullptr && i != j && this->fEntitys[j]->collInst != nullptr)
+			{
+				if (this->fEntitys[i]->collInst->Test(this->fEntitys[j]->collInst))
+				{
+					//cout << "kollision!" << endl;
+				}
+			}
+		}
+	}
+}

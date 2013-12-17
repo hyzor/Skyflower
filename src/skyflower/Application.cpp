@@ -48,9 +48,11 @@ void Application::Start()
 	modules.potentialField = new PotentialField();
 
 	entityManager = new EntityManager("../../XML/", &modules);
-	entityManager->loadXML2("player.xml");
+	entityManager->loadXML2("player2.xml");
 	entityManager->loadXML2("platform.xml");
 	entityManager->loadXML2("block22.xml");
+	//entityManager->loadXML2("TriggerTest.xml");
+	//entityManager->loadXML2("Player3.xml");
 
 	//Cistron::Component* playerMove = (Movement*)entityManager->getComponent("player", "Movement");
 
@@ -92,12 +94,12 @@ void Application::Start()
 			//frameTimeChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, (1.0f / 60.0f) * 1000.0f);
 			//memoryChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, 256.0f);
 		}
-
 		camera->Follow(entityManager->getEntityPos("player"));
 		playerMove->setCamera(camera->GetLook(), camera->GetRight(), camera->GetUp());
 		camera->Update((float)deltaTime);
 
 		this->entityManager->update((float)deltaTime);
+		//this->entityManager->handleCollision();
 
 		m_graphicsEngine->DrawScene();
 		m_graphicsEngine->UpdateScene((float)deltaTime);
