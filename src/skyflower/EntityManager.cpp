@@ -1470,17 +1470,21 @@ void EntityManager::handleCollision()
 		{
 			Vec3 pos = fEntitys[i]->returnPos();
 			Ray feet = Ray(pos + Vec3(0, 5, 0), Vec3(0, -5, 0));
+			Ray xcol = Ray(pos + Vec3(-3, 3, 0), Vec3(6, 0, 0));
+			Ray zcol = Ray(pos + Vec3(0, 3, -3), Vec3(0, 0, 6));
 
-			Ray left = Ray(pos + Vec3(0, 3, 0), Vec3(10, 0, 0));
+			/*Ray left = Ray(pos + Vec3(0, 3, 0), Vec3(10, 0, 0));
 			Ray back = Ray(pos + Vec3(0, 3, 0), Vec3(0, 0, 10));
-			Ray right = Ray(pos + Vec3(0, 3, 0), Vec3(-10, 0, 0));
-			Ray front = Ray(pos + Vec3(0, 3, 0), Vec3(0, 0, 10));
+			Ray right = Ray(pos + Vec3(10, 3, 0), Vec3(10, 0, 0));
+			Ray front = Ray(pos + Vec3(0, 3, 0), Vec3(0, 0, 10));*/
 
 			float colfeet = 0;
-			float colleft = 0;
+			/*float colleft = 0;
 			float colback = 0;
 			float colright = 0;
-			float colfront = 0;
+			float colfront = 0;*/
+			float colx = 0;
+			float colz = 0;
 			for (int j = 0; j < this->fIdCounter; j++)
 			{
 				if (fEntitys[j]->collInst && i != j)
@@ -1489,7 +1493,7 @@ void EntityManager::handleCollision()
 					if (t > 0)
 						colfeet = t;
 
-					t = fEntitys[j]->collInst->Test(left);
+					/*t = fEntitys[j]->collInst->Test(left);
 					if (t > 0)
 						colleft = t;
 
@@ -1503,7 +1507,15 @@ void EntityManager::handleCollision()
 
 					t = fEntitys[j]->collInst->Test(front);
 					if (t > 0)
-						colfront = t;
+						colfront = t;*/
+
+					t = fEntitys[j]->collInst->Test(xcol);
+					if (t > 0)
+						colx = t;
+
+					t = fEntitys[j]->collInst->Test(zcol);
+					if (t > 0)
+						colz = t;
 				}
 			}
 
@@ -1514,14 +1526,25 @@ void EntityManager::handleCollision()
 				fEntitys[i]->physics->setJumping(false);
 			}
 
-			if (colleft > 0)
+			if (colx > 0.5f) //right
+				fEntitys[i]->updatePos(fEntitys[i]->returnPos() - xcol.Dir*(1 - colx));
+			else if (colx > 0) //left
+				fEntitys[i]->updatePos(fEntitys[i]->returnPos() + xcol.Dir*(colx));
+
+			if (colz > 0.5f) //front
+				fEntitys[i]->updatePos(fEntitys[i]->returnPos() - zcol.Dir*(1 - colz));
+			else if (colz > 0) //back
+				fEntitys[i]->updatePos(fEntitys[i]->returnPos() + zcol.Dir*(colz));
+
+
+			/*if (colleft > 0)
 				fEntitys[i]->updatePos(fEntitys[i]->returnPos() - left.Dir*(1 - colleft));
 			if (colback > 0)
 				fEntitys[i]->updatePos(fEntitys[i]->returnPos() - back.Dir*(1 - colback));
 			if (colright > 0)
-				fEntitys[i]->updatePos(fEntitys[i]->returnPos() - right.Dir*(1 - colright));
-			if (colfront > 0)   
-				fEntitys[i]->updatePos(fEntitys[i]->returnPos() - front.Dir*(1 - colfront));
+				fEntitys[i]->updatePos(fEntitys[i]->returnPos() - right.Dir*(1 - colright));*/
+			//if (colfront > 0)   
+				//fEntitys[i]->updatePos(fEntitys[i]->returnPos() - front.Dir*(1 - colfront));
 			//if (colback > 0)
 				//fEntitys[i]->updatePos(fEntitys[i]->returnPos() - Vec3(0.0f, 0.0f, (1 - colback)*back.Dir.Z));
 			//else if(colright > 0)

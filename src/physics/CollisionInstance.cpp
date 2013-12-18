@@ -9,7 +9,7 @@ CollisionInstance::CollisionInstance(CollisionModel* Model, Vec3 Position)
 float CollisionInstance::Test(Ray r)
 {
 	r.Pos -= Position; //translate ray instead of all triangles
-	if (!Model->GetTree())
+	//if (!Model->GetTree())
 	{
 		Box rBounds = r.GetBox();
 		float hit = 0;
@@ -29,8 +29,8 @@ float CollisionInstance::Test(Ray r)
 		}
 		return hit;
 	}
-	else
-		return Model->GetTree()->Test(r);
+	//else
+		//return Model->GetTree()->Test(r);
 }
 
 bool CollisionInstance::Test(Triangle t)
