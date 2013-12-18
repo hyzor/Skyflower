@@ -96,18 +96,18 @@ bool GraphicsEngineImpl::Init(HWND hWindow, int width, int height, const std::st
 	mTextureMgr = new TextureManager();
 
 	// Texture manager
-	mTextureMgr->Init(mD3D->GetDevice());
+	mTextureMgr->Init(mD3D->GetDevice(), mD3D->GetImmediateContext());
 
 	// Load models
-	mSkinnedModels["Character"] = new GenericSkinnedModel(mD3D->GetDevice(),
-		mTextureMgr,
-		mResourceDir + "Models\\Character\\char.dae",
-		mResourceDir + "Models\\Character\\");
+// 	mSkinnedModels["Character"] = new GenericSkinnedModel(mD3D->GetDevice(),
+// 		mTextureMgr,
+// 		mResourceDir + "Models\\Character\\char.dae",
+// 		mResourceDir + "Models\\Character\\");
 
 	// -----------------------------------------
 	// Test model instances
 	// -----------------------------------------
-	mCharacter = new Character(mSkinnedModels["Character"], XMFLOAT3(-20.0f, 0.0f, -200.0f));
+	//mCharacter = new Character(mSkinnedModels["Character"], XMFLOAT3(-20.0f, 0.0f, -200.0f));
 
 	// Create camera
 	mCamera = new Camera();
