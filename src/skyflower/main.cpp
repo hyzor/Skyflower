@@ -14,38 +14,17 @@
 //int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 int main(int argc, const char *argv[])
 {
-#if defined(DEBUG) | defined(_DEBUG)
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
-	_CrtSetBreakAlloc(286);
-	Application app;
-
 	// Check for memory leaks for debug builds
 #if defined(DEBUG) | defined(_DEBUG)
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-	//_CrtSetBreakAlloc(35994);
-	//_CrtSetBreakAlloc(35951);
-	//_CrtSetBreakAlloc(157);
-
-
-	// Graphics engine
-	//GraphicsEngine* gEngine = CreateGraphicsEngine();
-
-	//if (!gEngine->Init(app.m_window->m_window))
-	//	return 0;
-
-	//std::cout << "GraphicsEngine started\n";
-	//gEngine->Run();
-
+	Application app;
 
 	/*CollisionInstance* ci = Collision::GetInstance()->CreateCollisionInstance("TestBlock", Vec3());
 	if (ci->Test(r) > 0)
 		std::cout << "Model collision! " << ci->Test(r) << std::endl;
 	Collision::GetInstance()->DeleteCollisionInstance(ci);*/
-
-
 
 	/*PotentialField pf;
 	pf.CreateField(200, 5, Vec3(10, 10, 0));
@@ -100,11 +79,6 @@ int main(int argc, const char *argv[])
 		}
 	}
 	*/
-
-
-
-
-
 
 	app.Start();
 

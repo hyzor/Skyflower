@@ -22,7 +22,6 @@ public:
 
 	ID3D11ShaderResourceView* cubeMapSRV();
 
-	//void draw(ID3D11DeviceContext* dc, const Camera& camera, bool inMenu);
 	void Draw(ID3D11DeviceContext* dc, const Camera& cam, SkyShader* skyShader);
 
 private:

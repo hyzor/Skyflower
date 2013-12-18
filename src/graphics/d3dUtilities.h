@@ -86,7 +86,7 @@ public:
 // Colors
 //==============================================================
 //#define XMGLOBALCONST extern CONST __declspec(selectany)
-namespace Colorss
+namespace D3dColors
 {
 	XMGLOBALCONST XMVECTORF32 White     = {1.0f, 1.0f, 1.0f, 1.0f};
 	XMGLOBALCONST XMVECTORF32 Black     = {0.0f, 0.0f, 0.0f, 1.0f};

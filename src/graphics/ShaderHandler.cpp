@@ -507,7 +507,7 @@ bool SkyShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pSha
 
 void SkyShader::SetWorldViewProj(const XMMATRIX& worldViewProj)
 {
-	mBufferCache.vsBuffer.WorldViewProj = worldViewProj;
+	mBufferCache.vsBuffer.WorldViewProj = XMMatrixTranspose(worldViewProj);
 }
 
 void SkyShader::SetCubeMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* cubeMap)

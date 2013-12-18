@@ -4,7 +4,6 @@
 #include "shared/platform.h"
 #include "Direct3D.h"
 #include "GraphicsEngine.h"
-//#include "Effects.h"
 #include "GenericModel.h"
 #include "GenericSkinnedModel.h"
 #include "TextureManager.h"
@@ -18,12 +17,9 @@
 #include <SpriteBatch.h>
 #include <SpriteFont.h>
 
-//#include "AnimatedEntity.h"
 #include "Character.h"
 #include "GraphicsEngine.h"
 #include "InstanceImpl.h"
-
-
 
 class GraphicsEngineImpl : public GraphicsEngine
 {
@@ -32,8 +28,7 @@ public:
 	~GraphicsEngineImpl();
 
 	bool Init(HWND hWindow, int width, int height, const std::string &resourceDir);
-	int Run();
-	//int DrawScene();
+	void Run(float dt);
 
 	void DrawScene();
 	void UpdateScene(float dt);
@@ -48,22 +43,15 @@ public:
 
 	void OnResize();
 
-	//bool HasDevice() { return mDirect3D->GetDevice() != NULL; }
-	//void GetFullscreenState(BOOL* fullscreenVariable) { mDirect3D->GetSwapChain()->GetFullscreenState(fullscreenVariable, NULL); }
-
 private:
 	Direct3D* mD3D;
-	//D3dWindow* mD3dWindow;
 
 	std::string mResourceDir;
 
 	TextureManager* mTextureMgr;
-	GenericModel* mDuckModel;
-	GenericSkinnedModel* mCharacterModel;
 
 	Camera* mCamera;
 
-//	Effects* mEffects;
 	InputLayouts* mInputLayouts;
 
 	std::map<std::string, GenericModel*> mModels;
@@ -71,19 +59,9 @@ private:
 
 	std::vector<ModelInstanceImpl*> mInstances;
 	std::vector<AnimatedInstanceImpl*> mAnimatedInstances;
-	//std::vector<GenericSkinnedModelInstance> mSkinnedInstances;
 
-	GenericModelInstance mDuckInstance;
-
-	AnimatedEntity* mAnimatedEntity;
-
-	DirectionalLight mDirLights[3];
-
-	PointLight mPointLights[16];
-
-	Character* mCharacter;
-
-	MSG msg;
+	std::vector<PointLight> mPointLights;
+	std::vector<DirectionalLight> mDirLights;
 
 	Sky* mSky;
 

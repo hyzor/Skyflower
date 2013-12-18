@@ -57,7 +57,6 @@ Sky::Sky(ID3D11Device* device, TextureManager *textureManager, const std::string
 	D3D11_SUBRESOURCE_DATA iinitData;
 	iinitData.pSysMem = &indices16[0];
 
-	//HR(device->CreateBuffer(&ibd, &iinitData, &mIndexBuffer));
 	device->CreateBuffer(&ibd, &iinitData, &mIndexBuffer);
 }
 
@@ -80,18 +79,11 @@ void Sky::Draw(ID3D11DeviceContext* dc, const Camera& cam, SkyShader* skyShader)
 	XMMATRIX T = XMMatrixTranslation(eyePos.x, eyePos.y, eyePos.z);
 
 	XMMATRIX WVP = XMMatrixMultiply(T, cam.GetViewProjMatrix());
-	WVP = XMMatrixTranspose(WVP);
 
 	skyShader->SetActive(dc);
 	skyShader->SetWorldViewProj(WVP);
 	skyShader->SetCubeMap(dc, mCubeMapSRV);
 	skyShader->Update(dc);
-
-// 	Effects::SkyFX->SetWorldViewProj(WVP);
-// 	Effects::SkyFX->SetCubeMap(mCubeMapSRV);
-// 
-// 
-// 	Effects::SkyFX->SetInMenu(inMenu);
 
 
 	UINT stride = sizeof(XMFLOAT3);
@@ -104,53 +96,4 @@ void Sky::Draw(ID3D11DeviceContext* dc, const Camera& cam, SkyShader* skyShader)
 	dc->OMSetDepthStencilState(RenderStates::mLessEqualDSS, 0);
 
 	dc->DrawIndexed(mIndexCount, 0, 0);
-
-// 	D3DX11_TECHNIQUE_DESC techDesc;
-// 	Effects::SkyFX->skyTech->GetDesc(&techDesc);
-// 
-// 	for (UINT p = 0; p < techDesc.Passes; ++p)
-// 	{
-// 		ID3DX11EffectPass* pass = Effects::SkyFX->skyTech->GetPassByIndex(p);
-// 
-// 		pass->Apply(0, dc);
-// 
-// 		dc->DrawIndexed(mIndexCount, 0, 0);
-// 	}
 }
-
-/*
-void Sky::draw(ID3D11DeviceContext* dc, const Camera& camera, bool inMenu)
-{
-	// Center sky about eye in world space
-	XMFLOAT3 eyePos = camera.GetPosition();
-	XMMATRIX T = XMMatrixTranslation(eyePos.x, eyePos.y, eyePos.z);
-
-	XMMATRIX WVP = XMMatrixMultiply(T, camera.GetViewProjMatrix());
-
-	Effects::SkyFX->SetWorldViewProj(WVP);
-	Effects::SkyFX->SetCubeMap(mCubeMapSRV);
-
-
-	Effects::SkyFX->SetInMenu(inMenu);
-
-
-	UINT stride = sizeof(XMFLOAT3);
-	UINT offset = 0;
-	dc->IASetVertexBuffers(0, 1, &mVertexBuffer, &stride, &offset);
-	dc->IASetIndexBuffer(mIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
-	dc->IASetInputLayout(InputLayouts::Position);
-	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	D3DX11_TECHNIQUE_DESC techDesc;
-	Effects::SkyFX->skyTech->GetDesc( &techDesc );
-
-	for(UINT p = 0; p < techDesc.Passes; ++p)
-	{
-		ID3DX11EffectPass* pass = Effects::SkyFX->skyTech->GetPassByIndex(p);
-
-		pass->Apply(0, dc);
-
-		dc->DrawIndexed(mIndexCount, 0, 0);
-	}
-}
-*/

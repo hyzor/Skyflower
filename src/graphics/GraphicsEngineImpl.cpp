@@ -34,131 +34,99 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 	}
 	mSkinnedModels.clear();
 
-	//delete mD3dWindow;
-
+	delete mSky;
 	delete mCamera;
-
-
-	//InputLayouts::DestroyAll();
-	mInputLayouts->DestroyAll();
-	delete mInputLayouts;
-
-	delete mAnimatedEntity;
-
 	delete mTextureMgr;
 
-	delete mCharacter;
-
-	delete mSky;
-
+	mInputLayouts->DestroyAll();
+	delete mInputLayouts;
 	RenderStates::DestroyAll();
 
 	delete mSpriteFont;
 	delete mSpriteBatch;
 
-	if (mShaderHandler)
-		delete mShaderHandler;
+	delete mShaderHandler;
 
-	if (mD3D)
-		delete mD3D;
+	delete mD3D;
 }
 
 bool GraphicsEngineImpl::Init(HWND hWindow, int width, int height, const std::string &resourceDir)
 {
-	//mD3dWindow = new D3dWindow(hWindow);
-
-	//if (!mD3dWindow)
-	//	return false;
-
-	//if (!mD3dWindow->Init())
-	//	return false;
-
-
 	mResourceDir = resourceDir;
 
 	mD3D = new Direct3D();
-
 	mD3D->Init(&hWindow, width, height);
 
-// 	mEffects = new Effects();
-// 
-// 	mEffects->InitAll(mD3D->GetDevice());
-	//InputLayouts::InitAll(mD3D->GetDevice());
-
 	mInputLayouts = new InputLayouts();
-	//mInputLayouts->InitAll(mD3D->GetDevice());
-
-	// Shaders
-	//Effects::InitAll(mDirect3D->GetDevice());
 
 	RenderStates::InitAll(mD3D->GetDevice());
 
-	mTextureMgr = new TextureManager();
-
 	// Texture manager
+	mTextureMgr = new TextureManager();
 	mTextureMgr->Init(mD3D->GetDevice(), mD3D->GetImmediateContext());
 
-	// Load models
-// 	mSkinnedModels["Character"] = new GenericSkinnedModel(mD3D->GetDevice(),
-// 		mTextureMgr,
-// 		mResourceDir + "Models\\Character\\char.dae",
-// 		mResourceDir + "Models\\Character\\");
-
-	// -----------------------------------------
-	// Test model instances
-	// -----------------------------------------
-	//mCharacter = new Character(mSkinnedModels["Character"], XMFLOAT3(-20.0f, 0.0f, -200.0f));
-
-	// Create camera
+	// Camera
 	mCamera = new Camera();
-
-	mCamera->SetLens(0.25f*MathHelper::pi, static_cast<float>(width)/height, 1.0f, 10000.0f);
+	mCamera->SetLens(0.25f*MathHelper::pi, static_cast<float>(width) / height, 1.0f, 10000.0f);
 	mCamera->SetPosition(XMFLOAT3(0.0f, 0.0f, -400.0f));
 
-	mD3D->OnResize();
-
 	//--------------------------------------------------------
-	// Create lights
+	// Lights
 	//--------------------------------------------------------
-	mDirLights[0].Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-	mDirLights[0].Diffuse = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
-	mDirLights[0].Specular = XMFLOAT4(0.4f, 0.4f, 0.5f, 1.0f);
-	mDirLights[0].Direction = XMFLOAT3(-0.57735f, -0.57735f, 0.57735f);
+	DirectionalLight dirLight;
+	ZeroMemory(&dirLight, sizeof(DirectionalLight));
 
-	mDirLights[1].Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-	mDirLights[1].Diffuse = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
-	mDirLights[1].Specular = XMFLOAT4(0.4f, 0.4f, 0.5f, 1.0f);
-	mDirLights[1].Direction = XMFLOAT3(0.57735f, 0.57735f, 0.0f);
+	dirLight.Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+	dirLight.Diffuse = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
+	dirLight.Specular = XMFLOAT4(0.4f, 0.4f, 0.5f, 1.0f);
+	dirLight.Direction = XMFLOAT3(-0.57735f, -0.57735f, 0.57735f);
+	mDirLights.push_back(dirLight);
 
-	mDirLights[2].Ambient = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
-	mDirLights[2].Diffuse = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-	mDirLights[2].Specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-	mDirLights[2].Direction = XMFLOAT3(0.0f, 0.0f, -0.57735f);
+	dirLight.Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+	dirLight.Diffuse = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
+	dirLight.Specular = XMFLOAT4(0.4f, 0.4f, 0.5f, 1.0f);
+	dirLight.Direction = XMFLOAT3(0.57735f, 0.57735f, 0.0f);
+	mDirLights.push_back(dirLight);
+
+	dirLight.Ambient = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
+	dirLight.Diffuse = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+	dirLight.Specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	dirLight.Direction = XMFLOAT3(0.0f, 0.0f, -0.57735f);
+	mDirLights.push_back(dirLight);
 
 	// Point lights
-	mPointLights[0].Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	mPointLights[0].Ambient = XMFLOAT4(0.25f, 0.25, 0.25f, 0.25f);
-	mPointLights[0].Specular = XMFLOAT4(0.25f, 0.25, 0.25f, 0.25f);
-	mPointLights[0].Diffuse = XMFLOAT4(0.25f, 0.25, 0.25f, 0.25f);
-	mPointLights[0].Attenuation = XMFLOAT3(0.25f, 0.25, 0.25f);
-	mPointLights[0].Range = 50.0f;
+	PointLight pointLight;
+	ZeroMemory(&pointLight, sizeof(PointLight));
 
-	mPointLights[1].Position = XMFLOAT3(35.0f, 35.0f, 10.0f);
-	mPointLights[1].Ambient = XMFLOAT4(0.25f, 0.25, 0.25f, 0.25f);
-	mPointLights[1].Specular = XMFLOAT4(0.25f, 0.25, 0.25f, 0.25f);
-	mPointLights[1].Diffuse = XMFLOAT4(0.25f, 0.25, 0.25f, 0.25f);
-	mPointLights[1].Attenuation = XMFLOAT3(0.25f, 0.25, 0.25f);
-	mPointLights[1].Range = 75.0f;
+	pointLight.Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	pointLight.Ambient = XMFLOAT4(0.25f, 0.25, 0.25f, 0.25f);
+	pointLight.Specular = XMFLOAT4(0.25f, 0.25, 0.25f, 0.25f);
+	pointLight.Diffuse = XMFLOAT4(0.25f, 0.25, 0.25f, 0.25f);
+	pointLight.Attenuation = XMFLOAT3(0.25f, 0.25, 0.25f);
+	pointLight.Range = 50.0f;
+	mPointLights.push_back(pointLight);
 
-	mPointLights[2].Position = XMFLOAT3(-10.0f, 10.0f, -20.0f);
-	mPointLights[2].Ambient = XMFLOAT4(0.25f, 0.25, 0.25f, 0.25f);
-	mPointLights[2].Specular = XMFLOAT4(0.25f, 0.25, 0.25f, 0.25f);
-	mPointLights[2].Diffuse = XMFLOAT4(0.25f, 0.25, 0.25f, 0.25f);
-	mPointLights[2].Attenuation = XMFLOAT3(0.25f, 0.25, 0.25f);
-	mPointLights[2].Range = 75.0f;
+	pointLight.Position = XMFLOAT3(35.0f, 35.0f, 10.0f);
+	pointLight.Ambient = XMFLOAT4(0.25f, 0.25, 0.25f, 0.25f);
+	pointLight.Specular = XMFLOAT4(0.25f, 0.25, 0.25f, 0.25f);
+	pointLight.Diffuse = XMFLOAT4(0.25f, 0.25, 0.25f, 0.25f);
+	pointLight.Attenuation = XMFLOAT3(0.25f, 0.25, 0.25f);
+	pointLight.Range = 75.0f;
+	mPointLights.push_back(pointLight);
+
+	pointLight.Position = XMFLOAT3(-10.0f, 10.0f, -20.0f);
+	pointLight.Ambient = XMFLOAT4(0.25f, 0.25, 0.25f, 0.25f);
+	pointLight.Specular = XMFLOAT4(0.25f, 0.25, 0.25f, 0.25f);
+	pointLight.Diffuse = XMFLOAT4(0.25f, 0.25, 0.25f, 0.25f);
+	pointLight.Attenuation = XMFLOAT3(0.25f, 0.25, 0.25f);
+	pointLight.Range = 75.0f;
+	mPointLights.push_back(pointLight);
 
 	mSky = new Sky(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Textures\\SkyBox_Space.dds", 5000.0f);
 
+	//-------------------------------------------------------------------------------------------------------
+	// Shaders
+	//-------------------------------------------------------------------------------------------------------
 	mShaderHandler = new ShaderHandler();
 
 	// Load all the pre-compiled shaders
@@ -168,7 +136,6 @@ bool GraphicsEngineImpl::Init(HWND hWindow, int width, int height, const std::st
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\SkyPS.cso", "SkyPS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\NormalMapSkinnedVS.cso", "NormalMapSkinnedVS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\NormalMapSkinnedPS.cso", "NormalMapSkinnedPS", mD3D->GetDevice());
-	//mShaderHandler->InitShaders(mD3D->GetDevice(), mInputLayouts);
 
 	// Bind loaded shaders to shader objects
 	mShaderHandler->mBasicShader->BindShaders(mShaderHandler->GetVertexShader("BasicVS"),
@@ -205,20 +172,11 @@ CameraController* GraphicsEngineImpl::CreateCameraController()
 	return CreateCameraControll(mCamera);
 }
 
-int GraphicsEngineImpl::Run()
+void GraphicsEngineImpl::Run(float dt)
 {
-	::ZeroMemory(&msg, sizeof(MSG));
-
-	//mD3dWindow->GetTimer()->reset();
-
-	/*while (msg.message != WM_QUIT)
-	{
-		DrawScene();
-	}*/
-
-	return (int)msg.wParam;
+	UpdateScene(dt);
+	DrawScene();
 }
-
 
 void GraphicsEngineImpl::DrawScene()
 {
@@ -226,7 +184,7 @@ void GraphicsEngineImpl::DrawScene()
 	// Restore back and depth buffer and viewport to the OM stage
 	ID3D11RenderTargetView* renderTargets[1] = { mD3D->GetRenderTargetView() };
 	mD3D->GetImmediateContext()->OMSetRenderTargets(1, renderTargets, mD3D->GetDepthStencilView());
-	mD3D->GetImmediateContext()->ClearRenderTargetView(mD3D->GetRenderTargetView(), reinterpret_cast<const float*>(&Colorss::LightSteelBlue));
+	mD3D->GetImmediateContext()->ClearRenderTargetView(mD3D->GetRenderTargetView(), reinterpret_cast<const float*>(&D3dColors::LightSteelBlue));
 
 	mD3D->GetImmediateContext()->ClearDepthStencilView(mD3D->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
@@ -239,12 +197,12 @@ void GraphicsEngineImpl::DrawScene()
 	mD3D->GetImmediateContext()->RSSetState(0);
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(0, 0);
 	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
-	
+
 	// Use basic shader to draw with
 	mShaderHandler->mBasicShader->SetActive(mD3D->GetImmediateContext());
 	mShaderHandler->mBasicShader->SetEyePosW(mD3D->GetImmediateContext(), mCamera->GetPosition());
-	mShaderHandler->mBasicShader->SetPointLights(mD3D->GetImmediateContext(), 3, mPointLights);
-	mShaderHandler->mBasicShader->SetDirLights(mD3D->GetImmediateContext(), 3, mDirLights);
+	mShaderHandler->mBasicShader->SetPointLights(mD3D->GetImmediateContext(), mPointLights.size(), mPointLights.data());
+	mShaderHandler->mBasicShader->SetDirLights(mD3D->GetImmediateContext(), mDirLights.size(), mDirLights.data());
 	mShaderHandler->mBasicShader->UpdatePerFrame(mD3D->GetImmediateContext());
 
 	// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
@@ -254,129 +212,36 @@ void GraphicsEngineImpl::DrawScene()
 		0.0f, 0.0f, 1.0f, 0.0f,
 		0.5f, 0.5f, 0.0f, 1.0f);
 
-		// Loop through all model instances
-	for (UINT i = 0; i < mInstances.size(); ++i)
-	{
-		if (mInstances[i]->IsVisible())
-		{
-			//worldInvTranspose = MathHelper::InverseTranspose(mInstances[i]->GetWorld());
-			//worldViewProj = mInstances[i]->GetWorld()*view*proj;
-
-			mShaderHandler->mBasicShader->SetWorldViewProjTex(mD3D->GetImmediateContext(),
-				mInstances[i]->GetWorld(),
-				mCamera->GetViewProjMatrix(),
-				toTexSpace);
-
-// 			mEffects->BasicFX->SetWorld(mInstances[i]->GetWorld());
-// 			mEffects->BasicFX->SetWorldInvTranspose(worldInvTranspose);
-// 			mEffects->BasicFX->SetWorldViewProj(worldViewProj);
-// 			mEffects->BasicFX->SetWorldViewProjTex(worldViewProj*toTexSpace);
-// 			mEffects->BasicFX->SetTexTransform(XMMatrixScaling(1.0f, 1.0f, 1.0f));
-
-			//GenericModel* model = mInstances[i]->model;
-
-			//for (UINT p = 0; p < techDesc.Passes; ++p)
-			//{
-			for (UINT j = 0; j < mInstances[i]->model->meshCount; ++j)
-				{
-				UINT matIndex = mInstances[i]->model->meshes[j].MaterialIndex;
-
-// 					mEffects->BasicFX->SetMaterial(model->mat[matIndex]);
-// 					mEffects->BasicFX->SetDiffuseMap(model->diffuseMapSRV[matIndex]);
-				mShaderHandler->mBasicShader->SetMaterial(mD3D->GetImmediateContext(), mInstances[i]->model->mat[matIndex]);
-				mShaderHandler->mBasicShader->SetDiffuseMap(mD3D->GetImmediateContext(), mInstances[i]->model->diffuseMapSRV[matIndex]);
-				mShaderHandler->mBasicShader->UpdatePerObj(mD3D->GetImmediateContext());
-// 
-// 					activeTech->GetPassByIndex(p)->Apply(0, mD3D->GetImmediateContext());
-					mD3D->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-					mInstances[i]->model->meshes[j].Draw(mD3D->GetImmediateContext());
-				}
-			//}
-		}
-	}
-
-	/*
-	// Set shader values
-	mEffects->BasicFX->SetEyePosW(mCamera->GetPosition());
-	mEffects->BasicFX->SetDirLights(mDirLights);
-
-	// ---------------------------------------------------------------------
-	// Specific entity draw function begin
-	// ---------------------------------------------------------------------
-	mD3D->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	mD3D->GetImmediateContext()->IASetInputLayout(InputLayouts::Basic32);
-
-	UINT stride = sizeof(Vertex::Basic32);
-	UINT offset = 0;
-
-	XMMATRIX world;
-	XMMATRIX worldInvTranspose;
-	XMMATRIX worldViewProj;
-
-	XMMATRIX view = mCamera->GetViewMatrix();
-	XMMATRIX proj = mCamera->GetProjMatrix();
-	XMMATRIX viewproj = mCamera->GetViewProjMatrix();
-
-	// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
-	XMMATRIX toTexSpace(
-		0.5f, 0.0f, 0.0f, 0.0f,
-		0.0f, -0.5f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, 0.0f, 1.0f);
-
-	D3DX11_TECHNIQUE_DESC techDesc;
-	ID3DX11EffectTechnique* activeTech = mEffects->BasicFX->DirLights3TexTech;
-	activeTech->GetDesc(&techDesc);
-
 	// Loop through all model instances
 	for (UINT i = 0; i < mInstances.size(); ++i)
 	{
 		if (mInstances[i]->IsVisible())
 		{
-			worldInvTranspose = MathHelper::InverseTranspose(mInstances[i]->GetWorld());
-			worldViewProj = mInstances[i]->GetWorld()*view*proj;
-
-			mEffects->BasicFX->SetWorld(mInstances[i]->GetWorld());
-			mEffects->BasicFX->SetWorldInvTranspose(worldInvTranspose);
-			mEffects->BasicFX->SetWorldViewProj(worldViewProj);
-			mEffects->BasicFX->SetWorldViewProjTex(worldViewProj*toTexSpace);
-			mEffects->BasicFX->SetTexTransform(XMMatrixScaling(1.0f, 1.0f, 1.0f));
-
-			GenericModel* model = mInstances[i]->model;
-
-			for (UINT p = 0; p < techDesc.Passes; ++p)
+			mShaderHandler->mBasicShader->SetWorldViewProjTex(mD3D->GetImmediateContext(),
+				mInstances[i]->GetWorld(),
+				mCamera->GetViewProjMatrix(),
+				toTexSpace);
+			for (UINT j = 0; j < mInstances[i]->model->meshCount; ++j)
 			{
-				for (UINT j = 0; j < model->meshCount; ++j)
-				{
-					UINT matIndex = model->meshes[j].MaterialIndex;
+				UINT matIndex = mInstances[i]->model->meshes[j].MaterialIndex;
 
-					mEffects->BasicFX->SetMaterial(model->mat[matIndex]);
-					mEffects->BasicFX->SetDiffuseMap(model->diffuseMapSRV[matIndex]);
-
-					activeTech->GetPassByIndex(p)->Apply(0, mD3D->GetImmediateContext());
-					model->meshes[j].Draw(mD3D->GetImmediateContext());
-				}
+				mShaderHandler->mBasicShader->SetMaterial(mD3D->GetImmediateContext(), mInstances[i]->model->mat[matIndex]);
+				mShaderHandler->mBasicShader->SetDiffuseMap(mD3D->GetImmediateContext(), mInstances[i]->model->diffuseMapSRV[matIndex]);
+				mShaderHandler->mBasicShader->UpdatePerObj(mD3D->GetImmediateContext());
+				mD3D->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+				mInstances[i]->model->meshes[j].Draw(mD3D->GetImmediateContext());
 			}
 		}
 	}
 
-	// ---------------------------------------------------------------------
-	// Specific entity draw function end
-	// ---------------------------------------------------------------------
-	mEffects->NormalMapFX->SetEyePosW(mCamera->GetPosition());
-	mEffects->NormalMapFX->SetDirLights(mDirLights);
-	*/
-
+	// Use normal mapping skinned shader to draw with
 	mShaderHandler->mNormalSkinned->SetActive(mD3D->GetImmediateContext());
 	mShaderHandler->mNormalSkinned->SetEyePosW(mD3D->GetImmediateContext(), mCamera->GetPosition());
-	mShaderHandler->mNormalSkinned->SetPointLights(mD3D->GetImmediateContext(), 3, mPointLights);
-	mShaderHandler->mNormalSkinned->SetDirLights(mD3D->GetImmediateContext(), 3, mDirLights);
+	mShaderHandler->mNormalSkinned->SetPointLights(mD3D->GetImmediateContext(), mPointLights.size(), mPointLights.data());
+	mShaderHandler->mNormalSkinned->SetDirLights(mD3D->GetImmediateContext(), mDirLights.size(), mDirLights.data());
 	mShaderHandler->mNormalSkinned->UpdatePerFrame(mD3D->GetImmediateContext());
 
-	// Draw animated character
-	//mCharacter->Draw(mD3D->GetImmediateContext(), mEffects->NormalMapFX->DirLights3TexSkinnedTech, mCamera);
-	//mCharacter->Draw(mD3D->GetImmediateContext(), mCamera, mShaderHandler->mNormalSkinned);
-
+	// Loop through all skinned model instances
 	for (UINT i = 0; i < mAnimatedInstances.size(); ++i)
 	{
 		if (mAnimatedInstances[i]->IsVisible())
@@ -385,29 +250,27 @@ void GraphicsEngineImpl::DrawScene()
 		}
 	}
 
+	// Draw 2D stuff
 	/*
 	mSpriteBatch->Begin();
-	mSpriteBatch->Draw(mTextureMgr->GetTexture(L"Data\\Models\\WoodBlock.dds"), XMFLOAT2(300.0f, 400.0f));
+	mSpriteBatch->Draw(mTextureMgr->CreateTexture("..\\..\\content\\Models\\WoodBlock.dds"), XMFLOAT2(300.0f, 400.0f));
 	mSpriteFont->DrawString(mSpriteBatch, L"Test", XMFLOAT2(100.0f, 100.0f), Colorss::Green, 0.0f, XMFLOAT2(100.0f, 100.0f), XMFLOAT2(1.0f, 1.0f));
 	mSpriteBatch->End();
 	*/
-	
 
 	// Restore default states
 	mD3D->GetImmediateContext()->RSSetState(0);
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(0, 0);
 	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
 
-	HR(mD3D->GetSwapChain()->Present(0, 0));
+	// Finally, present the back buffer to front buffer
+	// Set SyncInterval to 1 if you want to limit the FPS to the monitors refresh rate
+	HR(mD3D->GetSwapChain()->Present(1, 0));
 }
 
 void GraphicsEngineImpl::UpdateScene(float dt)
 {
-	//std::cout << "Updating scene!\n";
-
-	//mCamera->UpdateViewMatrix();
-
-
+	// Update skinned instances
 	for (size_t i = 0; i < mAnimatedInstances.size(); i++)
 	{
 		mAnimatedInstances[i]->model->SetKeyFrameInterval(mAnimatedInstances[i]->model->mAnimations[mAnimatedInstances[i]->model->mCurAnim].FrameStart, mAnimatedInstances[i]->model->mAnimations[mAnimatedInstances[i]->model->mCurAnim].FrameEnd);
@@ -471,7 +334,6 @@ void GraphicsEngineImpl::DeleteInstance(ModelInstance* m)
 	delete mi;
 }
 
-
 AnimatedInstance* GraphicsEngineImpl::CreateAnimatedInstance(std::string file)
 {
 	if (mModels.find(file) == mModels.end())
@@ -485,9 +347,7 @@ AnimatedInstance* GraphicsEngineImpl::CreateAnimatedInstance(std::string file)
 	}
 
 	AnimatedInstanceImpl* mi = new AnimatedInstanceImpl(Vec3(), Vec3(), Vec3(1, 1, 1));
-	mi->model = new AnimatedEntity(mSkinnedModels[file], XMFLOAT3(0,0,0));
-
-	
+	mi->model = new AnimatedEntity(mSkinnedModels[file], XMFLOAT3(0, 0, 0));
 
 	mAnimatedInstances.push_back(mi);
 	return mi;

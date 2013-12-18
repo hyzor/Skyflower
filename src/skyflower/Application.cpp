@@ -104,8 +104,7 @@ void Application::Start()
 		this->entityManager->update((float)deltaTime);
 		//this->entityManager->handleCollision();
 
-		m_graphicsEngine->UpdateScene((float)deltaTime);
-		m_graphicsEngine->DrawScene();
+		m_graphicsEngine->Run((float)deltaTime);
 
 		m_soundEngine->Update((float)deltaTime);
 
