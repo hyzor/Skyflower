@@ -39,7 +39,6 @@ public: // InputListener
 private:
 	Window *m_window;
 	InputHandler *m_inputHandler;
-	LevelHandler *levelHandler;
 	GraphicsEngine *m_graphicsEngine;
 	SoundEngine *m_soundEngine;
 	EntityManager* entityManager;

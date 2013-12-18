@@ -1303,6 +1303,18 @@ bool EntityManager::loadXML2(string xmlFile)
 				Input* i = new Input();
 				this->addComponent(entity, i);
 			}
+			else if (componentName == "Health")
+			{
+				attr = e->Attribute("maxHP");
+				float maxHP = 0;
+				
+				if (attr != NULL)
+				{
+					maxHP = e->IntAttribute("maxHP");
+				}
+				Health* hp = new Health(maxHP);
+				this->addComponent(entity, hp);
+			}
 			else
 			{
 				cout << "Unknown component with name " << componentName << " in entity " << entityName << " in file " << xmlFile << endl;

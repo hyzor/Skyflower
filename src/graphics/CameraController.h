@@ -22,4 +22,5 @@ public:
 	virtual void Zoom(float, float speed) = 0;
 };
 
+DLL_API void DestroyCameraController(CameraController* cameraController);
 #endif

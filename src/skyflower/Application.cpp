@@ -46,21 +46,20 @@ void Application::Start()
 	modules.graphics = m_graphicsEngine;
 	modules.sound = m_soundEngine;
 	modules.potentialField = new PotentialField();
-
+	
 	entityManager = new EntityManager("../../XML/", &modules);
+
 	entityManager->loadXML2("player.xml");
+	levelHandler->init(entityManager);
 	//entityManager->loadXML2("player2.xml");
-	entityManager->loadXML2("platform.xml");
-	entityManager->loadXML2("block22.xml");
+	//entityManager->loadXML2("platform.xml");
+	//entityManager->loadXML2("block22.xml");
 	//entityManager->loadXML2("TriggerTest.xml");
 	//entityManager->loadXML2("Player3.xml");
 
-	//Cistron::Component* playerMove = (Movement*)entityManager->getComponent("player", "Movement");
+	// Load Hub Level
+	levelHandler->load(0);
 
-	//m_graphicsEngine->CreateInstance("Data\\Models\\duck.obj")->SetVisibility(false);
-
-	//ModelInstance* d = m_graphicsEngine->CreateInstance("Data\\Models\\duck.obj", Vec3(-100, 50, 0));
-	//d->SetRotation(Vec3(-3.14f/2, 3.14f/4));
 	camera = m_graphicsEngine->CreateCameraController();
 	Movement* playerMove = (Movement*)entityManager->getComponent("player", "Movement");
 
@@ -113,6 +112,8 @@ void Application::Start()
 		m_window->PumpMessages();
 	}
 
+	delete levelHandler;
+	DestroyCameraController(camera);
 	delete entityManager;
 	DestroySoundEngine(m_soundEngine);
 	DestroyGraphicsEngine(m_graphicsEngine);

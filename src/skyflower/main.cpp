@@ -9,10 +9,15 @@
 #include "physics/Physics.h"
 #include "Application.h"
 #include "ScriptHandler.h"
+#include "LevelHandler.h"
 
 //int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 int main(int argc, const char *argv[])
 {
+#if defined(DEBUG) | defined(_DEBUG)
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+	_CrtSetBreakAlloc(286);
 	Application app;
 
 	// Check for memory leaks for debug builds
@@ -104,7 +109,8 @@ int main(int argc, const char *argv[])
 	app.Start();
 
 
-	//delete singleton
+	//delete singletons
+	//delete levelHandler;
 	delete Collision::GetInstance();
 	delete ScriptHandler::GetInstance();
 

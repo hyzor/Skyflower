@@ -1,39 +1,50 @@
 #include "LevelHandler.h"
 #include "ScriptHandler.h"
 
-LevelHandler::LevelHandler(vector<char*> levelXMLs, EntityManager *entityManager)
+char* levels[] = {
+	"testWorld.xml",
+	"testWorld2.xml"
+};
+
+#define LEVEL_COUNT 2
+
+LevelHandler *LevelHandler::instance = nullptr;
+
+LevelHandler::LevelHandler()
 {
-	this->_entityManager = entityManager;
+	this->_entityManager = NULL;
 	this->_current = 0;
-	this->_init(levelXMLs);
 }
 
 LevelHandler::~LevelHandler(){}
 
-void LevelHandler::_init(vector<char*> levelXMLs)
+void LevelHandler::init(EntityManager *entityManager)
 {
-	for (unsigned int i = 0; i < levelXMLs.size(); i++)
+	this->_entityManager = entityManager;
+	for (unsigned int i = 0; i < LEVEL_COUNT; i++)
 	{
-		Level curr(i, levelXMLs.at(i));
+		Level curr(i, levels[i]);
 		this->_levels.push_back(curr);
 	}
 }
-
+LevelHandler* LevelHandler::GetInstance()
+{
+	if (!instance)
+		instance = new LevelHandler();
+	return instance;
+}
 void LevelHandler::load(int id)
 {
-	int nrEntities = _entityManager->getNrOfEntities();
-	for (int i = 1; i < nrEntities; i++)
+	for (int i = 1; _entityManager->getNrOfEntities() != 1; i++)
 	{
 		_entityManager->destroyEntity(i);
-	
 	}
 	_entityManager->loadXML2(_levels.at(id)._path);
 	_current = id;
 }
 
 bool LevelHandler::isCompleted(int id) const
-{
-	
+{	
 	return _levels.at(id)._completed;
 }
 

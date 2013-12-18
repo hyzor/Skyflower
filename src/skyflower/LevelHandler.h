@@ -4,6 +4,8 @@
 #include "EntityManager.h"
 #include <vector>
 
+#define levelHandler LevelHandler::GetInstance() 
+
 class LevelHandler
 {
 	
@@ -15,8 +17,9 @@ public:
 		char* _path;
 		Level(int id, char* path) : _id(id), _path(path), _completed(false) {}
 	};
-	LevelHandler(vector<char*> LevelXMLs, EntityManager *entityManager);
+	static LevelHandler* GetInstance();
 	virtual ~LevelHandler();
+	void init(EntityManager *entityManager);
 	bool isCompleted(int id) const;
 	void load(int id);
 	int completedCount() const;
@@ -24,8 +27,9 @@ public:
 	int levelCount() const;
 	int currentLevel() const;
 private:
-	void _init(vector<char*> LevelXMLs);
-
+	
+	LevelHandler();
+	static LevelHandler *instance;
 	int _current;
 	EntityManager *_entityManager;
 	vector<Level> _levels;

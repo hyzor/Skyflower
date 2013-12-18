@@ -43,6 +43,7 @@
     <ClInclude Include="src\skyflower\Components\AI.h" />
     <ClInclude Include="src\skyflower\Components\Footsteps.h" />
     <ClInclude Include="src\skyflower\Components\Gravity.h" />
+    <ClInclude Include="src\skyflower\Components\Health.h" />
     <ClInclude Include="src\skyflower\Components\Input.h" />
     <ClInclude Include="src\skyflower\Components\Listener.h" />
     <ClInclude Include="src\skyflower\Components\LUAScript.h" />
