@@ -9,6 +9,7 @@
 #include "physics/Physics.h"
 #include "physics/Collision.h"
 #include "Entity.h"
+#include "Health.h"
 using namespace std;
 using namespace Cistron;
 
@@ -56,7 +57,16 @@ public:
 		Vec3 rot = getEntityRot();
 		p->update(deltaTime);
 		
-
+		if (pos.Y < -100)
+		{
+			getOwner()->getComponent<Health*>("Health")->setHealth(0);
+		}
+		if (!getOwner()->getComponent<Health*>("Health")->isAlive())
+		{
+			p->setVelocity(Vec3(0, 0, 0));
+			pos = Vec3(0, 12, 0);
+			getOwner()->getComponent<Health*>("Health")->setHealth(100);
+		}
 
 		if (this->isMovingForward) {
 			if (this->isMovingLeft) {

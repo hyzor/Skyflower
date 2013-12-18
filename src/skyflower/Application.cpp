@@ -58,7 +58,7 @@ void Application::Start()
 	//entityManager->loadXML2("Player3.xml");
 
 	// Load Hub Level
-	levelHandler->load(0);
+	levelHandler->load(1);
 
 	camera = m_graphicsEngine->CreateCameraController();
 	Movement* playerMove = (Movement*)entityManager->getComponent("player", "Movement");
