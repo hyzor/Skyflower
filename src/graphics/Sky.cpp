@@ -80,6 +80,7 @@ void Sky::Draw(ID3D11DeviceContext* dc, const Camera& cam, SkyShader* skyShader)
 	XMMATRIX T = XMMatrixTranslation(eyePos.x, eyePos.y, eyePos.z);
 
 	XMMATRIX WVP = XMMatrixMultiply(T, cam.GetViewProjMatrix());
+	WVP = XMMatrixTranspose(WVP);
 
 	skyShader->SetActive(dc);
 	skyShader->SetWorldViewProj(WVP);
