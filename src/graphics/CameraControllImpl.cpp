@@ -1,6 +1,10 @@
 #include "CameraControllImpl.h"
-#include <D3DX10math.h>
-D3DXMATRIX rotate;
+#include <DirectXMath.h>
+
+using namespace DirectX;
+
+XMMATRIX rotate;
+
 static float Lerp(float a, float b, float amount)
 {
 	return a + (b - a) * amount;

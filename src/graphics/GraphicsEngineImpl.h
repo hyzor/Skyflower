@@ -4,7 +4,7 @@
 #include "shared/platform.h"
 #include "Direct3D.h"
 #include "GraphicsEngine.h"
-#include "Effects.h"
+//#include "Effects.h"
 #include "GenericModel.h"
 #include "GenericSkinnedModel.h"
 #include "TextureManager.h"
@@ -13,6 +13,10 @@
 #include <map>
 #include <string>
 #include "Sky.h"
+#include "ShaderHandler.h"
+#include "RenderStates.h"
+#include <SpriteBatch.h>
+#include <SpriteFont.h>
 
 //#include "AnimatedEntity.h"
 #include "Character.h"
@@ -48,7 +52,7 @@ public:
 	//void GetFullscreenState(BOOL* fullscreenVariable) { mDirect3D->GetSwapChain()->GetFullscreenState(fullscreenVariable, NULL); }
 
 private:
-	Direct3D* mDirect3D;
+	Direct3D* mD3D;
 	//D3dWindow* mD3dWindow;
 
 	std::string mResourceDir;
@@ -59,7 +63,8 @@ private:
 
 	Camera* mCamera;
 
-	Effects* mEffects;
+//	Effects* mEffects;
+	InputLayouts* mInputLayouts;
 
 	std::map<std::string, GenericModel*> mModels;
 	std::map<std::string, GenericSkinnedModel*> mSkinnedModels;
@@ -68,16 +73,24 @@ private:
 	std::vector<AnimatedInstanceImpl*> mAnimatedInstances;
 	//std::vector<GenericSkinnedModelInstance> mSkinnedInstances;
 
+	GenericModelInstance mDuckInstance;
+
 	AnimatedEntity* mAnimatedEntity;
 
-
 	DirectionalLight mDirLights[3];
+
+	PointLight mPointLights[16];
 
 	Character* mCharacter;
 
 	MSG msg;
 
 	Sky* mSky;
+
+	ShaderHandler* mShaderHandler;
+
+	SpriteBatch* mSpriteBatch;
+	SpriteFont* mSpriteFont;
 };
 
 #endif

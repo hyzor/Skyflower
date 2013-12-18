@@ -10,7 +10,8 @@
 
 #include "d3dUtilities.h"
 #include "TextureManager.h"
-#include "xnacollision.h"
+//#include "xnacollision.h"
+#include <DirectXCollision.h>
 #include "GenericObjectLoader.h"
 #include "SkinnedData.h"
 
@@ -31,7 +32,7 @@ public:
 	std::vector<GenericSkinnedMesh> meshes;
 
 	// Bounding box
-	XNA::AxisAlignedBox boundingBox;
+	DirectX::BoundingBox boundingBox;
 
 	SkinnedData skinnedData;
 };

@@ -13,8 +13,8 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="FX">
-      <UniqueIdentifier>{b3ed883a-20c2-49c2-b058-8b65faa9d864}</UniqueIdentifier>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{72d712db-25fa-480f-81f7-fe4103183885}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -30,9 +30,6 @@
     <ClCompile Include="src\graphics\Vertex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\graphics\xnacollision.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\graphics\AnimatedEntity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -46,9 +43,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\graphics\Direct3D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\graphics\Effects.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\graphics\GenericMesh.cpp">
@@ -87,11 +81,14 @@
     <ClCompile Include="src\graphics\InstanceImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\graphics\ShaderHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\RenderStates.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\graphics\xnacollision.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\graphics\AnimatedEntity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -104,13 +101,7 @@
     <ClInclude Include="src\graphics\d3dUtilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\graphics\d3dx11effect.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\graphics\Direct3D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\graphics\Effects.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics\GenericMesh.h">
@@ -167,19 +158,42 @@
     <ClInclude Include="src\graphics\InstanceImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\graphics\RenderStates.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\ShaderHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="src\graphics\FX\Sky.fx">
-      <Filter>FX</Filter>
+    <FxCompile Include="src\graphics\Shaders\NormalMapPS.hlsl">
+      <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="src\graphics\FX\Basic.fx">
-      <Filter>FX</Filter>
+    <FxCompile Include="src\graphics\Shaders\NormalMapSkinnedPS.hlsl">
+      <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="src\graphics\FX\LightDef.fx">
-      <Filter>FX</Filter>
+    <FxCompile Include="src\graphics\Shaders\NormalMapSkinnedVS.hlsl">
+      <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="src\graphics\FX\NormalMap.fx">
-      <Filter>FX</Filter>
+    <FxCompile Include="src\graphics\Shaders\NormalMapVS.hlsl">
+      <Filter>Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SkyPS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SkyVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\BasicPS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\BasicVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\graphics\Shaders\LightDef.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

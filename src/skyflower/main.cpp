@@ -15,6 +15,15 @@ int main(int argc, const char *argv[])
 {
 	Application app;
 
+	// Check for memory leaks for debug builds
+#if defined(DEBUG) | defined(_DEBUG)
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+
+	//_CrtSetBreakAlloc(35994);
+	//_CrtSetBreakAlloc(35951);
+	//_CrtSetBreakAlloc(157);
+
 
 	// Graphics engine
 	//GraphicsEngine* gEngine = CreateGraphicsEngine();

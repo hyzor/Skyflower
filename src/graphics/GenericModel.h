@@ -10,7 +10,8 @@
 
 #include "d3dUtilities.h"
 #include "TextureManager.h"
-#include "xnacollision.h"
+//#include "xnacollision.h"
+#include <DirectXCollision.h>
 #include "GenericObjectLoader.h"
 
 class GenericModel
@@ -32,7 +33,7 @@ public:
 	//std::vector<Vertex::Basic32*> vertices;
 
 	// Bounding box
-	XNA::AxisAlignedBox boundingBox;
+	DirectX::BoundingBox boundingBox;
 
 	Vertex::Basic32* GetVertex(int index);
 	int GetVertexCount();

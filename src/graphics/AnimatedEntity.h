@@ -3,6 +3,7 @@
 
 #include "GenericSkinnedModel.h"
 #include "Camera.h"
+#include "ShaderHandler.h"
 
 class AnimatedEntity
 {
@@ -11,7 +12,9 @@ public:
 	AnimatedEntity(GenericSkinnedModel* model, XMFLOAT3 position);
 	~AnimatedEntity(void);
 
-	void Draw(ID3D11DeviceContext* dc, ID3DX11EffectTechnique* activeTech, Camera* mCamera, XMMATRIX &world);
+	//void Draw(ID3D11DeviceContext* dc, ID3DX11EffectTechnique* activeTech, Camera* mCamera);
+	void Draw(ID3D11DeviceContext* dc, Camera* cam, NormalMappedSkinned* shader, XMMATRIX &world);
+
 	void Update(float dt);
 
 	void SetPosition(XMFLOAT3 pos);
@@ -55,8 +58,6 @@ public:
 	UINT mCurAnim;
 
 	GenericSkinnedModelInstance mInstance;
-
-private:
 };
 
 #endif

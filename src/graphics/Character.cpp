@@ -22,13 +22,18 @@ Character::~Character()
 	delete mAnimEntity;
 }
 
-void Character::Draw(ID3D11DeviceContext* dc, ID3DX11EffectTechnique* activeTech, Camera* camera)
-{
-	//mAnimEntity->Draw(dc, activeTech, camera);
-}
+// void Character::Draw(ID3D11DeviceContext* dc, ID3DX11EffectTechnique* activeTech, Camera* camera)
+// {
+// 	mAnimEntity->Draw(dc, activeTech, camera);
+// }
 
 void Character::Update(float dt)
 {
 	mAnimEntity->SetKeyFrameInterval(mAnimEntity->mAnimations[mAnimEntity->mCurAnim].FrameStart, mAnimEntity->mAnimations[mAnimEntity->mCurAnim].FrameEnd);
 	mAnimEntity->Update(dt);
+}
+
+void Character::Draw(ID3D11DeviceContext* dc, Camera* cam, NormalMappedSkinned* shader)
+{
+	//mAnimEntity->Draw(dc, cam, shader);
 }

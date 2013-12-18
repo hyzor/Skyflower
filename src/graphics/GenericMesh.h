@@ -60,7 +60,8 @@ void Mesh::SetVertices(ID3D11Device* device, const VertexType* vertices, UINT co
 	D3D11_SUBRESOURCE_DATA vInitData;
 	vInitData.pSysMem = vertices;
 
-	HR(device->CreateBuffer(&vbd, &vInitData, &mVertexBuffer));
+	//HR(device->CreateBuffer(&vbd, &vInitData, &mVertexBuffer));
+	device->CreateBuffer(&vbd, &vInitData, &mVertexBuffer);
 }
 
 #endif

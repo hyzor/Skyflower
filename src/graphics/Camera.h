@@ -1,11 +1,9 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#pragma comment (lib, "d3dx9.lib")
-
 #include "d3dUtilities.h"
-#include <D3DX10math.h>
-#include "xnacollision.h"
+#include <DirectXCollision.h>
+#include <DirectXMath.h>
 #include "shared\Vec3.h"
 
 class Camera
@@ -52,17 +50,19 @@ public:
 	float GetFarWindowWidth() const;
 	float GetFarWindowHeight() const;
 
-	void UpdateViewMatrix();
+	//void UpdateViewMatrix();
 
 
-	XNA::Frustum GetFrustum() const;
+	DirectX::BoundingFrustum GetFrustum() const;
 
 	void ComputeFrustum();
 	
-	void Yaw(float);
 	void Pitch(float);
 
 	void LookAt(Vec3 at);
+	//float Yaw;
+	//float Pitch;
+	//float Roll;
 
 private:
 	// Coordinate system relative to world space
@@ -83,7 +83,7 @@ private:
 	float mNearWindowHeight;
 	float mFarWindowHeight;
 
-	XNA::Frustum mFrustum;
+	DirectX::BoundingFrustum mFrustum;
 
 };
 

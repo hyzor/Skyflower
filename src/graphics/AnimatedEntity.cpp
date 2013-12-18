@@ -27,59 +27,61 @@ AnimatedEntity::~AnimatedEntity(void)
 {
 }
 
-void AnimatedEntity::Draw( ID3D11DeviceContext* dc, ID3DX11EffectTechnique* activeTech, Camera* mCamera, XMMATRIX &world)
-{
-	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	dc->IASetInputLayout(InputLayouts::PosNormalTexTanSkinned);
-
-	UINT stride = sizeof(Vertex::PosNormalTexTanSkinned);
-	UINT offset = 0;
-
-	XMMATRIX worldInvTranspose;
-	XMMATRIX worldViewProj;
-
-	XMMATRIX view = mCamera->GetViewMatrix();
-	XMMATRIX proj = mCamera->GetProjMatrix();
-	XMMATRIX viewproj = mCamera->GetViewProjMatrix();
-
-	// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
-	XMMATRIX toTexSpace(
-		0.5f, 0.0f, 0.0f, 0.0f,
-		0.0f, -0.5f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, 0.0f, 1.0f);
-
-	D3DX11_TECHNIQUE_DESC techDesc;
-	activeTech->GetDesc(&techDesc);
-
-	worldInvTranspose = MathHelper::InverseTranspose(world);
-	worldViewProj = world*view*proj;
-
-	Effects::NormalMapFX->SetWorld(world);
-	Effects::NormalMapFX->SetWorldInvTranspose(worldInvTranspose);
-	Effects::NormalMapFX->SetWorldViewProj(worldViewProj);
-	Effects::NormalMapFX->SetWorldViewProjTex(worldViewProj*toTexSpace);
-	//Effects::NormalMapFX->SetShadowTransform(world*XMLoadFloat4x4(&shadowMap->GetShadowTransform()));
-	//Effects::NormalMapFX->SetShadowMap(shadowMap->getDepthMapSRV());
-	Effects::NormalMapFX->SetTexTransform(XMMatrixScaling(1.0f, 1.0f, 1.0f));
-	//Effects::NormalMapFX->SetBoneTransforms(mInstance.model->skinnedData.Transforms, )
-	Effects::NormalMapFX->SetBoneTransforms(&mInstance.FinalTransforms[0], (int)mInstance.FinalTransforms.size());
-
-	for (UINT p = 0; p < techDesc.Passes; ++p)
-	{
-		for (UINT i = 0; i < mInstance.model->numMeshes; ++i)
-		{
-			UINT matIndex = mInstance.model->meshes[i].mMaterialIndex;
-
-			Effects::NormalMapFX->SetMaterial(mInstance.model->mat[matIndex]);
-
-			Effects::NormalMapFX->SetDiffuseMap(mInstance.model->diffuseMapSRV[matIndex]);
-
-			activeTech->GetPassByIndex(p)->Apply(0, dc);
-			mInstance.model->meshes[i].draw(dc);
-		}
-	}
-}
+// void AnimatedEntity::Draw( ID3D11DeviceContext* dc, ID3DX11EffectTechnique* activeTech, Camera* mCamera)
+// {
+// 	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+// 	dc->IASetInputLayout(InputLayouts::PosNormalTexTanSkinned);
+// 
+// 	UINT stride = sizeof(Vertex::PosNormalTexTanSkinned);
+// 	UINT offset = 0;
+// 
+// 	XMMATRIX world;
+// 	XMMATRIX worldInvTranspose;
+// 	XMMATRIX worldViewProj;
+// 
+// 	XMMATRIX view = mCamera->GetViewMatrix();
+// 	XMMATRIX proj = mCamera->GetProjMatrix();
+// 	XMMATRIX viewproj = mCamera->GetViewProjMatrix();
+// 
+// 	// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
+// 	XMMATRIX toTexSpace(
+// 		0.5f, 0.0f, 0.0f, 0.0f,
+// 		0.0f, -0.5f, 0.0f, 0.0f,
+// 		0.0f, 0.0f, 1.0f, 0.0f,
+// 		0.5f, 0.5f, 0.0f, 1.0f);
+// 
+// 	D3DX11_TECHNIQUE_DESC techDesc;
+// 	activeTech->GetDesc(&techDesc);
+// 
+// 	world = XMLoadFloat4x4(&mInstance.world);
+// 	worldInvTranspose = MathHelper::InverseTranspose(world);
+// 	worldViewProj = world*view*proj;
+// 
+// 	Effects::NormalMapFX->SetWorld(world);
+// 	Effects::NormalMapFX->SetWorldInvTranspose(worldInvTranspose);
+// 	Effects::NormalMapFX->SetWorldViewProj(worldViewProj);
+// 	Effects::NormalMapFX->SetWorldViewProjTex(worldViewProj*toTexSpace);
+// 	//Effects::NormalMapFX->SetShadowTransform(world*XMLoadFloat4x4(&shadowMap->GetShadowTransform()));
+// 	//Effects::NormalMapFX->SetShadowMap(shadowMap->getDepthMapSRV());
+// 	Effects::NormalMapFX->SetTexTransform(XMMatrixScaling(1.0f, 1.0f, 1.0f));
+// 	//Effects::NormalMapFX->SetBoneTransforms(mInstance.model->skinnedData.Transforms, )
+// 	Effects::NormalMapFX->SetBoneTransforms(&mInstance.FinalTransforms[0], mInstance.FinalTransforms.size());
+// 
+// 	for (UINT p = 0; p < techDesc.Passes; ++p)
+// 	{
+// 		for (UINT i = 0; i < mInstance.model->numMeshes; ++i)
+// 		{
+// 			UINT matIndex = mInstance.model->meshes[i].mMaterialIndex;
+// 
+// 			Effects::NormalMapFX->SetMaterial(mInstance.model->mat[matIndex]);
+// 
+// 			Effects::NormalMapFX->SetDiffuseMap(mInstance.model->diffuseMapSRV[matIndex]);
+// 
+// 			activeTech->GetPassByIndex(p)->Apply(0, dc);
+// 			mInstance.model->meshes[i].draw(dc);
+// 		}
+// 	}
+// }
 
 void AnimatedEntity::Update(float dt)
 {
@@ -90,16 +92,114 @@ void AnimatedEntity::SetPosition(XMFLOAT3 pos)
 {
 	this->Position = pos;
 
-	/*XMMATRIX modelScale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
+	XMMATRIX modelScale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
 	XMMATRIX modelRot = XMMatrixRotationY(0.0f);
 	XMMATRIX modelOffset = XMMatrixTranslation(Position.x, Position.y, Position.z);
-	XMStoreFloat4x4(&mInstance.world, modelScale*modelRot*modelOffset);*/
+	XMStoreFloat4x4(&mInstance.world, modelScale*modelRot*modelOffset);
 }
 
 void AnimatedEntity::RotateXYZ(XMFLOAT3 rot, float yaw, XMVECTOR Up)
 {
-	/*XMMATRIX modelRot = XMMatrixRotationX(rot.x) * XMMatrixRotationY(rot.y) * XMMatrixRotationZ(rot.z) * XMMatrixRotationAxis(Up, yaw);
+	XMMATRIX modelRot = XMMatrixRotationX(rot.x) * XMMatrixRotationY(rot.y) * XMMatrixRotationZ(rot.z) * XMMatrixRotationAxis(Up, yaw);
 	XMMATRIX modelScale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
 	XMMATRIX modelOffset = XMMatrixTranslation(Position.x, Position.y, Position.z);
-	XMStoreFloat4x4(&mInstance.world, modelScale*modelRot*modelOffset);*/
+	XMStoreFloat4x4(&mInstance.world, modelScale*modelRot*modelOffset);
+}
+
+void AnimatedEntity::Draw(ID3D11DeviceContext* dc, Camera* cam, NormalMappedSkinned* shader, XMMATRIX &world)
+{
+	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	dc->IASetInputLayout(InputLayouts::PosNormalTexTanSkinned);
+
+	//UINT stride = sizeof(Vertex::PosNormalTexTanSkinned);
+	//UINT offset = 0;
+
+	//XMMATRIX worldInvTranspose;
+	//XMMATRIX worldViewProj;
+
+	//XMMATRIX viewProj = cam->GetViewProjMatrix();
+
+	XMMATRIX toTexSpace(
+		0.5f, 0.0f, 0.0f, 0.0f,
+		0.0f, -0.5f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.5f, 0.5f, 0.0f, 1.0f);
+
+	//worldInvTranspose = MathHelper::InverseTranspose(world);
+	//worldViewProj = world*viewProj;
+	//worldViewProj = XMMatrixTranspose(worldViewProj);
+
+	//shader->SetActive(dc);
+	shader->SetWorldViewProjTex(dc, world, cam->GetViewProjMatrix(), toTexSpace);
+	shader->SetBoneTransforms(dc, mInstance.FinalTransforms.data(), mInstance.FinalTransforms.size());
+
+	for (UINT i = 0; i < mInstance.model->numMeshes; ++i)
+	{
+		UINT matIndex = mInstance.model->meshes[i].mMaterialIndex;
+
+		shader->SetMaterial(dc, mInstance.model->mat[matIndex]);
+		shader->SetDiffuseMap(dc, mInstance.model->diffuseMapSRV[matIndex]);
+		shader->SetNormalMap(dc, mInstance.model->normalMapSRV[matIndex]);
+		shader->UpdatePerObj(dc);
+
+		//Effects::NormalMapFX->SetMaterial(mInstance.model->mat[matIndex]);
+
+		//Effects::NormalMapFX->SetDiffuseMap(mInstance.model->diffuseMapSRV[matIndex]);
+
+		//activeTech->GetPassByIndex(p)->Apply(0, dc);
+		mInstance.model->meshes[i].draw(dc);
+	}
+
+	// 	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	// 	dc->IASetInputLayout(InputLayouts::PosNormalTexTanSkinned);
+	// 
+	// 	UINT stride = sizeof(Vertex::PosNormalTexTanSkinned);
+	// 	UINT offset = 0;
+	// 
+	// 	XMMATRIX world;
+	// 	XMMATRIX worldInvTranspose;
+	// 	XMMATRIX worldViewProj;
+	// 
+	// 	XMMATRIX view = mCamera->GetViewMatrix();
+	// 	XMMATRIX proj = mCamera->GetProjMatrix();
+	// 	XMMATRIX viewproj = mCamera->GetViewProjMatrix();
+	// 
+	// 	// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
+	// 	XMMATRIX toTexSpace(
+	// 		0.5f, 0.0f, 0.0f, 0.0f,
+	// 		0.0f, -0.5f, 0.0f, 0.0f,
+	// 		0.0f, 0.0f, 1.0f, 0.0f,
+	// 		0.5f, 0.5f, 0.0f, 1.0f);
+	// 
+	// 	D3DX11_TECHNIQUE_DESC techDesc;
+	// 	activeTech->GetDesc(&techDesc);
+	// 
+	// 	world = XMLoadFloat4x4(&mInstance.world);
+	// 	worldInvTranspose = MathHelper::InverseTranspose(world);
+	// 	worldViewProj = world*view*proj;
+	// 
+	// 	Effects::NormalMapFX->SetWorld(world);
+	// 	Effects::NormalMapFX->SetWorldInvTranspose(worldInvTranspose);
+	// 	Effects::NormalMapFX->SetWorldViewProj(worldViewProj);
+	// 	Effects::NormalMapFX->SetWorldViewProjTex(worldViewProj*toTexSpace);
+	// 	//Effects::NormalMapFX->SetShadowTransform(world*XMLoadFloat4x4(&shadowMap->GetShadowTransform()));
+	// 	//Effects::NormalMapFX->SetShadowMap(shadowMap->getDepthMapSRV());
+	// 	Effects::NormalMapFX->SetTexTransform(XMMatrixScaling(1.0f, 1.0f, 1.0f));
+	// 	//Effects::NormalMapFX->SetBoneTransforms(mInstance.model->skinnedData.Transforms, )
+	// 	Effects::NormalMapFX->SetBoneTransforms(&mInstance.FinalTransforms[0], mInstance.FinalTransforms.size());
+	// 
+	// 	for (UINT p = 0; p < techDesc.Passes; ++p)
+	// 	{
+	// 		for (UINT i = 0; i < mInstance.model->numMeshes; ++i)
+	// 		{
+	// 			UINT matIndex = mInstance.model->meshes[i].mMaterialIndex;
+	// 
+	// 			Effects::NormalMapFX->SetMaterial(mInstance.model->mat[matIndex]);
+	// 
+	// 			Effects::NormalMapFX->SetDiffuseMap(mInstance.model->diffuseMapSRV[matIndex]);
+	// 
+	// 			activeTech->GetPassByIndex(p)->Apply(0, dc);
+	// 			mInstance.model->meshes[i].draw(dc);
+	// 		}
+	// 	}
 }

@@ -97,6 +97,7 @@ void Application::Start()
 			//frameTimeChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, (1.0f / 60.0f) * 1000.0f);
 			//memoryChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, 256.0f);
 		}
+
 		camera->Follow(entityManager->getEntityPos("player"));
 		playerMove->setCamera(camera->GetLook(), camera->GetRight(), camera->GetUp());
 		camera->Update((float)deltaTime);
@@ -104,8 +105,8 @@ void Application::Start()
 		this->entityManager->update((float)deltaTime);
 		//this->entityManager->handleCollision();
 
-		m_graphicsEngine->DrawScene();
 		m_graphicsEngine->UpdateScene((float)deltaTime);
+		m_graphicsEngine->DrawScene();
 
 		m_soundEngine->Update((float)deltaTime);
 

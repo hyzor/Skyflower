@@ -22,7 +22,8 @@ public:
 	};
 
 	void Update(float dt);
-	void Draw(ID3D11DeviceContext* dc, ID3DX11EffectTechnique* activeTech, Camera* camera);
+	//void Draw(ID3D11DeviceContext* dc, ID3DX11EffectTechnique* activeTech, Camera* camera);
+	void Draw(ID3D11DeviceContext* dc, Camera* cam, NormalMappedSkinned* shader);
 
 private:
 	AnimatedEntity* mAnimEntity;

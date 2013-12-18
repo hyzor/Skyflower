@@ -9,6 +9,7 @@
 
 #include "d3dUtilities.h"
 #include <map>
+#include <DDSTextureLoader.h>
 
 class TextureManager
 {

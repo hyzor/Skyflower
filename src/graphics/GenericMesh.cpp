@@ -35,7 +35,8 @@ void Mesh::SetIndices(ID3D11Device* device, const UINT* indices, UINT count)
 	D3D11_SUBRESOURCE_DATA iinitData;
 	iinitData.pSysMem = indices;
 
-	HR(device->CreateBuffer(&ibd, &iinitData, &mIndexBuffer));
+	//HR(device->CreateBuffer(&ibd, &iinitData, &mIndexBuffer));
+	device->CreateBuffer(&ibd, &iinitData, &mIndexBuffer);
 }
 
 void Mesh::Draw(ID3D11DeviceContext* deviceContext)
