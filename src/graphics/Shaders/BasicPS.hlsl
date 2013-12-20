@@ -16,6 +16,10 @@ cbuffer cbPerFrame : register(b1)
 	int gDirLightCount;
 	int padding5, padding6, padding7;
 
+	SpotLight gSpotLights[MAX_SPOT_LIGHTS];
+	int gSpotLightCount;
+	int padding8, padding9, padding10;
+
 	float3 gEyePosW;
 	float padding;
 };
@@ -31,18 +35,18 @@ SamplerState samAnisotropic : register(s1);
 /*
 SamplerState samLinear
 {
-	Filter = MIN_MAG_MIP_LINEAR;
-	AddressU = WRAP;
-	AddressV = WRAP;
+Filter = MIN_MAG_MIP_LINEAR;
+AddressU = WRAP;
+AddressV = WRAP;
 };
 
 SamplerState samAnisotropic
 {
-	Filter = ANISOTROPIC;
-	MaxAnisotropy = 4;
+Filter = ANISOTROPIC;
+MaxAnisotropy = 4;
 
-	AddressU = WRAP;
-	AddressV = WRAP;
+AddressU = WRAP;
+AddressV = WRAP;
 };
 */
 
@@ -61,16 +65,16 @@ float4 main(VertexOut pIn) : SV_TARGET
 	toEye /= distToEye;
 
 	float4 texColor = float4(1, 1, 1, 1);
-	//if (gUseTexture)
-	//{
+		//if (gUseTexture)
+		//{
 		// Sample texture
 		texColor = gDiffuseMap.Sample(samAnisotropic, pIn.Tex);
 
-		//if (gAlphaClip)
-		//{
-			// Discard pixel if alpha < 0.1
-			//clip(texColor.a - 0.1f);
-		//}
+	//if (gAlphaClip)
+	//{
+	// Discard pixel if alpha < 0.1
+	//clip(texColor.a - 0.1f);
+	//}
 	//}
 
 	//--------------------------------------------------------
@@ -81,15 +85,15 @@ float4 main(VertexOut pIn) : SV_TARGET
 	{
 		// Initialize values
 		float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
-		float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
-		float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
+			float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
+			float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 			//float3 shadow = float3(1.0f, 1.0f, 1.0f);
 			//shadow[0] = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
 
+			float4 A, D, S;
 		for (int j = 0; j < gPointLightCount; ++j)
 		{
-			float4 A, D, S;
 			ComputePointLight(gMaterial, gPointLights[j], pIn.PosW, pIn.NormalW, toEye, A, D, S);
 
 			ambient += A;
@@ -99,9 +103,16 @@ float4 main(VertexOut pIn) : SV_TARGET
 
 		for (int k = 0; k < gDirLightCount; ++k)
 		{
-			float4 A, D, S;
 			ComputeDirectionalLight(gMaterial, gDirLights[k], pIn.NormalW, toEye, A, D, S);
 
+			ambient += A;
+			diffuse += D;
+			specular += S;
+		}
+
+		for (int i = 0; i < gSpotLightCount; ++i)
+		{
+			ComputeSpotLight(gMaterial, gSpotLights[i], pIn.PosW, pIn.NormalW, toEye, A, D, S);
 			ambient += A;
 			diffuse += D;
 			specular += S;
@@ -118,6 +129,6 @@ float4 main(VertexOut pIn) : SV_TARGET
 /*
 float4 main() : SV_TARGET
 {
-	return float4(1.0f, 1.0f, 1.0f, 1.0f);
+return float4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 */

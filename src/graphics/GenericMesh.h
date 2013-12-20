@@ -29,7 +29,7 @@ public:
 	std::string Name;
 
 	// CPU copies of mesh data 
-	std::vector<Vertex::Basic32> vertices;
+	std::vector<Vertex::PosNormalTex> vertices;
 	std::vector<UINT> indices;
 
 private:

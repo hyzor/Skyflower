@@ -821,7 +821,7 @@ bool GenericObjectLoader::loadObject(const std::string& fileName,
 			//------------------------------------------------------------
 			for (UINT j = 0; j < numVertices; ++j)
 			{
-				Vertex::Basic32 vertex;
+				Vertex::PosNormalTex vertex;
 				//ZeroMemory(&vertex, sizeof(vertex));
 
 				// Vertex position

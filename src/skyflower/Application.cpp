@@ -126,7 +126,7 @@ void Application::OnWindowShouldClose()
 
 void Application::OnWindowResize(unsigned int width, unsigned int height)
 {
-	// FIXME: Notify the graphics engine of the resize.
+	m_graphicsEngine->OnResize(width, height);
 }
 
 void Application::OnWindowActivate()

@@ -8,7 +8,13 @@ const D3D11_INPUT_ELEMENT_DESC InputLayoutDesc::Position[1] =
 	{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
 };
 
-const D3D11_INPUT_ELEMENT_DESC InputLayoutDesc::Basic32[3] =
+const D3D11_INPUT_ELEMENT_DESC InputLayoutDesc::PosTex[2] =
+{
+	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+};
+
+const D3D11_INPUT_ELEMENT_DESC InputLayoutDesc::PosNormalTex[3] =
 {
 	{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 	{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
@@ -47,7 +53,8 @@ const D3D11_INPUT_ELEMENT_DESC InputLayoutDesc::PosNormalTexTanSkinned[6] =
 // Input layouts
 //===========================================================================
 ID3D11InputLayout* InputLayouts::Position = 0;
-ID3D11InputLayout* InputLayouts::Basic32 = 0;
+ID3D11InputLayout* InputLayouts::PosTex = 0;
+ID3D11InputLayout* InputLayouts::PosNormalTex = 0;
 ID3D11InputLayout* InputLayouts::Particle = 0;
 ID3D11InputLayout* InputLayouts::PosNormalTexTan = 0;
 ID3D11InputLayout* InputLayouts::PosNormalTexTanSkinned = 0;
@@ -96,7 +103,8 @@ void InputLayouts::InitAll(ID3D11Device* device)
 void InputLayouts::DestroyAll()
 {
 	ReleaseCOM(Position);
-	ReleaseCOM(Basic32);
+	ReleaseCOM(PosTex);
+	ReleaseCOM(PosNormalTex);
 	ReleaseCOM(Particle);
 	ReleaseCOM(PosNormalTexTan);
 	ReleaseCOM(PosNormalTexTanSkinned);

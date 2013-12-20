@@ -9,6 +9,7 @@ ID3D11SamplerState* RenderStates::mAnisotropicSS = 0;
 
 ID3D11DepthStencilState* RenderStates::mLessEqualDSS = 0;
 ID3D11DepthStencilState* RenderStates::mDefaultDDS = 0;
+ID3D11DepthStencilState* RenderStates::mDisabledDDS = 0;
 
 ID3D11BlendState* RenderStates::mDefaultBS = 0;
 
@@ -124,6 +125,26 @@ void RenderStates::InitAll(ID3D11Device* device)
 
 	device->CreateDepthStencilState(&defaultDSSdesc, &mDefaultDDS);
 
+	// Disabled depth stencil state
+	D3D11_DEPTH_STENCIL_DESC disabledDDSdesc;
+	ZeroMemory(&disabledDDSdesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+	disabledDDSdesc.DepthEnable = FALSE;
+	disabledDDSdesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	disabledDDSdesc.DepthFunc = D3D11_COMPARISON_LESS;
+	disabledDDSdesc.StencilEnable = TRUE;
+	disabledDDSdesc.StencilReadMask = 0xFF;
+	disabledDDSdesc.StencilWriteMask = 0xFF;
+	disabledDDSdesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	disabledDDSdesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	disabledDDSdesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	disabledDDSdesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	disabledDDSdesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	disabledDDSdesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	disabledDDSdesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	disabledDDSdesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	device->CreateDepthStencilState(&disabledDDSdesc, &mDisabledDDS);
+
 	//-----------------------------------------------------------
 	// Blend states
 	//-----------------------------------------------------------
@@ -152,4 +173,8 @@ void RenderStates::DestroyAll()
 	ReleaseCOM(mAnisotropicSS);
 
 	ReleaseCOM(mLessEqualDSS);
+	ReleaseCOM(mDefaultDDS);
+	ReleaseCOM(mDisabledDDS);
+
+	ReleaseCOM(mDefaultBS);
 }
