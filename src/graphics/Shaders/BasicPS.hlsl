@@ -24,9 +24,11 @@ cbuffer cbPerFrame : register(b1)
 //TextureCube gCubeMap;
 
 Texture2D gDiffuseMap : register(t0);
+Texture2D gShadowMap : register(t1);
 
 SamplerState samLinear : register(s0);
 SamplerState samAnisotropic : register(s1);
+SamplerComparisonState samShadow : register(s2);
 
 /*
 SamplerState samLinear
@@ -84,8 +86,8 @@ float4 main(VertexOut pIn) : SV_TARGET
 		float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 		float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-			//float3 shadow = float3(1.0f, 1.0f, 1.0f);
-			//shadow[0] = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
+			float3 shadow = float3(1.0f, 1.0f, 1.0f);
+			shadow[0] = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
 
 		for (int j = 0; j < gPointLightCount; ++j)
 		{
@@ -93,8 +95,8 @@ float4 main(VertexOut pIn) : SV_TARGET
 			ComputePointLight(gMaterial, gPointLights[j], pIn.PosW, pIn.NormalW, toEye, A, D, S);
 
 			ambient += A;
-			diffuse += D;
-			specular += S;
+			diffuse += /*shadow[j]**/D;
+			specular += /*shadow[j]**/S;
 		}
 
 		for (int k = 0; k < gDirLightCount; ++k)
@@ -103,8 +105,8 @@ float4 main(VertexOut pIn) : SV_TARGET
 			ComputeDirectionalLight(gMaterial, gDirLights[k], pIn.NormalW, toEye, A, D, S);
 
 			ambient += A;
-			diffuse += D;
-			specular += S;
+			diffuse += /*shadow[k]**/D;
+			specular += /*shadow[k]**/S;
 		}
 
 		litColor = texColor * (ambient + diffuse) + specular;

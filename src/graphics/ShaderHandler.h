@@ -44,6 +44,59 @@ protected:
 	ID3D11InputLayout* mInputLayout;
 };
 
+#pragma region ShadowShader
+class ShadowShader : public IShader
+{
+public:
+	ShadowShader();
+	~ShadowShader();
+
+	void* operator new (size_t size)
+	{
+		void* p = _aligned_malloc(size, 16);
+
+		if (!p)
+			throw std::bad_alloc();
+
+		return p;
+	}
+
+	void operator delete (void* p)
+	{
+		ShadowShader* ptr = static_cast<ShadowShader*>(p);
+		_aligned_free(p);
+	}
+
+	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
+	bool SetActive(ID3D11DeviceContext* dc);
+	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+	bool BindVertexShader(ID3D11VertexShader* vShader);
+
+	void setLightWVP(ID3D11DeviceContext* dc, const XMMATRIX& lgwp);
+	void updatePerObj(ID3D11DeviceContext* dc);
+
+private:
+	void Update(ID3D11DeviceContext* dc){ ; };
+	
+	struct VS_CPEROBJBUFFER
+	{
+		XMMATRIX lightWorldViewProj;
+	};
+
+	struct BUFFERCACHE
+	{
+		VS_CPEROBJBUFFER vsBuffer;
+	};
+
+	struct BUFFERCACHE mBufferCache;
+
+	ID3D11Buffer* vs_cBuffer;
+	//ID3D11DepthStencilState* DSState;
+	VS_CPEROBJBUFFER vs_cBufferVariables;
+};
+
+#pragma endregion ShadowShaderEnd
+
 #pragma region BasicShader
 class BasicShader : public IShader
 {
@@ -82,6 +135,8 @@ public:
 	void SetEyePosW(ID3D11DeviceContext* dc, XMFLOAT3 eyePosW);
 	void SetMaterial(ID3D11DeviceContext* dc, const Material& mat);
 	void SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* shadowMap);
+	void SetShadowTransform(ID3D11DeviceContext* dc, const XMFLOAT4X4& shadowTransform);
 
 	void SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, PointLight pointLights[]);
 	void SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DirectionalLight dirLights[]);
@@ -99,6 +154,7 @@ private:
 		XMMATRIX worldViewProj;
 		//XMMATRIX worldViewProjTex;
 		XMMATRIX texTransform;
+		XMMATRIX shadowTransform;
 	};
 
 	struct PS_CPEROBJBUFFER
@@ -355,6 +411,7 @@ public:
 	BasicShader* mBasicShader;
 	SkyShader* mSkyShader;
 	NormalMappedSkinned* mNormalSkinned;
+	ShadowShader* mShadowShader;
 
 private:
 

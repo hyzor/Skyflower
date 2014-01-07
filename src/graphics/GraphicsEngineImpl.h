@@ -12,6 +12,7 @@
 #include <map>
 #include <string>
 #include "Sky.h"
+#include "Shadowmap.h"
 #include "ShaderHandler.h"
 #include "RenderStates.h"
 #include <SpriteBatch.h>
@@ -64,6 +65,7 @@ private:
 	std::vector<DirectionalLight> mDirLights;
 
 	Sky* mSky;
+	ShadowMap* mShadowMap;
 
 	ShaderHandler* mShaderHandler;
 

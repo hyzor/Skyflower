@@ -87,6 +87,9 @@
     <ClCompile Include="src\graphics\RenderStates.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\graphics\Shadowmap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\graphics\AnimatedEntity.h">
@@ -164,6 +167,9 @@
     <ClInclude Include="src\graphics\ShaderHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\graphics\Shadowmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\graphics\Shaders\NormalMapPS.hlsl">
@@ -188,6 +194,9 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="src\graphics\Shaders\BasicVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\ShadowBuildVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

@@ -38,6 +38,7 @@
     <ClCompile Include="src\graphics\MathHelper.cpp" />
     <ClCompile Include="src\graphics\RenderStates.cpp" />
     <ClCompile Include="src\graphics\ShaderHandler.cpp" />
+    <ClCompile Include="src\graphics\Shadowmap.cpp" />
     <ClCompile Include="src\graphics\SkinnedData.cpp" />
     <ClCompile Include="src\graphics\Sky.cpp" />
     <ClCompile Include="src\graphics\TextureManager.cpp" />
@@ -65,6 +66,7 @@
     <ClInclude Include="src\graphics\MathHelper.h" />
     <ClInclude Include="src\graphics\RenderStates.h" />
     <ClInclude Include="src\graphics\ShaderHandler.h" />
+    <ClInclude Include="src\graphics\Shadowmap.h" />
     <ClInclude Include="src\graphics\SkinnedData.h" />
     <ClInclude Include="src\graphics\Sky.h" />
     <ClInclude Include="src\graphics\TextureManager.h" />
@@ -106,6 +108,9 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\ShadowBuildVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
     </FxCompile>
     <FxCompile Include="src\graphics\Shaders\SkyPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>

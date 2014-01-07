@@ -6,6 +6,7 @@ ShaderHandler::ShaderHandler()
 	mBasicShader = new BasicShader();
 	mSkyShader = new SkyShader();
 	mNormalSkinned = new NormalMappedSkinned();
+	mShadowShader = new ShadowShader();
 }
 
 ShaderHandler::~ShaderHandler()
@@ -35,6 +36,7 @@ ShaderHandler::~ShaderHandler()
 	delete mBasicShader;
 	delete mSkyShader;
 	delete mNormalSkinned;
+	delete mShadowShader;
 }
 
 void ShaderHandler::LoadCompiledVertexShader(LPCWSTR fileName, char* name, ID3D11Device* device)
@@ -268,6 +270,7 @@ bool BasicShader::SetActive(ID3D11DeviceContext* dc)
 
 	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
 	dc->PSSetSamplers(1, 1, &RenderStates::mAnisotropicSS);
+	dc->PSSetSamplers(2, 1, &RenderStates::mComparisonSS);
 
 	// Set buffers to the new active shaders
 // 	dc->VSSetConstantBuffers(0, 1, &vs_cBuffer);
@@ -292,6 +295,7 @@ void BasicShader::UpdatePerObj(ID3D11DeviceContext* dc)
 	//dataPtr->worldViewProjTex = mBufferCache.vsBuffer.worldViewProjTex;
 	dataPtr->worldInvTranspose = mBufferCache.vsBuffer.worldInvTranspose;
 	dataPtr->texTransform = mBufferCache.vsBuffer.texTransform;
+	dataPtr->shadowTransform = mBufferCache.vsBuffer.shadowTransform;
 
 	dc->Unmap(vs_cBuffer, 0);
 
@@ -428,6 +432,11 @@ void BasicShader::SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceVie
 	dc->PSSetShaderResources(0, 1, &tex);
 }
 
+void BasicShader::SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* shadowMap)
+{
+	dc->PSSetShaderResources(1, 1, &shadowMap);
+}
+
 bool BasicShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
 {
 	mVertexShader = vShader;
@@ -475,7 +484,117 @@ void BasicShader::SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, Direc
 	for (UINT i = 0; i < numDirLights; ++i)
 		mBufferCache.psPerFrameBuffer.dirLights[i] = dirLights[i];
 }
+
+void BasicShader::SetShadowTransform(ID3D11DeviceContext* dc, const XMFLOAT4X4& shadowTransform)
+{
+	XMMATRIX sTransform = XMLoadFloat4x4(&shadowTransform);
+	mBufferCache.vsBuffer.shadowTransform = sTransform;
+}
+
 #pragma endregion BasicShaderEnd
+
+#pragma region ShadowShader
+
+ShadowShader::ShadowShader()
+{
+
+}
+
+ShadowShader::~ShadowShader()
+{
+	if (mVertexShader)
+		mVertexShader->Release();
+	if (mPixelShader)
+		mPixelShader->Release();
+
+	if (vs_cBuffer)
+		vs_cBuffer->Release();
+}
+
+bool ShadowShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
+{
+	mVertexShader = vShader;
+	mPixelShader = pShader;
+
+	return true;
+}
+
+bool ShadowShader::BindVertexShader(ID3D11VertexShader* vShader)
+{
+	mVertexShader = vShader;
+
+	return true;
+}
+
+bool ShadowShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
+{
+	ZeroMemory(&vs_cBufferVariables, sizeof(VS_CPEROBJBUFFER));
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC cbDesc;
+	cbDesc.ByteWidth = sizeof(VS_CPEROBJBUFFER);
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA InitData;
+	InitData.pSysMem = &vs_cBufferVariables;
+	InitData.SysMemPitch = 0;
+	InitData.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	device->CreateBuffer(&cbDesc, &InitData, &vs_cBuffer);
+	
+	//test
+	//D3D11_DEPTH_STENCIL_DESC dsDesc;
+	//dsDesc.DepthEnable = true;
+	//dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	//dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+	//device->CreateDepthStencilState(&dsDesc, &DSState);
+
+	mInputLayout = inputLayout;
+
+	return true;
+}
+
+bool ShadowShader::SetActive(ID3D11DeviceContext* dc)
+{
+	dc->IASetInputLayout(mInputLayout);
+
+	// Set active shaders
+	dc->VSSetShader(mVertexShader, nullptr, 0);
+	dc->PSSetShader(NULL, nullptr, 0);
+	
+	//test
+	//dc->OMSetDepthStencilState(DSState, 0);
+
+	return true;
+}
+
+void ShadowShader::setLightWVP(ID3D11DeviceContext* dc, const XMMATRIX& lgwp)
+{
+	mBufferCache.vsBuffer.lightWorldViewProj = lgwp;
+}
+
+void ShadowShader::updatePerObj(ID3D11DeviceContext* dc)
+{
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	dc->Map(vs_cBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	VS_CPEROBJBUFFER* dataPtr = (VS_CPEROBJBUFFER*)mappedResource.pData;
+
+	dataPtr->lightWorldViewProj = mBufferCache.vsBuffer.lightWorldViewProj;
+
+	dc->Unmap(vs_cBuffer, 0);
+	dc->VSSetConstantBuffers(0, 1, &vs_cBuffer);
+}
+
+#pragma endregion ShadowShaderEnd
+
 
 //-----------------------------------------------------------------------------------------------
 // Sky shader
