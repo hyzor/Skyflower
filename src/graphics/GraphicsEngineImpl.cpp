@@ -271,7 +271,6 @@ void GraphicsEngineImpl::DrawScene()
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(0, 0);
 	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
 
-	/*
 	// Use basic shader to draw with
 	mShaderHandler->mBasicShader->SetActive(mD3D->GetImmediateContext());
 	mShaderHandler->mBasicShader->SetEyePosW(mD3D->GetImmediateContext(), mCamera->GetPosition());
@@ -331,7 +330,6 @@ void GraphicsEngineImpl::DrawScene()
 			mAnimatedInstances[i]->model->Draw(mD3D->GetImmediateContext(), mCamera, mShaderHandler->mNormalSkinned, mAnimatedInstances[i]->GetWorld());
 		}
 	}
-	*/
 
 	// Draw 2D stuff
 	/*

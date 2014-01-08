@@ -273,7 +273,7 @@ void BasicShader::UpdatePerObj(ID3D11DeviceContext* dc)
 	//dataPtr->worldViewProjTex = mBufferCache.vsBuffer.worldViewProjTex;
 	dataPtr->worldInvTranspose = mBufferCache.vsPerObjBuffer.worldInvTranspose;
 	dataPtr->texTransform = mBufferCache.vsPerObjBuffer.texTransform;
-	dataPtr->shadowTransform = mBufferCache.vsBuffer.shadowTransform;
+	dataPtr->shadowTransform = mBufferCache.vsPerObjBuffer.shadowTransform;
 
 	dc->Unmap(vs_cPerObjBuffer, 0);
 
@@ -396,7 +396,7 @@ void BasicShader::SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, Direc
 void BasicShader::SetShadowTransform(ID3D11DeviceContext* dc, const XMFLOAT4X4& shadowTransform)
 {
 	XMMATRIX sTransform = XMLoadFloat4x4(&shadowTransform);
-	mBufferCache.vsBuffer.shadowTransform = sTransform;
+	mBufferCache.vsPerObjBuffer.shadowTransform = sTransform;
 }
 
 #pragma endregion BasicShaderEnd

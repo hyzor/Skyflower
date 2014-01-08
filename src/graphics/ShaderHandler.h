@@ -313,6 +313,7 @@ private:
 		XMMATRIX worldViewProj;
 		//XMMATRIX worldViewProjTex;
 		XMMATRIX texTransform;
+		XMMATRIX shadowTransform;
 	};
 
 	struct VS_CSKINNEDBUFFER
