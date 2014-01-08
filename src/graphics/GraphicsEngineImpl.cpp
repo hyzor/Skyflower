@@ -274,9 +274,9 @@ void GraphicsEngineImpl::DrawScene()
 	// Use basic shader to draw with
 	mShaderHandler->mBasicShader->SetActive(mD3D->GetImmediateContext());
 	mShaderHandler->mBasicShader->SetEyePosW(mD3D->GetImmediateContext(), mCamera->GetPosition());
-	mShaderHandler->mBasicShader->SetPointLights(mD3D->GetImmediateContext(), mPointLights.size(), mPointLights.data());
-	mShaderHandler->mBasicShader->SetDirLights(mD3D->GetImmediateContext(), mDirLights.size(), mDirLights.data());
-	mShaderHandler->mBasicShader->SetSpotLights(mD3D->GetImmediateContext(), mSpotLights.size(), mSpotLights.data());
+	mShaderHandler->mBasicShader->SetPointLights(mD3D->GetImmediateContext(), (UINT)mPointLights.size(), mPointLights.data());
+	mShaderHandler->mBasicShader->SetDirLights(mD3D->GetImmediateContext(), (UINT)mDirLights.size(), mDirLights.data());
+	mShaderHandler->mBasicShader->SetSpotLights(mD3D->GetImmediateContext(), (UINT)mSpotLights.size(), mSpotLights.data());
 	mShaderHandler->mBasicShader->SetShadowMap(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
 	mShaderHandler->mBasicShader->UpdatePerFrame(mD3D->GetImmediateContext());
 
@@ -317,9 +317,9 @@ void GraphicsEngineImpl::DrawScene()
 	// Use normal mapping skinned shader to draw with
 	mShaderHandler->mNormalSkinned->SetActive(mD3D->GetImmediateContext());
 	mShaderHandler->mNormalSkinned->SetEyePosW(mD3D->GetImmediateContext(), mCamera->GetPosition());
-	mShaderHandler->mNormalSkinned->SetPointLights(mD3D->GetImmediateContext(), mPointLights.size(), mPointLights.data());
-	mShaderHandler->mNormalSkinned->SetDirLights(mD3D->GetImmediateContext(), mDirLights.size(), mDirLights.data());
-	mShaderHandler->mNormalSkinned->SetSpotLights(mD3D->GetImmediateContext(), mSpotLights.size(), mSpotLights.data());
+	mShaderHandler->mNormalSkinned->SetPointLights(mD3D->GetImmediateContext(), (UINT)mPointLights.size(), mPointLights.data());
+	mShaderHandler->mNormalSkinned->SetDirLights(mD3D->GetImmediateContext(), (UINT)mDirLights.size(), mDirLights.data());
+	mShaderHandler->mNormalSkinned->SetSpotLights(mD3D->GetImmediateContext(), (UINT)mSpotLights.size(), mSpotLights.data());
 	mShaderHandler->mNormalSkinned->UpdatePerFrame(mD3D->GetImmediateContext());
 
 	// Loop through all skinned model instances
@@ -363,9 +363,9 @@ void GraphicsEngineImpl::DrawScene()
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDisabledDDS, 1);
 	mShaderHandler->mLightDeferredShader->SetActive(mD3D->GetImmediateContext());
 	mShaderHandler->mLightDeferredShader->SetEyePosW(mCamera->GetPosition());
-	mShaderHandler->mLightDeferredShader->SetPointLights(mD3D->GetImmediateContext(), mPointLights.size(), mPointLights.data());
-	mShaderHandler->mLightDeferredShader->SetDirLights(mD3D->GetImmediateContext(), mDirLights.size(), mDirLights.data());
-	mShaderHandler->mLightDeferredShader->SetSpotLights(mD3D->GetImmediateContext(), mSpotLights.size(), mSpotLights.data());
+	mShaderHandler->mLightDeferredShader->SetPointLights(mD3D->GetImmediateContext(), (UINT)mPointLights.size(), mPointLights.data());
+	mShaderHandler->mLightDeferredShader->SetDirLights(mD3D->GetImmediateContext(), (UINT)mDirLights.size(), mDirLights.data());
+	mShaderHandler->mLightDeferredShader->SetSpotLights(mD3D->GetImmediateContext(), (UINT)mSpotLights.size(), mSpotLights.data());
 	mShaderHandler->mLightDeferredShader->UpdatePerFrame(mD3D->GetImmediateContext());
 
 	mShaderHandler->mLightDeferredShader->SetDiffuseTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(0));

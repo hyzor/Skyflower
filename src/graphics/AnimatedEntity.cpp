@@ -118,7 +118,7 @@ void AnimatedEntity::Draw(ID3D11DeviceContext* dc, Camera* cam, NormalMappedSkin
 		0.5f, 0.5f, 0.0f, 1.0f);
 
 	shader->SetWorldViewProjTex(dc, world, cam->GetViewProjMatrix(), toTexSpace);
-	shader->SetBoneTransforms(dc, mInstance.FinalTransforms.data(), mInstance.FinalTransforms.size());
+	shader->SetBoneTransforms(dc, mInstance.FinalTransforms.data(), (UINT)mInstance.FinalTransforms.size());
 
 	for (UINT i = 0; i < mInstance.model->numMeshes; ++i)
 	{
@@ -145,7 +145,7 @@ void AnimatedEntity::Draw(ID3D11DeviceContext* dc, Camera* cam, BasicDeferredSki
 		0.5f, 0.5f, 0.0f, 1.0f);
 
 	deferredShader->SetWorldViewProjTex(world, cam->GetViewProjMatrix(), toTexSpace);
-	deferredShader->SetBoneTransforms(mInstance.FinalTransforms.data(), mInstance.FinalTransforms.size());
+	deferredShader->SetBoneTransforms(mInstance.FinalTransforms.data(), (UINT)mInstance.FinalTransforms.size());
 
 	for (UINT i = 0; i < mInstance.model->numMeshes; ++i)
 	{

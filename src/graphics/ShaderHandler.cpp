@@ -111,7 +111,7 @@ BYTE* ShaderHandler::LoadByteCode(char* fileName, UINT& size)
 	shaderCode = (unsigned char*)malloc(fileSize);
 
 	while (numRead != fileSize)
-		numRead = fread(&shaderCode[numRead], 1, fileSize, file);
+		numRead = (UINT)fread(&shaderCode[numRead], 1, fileSize, file);
 
 	fclose(file);
 
