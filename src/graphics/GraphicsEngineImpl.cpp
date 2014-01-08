@@ -1,4 +1,5 @@
 #include "GraphicsEngineImpl.h"
+#include "Texture2DImpl.h"
 
 GraphicsEngineImpl::GraphicsEngineImpl()
 {
@@ -381,10 +382,6 @@ void GraphicsEngineImpl::DrawScene()
 
 	// Turn z-buffer back on
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDefaultDDS, 1);
-
-	// Finally, present the back buffer to front buffer
-	// Set SyncInterval to 1 if you want to limit the FPS to the monitors refresh rate
-	HR(mD3D->GetSwapChain()->Present(1, 0));
 }
 
 void GraphicsEngineImpl::UpdateScene(float dt)
@@ -396,6 +393,36 @@ void GraphicsEngineImpl::UpdateScene(float dt)
 		mAnimatedInstances[i]->model->Update(dt);
 	}
 }
+
+void GraphicsEngineImpl::Present()
+{
+	// Present the back buffer to front buffer
+	// Set SyncInterval to 1 if you want to limit the FPS to the monitors refresh rate
+	HR(mD3D->GetSwapChain()->Present(1, 0));
+}
+
+void GraphicsEngineImpl::Begin2D()
+{
+	mSpriteBatch->Begin();
+}
+
+void GraphicsEngineImpl::End2D()
+{
+	mSpriteBatch->End();
+}
+
+void GraphicsEngineImpl::Draw2DTextureFile(const std::string file, int x, int y)
+{
+	mSpriteBatch->Draw(mTextureMgr->CreateTexture(file), XMFLOAT2((float)x, (float)y));
+}
+
+void GraphicsEngineImpl::Draw2DTexture(Texture2D *texture, int x, int y)
+{
+	Texture2DImpl *textureImpl = (Texture2DImpl *)texture;
+
+	mSpriteBatch->Draw(textureImpl->GetTextureView(), XMFLOAT2((float)x, (float)y));
+}
+
 ModelInstance* GraphicsEngineImpl::CreateInstance(std::string file)
 {
 	return CreateInstance(file, Vec3());
@@ -502,6 +529,20 @@ void GraphicsEngineImpl::DeleteInstance(AnimatedInstance* ai)
 	}
 
 	delete mi;
+}
+
+Texture2D *GraphicsEngineImpl::CreateTexture2D(unsigned int width, unsigned int height)
+{
+	Texture2DImpl *texture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height);
+ 
+	return (Texture2D *)texture;
+}
+
+void GraphicsEngineImpl::DeleteTexture2D(Texture2D *texture)
+{
+	Texture2DImpl *textureImpl = (Texture2DImpl *)texture;
+
+	delete textureImpl;
 }
 
 void GraphicsEngineImpl::OnResize(UINT width, UINT height)

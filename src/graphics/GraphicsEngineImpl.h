@@ -35,11 +35,19 @@ public:
 	~GraphicsEngineImpl();
 
 	bool Init(HWND hWindow, UINT width, UINT height, const std::string &resourceDir);
+	void OnResize(UINT width, UINT height);
+
 	void Run(float dt);
 
 	void DrawScene();
 	void UpdateScene(float dt);
 	void RenderSceneToTexture();
+	void Present();
+
+	void Begin2D();
+	void End2D();
+	void Draw2DTextureFile(const std::string file, int x, int y);
+	void Draw2DTexture(Texture2D *texture, int x, int y);
 
 	ModelInstance* CreateInstance(std::string file);
 	ModelInstance* CreateInstance(std::string file, Vec3 pos);
@@ -49,7 +57,8 @@ public:
 	AnimatedInstance* CreateAnimatedInstance(std::string file);
 	void DeleteInstance(AnimatedInstance* ai);
 
-	void OnResize(UINT width, UINT height);
+	Texture2D *CreateTexture2D(unsigned int width, unsigned int height);
+	void DeleteTexture2D(Texture2D *texture);
 
 private:
 	Direct3D* mD3D;

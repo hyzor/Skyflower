@@ -29,17 +29,10 @@ LineChart::LineChart(size_t maximumDataPoints)
 	m_dataPointEnd = 0;
 
 	m_unit = "";
-
-
-
-	m_imageEncoder = SkImageEncoder::Create(SkImageEncoder::kPNG_Type);
 }
 
 LineChart::~LineChart()
 {
-	delete m_imageEncoder;
-
-
 	delete[] m_dataPoints;
 
 	if (m_canvas)
@@ -57,7 +50,6 @@ void LineChart::SetSize(unsigned int width, unsigned int height)
 
 	m_bitmap = new SkBitmap();
 	m_bitmap->setConfig(SkBitmap::kARGB_8888_Config, width, height);
-	// FIXME: Replace with setPixels.
 	m_bitmap->allocPixels();
 
 	m_canvas = new SkCanvas(*m_bitmap);
@@ -66,6 +58,27 @@ void LineChart::SetSize(unsigned int width, unsigned int height)
 void LineChart::SetUnit(const std::string &unit)
 {
 	m_unit = unit;
+}
+
+unsigned int LineChart::GetWidth() const
+{
+	assert(m_bitmap);
+
+	return (unsigned int)m_bitmap->width();
+}
+
+unsigned int LineChart::GetHeight() const
+{
+	assert(m_bitmap);
+
+	return (unsigned int)m_bitmap->height();
+}
+
+void *LineChart::GetPixels() const
+{
+	assert(m_bitmap);
+
+	return m_bitmap->getPixels();
 }
 
 void LineChart::AddPoint(float timeStamp, float value)
@@ -80,7 +93,7 @@ void LineChart::AddPoint(float timeStamp, float value)
 	}
 }
 
-void LineChart::Clear()
+void LineChart::ClearPoints()
 {
 	m_dataPointStart = 0;
 	m_dataPointEnd = 0;
@@ -159,26 +172,7 @@ void LineChart::Draw(float startTime, float endTime, float resolution, float tar
 	float drawMax = std::max(maxValue, targetValue);
 	float drawMin = std::min(minValue, targetValue);
 	float padding = (drawMax - drawMin) * 0.1f;
-	// FIXME: Allow charts not starting at zero.
-	float drawRange = (drawMax + padding); // - (drawMin - padding)
-
-	// Clear the canvas with transparency.
-	m_canvas->clear(SK_ColorTRANSPARENT);
-
-	SkPaint backgroundPaint;
-	backgroundPaint.setColor(SkColorSetARGB(32, 0, 0, 0));
-	backgroundPaint.setStyle(SkPaint::kFill_Style);
-	backgroundPaint.setXfermodeMode(SkXfermode::kSrcOver_Mode);
-
-	// Draw a semi-transparent background.
-	m_canvas->drawRect(SkRect::MakeXYWH(0.0f, 0.0f, (float)m_bitmap->width(), (float)m_bitmap->height()), backgroundPaint);
-
-	SkPaint pathPaint;
-	pathPaint.setColor(SkColorSetARGB(255, 255, 115, 0));
-	pathPaint.setStyle(SkPaint::kStroke_Style);
-	pathPaint.setStrokeWidth(1.0f);
-	//pathPaint.setXfermodeMode(SkXfermode::kSrcOver_Mode);
-	pathPaint.setAntiAlias(true);
+	float drawRange = (drawMax + padding) + (drawMin - padding);
 
 	// Scale the path to fit the canvas.
 	float scale = m_bitmap->height() / drawRange;
@@ -187,21 +181,38 @@ void LineChart::Draw(float startTime, float endTime, float resolution, float tar
 	transformation.postTranslate(0.0f, m_bitmap->height() * -(scale - 1.0f));
 	path.transform(transformation);
 
-	// Draw the actual data point lines.
-	m_canvas->drawPath(path, pathPaint);
+	// Clear the canvas with transparency.
+	m_canvas->clear(SK_ColorTRANSPARENT);
 
+	// Draw a semi-transparent background.
+	SkPaint backgroundPaint;
+	backgroundPaint.setColor(SkColorSetARGB(128, 0, 0, 0));
+	backgroundPaint.setStyle(SkPaint::kFill_Style);
+	backgroundPaint.setXfermodeMode(SkXfermode::kSrcOver_Mode);
+	m_canvas->drawRect(SkRect::MakeXYWH(0.0f, 0.0f, (float)m_bitmap->width(), (float)m_bitmap->height()), backgroundPaint);
+
+	float targetLinePosition = ((float)m_bitmap->height() - targetValue) * scale + (m_bitmap->height() * -(scale - 1.0f));
+
+	// Draw the target value line.
 	SkPaint linePaint;
-	linePaint.setColor(SkColorSetARGB(255, 0, 255, 255));
+	linePaint.setColor(SkColorSetARGB(255, 255, 133, 27));
 	linePaint.setStyle(SkPaint::kStroke_Style);
 	linePaint.setStrokeWidth(1.0f);
 	//linePaint.setXfermodeMode(SkXfermode::kSrcOver_Mode);
-
-	// Draw the target value line.
-	float targetLinePosition = ((float)m_bitmap->height() - targetValue) * scale + (m_bitmap->height() * -(scale - 1.0f));
 	m_canvas->drawLine(0.0f, targetLinePosition, (float)m_bitmap->width(), targetLinePosition, linePaint);
+
+	// Draw the actual data point lines.
+	SkPaint pathPaint;
+	pathPaint.setColor(SkColorSetARGB(255, 127, 219, 255));
+	pathPaint.setStyle(SkPaint::kStroke_Style);
+	pathPaint.setStrokeWidth(1.0f);
+	//pathPaint.setXfermodeMode(SkXfermode::kSrcOver_Mode);
+	pathPaint.setAntiAlias(true);
+	m_canvas->drawPath(path, pathPaint);
 
 	// Draw the labels
 	SkPaint textPaint;
+	textPaint.setColor(SkColorSetARGB(255, 255, 255, 255));
 	textPaint.setAntiAlias(true);
 	textPaint.setSubpixelText(true);
 	textPaint.setLCDRenderText(true);
@@ -216,6 +227,14 @@ void LineChart::Draw(float startTime, float endTime, float resolution, float tar
 	stringStream.precision(1);
 	stringStream << std::fixed << targetValue << m_unit;
 	std::string targetValueString = stringStream.str();
+
+	stringStream.str("");
+	stringStream << std::fixed << drawMin - padding << m_unit;
+	std::string lowValueString = stringStream.str();
+
+	stringStream.str("");
+	stringStream << std::fixed << drawMax + padding << m_unit;
+	std::string highValueString = stringStream.str();
 
 	stringStream.str("");
 	stringStream << "Min:" << std::fixed << minValue << m_unit;
@@ -236,19 +255,20 @@ void LineChart::Draw(float startTime, float endTime, float resolution, float tar
 	// Draw the labels.
 	float textPadding = 10.0f;
 	float textPosition = textPadding;
-	m_canvas->drawText(minValueString.c_str(), minValueString.length(), 0.0f, textPosition, textPaint);
-	textPosition += textPadding;
-	m_canvas->drawText(maxValueString.c_str(), maxValueString.length(), 0.0f, textPosition, textPaint);
+	m_canvas->drawText(currentValueString.c_str(), currentValueString.length(), 0.0f, textPosition, textPaint);
 	textPosition += textPadding;
 	m_canvas->drawText(averageValueString.c_str(), averageValueString.length(), 0.0f, textPosition, textPaint);
 	textPosition += textPadding;
-	m_canvas->drawText(currentValueString.c_str(), currentValueString.length(), 0.0f, textPosition, textPaint);
+	m_canvas->drawText(minValueString.c_str(), minValueString.length(), 0.0f, textPosition, textPaint);
+	textPosition += textPadding;
+	m_canvas->drawText(maxValueString.c_str(), maxValueString.length(), 0.0f, textPosition, textPaint);
+
+	textPaint.setTextAlign(SkPaint::kRight_Align);
 
 	// Draw the target label at the end of the chart just above the target line.
-	textPaint.setTextAlign(SkPaint::kRight_Align);
-	m_canvas->drawText(targetValueString.c_str(), targetValueString.length(), (float)m_bitmap->width(), targetLinePosition - (textPadding / 2.0f), textPaint);
+	//m_canvas->drawText(targetValueString.c_str(), targetValueString.length(), (float)m_bitmap->width(), targetLinePosition - (textPadding / 2.0f), textPaint);
 
-	if (!m_imageEncoder->encodeFile("chart.png", *m_bitmap, 100)) {
-		printf("Failed to encode image!\n");
-	}
+	// Draw the high and low values.
+	m_canvas->drawText(highValueString.c_str(), highValueString.length(), (float)m_bitmap->width(), 9.0f, textPaint);
+	m_canvas->drawText(lowValueString.c_str(), lowValueString.length(), (float)m_bitmap->width(), m_bitmap->height() - 1.0f, textPaint);
 }

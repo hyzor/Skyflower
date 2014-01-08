@@ -43,6 +43,7 @@
     <ClCompile Include="src\graphics\Shadowmap.cpp" />
     <ClCompile Include="src\graphics\SkinnedData.cpp" />
     <ClCompile Include="src\graphics\Sky.cpp" />
+    <ClCompile Include="src\graphics\Texture2DImpl.cpp" />
     <ClCompile Include="src\graphics\TextureManager.cpp" />
     <ClCompile Include="src\graphics\Vertex.cpp" />
   </ItemGroup>
@@ -73,6 +74,8 @@
     <ClInclude Include="src\graphics\Shadowmap.h" />
     <ClInclude Include="src\graphics\SkinnedData.h" />
     <ClInclude Include="src\graphics\Sky.h" />
+    <ClInclude Include="src\graphics\Texture2D.h" />
+    <ClInclude Include="src\graphics\Texture2DImpl.h" />
     <ClInclude Include="src\graphics\TextureManager.h" />
     <ClInclude Include="src\graphics\Vertex.h" />
   </ItemGroup>

@@ -19,6 +19,7 @@ Application::Application()
 	m_window = NULL;
 	m_soundEngine = NULL;
 	this->entityManager = NULL;
+	m_showCharts = false;
 }
 
 Application::~Application()
@@ -66,15 +67,18 @@ void Application::Start()
 	entityManager->sendMessageToEntity("ActivateListener", "player");
 
 	LineChart frameTimeChart(1024 * 1024);
-	frameTimeChart.SetSize(512, 256);
+	frameTimeChart.SetSize(256, 128);
 	frameTimeChart.SetUnit("ms");
+	Texture2D *frameTimeChartTexture = m_graphicsEngine->CreateTexture2D(frameTimeChart.GetWidth(), frameTimeChart.GetHeight());
 
 	LineChart memoryChart(1024 * 1024);
-	memoryChart.SetSize(512, 256);
+	memoryChart.SetSize(256, 128);
 	memoryChart.SetUnit("MiB");
+	Texture2D *memoryChartTexture = m_graphicsEngine->CreateTexture2D(memoryChart.GetWidth(), memoryChart.GetHeight());
 
-	double startTime = GetTime();
-	double chartTime = 5.0;
+	double chartUpdateDelay = 0.1;
+	double nextChartUpdate = 0.0;
+	double chartTime = 30.0;
 
 	double oldTime = GetTime();
 	double time, deltaTime;
@@ -90,11 +94,14 @@ void Application::Start()
 		frameTimeChart.AddPoint((float)time, (float)(deltaTime * 1000.0));
 		memoryChart.AddPoint((float)time, GetMemoryUsage() / (1024.0f * 1024.0f));
 		
-		if (time - startTime > chartTime) {
-			startTime = time;
+		if (m_showCharts && time >= nextChartUpdate) {
+			nextChartUpdate = time + chartUpdateDelay;
 
-			//frameTimeChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, (1.0f / 60.0f) * 1000.0f);
-			//memoryChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, 256.0f);
+			frameTimeChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, (1.0f / 60.0f) * 1000.0f);
+			frameTimeChartTexture->UploadData(frameTimeChart.GetPixels());
+
+			memoryChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, 256.0f);
+			memoryChartTexture->UploadData(memoryChart.GetPixels());
 		}
 
 		camera->Follow(entityManager->getEntityPos("player"));
@@ -104,13 +111,25 @@ void Application::Start()
 		this->entityManager->update((float)deltaTime);
 		//this->entityManager->handleCollision();
 
-		m_graphicsEngine->Run((float)deltaTime);
+		m_graphicsEngine->UpdateScene((float)deltaTime);
+		m_graphicsEngine->DrawScene();
+		m_graphicsEngine->Begin2D();
+		
+		if (m_showCharts) {
+			m_graphicsEngine->Draw2DTexture(frameTimeChartTexture, 0, 0);
+			m_graphicsEngine->Draw2DTexture(memoryChartTexture, 0, frameTimeChart.GetHeight() + 6);
+		}
+
+		m_graphicsEngine->End2D();
+		m_graphicsEngine->Present();
 
 		m_soundEngine->Update((float)deltaTime);
 
 		m_window->PumpMessages();
 	}
 
+	m_graphicsEngine->DeleteTexture2D(memoryChartTexture);
+	m_graphicsEngine->DeleteTexture2D(frameTimeChartTexture);
 	delete levelHandler;
 	DestroyCameraController(camera);
 	delete entityManager;
@@ -170,6 +189,9 @@ void Application::OnKeyDown(unsigned short key)
 	case VK_ESCAPE:
 		m_inputHandler->SetMouseCapture(false);
 		m_window->SetCursorVisibility(true);
+		break;
+	case 'Z':
+		m_showCharts = !m_showCharts;
 		break;
 	default:
 		break;
