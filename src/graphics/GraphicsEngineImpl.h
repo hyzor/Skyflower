@@ -22,17 +22,24 @@
 #include "GraphicsEngine.h"
 #include "InstanceImpl.h"
 
+#include "DeferredBuffers.h"
+#include "OrthoWindow.h"
+
+const float zNear = 1.0f;
+const float zFar = 10000.0f;
+
 class GraphicsEngineImpl : public GraphicsEngine
 {
 public:
 	GraphicsEngineImpl();
 	~GraphicsEngineImpl();
 
-	bool Init(HWND hWindow, int width, int height, const std::string &resourceDir);
+	bool Init(HWND hWindow, UINT width, UINT height, const std::string &resourceDir);
 	void Run(float dt);
 
 	void DrawScene();
 	void UpdateScene(float dt);
+	void RenderSceneToTexture();
 
 	ModelInstance* CreateInstance(std::string file);
 	ModelInstance* CreateInstance(std::string file, Vec3 pos);
@@ -42,7 +49,7 @@ public:
 	AnimatedInstance* CreateAnimatedInstance(std::string file);
 	void DeleteInstance(AnimatedInstance* ai);
 
-	void OnResize();
+	void OnResize(UINT width, UINT height);
 
 private:
 	Direct3D* mD3D;
@@ -63,6 +70,7 @@ private:
 
 	std::vector<PointLight> mPointLights;
 	std::vector<DirectionalLight> mDirLights;
+	std::vector<SpotLight> mSpotLights;
 
 	Sky* mSky;
 	ShadowMap* mShadowMap;
@@ -71,6 +79,9 @@ private:
 
 	SpriteBatch* mSpriteBatch;
 	SpriteFont* mSpriteFont;
+
+	DeferredBuffers* mDeferredBuffers;
+	OrthoWindow* mOrthoWindow;
 };
 
 #endif

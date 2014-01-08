@@ -11,10 +11,11 @@ class DLL_API GraphicsEngine
 public:
 	virtual ~GraphicsEngine() {}
 
-	virtual bool Init(HWND hWindow, int width, int height, const std::string &resourceDir) = 0;
+	virtual bool Init(HWND hWindow, UINT width, UINT height, const std::string &resourceDir) = 0;
 	virtual void Run(float dt) = 0;
 	virtual void DrawScene() = 0;
 	virtual void UpdateScene(float dt) = 0;
+	virtual void OnResize(UINT width, UINT height) = 0;
 
 	virtual ModelInstance* CreateInstance(std::string file) = 0;
 	virtual ModelInstance* CreateInstance(std::string file, Vec3 pos) = 0;

@@ -25,6 +25,7 @@
     <ClCompile Include="src\graphics\CameraControllImpl.cpp" />
     <ClCompile Include="src\graphics\Character.cpp" />
     <ClCompile Include="src\graphics\d3dUtilities.cpp" />
+    <ClCompile Include="src\graphics\DeferredBuffers.cpp" />
     <ClCompile Include="src\graphics\Direct3D.cpp" />
     <ClCompile Include="src\graphics\GenericMesh.cpp" />
     <ClCompile Include="src\graphics\GenericModel.cpp" />
@@ -36,6 +37,7 @@
     <ClCompile Include="src\graphics\GraphicsEngineImpl.cpp" />
     <ClCompile Include="src\graphics\InstanceImpl.cpp" />
     <ClCompile Include="src\graphics\MathHelper.cpp" />
+    <ClCompile Include="src\graphics\OrthoWindow.cpp" />
     <ClCompile Include="src\graphics\RenderStates.cpp" />
     <ClCompile Include="src\graphics\ShaderHandler.cpp" />
     <ClCompile Include="src\graphics\Shadowmap.cpp" />
@@ -51,6 +53,7 @@
     <ClInclude Include="src\graphics\CameraControllImpl.h" />
     <ClInclude Include="src\graphics\Character.h" />
     <ClInclude Include="src\graphics\d3dUtilities.h" />
+    <ClInclude Include="src\graphics\DeferredBuffers.h" />
     <ClInclude Include="src\graphics\Direct3D.h" />
     <ClInclude Include="src\graphics\GenericMesh.h" />
     <ClInclude Include="src\graphics\GenericModel.h" />
@@ -64,6 +67,7 @@
     <ClInclude Include="src\graphics\InstanceImpl.h" />
     <ClInclude Include="src\graphics\LightDef.h" />
     <ClInclude Include="src\graphics\MathHelper.h" />
+    <ClInclude Include="src\graphics\OrthoWindow.h" />
     <ClInclude Include="src\graphics\RenderStates.h" />
     <ClInclude Include="src\graphics\ShaderHandler.h" />
     <ClInclude Include="src\graphics\Shadowmap.h" />
@@ -73,6 +77,18 @@
     <ClInclude Include="src\graphics\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="src\graphics\Shaders\BasicDeferredPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\BasicDeferredSkinnedPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\BasicDeferredSkinnedVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\BasicDeferredVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+    </FxCompile>
     <FxCompile Include="src\graphics\Shaders\BasicPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
@@ -84,6 +100,12 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\LightDeferredPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\LightDeferredVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
     </FxCompile>
     <FxCompile Include="src\graphics\Shaders\NormalMapPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
@@ -129,7 +151,9 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\graphics\Shaders\LightDef.hlsli" />
+    <None Include="src\graphics\Shaders\LightDef.hlsli">
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9B38121D-8D9E-45A3-AEE4-483D762F930F}</ProjectGuid>

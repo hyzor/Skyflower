@@ -35,7 +35,7 @@ public:
 	// Bounding box
 	DirectX::BoundingBox boundingBox;
 
-	Vertex::Basic32* GetVertex(int index);
+	Vertex::PosNormalTex* GetVertex(int index);
 	int GetVertexCount();
 
 	//

@@ -12,13 +12,11 @@
 #include "RenderStates.h"
 #include "MathHelper.h"
 
-using namespace DirectX;
+#define MAX_DIR_LIGHTS 4
+#define MAX_POINT_LIGHTS 16
+#define MAX_SPOT_LIGHTS 8
 
-enum ShaderType
-{
-	VERTEXSHADER = 0,
-	PIXELSHADER
-};
+using namespace DirectX;
 
 // Shader interface
 // This shader object contains pointers to loaded compiled shaders and handles the
@@ -26,12 +24,8 @@ enum ShaderType
 class IShader
 {
 public:
-	//IShader();
-	//virtual ~IShader();
-
 	virtual bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout) = 0;
 	virtual bool SetActive(ID3D11DeviceContext* dc) = 0;
-	//virtual void UpdateCBuffers() = 0;
 
 	const ID3D11VertexShader* GetVertexShader() { return mVertexShader; }
 	const ID3D11PixelShader* GetPixelShader() { return mPixelShader; }
@@ -123,10 +117,8 @@ public:
 
 	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
 	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
-	//bool SetActive(ID3D11DeviceContext* dc) { return false; }
 	bool SetActive(ID3D11DeviceContext* dc);
 
-	//void SetWorldViewProj(XMFLOAT4X4 world, XMFLOAT4X4 view, XMFLOAT4X4 projection);
 	void SetWorldViewProjTex(ID3D11DeviceContext* dc,
 		XMMATRIX& world,
 		XMMATRIX& viewProj,
@@ -140,6 +132,7 @@ public:
 
 	void SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, PointLight pointLights[]);
 	void SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DirectionalLight dirLights[]);
+	void SetSpotLights(ID3D11DeviceContext* dc, UINT numSpotLights, SpotLight spotLights[]);
 
 	void UpdatePerObj(ID3D11DeviceContext* dc);
 	void UpdatePerFrame(ID3D11DeviceContext* dc);
@@ -159,29 +152,28 @@ private:
 
 	struct PS_CPEROBJBUFFER
 	{
-// 		XMMATRIX world;
-// 		XMMATRIX worldViewProj;
-// 		XMMATRIX worldViewProjTex;
-// 		XMMATRIX worldInvTranspose;
-// 		XMMATRIX texTransform;
 		Material mat;
-		//XMFLOAT3 gEyePosW;
-		//ID3D11ShaderResourceView* diffuseMap;
 	};
 
 	struct PS_CPERFRAMEBUFFER
 	{
-		PointLight pointLights[16];
+		PointLight pointLights[MAX_POINT_LIGHTS];
 
 		// 16 bytes
 		UINT numPointLights;
 		int padding2, padding3, padding4;
 
-		DirectionalLight dirLights[4];
+		DirectionalLight dirLights[MAX_DIR_LIGHTS];
 
 		// 16 bytes
 		UINT numDirLights;
 		int padding5, padding6, padding7;
+
+		SpotLight spotLights[MAX_SPOT_LIGHTS];
+
+		// 16 bytes
+		UINT numSpotLights;
+		int padding8, padding9, padding10;
 
 		// Forms into a 4D vector
 		XMFLOAT3 gEyePosW;
@@ -190,16 +182,16 @@ private:
 
 	struct BUFFERCACHE
 	{
-		VS_CPEROBJBUFFER vsBuffer;
-		PS_CPEROBJBUFFER psBuffer;
+		VS_CPEROBJBUFFER vsPerObjBuffer;
+		PS_CPEROBJBUFFER psPerObjBuffer;
 		PS_CPERFRAMEBUFFER psPerFrameBuffer;
 	};
 
 	struct BUFFERCACHE mBufferCache;
 
-	// VS
-	ID3D11Buffer* vs_cBuffer;
-	VS_CPEROBJBUFFER vs_cBufferVariables;
+	// VS - per object
+	ID3D11Buffer* vs_cPerObjBuffer;
+	VS_CPEROBJBUFFER vs_cPerObjBufferVariables;
 
 	// PS - per object
 	ID3D11Buffer* ps_cPerObjBuffer;
@@ -218,7 +210,7 @@ public:
 	SkyShader();
 	~SkyShader();
 
-	// Overload new and delete, because this class contains XMMATRIX (16 byte alignment)
+	// Override new and delete, because this class contains XMMATRIX (16 byte alignment)
 	void* operator new (size_t size)
 	{
 		void* p = _aligned_malloc(size, 16);
@@ -236,7 +228,6 @@ public:
 	}
 
 	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
-	//bool SetActive(ID3D11DeviceContext* dc) { return false; }
 	bool SetActive(ID3D11DeviceContext* dc);
 
 	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
@@ -263,16 +254,16 @@ private:
 
 	struct BUFFERCACHE mBufferCache;
 };
-#pragma endregion SkyShaderEnd
+#pragma endregion SkyShader
 
-#pragma region NormalMappedSkinnedShader
+#pragma region NormalMappedSkinned
 class NormalMappedSkinned : public IShader
 {
 public:
 	NormalMappedSkinned();
 	~NormalMappedSkinned();
 
-	// Overload new and delete, because this class contains XMMATRIX (16 byte alignment)
+	// Override new and delete, because this class contains XMMATRIX (16 byte alignment)
 	void* operator new (size_t size)
 	{
 		void* p = _aligned_malloc(size, 16);
@@ -291,10 +282,8 @@ public:
 
 	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
 	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
-	//bool SetActive(ID3D11DeviceContext* dc) { return false; }
 	bool SetActive(ID3D11DeviceContext* dc);
 
-	//void SetWorldViewProj(XMFLOAT4X4 world, XMFLOAT4X4 view, XMFLOAT4X4 projection);
 	void SetWorldViewProjTex(ID3D11DeviceContext* dc,
 		XMMATRIX& world,
 		XMMATRIX& viewProj,
@@ -307,6 +296,7 @@ public:
 
 	void SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, PointLight pointLights[]);
 	void SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DirectionalLight dirLights[]);
+	void SetSpotLights(ID3D11DeviceContext* dc, UINT numSpotLights, SpotLight spotLights[]);
 
 	void SetBoneTransforms(ID3D11DeviceContext* dc, const XMFLOAT4X4 boneTransforms[], UINT numTransforms);
 
@@ -339,17 +329,23 @@ private:
 
 	struct PS_CPERFRAMEBUFFER
 	{
-		PointLight pointLights[16];
+		PointLight pointLights[MAX_POINT_LIGHTS];
 
 		// 16 bytes
 		UINT numPointLights;
 		int padding2, padding3, padding4;
 
-		DirectionalLight dirLights[4];
+		DirectionalLight dirLights[MAX_DIR_LIGHTS];
 
 		// 16 bytes
 		UINT numDirLights;
 		int padding5, padding6, padding7;
+
+		SpotLight spotLights[MAX_SPOT_LIGHTS];
+
+		// 16 bytes
+		UINT numSpotLights;
+		int padding8, padding9, padding10;
 
 		// Forms into a 4D vector
 		XMFLOAT3 gEyePosW;
@@ -366,11 +362,11 @@ private:
 
 	struct BUFFERCACHE mBufferCache;
 
-	// VS
+	// VS - per object
 	ID3D11Buffer* vs_cBuffer;
 	VS_CPEROBJBUFFER vs_cBufferVariables;
 
-	// VS skinned
+	// VS skinned data
 	ID3D11Buffer* vs_cSkinnedBuffer;
 	VS_CSKINNEDBUFFER vs_cSkinnedBufferVariables;
 
@@ -382,7 +378,266 @@ private:
 	ID3D11Buffer* ps_cPerFrameBuffer;
 	PS_CPERFRAMEBUFFER ps_cPerFrameBufferVariables;
 };
-#pragma endregion NormalMappedSkinnedShader
+#pragma endregion NormalMappedSkinned
+
+#pragma region BasicDeferredShader
+class BasicDeferredShader : public IShader
+{
+public:
+	BasicDeferredShader();
+	~BasicDeferredShader();
+
+	// Overload new and delete, because this class contains XMMATRIX (16 byte alignment)
+	void* operator new (size_t size)
+	{
+		void* p = _aligned_malloc(size, 16);
+
+		if (!p)
+			throw std::bad_alloc();
+
+		return p;
+	}
+
+	void operator delete (void* p)
+	{
+		BasicDeferredShader* ptr = static_cast<BasicDeferredShader*>(p);
+		_aligned_free(p);
+	}
+
+	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
+	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+	bool SetActive(ID3D11DeviceContext* dc);
+
+	void SetWorldViewProjTex(XMMATRIX& world,
+		XMMATRIX& viewProj,
+		XMMATRIX& tex);
+
+	void SetMaterial(const Material& mat);
+	void SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+
+	void UpdatePerObj(ID3D11DeviceContext* dc);
+
+private:
+	void Update(ID3D11DeviceContext* dc) { ; }
+
+	struct VS_CPEROBJBUFFER
+	{
+		XMMATRIX world;
+		XMMATRIX worldInvTranspose;
+		XMMATRIX worldViewProj;
+		//XMMATRIX worldViewProjTex;
+		XMMATRIX texTransform;
+	};
+
+	struct PS_CPEROBJBUFFER
+	{
+		Material mat;
+	};
+
+	struct BUFFERCACHE
+	{
+		VS_CPEROBJBUFFER vsPerObjBuffer;
+		PS_CPEROBJBUFFER psPerObjBuffer;
+	};
+
+	struct BUFFERCACHE mBufferCache;
+
+	// VS - per object
+	ID3D11Buffer* vs_cPerObjBuffer;
+	VS_CPEROBJBUFFER vs_cPerObjBufferVariables;
+
+	// PS - per object
+	ID3D11Buffer* ps_cPerObjBuffer;
+	PS_CPEROBJBUFFER ps_cPerObjBufferVariables;
+};
+#pragma endregion BasicDeferredShader
+
+#pragma region BasicDeferredSkinnedShader
+class BasicDeferredSkinnedShader : public IShader
+{
+public:
+	BasicDeferredSkinnedShader();
+	~BasicDeferredSkinnedShader();
+
+	// Overload new and delete, because this class contains XMMATRIX (16 byte alignment)
+	void* operator new (size_t size)
+	{
+		void* p = _aligned_malloc(size, 16);
+
+		if (!p)
+			throw std::bad_alloc();
+
+		return p;
+	}
+
+	void operator delete (void* p)
+	{
+		BasicDeferredSkinnedShader* ptr = static_cast<BasicDeferredSkinnedShader*>(p);
+		_aligned_free(p);
+	}
+
+	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
+	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+	bool SetActive(ID3D11DeviceContext* dc);
+
+	void SetWorldViewProjTex(XMMATRIX& world,
+		XMMATRIX& viewProj,
+		XMMATRIX& tex);
+
+	void SetMaterial(const Material& mat);
+	void SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+
+	void SetBoneTransforms(const XMFLOAT4X4 boneTransforms[], UINT numTransforms);
+
+	void UpdatePerObj(ID3D11DeviceContext* dc);
+
+private:
+	void Update(ID3D11DeviceContext* dc) { ; }
+
+	struct VS_CPEROBJBUFFER
+	{
+		XMMATRIX world;
+		XMMATRIX worldInvTranspose;
+		XMMATRIX worldViewProj;
+		//XMMATRIX worldViewProjTex;
+		XMMATRIX texTransform;
+	};
+
+	struct VS_CSKINNEDBUFFER
+	{
+		XMMATRIX boneTransforms[96];
+		UINT numBoneTransforms;
+		int padding, padding2, padding3;
+	};
+
+	struct PS_CPEROBJBUFFER
+	{
+		Material mat;
+	};
+
+	struct BUFFERCACHE
+	{
+		VS_CPEROBJBUFFER vsPerObjBuffer;
+		VS_CSKINNEDBUFFER vsSkinnedBuffer;
+		PS_CPEROBJBUFFER psPerObjBuffer;
+	};
+
+	struct BUFFERCACHE mBufferCache;
+
+	// VS - per object
+	ID3D11Buffer* vs_cPerObjBuffer;
+	VS_CPEROBJBUFFER vs_cPerObjBufferVariables;
+
+	// VS - skinned data
+	ID3D11Buffer* vs_cSkinnedBuffer;
+	VS_CSKINNEDBUFFER vs_cSkinnedBufferVariables;
+
+	// PS - per obj
+	ID3D11Buffer* ps_cPerObjBuffer;
+	PS_CPEROBJBUFFER ps_cPerObjBufferVariables;
+};
+#pragma endregion BasicDeferredSkinnedShader
+
+#pragma region LightDeferredShader
+class LightDeferredShader : public IShader
+{
+public:
+	LightDeferredShader();
+	~LightDeferredShader();
+
+	// Overload new and delete, because this class contains XMMATRIX (16 byte alignment)
+	void* operator new (size_t size)
+	{
+		void* p = _aligned_malloc(size, 16);
+
+		if (!p)
+			throw std::bad_alloc();
+
+		return p;
+	}
+
+	void operator delete (void* p)
+	{
+		LightDeferredShader* ptr = static_cast<LightDeferredShader*>(p);
+		_aligned_free(p);
+	}
+
+	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
+	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+	bool SetActive(ID3D11DeviceContext* dc);
+
+	void SetWorldViewProj(XMMATRIX& world, XMMATRIX& view, XMMATRIX& proj);
+	void SetEyePosW(XMFLOAT3 eyePosW);
+
+	void SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, PointLight pointLights[]);
+	void SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DirectionalLight dirLights[]);
+	void SetSpotLights(ID3D11DeviceContext* dc, UINT numSpotLights, SpotLight spotLights[]);
+
+	void SetDiffuseTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetNormalTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetSpecularTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetPositionTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+
+	void UpdatePerObj(ID3D11DeviceContext* dc);
+	void UpdatePerFrame(ID3D11DeviceContext* dc);
+
+private:
+	void Update(ID3D11DeviceContext* dc) { ; }
+
+	struct VS_CPEROBJBUFFER
+	{
+		XMMATRIX worldViewProj;
+	};
+
+	struct PS_CPERFRAMEBUFFER
+	{
+		PointLight pointLights[MAX_POINT_LIGHTS];
+
+		// 16 bytes
+		UINT numPointLights;
+		int padding2, padding3, padding4;
+
+		DirectionalLight dirLights[MAX_DIR_LIGHTS];
+
+		// 16 bytes
+		UINT numDirLights;
+		int padding5, padding6, padding7;
+
+		SpotLight spotLights[MAX_SPOT_LIGHTS];
+
+		// 16 bytes
+		UINT numSpotLights;
+		int padding8, padding9, padding10;
+
+		// Forms into a 4D vector
+		XMFLOAT3 gEyePosW;
+		float padding;
+	};
+
+	struct BUFFERCACHE
+	{
+		VS_CPEROBJBUFFER vsPerObjBuffer;
+		PS_CPERFRAMEBUFFER psPerFrameBuffer;
+	};
+
+	struct BUFFERCACHE mBufferCache;
+
+	// VS - per object
+	ID3D11Buffer* vs_cPerObjBuffer;
+	VS_CPEROBJBUFFER vs_cPerObjBufferVariables;
+
+	// PS - per object
+	ID3D11Buffer* ps_cPerFrameBuffer;
+	PS_CPERFRAMEBUFFER ps_cPerFrameBufferVariables;
+};
+#pragma endregion LightDeferredShader
+
+#pragma region ShaderHandler
+enum ShaderType
+{
+	VERTEXSHADER = 0,
+	PIXELSHADER
+};
 
 struct Shader
 {
@@ -412,6 +667,9 @@ public:
 	SkyShader* mSkyShader;
 	NormalMappedSkinned* mNormalSkinned;
 	ShadowShader* mShadowShader;
+	BasicDeferredShader* mBasicDeferredShader;
+	BasicDeferredSkinnedShader* mBasicDeferredSkinnedShader;
+	LightDeferredShader* mLightDeferredShader;
 
 private:
 
@@ -425,5 +683,6 @@ private:
 
 	std::vector<Shader*> mShaders;
 };
+#pragma endregion ShaderHandler
 
 #endif

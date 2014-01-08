@@ -4,6 +4,7 @@
 
 #define MAX_POINT_LIGHTS 16
 #define MAX_DIR_LIGHTS 4
+#define MAX_SPOT_LIGHTS 8
 
 // Suffixes: L (Local), W (World), V (View), H (Homogeneous)
 
@@ -110,6 +111,57 @@ void ComputePointLight(
 	specular *= atten;
 }
 
+void ComputePointLight_Deferred(
+	float4 specular,		// Material (specular)
+	PointLight light,	// Point light source
+	float3 pos,			// Surface position
+	float3 normal,		// Surface normal
+	float3 toEye,		// Surface point being lit to the eye
+
+	out float4 diffuseOut,
+	out float4 specularOut)
+{
+	// Initialize outputs
+	//ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	diffuseOut = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	specularOut = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+	// Define light vector (Direction from surface point to point light source)
+	float3 lightVec = light.Position - pos;
+
+	// Calculate distance from surface to light
+	float dist = length(lightVec);
+
+	// Test if out of range
+	if (dist > light.Range)
+		return;
+
+	// Normalize light vector
+	lightVec /= dist;
+
+	// Ambient
+	//ambient = mat.Ambient * light.Ambient;
+
+	// Begin calculating diffuse and specular
+	float diffuseFactor = dot(lightVec, normal);
+
+	[flatten]
+	if (diffuseFactor > 0.0f)
+	{
+		float3 v = reflect(-lightVec, normal);
+		float specFactor = pow(max(dot(v, toEye), 0.0f), specular.w);
+
+		diffuseOut = diffuseFactor * light.Diffuse;
+		specularOut = specFactor * specular * light.Specular;
+	}
+
+	// Attenuate
+	float atten = 1.0f / dot(light.Attenuation, float3(1.0f, dist, dist*dist));
+
+	diffuseOut *= atten;
+	specularOut *= atten;
+}
+
 //=============================================================================
 // Directional light
 //=============================================================================
@@ -143,6 +195,38 @@ void ComputeDirectionalLight(
 
 		diffuse = diffuseFactor * mat.Diffuse * light.Diffuse;
 		specular = specFactor * mat.Specular * light.Specular;
+	}
+}
+
+void ComputeDirectionalLight_Deferred(
+	float4 specular,
+	DirectionalLight light,
+	float3 normal,
+	float3 toEye,
+
+	out float4 diffuseOut,
+	out float4 specularOut)
+{
+	// Initialize outputs
+	//ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	diffuseOut = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	specularOut = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+	// Light vector aims opposite the direction the light rays travel
+	float3 lightVec = -light.Direction;
+
+	//ambient = mat.Ambient * light.Ambient;
+
+	float diffuseFactor = dot(lightVec, normal);
+
+	[flatten]
+	if (diffuseFactor > 0.0f)
+	{
+		float3 v = reflect(-lightVec, normal);
+		float specFactor = pow(max(dot(v, toEye), 0.0f), specular.w);
+
+		diffuseOut = diffuseFactor * light.Diffuse;
+		specularOut = specFactor * specular * light.Specular;
 	}
 }
 
@@ -203,6 +287,62 @@ void ComputeSpotLight(
 	ambient *= spot;
 	diffuse *= attenuation;
 	specular *= attenuation;
+}
+
+void ComputeSpotLight_Deferred(
+	float4 specular,
+	SpotLight light,
+	float3 pos,
+	float3 normal,
+	float3 toEye,
+
+	out float4 ambientOut,
+	out float4 diffuseOut,
+	out float4 specularOut)
+{
+	// Initialize outputs.
+	ambientOut = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	diffuseOut = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	specularOut = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+	// Vector from surface to light
+	float3 lightVec = light.Position - pos;
+
+		// Distance from surface to light
+		float dist = length(lightVec);
+
+	// If distance is further than lights range, return
+	if (dist > light.Range)
+		return;
+
+	// Normalize light vector
+	lightVec /= dist;
+
+	// Ambient
+	ambientOut = light.Ambient;
+
+	// Add diffuse and specular
+	float diffuseFactor = dot(lightVec, normal);
+
+	[flatten]
+	if (diffuseFactor > 0.0f)
+	{
+		float3 v = reflect(-lightVec, normal);
+			float specFactor = pow(max(dot(v, toEye), 0.0f), specular.w);
+
+		diffuseOut = diffuseFactor * light.Diffuse;
+		specularOut = specFactor * specular * light.Specular;
+	}
+
+	// Scale by spotlight factor
+	float spot = pow(max(dot(-lightVec, light.Direction), 0.0f), light.Spot);
+
+	// Scale by attenuation factor
+	float attenuation = spot / dot(light.Attenuation, float3(1.0f, dist, dist*dist));
+
+	ambientOut *= spot;
+	diffuseOut *= attenuation;
+	specularOut *= attenuation;
 }
 
 //====================================================================================

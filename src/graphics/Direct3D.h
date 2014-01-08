@@ -9,8 +9,10 @@ public:
 	Direct3D(void);
 	~Direct3D(void);
 
-	bool Init(HWND* mainWindow, int& _clientWidth, int& _clientHeight);
-	void OnResize();
+	//bool Init(HWND* mainWindow, int& _clientWidth, int& _clientHeight);
+	bool Init(HWND* mainWindow, UINT width, UINT height);
+	//void OnResize();
+	void OnResize(UINT width, UINT height);
 	void Shutdown();
 
 	ID3D11Device* GetDevice() const;
