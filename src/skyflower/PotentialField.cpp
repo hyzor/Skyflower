@@ -49,7 +49,7 @@ Field* PotentialField::CreateField(std::string file, Vec3 pos)
 	Vec3 vMin = Vec3::Max();
 	Vec3 vMax = Vec3::Min();
 	center /= count;
-	float radius = 9999999999;
+	float radius = 9999999999.0f;
 	for (unsigned int i = 0; i < positions.size(); i++)
 	{
 		//calculate sphere
