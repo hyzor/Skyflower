@@ -9,29 +9,22 @@
 #include "physics/Physics.h"
 #include "Application.h"
 #include "ScriptHandler.h"
+#include "LevelHandler.h"
 
 //int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 int main(int argc, const char *argv[])
 {
+	// Check for memory leaks for debug builds
+#if defined(DEBUG) | defined(_DEBUG)
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+
 	Application app;
-
-
-	// Graphics engine
-	//GraphicsEngine* gEngine = CreateGraphicsEngine();
-
-	//if (!gEngine->Init(app.m_window->m_window))
-	//	return 0;
-
-	//std::cout << "GraphicsEngine started\n";
-	//gEngine->Run();
-
 
 	/*CollisionInstance* ci = Collision::GetInstance()->CreateCollisionInstance("TestBlock", Vec3());
 	if (ci->Test(r) > 0)
 		std::cout << "Model collision! " << ci->Test(r) << std::endl;
 	Collision::GetInstance()->DeleteCollisionInstance(ci);*/
-
-
 
 	/*PotentialField pf;
 	pf.CreateField(200, 5, Vec3(10, 10, 0));
@@ -87,15 +80,11 @@ int main(int argc, const char *argv[])
 	}
 	*/
 
-
-
-
-
-
 	app.Start();
 
 
-	//delete singleton
+	//delete singletons
+	//delete levelHandler;
 	delete Collision::GetInstance();
 	delete ScriptHandler::GetInstance();
 

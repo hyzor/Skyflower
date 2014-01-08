@@ -9,6 +9,7 @@
 #include "physics/Collision.h"
 #include "Sound/SoundEngine.h"
 #include "EntityManager.h"
+#include "LevelHandler.h"
 
 using namespace Cistron;
 
@@ -38,7 +39,6 @@ public: // InputListener
 private:
 	Window *m_window;
 	InputHandler *m_inputHandler;
-
 	GraphicsEngine *m_graphicsEngine;
 	SoundEngine *m_soundEngine;
 	EntityManager* entityManager;

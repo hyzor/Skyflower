@@ -2,6 +2,8 @@
 
 #include "AudioResource.h"
 
+static bool forceSineWave = false;
+
 static struct MemoryMappedFile *MemoryMapFile(const char *file)
 {
 	HANDLE fileHandle = CreateFile(file, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -52,6 +54,31 @@ static void FreeMemoryMappedFile(struct MemoryMappedFile *mappedFile)
 
 struct AudioResource *CreateAudioResource(const std::string &file)
 {
+	if (forceSineWave) {
+		struct AudioResource *resource = new AudioResource;
+		resource->decoder = &audioDecoderSineWave;
+		resource->file = NULL;
+
+		assert(resource->decoder->init(resource));
+
+		assert(resource->info.totalSamples > 0);
+		assert(resource->info.samplesPerBuffer > 0);
+		assert(resource->info.channels > 0);
+		assert(resource->info.sampleRate > 0);
+		assert(resource->info.bitDepth > 0);
+
+		resource->info.duration = ((float)resource->info.totalSamples / resource->info.channels) / resource->info.sampleRate;
+		resource->info.bufferCount = (unsigned int)(resource->info.totalSamples / resource->info.samplesPerBuffer);
+
+		if (resource->info.totalSamples % resource->info.samplesPerBuffer > 0) {
+			resource->info.bufferCount++;
+		}
+
+		printf("duration=%.2f, bufferCount=%i\n", resource->info.duration, resource->info.bufferCount);
+
+		return resource;
+	}
+
 	struct MemoryMappedFile *mappedFile = MemoryMapFile(file.c_str());
 
 	if (!mappedFile) {
@@ -67,7 +94,7 @@ struct AudioResource *CreateAudioResource(const std::string &file)
 	for (int i = 0; i < AudioDecoderCount; i++) {
 		if (audioDecoders[i].init(resource)) {
 			success = true;
-			resource->decoder = (AudioDecoders)i;
+			resource->decoder = &audioDecoders[i];
 			break;
 		}
 	}
@@ -94,6 +121,8 @@ struct AudioResource *CreateAudioResource(const std::string &file)
 		resource->info.bufferCount++;
 	}
 
+	//printf("duration=%.2f, bufferCount=%i\n", resource->info.duration, resource->info.bufferCount);
+
 	return resource;
 }
 
@@ -103,8 +132,11 @@ void DestroyAudioResource(struct AudioResource *resource)
 		return;
 	}
 
-	audioDecoders[resource->decoder].release(resource);
+	resource->decoder->release(resource);
 
-	FreeMemoryMappedFile(resource->file);
+	if (resource->file) {
+		FreeMemoryMappedFile(resource->file);
+	}
+
 	delete resource;
 }

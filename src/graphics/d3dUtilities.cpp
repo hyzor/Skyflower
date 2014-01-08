@@ -3,6 +3,7 @@
 //==============================================================
 // D3D functions
 //==============================================================
+/*
 ID3D11ShaderResourceView* d3dHelper::CreateTexture2DArraySRV(
 	ID3D11Device* device, ID3D11DeviceContext* context,
 	std::vector<std::wstring>& filenames,
@@ -113,6 +114,7 @@ ID3D11ShaderResourceView* d3dHelper::CreateTexture2DArraySRV(
 
 	return texArraySRV;
 }
+*/
 
 ID3D11ShaderResourceView* d3dHelper::CreateRandomTexture1DSRV(ID3D11Device* device)
 {
@@ -148,7 +150,8 @@ ID3D11ShaderResourceView* d3dHelper::CreateRandomTexture1DSRV(ID3D11Device* devi
 	texDesc.ArraySize = 1;
 
 	ID3D11Texture1D* randomTex = 0;
-	HR(device->CreateTexture1D(&texDesc, &initData, &randomTex));
+	//HR(device->CreateTexture1D(&texDesc, &initData, &randomTex));
+	device->CreateTexture1D(&texDesc, &initData, &randomTex);
 
 	//
 	// Create the resource view.
@@ -160,7 +163,8 @@ ID3D11ShaderResourceView* d3dHelper::CreateRandomTexture1DSRV(ID3D11Device* devi
 	viewDesc.Texture1D.MostDetailedMip = 0;
 
 	ID3D11ShaderResourceView* randomTexSRV = 0;
-	HR(device->CreateShaderResourceView(randomTex, &viewDesc, &randomTexSRV));
+	//HR(device->CreateShaderResourceView(randomTex, &viewDesc, &randomTexSRV));
+	device->CreateShaderResourceView(randomTex, &viewDesc, &randomTexSRV);
 
 	ReleaseCOM(randomTex);
 

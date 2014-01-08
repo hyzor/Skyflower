@@ -38,7 +38,7 @@ private:
 	float targetYaw;
 	float rot;
 	float rotx;
-
+	float targetY;
 	Vec3 lookat;
 };
 

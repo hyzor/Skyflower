@@ -12,5 +12,6 @@
 			<Listener />
 			<Footsteps />
 			<Messenger />
+			<Health maxHP = "100" />
 	</Entity>
 </root>

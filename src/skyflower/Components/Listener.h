@@ -61,7 +61,8 @@ public:
 		assert(owner);
 
 		m_listener = owner->getModules()->sound->CreateListener();
-		owner->getModules()->sound->SetActiveListener(m_listener);
+
+		requestMessage("ActivateListener", &ListenerComponent::activateListener);
 	}
 
 	void removeFromEntity()
@@ -72,9 +73,6 @@ public:
 
 		owner->getModules()->sound->DestroyListener(m_listener);
 	}
-
-private:
-	Listener *m_listener;
 
 	void update(float deltaTime)
 	{
@@ -89,6 +87,20 @@ private:
 		m_listener->SetPosition(&position.X);
 		m_listener->SetOrientation(forward, up);
 	}
+
+	void activateListener(Message const& msg)
+	{
+		Entity *owner = getOwner();
+
+		assert(owner);
+
+		owner->getModules()->sound->SetActiveListener(m_listener);
+
+		printf("activated listener\n");
+	}
+
+private:
+	Listener *m_listener;
 };
 
 #endif

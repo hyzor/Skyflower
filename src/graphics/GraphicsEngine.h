@@ -12,7 +12,7 @@ public:
 	virtual ~GraphicsEngine() {}
 
 	virtual bool Init(HWND hWindow, int width, int height, const std::string &resourceDir) = 0;
-	virtual int Run() = 0;
+	virtual void Run(float dt) = 0;
 	virtual void DrawScene() = 0;
 	virtual void UpdateScene(float dt) = 0;
 
@@ -25,9 +25,6 @@ public:
 
 
 	virtual CameraController *CreateCameraController() = 0;
-	//virtual Camera* GetCameraPtr() = 0;
-	//virtual bool HasDevice();
-	//virtual void GetFullscreenState(BOOL* fullscreenVariable);
 };
 
 DLL_API GraphicsEngine* CreateGraphicsEngine();

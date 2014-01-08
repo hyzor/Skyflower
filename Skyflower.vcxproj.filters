@@ -54,6 +54,9 @@
     <ClCompile Include="src\skyflower\InputHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\skyflower\LevelHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\skyflower\Application.h">
@@ -126,6 +129,15 @@
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\skyflower\Components\Trigger.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\Components\LUAScript.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\LevelHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\Components\Health.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>

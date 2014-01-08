@@ -47,6 +47,7 @@ void EntityManager::update(float deltaTime)
 		if ((*iter) != NULL)
 			(*iter)->update(deltaTime);
 	}
+	handleCollision();
 }
 
 // generate a unique request id or return one if it already exists
@@ -90,6 +91,15 @@ RequestId EntityManager::getExistingRequestId(ComponentRequestType type, string 
 EntityId EntityManager::createEntity(string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
 	float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated) {
 
+	vector<Entity*> temp;
+	for (unsigned int i = 0; i < fEntitys.size(); i++)
+	{
+		if (fEntitys.at(i) != NULL)
+		{
+			temp.push_back(fEntitys.at(i));
+		}
+	}
+	fEntitys = temp;
 	// create a new Entity
 	Entity *obj = new Entity(modules, fIdCounter, type, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, isAnimated);
 	//cout << "Created Entity " << fIdCounter << endl;
@@ -406,6 +416,7 @@ void EntityManager::destroyEntity(EntityId id) {
 	//cout << "Destroyed Entity " << id << endl;
 	delete fEntitys[id];
 	fEntitys[id] = 0;
+	fIdCounter--;
 }
 
 
@@ -1183,7 +1194,7 @@ bool EntityManager::loadXML2(string xmlFile)
 
 		//Creating the Player entity and adding it to the entitymanager
 		EntityId entity = this->createEntity(entityName, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, isAnimated);
-		
+
 		//Looping through all the components for Player-entity.
 		for (XMLElement* e = elem->FirstChildElement(); e != NULL; e = e->NextSiblingElement())
 		{
@@ -1267,6 +1278,11 @@ bool EntityManager::loadXML2(string xmlFile)
 				GravityComponent* m = new GravityComponent();
 				this->addComponent(entity, m);
 			}
+			else if (componentName == "AI")
+			{
+				AI* m = new AI();
+				this->addComponent(entity, m);
+			}
 			else if (componentName == "Listener")
 			{
 				ListenerComponent* m = new ListenerComponent();
@@ -1286,6 +1302,18 @@ bool EntityManager::loadXML2(string xmlFile)
 			{
 				Input* i = new Input();
 				this->addComponent(entity, i);
+			}
+			else if (componentName == "Health")
+			{
+				attr = e->Attribute("maxHP");
+				float maxHP = 0;
+				
+				if (attr != NULL)
+				{
+					maxHP = e->IntAttribute("maxHP");
+				}
+				Health* hp = new Health(maxHP);
+				this->addComponent(entity, hp);
 			}
 			else
 			{
@@ -1448,16 +1476,151 @@ void EntityManager::handleCollision()
 {
 	//cout << " " << endl;
 	for (int i = 0; i < this->fIdCounter; i++)
-	{
-		for (int j = i+1; j < this->fIdCounter; j++)
+	{		
+		
+		if (fEntitys[i]->hasComponents("Gravity"))
 		{
-			if (this->fEntitys[i]->collInst != nullptr && i != j && this->fEntitys[j]->collInst != nullptr)
+			Vec3 pos = fEntitys[i]->returnPos();
+			Ray feet = Ray(pos + Vec3(0, 5, 0), Vec3(0, -5, 0));
+			Ray xcol = Ray(pos + Vec3(-3, 3, 0), Vec3(6, 0, 0));
+			Ray zcol = Ray(pos + Vec3(0, 3, -3), Vec3(0, 0, 6));
+
+			/*Ray left = Ray(pos + Vec3(0, 3, 0), Vec3(10, 0, 0));
+			Ray back = Ray(pos + Vec3(0, 3, 0), Vec3(0, 0, 10));
+			Ray right = Ray(pos + Vec3(10, 3, 0), Vec3(10, 0, 0));
+			Ray front = Ray(pos + Vec3(0, 3, 0), Vec3(0, 0, 10));*/
+
+			float colfeet = 0;
+			/*float colleft = 0;
+			float colback = 0;
+			float colright = 0;
+			float colfront = 0;*/
+			float colx = 0;
+			float colz = 0;
+			for (int j = 0; j < this->fIdCounter; j++)
+			{
+				if (fEntitys[j]->collInst && i != j)
+				{
+					float t = fEntitys[j]->collInst->Test(feet);
+					if (t > 0)
+						colfeet = t;
+
+					/*t = fEntitys[j]->collInst->Test(left);
+					if (t > 0)
+						colleft = t;
+
+					t = fEntitys[j]->collInst->Test(back);
+					if (t > 0)
+						colback = t;
+
+					t = fEntitys[j]->collInst->Test(right);
+					if (t > 0)
+						colright = t;
+
+					t = fEntitys[j]->collInst->Test(front);
+					if (t > 0)
+						colfront = t;*/
+
+					t = fEntitys[j]->collInst->Test(xcol);
+					if (t > 0)
+						colx = t;
+
+					t = fEntitys[j]->collInst->Test(zcol);
+					if (t > 0)
+						colz = t;
+				}
+			}
+
+			if (colfeet) //om kollision flytta tillbaka
+			{
+				fEntitys[i]->updatePos(fEntitys[i]->returnPos() - Vec3(0.0f, (1 - colfeet)*feet.Dir.Y, 0.0f));
+				fEntitys[i]->physics->setVelocity(Vec3());
+				fEntitys[i]->physics->setJumping(false);
+			}
+
+			if (colx > 0.5f) //right
+				fEntitys[i]->updatePos(fEntitys[i]->returnPos() - xcol.Dir*(1 - colx));
+			else if (colx > 0) //left
+				fEntitys[i]->updatePos(fEntitys[i]->returnPos() + xcol.Dir*(colx));
+
+			if (colz > 0.5f) //front
+				fEntitys[i]->updatePos(fEntitys[i]->returnPos() - zcol.Dir*(1 - colz));
+			else if (colz > 0) //back
+				fEntitys[i]->updatePos(fEntitys[i]->returnPos() + zcol.Dir*(colz));
+
+
+			/*if (colleft > 0)
+				fEntitys[i]->updatePos(fEntitys[i]->returnPos() - left.Dir*(1 - colleft));
+			if (colback > 0)
+				fEntitys[i]->updatePos(fEntitys[i]->returnPos() - back.Dir*(1 - colback));
+			if (colright > 0)
+				fEntitys[i]->updatePos(fEntitys[i]->returnPos() - right.Dir*(1 - colright));*/
+			//if (colfront > 0)   
+				//fEntitys[i]->updatePos(fEntitys[i]->returnPos() - front.Dir*(1 - colfront));
+			//if (colback > 0)
+				//fEntitys[i]->updatePos(fEntitys[i]->returnPos() - Vec3(0.0f, 0.0f, (1 - colback)*back.Dir.Z));
+			//else if(colright > 0)
+				//fEntitys[i]->updatePos(fEntitys[i]->returnPos() - Vec3((1-colright)*right.Dir.X, 0.0f, 0.0f));
+		}
+		if (fEntitys[i]->hasComponents("AI"))
+		{
+			Vec3 pos = fEntitys[i]->returnPos();
+			Ray r = Ray(pos + Vec3(0, 15, 0), Vec3(0, -30, 0));
+
+			//find platform
+			Entity* col = nullptr;
+			for (int j = 0; j < this->fIdCounter; j++)
+			{
+				if (fEntitys[j]->collInst && i != j)
+				{
+					float t = fEntitys[j]->collInst->Test(r);
+					if (t > 0)
+					{
+						col = fEntitys[j];
+						break;
+					}
+				}
+			}
+
+			//find taget
+			Entity* p = nullptr;
+			for (int j = 0; j < this->fIdCounter; j++)
+			{
+				if (fEntitys[j]->getType() == "player")
+				{
+					p = fEntitys[j];
+					break;
+				}
+			}
+
+
+
+
+			Field* target = modules->potentialField->CreateField(-1000, 1000, p->returnPos());
+
+			Vec3 dir;
+			if(col)
+				dir = modules->potentialField->GetDir(pos, col->collInst, col->field);
+			else
+				dir = modules->potentialField->GetDir(pos, nullptr, nullptr);
+
+			
+			fEntitys[i]->updatePos(fEntitys[i]->returnPos() + dir);
+
+			modules->potentialField->DeleteField(target);
+
+		}
+
+		/*for (int j = i+1; j < this->fIdCounter; j++)
+		{
+			/*if (this->fEntitys[i]->collInst != nullptr && i != j && this->fEntitys[j]->collInst != nullptr)
 			{
 				if (this->fEntitys[i]->collInst->Test(this->fEntitys[j]->collInst))
 				{
 					//cout << "kollision!" << endl;
 				}
 			}
-		}
+			
+		}*/
 	}
 }

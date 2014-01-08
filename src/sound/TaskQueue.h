@@ -13,4 +13,12 @@ public:
 	virtual void WaitForTasks(bool cancelPendingTasks) = 0;
 };
 
+class Mutex
+{
+public:
+	virtual ~Mutex() {}
+	virtual void Lock() = 0;
+	virtual void Unlock() = 0;
+};
+
 #endif

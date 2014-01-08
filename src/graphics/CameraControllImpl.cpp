@@ -1,6 +1,10 @@
 #include "CameraControllImpl.h"
-#include <D3DX10math.h>
-D3DXMATRIX rotate;
+#include <DirectXMath.h>
+
+using namespace DirectX;
+
+XMMATRIX rotate;
+
 static float Lerp(float a, float b, float amount)
 {
 	return a + (b - a) * amount;
@@ -27,7 +31,10 @@ void CameraControllImpl::Update(float dt)
 	o.Y = sin(pitch);
 	o.X = cos(yaw)*cos(pitch);
 	o.Z = sin(yaw)*cos(pitch);
-
+	o = o.Normalize();
+	targetY = Lerp(targetY, target.Y, 2 * dt);
+	
+	target.Y = targetY;
 	camera->LookAt(target);
 	SetPosition(Vec3(target + (o*offset)));
 }

@@ -9,6 +9,9 @@
 
 #include "d3dUtilities.h"
 #include "Camera.h"
+#include <DDSTextureLoader.h>
+#include "ShaderHandler.h"
+#include "RenderStates.h"
 #include "TextureManager.h"
 
 class Sky
@@ -19,7 +22,7 @@ public:
 
 	ID3D11ShaderResourceView* cubeMapSRV();
 
-	void draw(ID3D11DeviceContext* dc, const Camera& camera, bool inMenu);
+	void Draw(ID3D11DeviceContext* dc, const Camera& cam, SkyShader* skyShader);
 
 private:
 	// Buffers

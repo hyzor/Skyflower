@@ -3,6 +3,7 @@
 
 #include "d3dUtilities.h"
 #include "Effects.h"
+#include "ShaderHandler.h"
 
 // Vertices
 namespace Vertex
@@ -62,6 +63,8 @@ namespace Vertex
 	};
 }
 
+class ShaderHandler;
+
 // Input layout descriptions
 class InputLayoutDesc
 {
@@ -79,8 +82,16 @@ public:
 class InputLayouts
 {
 public:
-	static void InitAll(ID3D11Device* device);
+	//static void InitAll(ID3D11Device* device);
 	static void DestroyAll();
+
+	static void CreateInputLayout(ID3D11Device* device,
+		Shader* shader,
+		const D3D11_INPUT_ELEMENT_DESC* layoutDesc,
+		UINT layoutDescSize,
+		ID3D11InputLayout** inputLayout);
+
+	//static void CreateInputLayout(ID3D11Device* device, ID3D11PixelShader* pixelShader);
 
 	static ID3D11InputLayout* Position;
 	static ID3D11InputLayout* Basic32;

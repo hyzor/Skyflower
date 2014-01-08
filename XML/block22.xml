@@ -8,5 +8,8 @@
 		isAnimated="0"
 		isCollidible="1">
 		<Messenger/>
+		<!--<AI />-->
+		<Movement />
+		<Gravity />
 	</Platform>
 </root>

@@ -46,22 +46,24 @@ void Application::Start()
 	modules.graphics = m_graphicsEngine;
 	modules.sound = m_soundEngine;
 	modules.potentialField = new PotentialField();
-
+	
 	entityManager = new EntityManager("../../XML/", &modules);
-	entityManager->loadXML2("player2.xml");
-	entityManager->loadXML2("platform.xml");
-	entityManager->loadXML2("block22.xml");
+
+	entityManager->loadXML2("player.xml");
+	levelHandler->init(entityManager);
+	//entityManager->loadXML2("player2.xml");
+	//entityManager->loadXML2("platform.xml");
+	//entityManager->loadXML2("block22.xml");
 	//entityManager->loadXML2("TriggerTest.xml");
 	//entityManager->loadXML2("Player3.xml");
 
-	//Cistron::Component* playerMove = (Movement*)entityManager->getComponent("player", "Movement");
+	// Load Hub Level
+	levelHandler->load(1);
 
-	//m_graphicsEngine->CreateInstance("Data\\Models\\duck.obj")->SetVisibility(false);
-
-	//ModelInstance* d = m_graphicsEngine->CreateInstance("Data\\Models\\duck.obj", Vec3(-100, 50, 0));
-	//d->SetRotation(Vec3(-3.14f/2, 3.14f/4));
 	camera = m_graphicsEngine->CreateCameraController();
 	Movement* playerMove = (Movement*)entityManager->getComponent("player", "Movement");
+
+	entityManager->sendMessageToEntity("ActivateListener", "player");
 
 	LineChart frameTimeChart(1024 * 1024);
 	frameTimeChart.SetSize(512, 256);
@@ -94,6 +96,7 @@ void Application::Start()
 			//frameTimeChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, (1.0f / 60.0f) * 1000.0f);
 			//memoryChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, 256.0f);
 		}
+
 		camera->Follow(entityManager->getEntityPos("player"));
 		playerMove->setCamera(camera->GetLook(), camera->GetRight(), camera->GetUp());
 		camera->Update((float)deltaTime);
@@ -101,14 +104,15 @@ void Application::Start()
 		this->entityManager->update((float)deltaTime);
 		//this->entityManager->handleCollision();
 
-		m_graphicsEngine->DrawScene();
-		m_graphicsEngine->UpdateScene((float)deltaTime);
+		m_graphicsEngine->Run((float)deltaTime);
 
 		m_soundEngine->Update((float)deltaTime);
 
 		m_window->PumpMessages();
 	}
 
+	delete levelHandler;
+	DestroyCameraController(camera);
 	delete entityManager;
 	DestroySoundEngine(m_soundEngine);
 	DestroyGraphicsEngine(m_graphicsEngine);

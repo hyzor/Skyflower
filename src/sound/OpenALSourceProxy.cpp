@@ -405,6 +405,10 @@ unsigned int OpenALSourceProxy::UnqueueProcessedBuffers()
 			}
 		}
 
+		if (m_queuedBufferIndices[0] == -1) {
+			//printf("Sound source is out of buffers\n");
+		}
+
 		assert(alGetError() == AL_NO_ERROR);
 	}
 

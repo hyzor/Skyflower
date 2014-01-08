@@ -9,6 +9,7 @@
 #include "physics/Physics.h"
 #include "physics/Collision.h"
 #include "Entity.h"
+#include "Health.h"
 using namespace std;
 using namespace Cistron;
 
@@ -56,7 +57,16 @@ public:
 		Vec3 rot = getEntityRot();
 		p->update(deltaTime);
 		
-
+		if (pos.Y < -100)
+		{
+			getOwner()->getComponent<Health*>("Health")->setHealth(0);
+		}
+		if (!getOwner()->getComponent<Health*>("Health")->isAlive())
+		{
+			p->setVelocity(Vec3(0, 0, 0));
+			pos = Vec3(0, 12, 0);
+			getOwner()->getComponent<Health*>("Health")->setHealth(100);
+		}
 
 		if (this->isMovingForward) {
 			if (this->isMovingLeft) {
@@ -87,27 +97,27 @@ public:
 			p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 90.0f);
 		}
 
-		//std::vector<CollisionInstance*> instances = Collision::GetInstance()->GetCollisionInstances();
-		//Ray r = Ray(pos+Vec3(0,5,0), Vec3(0, -5, 0));
-		//float col = 0;
-		//for (size_t i = 0; i < instances.size(); i++)
-		//{
-		//	if (instances[i] != getEntityCollision())
-		//	{
-		//		float t = instances[i]->Test(r);
-		//		if (t > 0)
-		//		{
-		//			col = t;
-		//			break;
-		//		}
-		//	}
-		//}
-		//if (col) //om kollision flytta tillbaka
-		//{
-		//	pos.Y -= (1 - col)*r.Dir.Y;
-		//	p->setVelocity(Vec3());
-		//	p->setJumping(false);
-		//}
+		std::vector<CollisionInstance*> instances = Collision::GetInstance()->GetCollisionInstances();
+		Ray r = Ray(pos+Vec3(0,5,0), Vec3(0, -5, 0));
+		float col = 0;
+		for (size_t i = 0; i < instances.size(); i++)
+		{
+			if (instances[i] != getEntityCollision())
+			{
+				float t = instances[i]->Test(r);
+				if (t > 0)
+				{
+					col = t;
+					break;
+				}
+			}
+		}
+		if (col) //om kollision flytta tillbaka
+		{
+			pos.Y -= (1 - col)*r.Dir.Y;
+			p->setVelocity(Vec3());
+			p->setJumping(false);
+		}
 
 		updateEntityPos(pos);
 		updateEntityRot(rot);
@@ -121,10 +131,10 @@ public:
 
 	void setCamera(Vec3 look, Vec3 right, Vec3 up)
 	{
-		//if (p)
-		//{
-		//	this->camLook = look;
-		//}
+		if (p)
+		{
+			this->camLook = look;
+		}
 	}
 
 private:

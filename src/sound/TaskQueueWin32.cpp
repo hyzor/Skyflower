@@ -53,3 +53,23 @@ void TaskQueueWin32::WaitForTasks(bool cancelPendingTasks)
 {
 	CloseThreadpoolCleanupGroupMembers(m_cleanupGroup, cancelPendingTasks, NULL);
 }
+
+MutexWin32::MutexWin32()
+{
+	m_mutex = CreateMutex(NULL, false, NULL);
+}
+
+MutexWin32::~MutexWin32()
+{
+	CloseHandle(m_mutex);
+}
+
+void MutexWin32::Lock()
+{
+	WaitForSingleObject(m_mutex, INFINITE);
+}
+
+void MutexWin32::Unlock()
+{
+	ReleaseMutex(m_mutex);
+}

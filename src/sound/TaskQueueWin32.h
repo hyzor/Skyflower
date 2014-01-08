@@ -23,4 +23,17 @@ private:
 	TP_CALLBACK_ENVIRON m_environment;
 };
 
+class MutexWin32 : public Mutex
+{
+public:
+	MutexWin32();
+	virtual ~MutexWin32();
+
+	void Lock();
+	void Unlock();
+
+private:
+	HANDLE m_mutex;
+};
+
 #endif

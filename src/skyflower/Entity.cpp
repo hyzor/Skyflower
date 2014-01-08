@@ -82,9 +82,12 @@ Entity::~Entity() {
 			delete (*it2);
 		}
 	}*/
-	//this->modules->graphics->DeleteInstance(this->modelInst);
-	//this->modules->graphics->DeleteInstance(this->AnimInst);
+	if (modelInst)
+		this->modules->graphics->DeleteInstance(this->modelInst);
 
+	//if (AnimInst)
+		//this->modules->graphics->DeleteInstance(this->AnimInst);
+	
 	delete this->physics;
 }
 
@@ -146,6 +149,24 @@ list<Component*> Entity::getComponents(string name) {
 
 	// return normally
 	return fComponents[name];
+}
+
+bool Entity::hasComponents(string name) {
+
+	// make sure there's no such component yet
+	//if (fComponents.find(name) == fComponents.end()) 
+		//return false;
+
+
+	list<Component*> comps = getComponents();
+	for (std::list<Component*>::iterator it = comps.begin(); it != comps.end(); it++)
+	{
+		if ((*it)->getName() == name)
+			return true;
+	}
+
+	// return normally
+	return false;
 }
 
 
@@ -357,4 +378,3 @@ void Entity::updateVisible(bool isVisible)
 	this->isVisible = isVisible;
 	this->modelInst->SetVisibility(isVisible);
 }
-
