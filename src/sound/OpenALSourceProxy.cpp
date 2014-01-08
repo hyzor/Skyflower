@@ -144,7 +144,12 @@ void OpenALSourceProxy::Update(float deltaTime)
 void OpenALSourceProxy::Play()
 {
 	if (HasSource()) {
-		alSourcePlay(m_source);
+		ALint state;
+		alGetSourcei(m_source, AL_SOURCE_STATE, &state);
+
+		if (state != AL_PLAYING) {
+			alSourcePlay(m_source);
+		}
 
 		assert(alGetError() == AL_NO_ERROR);
 	}
@@ -186,7 +191,7 @@ void OpenALSourceProxy::SetBuffer(ALuint buffer)
 	alSourcei(m_source, AL_LOOPING, (m_isLooping? AL_TRUE : AL_FALSE));
 
 	if (m_isPlaying) {
-		alSourcePlay(m_source);
+		Play();
 	}
 
 	m_buffer = buffer;
@@ -348,7 +353,7 @@ void OpenALSourceProxy::QueueBuffer(ALuint buffer, unsigned int bufferIndex)
 	alSourcei(m_source, AL_LOOPING, AL_FALSE);
 	
 	if (m_isPlaying) {
-		alSourcePlay(m_source);
+		Play();
 	}
 
 	for (int i = 0; i < 2; i++) {
@@ -369,48 +374,49 @@ void OpenALSourceProxy::QueueBuffer(ALuint buffer, unsigned int bufferIndex)
 
 unsigned int OpenALSourceProxy::UnqueueProcessedBuffers()
 {
+	if (!HasSource()) {
+		return 0;
+	}
+
 	ALint count = 0;
+	alGetSourcei(m_source, AL_BUFFERS_PROCESSED, &count);
 
-	if (HasSource()) {
-		alGetSourcei(m_source, AL_BUFFERS_PROCESSED, &count);
+	assert(count <= 2);
 
-		assert(count <= 2);
+	if (count > 0) {
+		ALuint buffers[2];
+		alSourceUnqueueBuffers(m_source, count, buffers);
 
-		if (count > 0) {
-			ALuint buffers[2];
-			alSourceUnqueueBuffers(m_source, count, buffers);
+		const struct AudioResourceInfo *info = m_owner->GetResourceInfo();
 
-			const struct AudioResourceInfo *info = m_owner->GetResourceInfo();
+		if (info) {
+			for (int i = 0; i < count; i++) {
+				if (m_queuedBufferIndices[i] == info->bufferCount - 1) {
+					m_isLastBufferQueued = false;
 
-			if (info) {
-				for (int i = 0; i < count; i++) {
-					if (m_queuedBufferIndices[i] == info->bufferCount - 1) {
-						m_isLastBufferQueued = false;
-
-						if (!IsLooping() && IsPlaying()) {
-							// We reached the end of a non-looping source, stop playback.
-							Pause();
-						}
+					if (!IsLooping() && IsPlaying()) {
+						// We reached the end of a non-looping source, stop playback.
+						Pause();
 					}
 				}
 			}
+		}
 
-			// Move the remaining queued buffers to the start of the array.
-			for (int i = count; i < 2; i++) {
-				m_queuedBufferIndices[i - count] = m_queuedBufferIndices[i];
-			}
-			// Clear the end of the array.
-			for (int i = 2 - count; i < 2; i++) {
-				m_queuedBufferIndices[i] = -1;
-			}
+		// Move the remaining queued buffers to the start of the array.
+		for (int i = count; i < 2; i++) {
+			m_queuedBufferIndices[i - count] = m_queuedBufferIndices[i];
+		}
+		// Clear the end of the array.
+		for (int i = 2 - count; i < 2; i++) {
+			m_queuedBufferIndices[i] = -1;
 		}
 
 		if (m_queuedBufferIndices[0] == -1) {
-			//printf("Sound source is out of buffers\n");
+			//printf("Sound source just ran out of buffers\n");
 		}
-
-		assert(alGetError() == AL_NO_ERROR);
 	}
+
+	assert(alGetError() == AL_NO_ERROR);
 
 	return (unsigned int)count;
 }
