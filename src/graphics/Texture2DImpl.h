@@ -8,11 +8,15 @@
 class Texture2DImpl : public Texture2D
 {
 public:
-	Texture2DImpl(ID3D11Device *d3dDevice, ID3D11DeviceContext *d3dDeviceContext, unsigned int width, unsigned int height);
+	Texture2DImpl(ID3D11Device *d3dDevice, ID3D11DeviceContext *d3dDeviceContext, unsigned int width, unsigned int height, DXGI_FORMAT format, UINT bindFlags, D3D11_USAGE usage = D3D11_USAGE_DEFAULT, UINT CPUAccessFlags = 0);
 	~Texture2DImpl();
+
+	unsigned int GetWidth() const;
+	unsigned int GetHeight() const;
 
 	void UploadData(const void *data);
 
+	ID3D11Texture2D *GetTexture();
 	ID3D11ShaderResourceView *GetTextureView();
 
 private:
