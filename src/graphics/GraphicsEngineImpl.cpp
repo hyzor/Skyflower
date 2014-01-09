@@ -414,7 +414,7 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mSSAOShader->SetEyePos(mCamera->GetPosition());
 	mShaderHandler->mSSAOShader->SetZFar(mCamera->GetFarZ());
 	mShaderHandler->mSSAOShader->SetFramebufferSize(XMFLOAT2((float)mSSAOTexture->GetWidth(), (float)mSSAOTexture->GetHeight()));
-	mShaderHandler->mSSAOShader->SetProjectionMatrix(mCamera->GetViewMatrix());
+	mShaderHandler->mSSAOShader->SetProjectionMatrix(mCamera->GetProjMatrix());
 	mShaderHandler->mSSAOShader->SetViewProjectionMatrix(mCamera->GetViewProjMatrix());
 	mShaderHandler->mSSAOShader->Update(mD3D->GetImmediateContext());
 
