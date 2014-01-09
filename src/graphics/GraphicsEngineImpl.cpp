@@ -252,7 +252,6 @@ void GraphicsEngineImpl::DrawScene()
 	mShadowMap->BuildShadowTransform(mDirLights.at(0), XMFLOAT3(0.0f, 0.0f, 0.0f), 100.0f);
 	mShaderHandler->mShadowShader->SetActive(mD3D->GetImmediateContext());
 	mShadowMap->DrawSceneToShadowMap(mInstances, mAnimatedInstances, *mCamera, mD3D->GetImmediateContext(), mShaderHandler->mShadowShader);
-	
 
 	mD3D->GetImmediateContext()->RSSetState(0);
 	// Restore back and depth buffer and viewport to the OM stage
@@ -272,6 +271,7 @@ void GraphicsEngineImpl::DrawScene()
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(0, 0);
 	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
 
+	/*
 	// Use basic shader to draw with
 	mShaderHandler->mBasicShader->SetActive(mD3D->GetImmediateContext());
 	mShaderHandler->mBasicShader->SetEyePosW(mD3D->GetImmediateContext(), mCamera->GetPosition());
@@ -295,19 +295,19 @@ void GraphicsEngineImpl::DrawScene()
 		{
 			mShaderHandler->mBasicShader->SetWorldViewProjTex(mD3D->GetImmediateContext(),
 				mInstances[i]->GetWorld(),
-				mCamera->GetViewProjMatrix()/*mShadowMap->GetLightViewProj()*/,
+				mCamera->GetViewProjMatrix(),
 				toTexSpace);
 
 			XMMATRIX test = XMMatrixMultiply(mInstances[i]->GetWorld(), mShadowMap->GetLightViewProj());
 			XMFLOAT4X4 test1;
 			XMStoreFloat4x4(&test1, test);
-			mShaderHandler->mBasicShader->SetShadowTransform(mD3D->GetImmediateContext(), /*test1*/mShadowMap->GetShadowTransform());
+			mShaderHandler->mBasicShader->SetShadowTransform(mD3D->GetImmediateContext(), mShadowMap->GetShadowTransform());
 			for (UINT j = 0; j < mInstances[i]->model->meshCount; ++j)
 			{
 				UINT matIndex = mInstances[i]->model->meshes[j].MaterialIndex;
 
 				mShaderHandler->mBasicShader->SetMaterial(mD3D->GetImmediateContext(), mInstances[i]->model->mat[matIndex]);
-				mShaderHandler->mBasicShader->SetDiffuseMap(mD3D->GetImmediateContext(), mInstances[i]->model->diffuseMapSRV[matIndex]/*mShadowMap->getDepthMapSRV()*/);
+				mShaderHandler->mBasicShader->SetDiffuseMap(mD3D->GetImmediateContext(), mInstances[i]->model->diffuseMapSRV[matIndex]);
 				mShaderHandler->mBasicShader->UpdatePerObj(mD3D->GetImmediateContext());
 				mD3D->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 				mInstances[i]->model->meshes[j].Draw(mD3D->GetImmediateContext());
@@ -331,6 +331,7 @@ void GraphicsEngineImpl::DrawScene()
 			mAnimatedInstances[i]->model->Draw(mD3D->GetImmediateContext(), mCamera, mShaderHandler->mNormalSkinned, mAnimatedInstances[i]->GetWorld());
 		}
 	}
+	*/
 
 	// Draw 2D stuff
 	/*
@@ -361,12 +362,14 @@ void GraphicsEngineImpl::DrawScene()
 	RenderSceneToTexture();
 
 	// Turn off Z-buffer to begin 2D-drawing
-	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDisabledDDS, 1);
+	//mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDisabledDDS, 1);
 	mShaderHandler->mLightDeferredShader->SetActive(mD3D->GetImmediateContext());
 	mShaderHandler->mLightDeferredShader->SetEyePosW(mCamera->GetPosition());
 	mShaderHandler->mLightDeferredShader->SetPointLights(mD3D->GetImmediateContext(), (UINT)mPointLights.size(), mPointLights.data());
 	mShaderHandler->mLightDeferredShader->SetDirLights(mD3D->GetImmediateContext(), (UINT)mDirLights.size(), mDirLights.data());
 	mShaderHandler->mLightDeferredShader->SetSpotLights(mD3D->GetImmediateContext(), (UINT)mSpotLights.size(), mSpotLights.data());
+	mShaderHandler->mLightDeferredShader->SetShadowMapTexture(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
+	mShaderHandler->mLightDeferredShader->SetShadowTransform(XMLoadFloat4x4(&mShadowMap->GetShadowTransform()));
 	mShaderHandler->mLightDeferredShader->UpdatePerFrame(mD3D->GetImmediateContext());
 
 	mShaderHandler->mLightDeferredShader->SetDiffuseTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(0));

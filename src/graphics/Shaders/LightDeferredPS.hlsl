@@ -17,30 +17,53 @@ cbuffer cLightBuffer : register(b0)
 
 	float3 gEyePosW;
 	float padding;
+
+	float4x4 gShadowTransform;
 };
 
 Texture2D gDiffuseTexture : register(t0);
 Texture2D gNormalTexture : register(t1);
 Texture2D gSpecularTexture : register(t2);
 Texture2D gPositionTexture : register(t3);
+Texture2D gShadowMap : register(t4);
 
 SamplerState samLinear : register(s0);
 SamplerState samAnisotropic : register(s1);
+SamplerComparisonState samShadow : register(s2);
+
+float ReadShadowMap(float3 eyeDir)
+{
+	float4 projectedEyeDir = mul(float4(eyeDir, 1.0f), gShadowTransform);
+	projectedEyeDir = projectedEyeDir / projectedEyeDir.w;
+
+	float shadow = float3(1.0f, 1.0f, 1.0f);
+	shadow = CalcShadowFactor(samShadow, gShadowMap, projectedEyeDir);
+
+	return shadow;
+
+	//float2 tex = projectedEyeDir.xy * float2(0.5f, 0.5f) + float2(0.5f, 0.5f);
+
+	//float depthValue = gShadowMap.Sample(samLinear, tex);
+	//return projectedEyeDir.z * 0.5 + 0.5 < depthValue;
+}
 
 float4 main(VertexOut pIn) : SV_TARGET
 {
 	float4 diffuse;
 	float3 normal;
 	float4 specular;
-	float3 position;
+	float3 positionW;
 	
 	diffuse = gDiffuseTexture.Sample(samLinear, pIn.Tex);
 	normal = gNormalTexture.Sample(samLinear, pIn.Tex).xyz;
 	specular = gSpecularTexture.Sample(samLinear, pIn.Tex);
-	position = gPositionTexture.Sample(samLinear, pIn.Tex).xyz;
+	positionW = gPositionTexture.Sample(samLinear, pIn.Tex).xyz;
 
 	// The toEye vector is used in lighting
-	float3 toEye = gEyePosW - position;
+	float3 toEye = gEyePosW - positionW;
+
+	// Used in shadow mapping
+	float3 eyeDir = positionW - gEyePosW;
 
 	// Cache the distance to the eye from this surface point.
 	float distToEye = length(toEye);
@@ -56,28 +79,35 @@ float4 main(VertexOut pIn) : SV_TARGET
 
 	float4 A, D, S;
 
+	//float shadow = ReadShadowMap(eyeDir);
+
+	float3 shadow = float3(1.0f, 1.0f, 1.0f);
+	shadow[0] = ReadShadowMap(eyeDir);
+
 	// Begin calculating lights
 	for (int i = 0; i < gDirLightCount; ++i)
 	{
 		ComputeDirectionalLight_Deferred(specular, gDirLights[i], normal, toEye, D, S);
-		diffuse_Lights += D;
-		specular_Lights += S;
+		diffuse_Lights += D * shadow[i];
+		specular_Lights += S * shadow[i];
 	}
 
+	/*
 	for (int j = 0; j < gPointLightCount; ++j)
 	{
-		ComputePointLight_Deferred(specular, gPointLights[j], position, normal, toEye, D, S);
+		ComputePointLight_Deferred(specular, gPointLights[j], positionW, normal, toEye, D, S);
 		diffuse_Lights += D;
 		specular_Lights += S;
 	}
 
 	for (int k = 0; k < gSpotLightCount; ++k)
 	{
-		ComputeSpotLight_Deferred(specular, gSpotLights[k], position, normal, toEye, A, D, S);
+		ComputeSpotLight_Deferred(specular, gSpotLights[k], positionW, normal, toEye, A, D, S);
 		ambient_Lights += A;
 		diffuse_Lights += D;
 		specular_Lights += S;
 	}
+	*/
 
 	litColor = diffuse * (ambient_Lights + diffuse_Lights) + specular_Lights;
 

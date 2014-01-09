@@ -1338,6 +1338,7 @@ bool LightDeferredShader::SetActive(ID3D11DeviceContext* dc)
 
 	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
 	dc->PSSetSamplers(1, 1, &RenderStates::mAnisotropicSS);
+	dc->PSSetSamplers(2, 1, &RenderStates::mComparisonSS);
 
 	return true;
 }
@@ -1422,7 +1423,19 @@ void LightDeferredShader::UpdatePerFrame(ID3D11DeviceContext* dc)
 	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numSpotLights; ++j)
 		dataPtr3->spotLights[j] = mBufferCache.psPerFrameBuffer.spotLights[j];
 
+	dataPtr3->shadowTransform = mBufferCache.psPerFrameBuffer.shadowTransform;
+
 	dc->Unmap(ps_cPerFrameBuffer, 0);
 
 	dc->PSSetConstantBuffers(0, 1, &ps_cPerFrameBuffer);
+}
+
+void LightDeferredShader::SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(4, 1, &tex);
+}
+
+void LightDeferredShader::SetShadowTransform(XMMATRIX& shadowTransform)
+{
+	mBufferCache.psPerFrameBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
 }

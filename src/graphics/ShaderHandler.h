@@ -579,6 +579,9 @@ public:
 	void SetSpecularTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetPositionTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
+	void SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetShadowTransform(XMMATRIX& shadowTransform);
+
 	void UpdatePerObj(ID3D11DeviceContext* dc);
 	void UpdatePerFrame(ID3D11DeviceContext* dc);
 
@@ -613,6 +616,8 @@ private:
 		// Forms into a 4D vector
 		XMFLOAT3 gEyePosW;
 		float padding;
+
+		XMMATRIX shadowTransform;
 	};
 
 	struct BUFFERCACHE
