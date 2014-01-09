@@ -57,7 +57,15 @@ public:
 		Vec3 rot = getEntityRot();
 		p->update(deltaTime);
 		
+
 		if (pos.Y < -100)
+		{
+			updateEntityPos(Vec3(0, 20, 0));
+			p->setVelocity(Vec3(0, 0, 0));
+			return;
+		}
+		// CRACH!! FIX PLZ
+		/*if (pos.Y < -100)
 		{
 			getOwner()->getComponent<Health*>("Health")->setHealth(0);
 		}
@@ -66,7 +74,8 @@ public:
 			p->setVelocity(Vec3(0, 0, 0));
 			pos = Vec3(0, 12, 0);
 			getOwner()->getComponent<Health*>("Health")->setHealth(100);
-		}
+		}*/
+		//
 
 		if (this->isMovingForward) {
 			if (this->isMovingLeft) {

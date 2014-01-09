@@ -64,6 +64,8 @@ Entity::Entity(const Modules *modules, EntityId id, string type, float xPos, flo
 	if (isCollidible && !isAnimated)
 	{
 		collInst = Collision::GetInstance()->CreateCollisionInstance(model, pos);
+		collInst->SetScale(scale);
+		collInst->SetRotation(rot);
 		field = this->modules->potentialField->CreateField(model, pos);
 	}
 	else

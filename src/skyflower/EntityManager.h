@@ -220,6 +220,10 @@ class EntityManager {
 		std::tr1::unordered_map<ComponentId, list<ComponentRequest> > fRequestsByComponentId;
 
 
+		float testMove(Ray r, Entity* e);
+		float testMove(Ray r, Entity* e, Entity* &out);
+
+
 		/**
 		 * ERROR PROCESSING
 		 */
