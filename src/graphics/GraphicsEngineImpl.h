@@ -94,7 +94,6 @@ private:
 	OrthoWindow* mOrthoWindow;
 
 	Texture2DImpl *mSSAOTexture;
-	ID3D11RenderTargetView *mSSAOTextureRTView;
 };
 
 #endif

@@ -83,19 +83,8 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mDeferredBuffers = new DeferredBuffers();
 	mDeferredBuffers->Init(mD3D->GetDevice(), width, height, zNear, zFar);
 
-	//mSSAOTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8_UNORM, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
-	mSSAOTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
-
-	D3D11_RENDER_TARGET_VIEW_DESC RTViewDesc;
-	memset(&RTViewDesc, 0, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
-	//RTViewDesc.Format = DXGI_FORMAT_R8_UNORM;
-	RTViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	RTViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-	RTViewDesc.Texture2D.MipSlice = 0;
-
-	HRESULT hr = mD3D->GetDevice()->CreateRenderTargetView(mSSAOTexture->GetTexture(), &RTViewDesc, &mSSAOTextureRTView);
-
-	assert(SUCCEEDED(hr));
+	//mSSAOTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8_UNORM, true);
+	mSSAOTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8G8B8A8_UNORM, true);
 
 	//--------------------------------------------------------
 	// Lights
@@ -399,15 +388,16 @@ void GraphicsEngineImpl::DrawScene()
 	viewport.MaxDepth = 1.0f;
 
 #if 1
-	ID3D11RenderTargetView* watRenderTarget[1] = { mD3D->GetRenderTargetView() };
-	mD3D->GetImmediateContext()->OMSetRenderTargets(1, watRenderTarget, NULL);
+	ID3D11RenderTargetView* SSAORenderTarget[1] = { mD3D->GetRenderTargetView() };
+	mD3D->GetImmediateContext()->OMSetRenderTargets(1, SSAORenderTarget, NULL);
 #else
-	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &mSSAOTextureRTView, NULL);
+	ID3D11RenderTargetView* SSAORenderTarget[1] = { mSSAOTexture->GetRenderTargetView() };
+	mD3D->GetImmediateContext()->OMSetRenderTargets(1, SSAORenderTarget, NULL);
 #endif
 	mD3D->GetImmediateContext()->RSSetViewports(1, &viewport);
 
 	float clearColor[4] = {1.0, 0.0, 0.0, 1.0};
-	mD3D->GetImmediateContext()->ClearRenderTargetView(mSSAOTextureRTView, clearColor);
+	mD3D->GetImmediateContext()->ClearRenderTargetView(mSSAOTexture->GetRenderTargetView(), clearColor);
 
 
 
@@ -497,7 +487,7 @@ void GraphicsEngineImpl::Draw2DTexture(Texture2D *texture, int x, int y)
 {
 	Texture2DImpl *textureImpl = (Texture2DImpl *)texture;
 
-	mSpriteBatch->Draw(textureImpl->GetTextureView(), XMFLOAT2((float)x, (float)y));
+	mSpriteBatch->Draw(textureImpl->GetShaderResourceView(), XMFLOAT2((float)x, (float)y));
 }
 
 ModelInstance* GraphicsEngineImpl::CreateInstance(std::string file)
@@ -610,7 +600,7 @@ void GraphicsEngineImpl::DeleteInstance(AnimatedInstance* ai)
 
 Texture2D *GraphicsEngineImpl::CreateTexture2D(unsigned int width, unsigned int height)
 {
-	Texture2DImpl *texture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_BIND_SHADER_RESOURCE);
+	Texture2DImpl *texture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8G8B8A8_UNORM, false);
  
 	return (Texture2D *)texture;
 }
