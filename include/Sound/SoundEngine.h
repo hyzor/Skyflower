@@ -1,9 +1,17 @@
 #ifndef SOUND_SOUNDENGINE_H
 #define SOUND_SOUNDENGINE_H
 
-#include <string>
+#ifdef _WIN32
+	#ifdef COMPILING_DLL
+		#define DLL_EXPORT __declspec(dllexport)
+	#else
+		#define DLL_EXPORT __declspec(dllimport)
+	#endif
+#else
+	#define DLL_EXPORT
+#endif
 
-#include "shared/platform.h"
+#include <string>
 
 #include "Sound/Listener.h"
 #include "Sound/SoundSource.h"
@@ -29,7 +37,7 @@ public:
 	virtual void Update(float deltaTime) = 0;
 };
 
-DLL_API SoundEngine *CreateSoundEngine(const std::string &resourceDir);
-DLL_API void DestroySoundEngine(SoundEngine *engine);
+DLL_EXPORT SoundEngine *CreateSoundEngine(const std::string &resourceDir);
+DLL_EXPORT void DestroySoundEngine(SoundEngine *engine);
 
 #endif

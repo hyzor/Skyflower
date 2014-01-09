@@ -1,9 +1,7 @@
-#include "shared/platform.h"
-
 #include "Sound/SoundEngine.h"
 #include "SoundEngineImpl.h"
 
-DLL_API SoundEngine *CreateSoundEngine(const std::string &resourceDir)
+DLL_EXPORT SoundEngine *CreateSoundEngine(const std::string &resourceDir)
 {
 	SoundEngineImpl *engine = new SoundEngineImpl();
 
@@ -15,7 +13,7 @@ DLL_API SoundEngine *CreateSoundEngine(const std::string &resourceDir)
 	return (SoundEngine *)engine;
 }
 
-DLL_API void DestroySoundEngine(SoundEngine *engine)
+DLL_EXPORT void DestroySoundEngine(SoundEngine *engine)
 {
 	if (!engine) {
 		return;

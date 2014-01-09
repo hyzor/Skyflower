@@ -17,9 +17,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Graphics", "Graphics.vcxpro
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sound", "Sound.vcxproj", "{B436B3C1-B4AA-4A61-972E-8DD36A9CC598}"
-	ProjectSection(ProjectDependencies) = postProject
-		{6751BB7B-4EF6-4BA0-86B2-C5DA87F19022} = {6751BB7B-4EF6-4BA0-86B2-C5DA87F19022}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Shared", "Shared.vcxproj", "{6751BB7B-4EF6-4BA0-86B2-C5DA87F19022}"
 EndProject
