@@ -60,6 +60,9 @@ public:
 		if (pos.Y < -100)
 		{
 			getOwner()->getComponent<Health*>("Health")->setHealth(0);
+
+			float soundPosition[3] = {0.0f, 0.0f, 0.0f};
+			getOwner()->getModules()->sound->PlaySound("player/wilhelm_scream.wav", soundPosition, 1.0f, true); 
 		}
 		if (!getOwner()->getComponent<Health*>("Health")->isAlive())
 		{

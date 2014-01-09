@@ -42,6 +42,10 @@ void Application::Start()
 	m_soundEngine = CreateSoundEngine("../../content/sounds/");
 	assert(m_soundEngine);
 
+	// Play some background music.
+	//float soundPosition[3] = {0.0f, 0.0f, 0.0f};
+	//m_soundEngine->PlaySound("creepy.opus", soundPosition, 0.05f, true);
+
 	Modules modules;
 	modules.input = m_inputHandler;
 	modules.graphics = m_graphicsEngine;
