@@ -68,7 +68,7 @@ int LevelHandler::completedCount() const
 
 int LevelHandler::levelCount() const
 {
-	return this->_levels.size();
+	return (int)this->_levels.size();
 }
 
 int LevelHandler::currentLevel() const

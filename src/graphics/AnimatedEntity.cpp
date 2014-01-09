@@ -118,7 +118,7 @@ void AnimatedEntity::Draw(ID3D11DeviceContext* dc, Camera* cam, NormalMappedSkin
 		0.5f, 0.5f, 0.0f, 1.0f);
 
 	shader->SetWorldViewProjTex(dc, world, cam->GetViewProjMatrix(), toTexSpace);
-	shader->SetBoneTransforms(dc, mInstance.FinalTransforms.data(), mInstance.FinalTransforms.size());
+	shader->SetBoneTransforms(dc, mInstance.FinalTransforms.data(), (UINT)mInstance.FinalTransforms.size());
 
 	for (UINT i = 0; i < mInstance.model->numMeshes; ++i)
 	{
@@ -128,6 +128,33 @@ void AnimatedEntity::Draw(ID3D11DeviceContext* dc, Camera* cam, NormalMappedSkin
 		shader->SetDiffuseMap(dc, mInstance.model->diffuseMapSRV[matIndex]);
 		shader->SetNormalMap(dc, mInstance.model->normalMapSRV[matIndex]);
 		shader->UpdatePerObj(dc);
+
+		mInstance.model->meshes[i].draw(dc);
+	}
+}
+
+void AnimatedEntity::Draw(ID3D11DeviceContext* dc, Camera* cam, BasicDeferredSkinnedShader* deferredShader, XMMATRIX &world)
+{
+	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//dc->IASetInputLayout(InputLayouts::PosNormalTexTanSkinned);
+
+	XMMATRIX toTexSpace(
+		0.5f, 0.0f, 0.0f, 0.0f,
+		0.0f, -0.5f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.5f, 0.5f, 0.0f, 1.0f);
+
+	deferredShader->SetWorldViewProjTex(world, cam->GetViewProjMatrix(), toTexSpace);
+	deferredShader->SetBoneTransforms(mInstance.FinalTransforms.data(), (UINT)mInstance.FinalTransforms.size());
+
+	for (UINT i = 0; i < mInstance.model->numMeshes; ++i)
+	{
+		UINT matIndex = mInstance.model->meshes[i].mMaterialIndex;
+
+		deferredShader->SetMaterial(mInstance.model->mat[matIndex]);
+		deferredShader->SetDiffuseMap(dc, mInstance.model->diffuseMapSRV[matIndex]);
+		//shader->SetNormalMap(dc, mInstance.model->normalMapSRV[matIndex]);
+		deferredShader->UpdatePerObj(dc);
 
 		mInstance.model->meshes[i].draw(dc);
 	}

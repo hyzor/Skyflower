@@ -1,11 +1,14 @@
 #include "ShaderHandler.h"
 
+#pragma region ShaderHandler
 ShaderHandler::ShaderHandler()
 {
-	// Basic shader
 	mBasicShader = new BasicShader();
 	mSkyShader = new SkyShader();
-	mNormalSkinned = new NormalMappedSkinned();
+	mNormalSkinned = new NormalMappedSkinned(); 
+	mBasicDeferredShader = new BasicDeferredShader();
+	mBasicDeferredSkinnedShader = new BasicDeferredSkinnedShader();
+	mLightDeferredShader = new LightDeferredShader();
 	mShadowShader = new ShadowShader();
 }
 
@@ -20,7 +23,6 @@ ShaderHandler::~ShaderHandler()
 	for (auto& it(mVertexShaders.begin()); it != mVertexShaders.end(); ++it)
 	{
 		if (it->second)
-			//SafeDelete(it->second);
 			it->second->Release();
 	}
 	mVertexShaders.clear();
@@ -28,7 +30,6 @@ ShaderHandler::~ShaderHandler()
 	for (auto& it(mPixelShaders.begin()); it != mPixelShaders.end(); ++it)
 	{
 		if (it->second)
-			//SafeDelete(it->second);
 			it->second->Release();
 	}
 	mPixelShaders.clear();
@@ -37,37 +38,58 @@ ShaderHandler::~ShaderHandler()
 	delete mSkyShader;
 	delete mNormalSkinned;
 	delete mShadowShader;
+	delete mBasicDeferredShader;
+	delete mBasicDeferredSkinnedShader;
+	delete mLightDeferredShader;
 }
 
 void ShaderHandler::LoadCompiledVertexShader(LPCWSTR fileName, char* name, ID3D11Device* device)
 {
+	HRESULT hr;
+
 	Shader* shader = new Shader();
 	shader->Name = name;
 	shader->Type = VERTEXSHADER;
-	D3DReadFileToBlob(fileName, &shader->Buffer);
+	hr = D3DReadFileToBlob(fileName, &shader->Buffer);
+
+	if (FAILED(hr))
+	{
+		std::wstringstream ErrorMsg;
+		ErrorMsg << "Failed to load vertex shader " << fileName;
+		MessageBox(0, ErrorMsg.str().c_str(), 0, 0);
+	}
+
 	mShaders.push_back(shader);
 
 	// Create the actual shader
 	ID3D11VertexShader* vShader;
-	device->CreateVertexShader(mShaders.back()->Buffer->GetBufferPointer(),
+	hr = device->CreateVertexShader(mShaders.back()->Buffer->GetBufferPointer(),
 		mShaders.back()->Buffer->GetBufferSize(), nullptr, &vShader);
-	//mVShaders.push_back(vShader);
 	mVertexShaders[name] = vShader;
 }
 
 void ShaderHandler::LoadCompiledPixelShader(LPCWSTR fileName, char* name, ID3D11Device* device)
 {
+	HRESULT hr;
+
 	Shader* shader = new Shader();
 	shader->Name = name;
 	shader->Type = PIXELSHADER;
-	D3DReadFileToBlob(fileName, &shader->Buffer);
+	hr = D3DReadFileToBlob(fileName, &shader->Buffer);
+
+	if (FAILED(hr))
+	{
+		std::wstringstream ErrorMsg;
+		ErrorMsg << "Failed to load pixel shader " << fileName;
+		MessageBox(0, ErrorMsg.str().c_str(), 0, 0);
+	}
+
 	mShaders.push_back(shader);
 
 	// Create the actual shader
 	ID3D11PixelShader* pShader;
-	device->CreatePixelShader(mShaders.back()->Buffer->GetBufferPointer(),
+	hr = device->CreatePixelShader(mShaders.back()->Buffer->GetBufferPointer(),
 		mShaders.back()->Buffer->GetBufferSize(), nullptr, &pShader);
-	//mVShaders.push_back(vShader);
 	mPixelShaders[name] = pShader;
 }
 
@@ -89,7 +111,7 @@ BYTE* ShaderHandler::LoadByteCode(char* fileName, UINT& size)
 	shaderCode = (unsigned char*)malloc(fileSize);
 
 	while (numRead != fileSize)
-		numRead = fread(&shaderCode[numRead], 1, fileSize, file);
+		numRead = (UINT)fread(&shaderCode[numRead], 1, fileSize, file);
 
 	fclose(file);
 
@@ -114,12 +136,6 @@ ID3D11PixelShader* ShaderHandler::GetPixelShader(std::string name)
 		return NULL;
 }
 
-// void ShaderHandler::InitShaders(ID3D11Device* device, InputLayouts* inputLayouts)
-// {
-// 	// Basic shader
-// 	mBasicShader->Init(device, inputLayouts->Basic32);
-// }
-
 Shader* ShaderHandler::GetShader(std::string name)
 {
 	for (UINT i = 0; i < mShaders.size(); ++i)
@@ -132,25 +148,18 @@ Shader* ShaderHandler::GetShader(std::string name)
 
 	return NULL;
 }
+#pragma endregion ShaderHandler
 
 //----------------------------------------------------------------------------
 // Basic shader
 //----------------------------------------------------------------------------
 #pragma region BasicShader
-BasicShader::BasicShader()
-{
-
-}
+BasicShader::BasicShader(){}
 
 BasicShader::~BasicShader()
 {
-	if (mVertexShader)
-		mVertexShader->Release();
-	if (mPixelShader)
-		mPixelShader->Release();
-
-	if (vs_cBuffer)
-		vs_cBuffer->Release();
+	if (vs_cPerObjBuffer)
+		vs_cPerObjBuffer->Release();
 	if (ps_cPerObjBuffer)
 		ps_cPerObjBuffer->Release();
 	if (ps_cPerFrameBuffer)
@@ -162,14 +171,8 @@ bool BasicShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
 	//------------------------
 	// Vertex shader buffer
 	//------------------------
-	// Init vertex shader buffer
-// 	vs_cBufferVariables.world = XMMatrixIdentity();
-// 	vs_cBufferVariables.worldViewProj = XMMatrixIdentity();
-// 	vs_cBufferVariables.worldViewProjTex = XMMatrixIdentity();
-// 	vs_cBufferVariables.worldInvTranspose = XMMatrixIdentity();
-// 	vs_cBufferVariables.texTransform = XMMatrixIdentity();
-
-	ZeroMemory(&vs_cBufferVariables, sizeof(VS_CPEROBJBUFFER));
+	// PER OBJECT BUFFER
+	ZeroMemory(&vs_cPerObjBufferVariables, sizeof(VS_CPEROBJBUFFER));
 
 	// Fill in a buffer description.
 	D3D11_BUFFER_DESC cbDesc;
@@ -182,31 +185,17 @@ bool BasicShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
 
 	// Fill in the subresource data.
 	D3D11_SUBRESOURCE_DATA InitData;
-	InitData.pSysMem = &vs_cBufferVariables;
+	InitData.pSysMem = &vs_cPerObjBufferVariables;
 	InitData.SysMemPitch = 0;
 	InitData.SysMemSlicePitch = 0;
 
 	// Now create the buffer
-	device->CreateBuffer(&cbDesc, &InitData, &vs_cBuffer);
+	device->CreateBuffer(&cbDesc, &InitData, &vs_cPerObjBuffer);
 
 	//------------------------
 	// Pixel shader buffers
 	//------------------------
 	// PER OBJECT BUFFER
-// 	ps_cPerObjBufferVariables.world = XMMatrixIdentity();
-// 	ps_cPerObjBufferVariables.worldViewProj = XMMatrixIdentity();
-// 	ps_cPerObjBufferVariables.worldViewProjTex = XMMatrixIdentity();
-// 	ps_cPerObjBufferVariables.worldInvTranspose = XMMatrixIdentity();
-// 	ps_cPerObjBufferVariables.texTransform = XMMatrixIdentity();
-
-// 	ps_cPerObjBufferVariables.mat.Ambient = XMFLOAT4(0.25f, 0.25f, 0.25f, 0.25f);
-// 	ps_cPerObjBufferVariables.mat.Diffuse = XMFLOAT4(0.25f, 0.25f, 0.25f, 0.25f);
-// 	ps_cPerObjBufferVariables.mat.Reflect = XMFLOAT4(0.25f, 0.25f, 0.25f, 0.25f);
-// 	ps_cPerObjBufferVariables.mat.Specular = XMFLOAT4(0.25f, 0.25f, 0.25f, 0.25f);
-
-	//ps_cPerObjBufferVariables.gEyePosW = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	//ps_cPerObjBufferVariables.diffuseMap = nullptr;
-
 	ZeroMemory(&ps_cPerObjBufferVariables, sizeof(PS_CPEROBJBUFFER));
 
 	// Fill in a buffer description.
@@ -228,11 +217,6 @@ bool BasicShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
 	device->CreateBuffer(&ps_cbDesc, &PS_InitData, &ps_cPerObjBuffer);
 
 	// PER FRAME BUFFER
-// 	ps_cPerFrameBufferVariables.gEyePosW = XMFLOAT3(0.0f, 0.0f, 0.0f);
-// 	ps_cPerFrameBufferVariables.padding = 0.0f;
-// 	ps_cPerFrameBufferVariables.padding2 = 0;
-// 	ps_cPerFrameBufferVariables.padding3 = 0;
-
 	ZeroMemory(&ps_cPerFrameBufferVariables, sizeof(PS_CPERFRAMEBUFFER));
 
 	// Fill in a buffer description.
@@ -262,7 +246,6 @@ bool BasicShader::SetActive(ID3D11DeviceContext* dc)
 {
 	// Set vertex layout and primitive topology
 	dc->IASetInputLayout(mInputLayout);
-	//dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// Set active shaders
 	dc->VSSetShader(mVertexShader, nullptr, 0);
@@ -271,11 +254,6 @@ bool BasicShader::SetActive(ID3D11DeviceContext* dc)
 	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
 	dc->PSSetSamplers(1, 1, &RenderStates::mAnisotropicSS);
 	dc->PSSetSamplers(2, 1, &RenderStates::mComparisonSS);
-
-	// Set buffers to the new active shaders
-// 	dc->VSSetConstantBuffers(0, 1, &vs_cBuffer);
-// 	dc->PSSetConstantBuffers(0, 1, &ps_cPerObjBuffer);
-// 	dc->PSSetConstantBuffers(1, 1, &ps_cPerFrameBuffer);
 
 	return true;
 }
@@ -286,30 +264,29 @@ void BasicShader::UpdatePerObj(ID3D11DeviceContext* dc)
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
 	// Vertex shader per obj buffer
-	dc->Map(vs_cBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	dc->Map(vs_cPerObjBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
 	VS_CPEROBJBUFFER* dataPtr = (VS_CPEROBJBUFFER*)mappedResource.pData;
 
-	dataPtr->world = mBufferCache.vsBuffer.world;
-	dataPtr->worldViewProj = mBufferCache.vsBuffer.worldViewProj;
+	dataPtr->world = mBufferCache.vsPerObjBuffer.world;
+	dataPtr->worldViewProj = mBufferCache.vsPerObjBuffer.worldViewProj;
 	//dataPtr->worldViewProjTex = mBufferCache.vsBuffer.worldViewProjTex;
-	dataPtr->worldInvTranspose = mBufferCache.vsBuffer.worldInvTranspose;
-	dataPtr->texTransform = mBufferCache.vsBuffer.texTransform;
-	dataPtr->shadowTransform = mBufferCache.vsBuffer.shadowTransform;
+	dataPtr->worldInvTranspose = mBufferCache.vsPerObjBuffer.worldInvTranspose;
+	dataPtr->texTransform = mBufferCache.vsPerObjBuffer.texTransform;
+	dataPtr->shadowTransform = mBufferCache.vsPerObjBuffer.shadowTransform;
 
-	dc->Unmap(vs_cBuffer, 0);
+	dc->Unmap(vs_cPerObjBuffer, 0);
 
 	// Pixel shader per obj buffer
-	//D3D11_MAPPED_SUBRESOURCE mappedResource2;
 	dc->Map(ps_cPerObjBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
 	PS_CPEROBJBUFFER* dataPtr2 = (PS_CPEROBJBUFFER*)mappedResource.pData;
 
-	dataPtr2->mat = mBufferCache.psBuffer.mat;
+	dataPtr2->mat = mBufferCache.psPerObjBuffer.mat;
 
 	dc->Unmap(ps_cPerObjBuffer, 0);
 
-	dc->VSSetConstantBuffers(0, 1, &vs_cBuffer);
+	dc->VSSetConstantBuffers(0, 1, &vs_cPerObjBuffer);
 	dc->PSSetConstantBuffers(0, 1, &ps_cPerObjBuffer);
 }
 
@@ -319,7 +296,6 @@ void BasicShader::UpdatePerFrame(ID3D11DeviceContext* dc)
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
 	// Pixel shader per frame buffer
-	//D3D11_MAPPED_SUBRESOURCE mappedResource3;
 	dc->Map(ps_cPerFrameBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
 	PS_CPERFRAMEBUFFER* dataPtr3 = (PS_CPERFRAMEBUFFER*)mappedResource.pData;
@@ -343,6 +319,14 @@ void BasicShader::UpdatePerFrame(ID3D11DeviceContext* dc)
 	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numPointLights; ++j)
 		dataPtr3->pointLights[j] = mBufferCache.psPerFrameBuffer.pointLights[j];
 
+	dataPtr3->numSpotLights = mBufferCache.psPerFrameBuffer.numSpotLights;
+	dataPtr3->padding8 = 0;
+	dataPtr3->padding9 = 0;
+	dataPtr3->padding10 = 0;
+
+	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numSpotLights; ++j)
+		dataPtr3->spotLights[j] = mBufferCache.psPerFrameBuffer.spotLights[j];
+
 	dc->Unmap(ps_cPerFrameBuffer, 0);
 
 	dc->PSSetConstantBuffers(1, 1, &ps_cPerFrameBuffer);
@@ -353,82 +337,30 @@ void BasicShader::SetWorldViewProjTex(ID3D11DeviceContext* dc,
 	XMMATRIX& viewProj,
 	XMMATRIX& tex)
 {
-	//world = XMMatrixTranspose(world);
-	//view = XMMatrixTranspose(view);
-	//proj = XMMatrixTranspose(proj);
-	//tex = XMMatrixTranspose(tex);
-
 	XMMATRIX worldViewProj = XMMatrixMultiply(world, viewProj);
 	XMMATRIX worldViewProjTex = XMMatrixMultiply(worldViewProj, tex);
 	XMMATRIX worldInvTranspose = MathHelper::InverseTranspose(world);
 	XMMATRIX texTransform = XMMatrixScaling(1.0f, 1.0f, 1.0f);
 
-	// Update vertex shader variables
-// 	D3D11_MAPPED_SUBRESOURCE mappedResource;
-// 	dc->Map(vs_cBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-// 
-// 	VS_CPEROBJBUFFER* dataPtr = (VS_CPEROBJBUFFER*)mappedResource.pData;
-// 
-// 	dataPtr->world = world;
-// 	dataPtr->worldViewProj = worldViewProj;
-// 	dataPtr->worldViewProjTex = worldViewProjTex;
-// 	dataPtr->worldInvTranspose = worldInvTranspose;
-// 	dataPtr->texTransform = texTransform;
-// 
-// 	dc->Unmap(vs_cBuffer, 0);
-
-	//mBufferCache.vsBuffer.world = XMMatrixTranspose(world);
-	mBufferCache.vsBuffer.world = world;
-	mBufferCache.vsBuffer.worldInvTranspose = worldInvTranspose;
-	mBufferCache.vsBuffer.worldViewProj = XMMatrixTranspose(worldViewProj);
+	mBufferCache.vsPerObjBuffer.world = XMMatrixTranspose(world);
+	mBufferCache.vsPerObjBuffer.worldInvTranspose = worldInvTranspose;
+	mBufferCache.vsPerObjBuffer.worldViewProj = XMMatrixTranspose(worldViewProj);
 	//mBufferCache.vsBuffer.worldViewProjTex = worldViewProjTex;
-	mBufferCache.vsBuffer.texTransform = texTransform;
+	mBufferCache.vsPerObjBuffer.texTransform = XMMatrixTranspose(texTransform);
 }
 
 void BasicShader::SetEyePosW(ID3D11DeviceContext* dc, XMFLOAT3 eyePosW)
 {
-	// Update pixel shader variables
-// 	D3D11_MAPPED_SUBRESOURCE mappedResource;
-// 	dc->Map(ps_cPerFrameBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-// 
-// 	PS_CPERFRAMEBUFFER* dataPtr = (PS_CPERFRAMEBUFFER*)mappedResource.pData;
-// 
-// 	dataPtr->gEyePosW = eyePosW;
-// 
-// 	dc->Unmap(ps_cPerFrameBuffer, 0);
-
 	mBufferCache.psPerFrameBuffer.gEyePosW = eyePosW;
 }
 
 void BasicShader::SetMaterial(ID3D11DeviceContext* dc, const Material& mat)
 {
-	// Update pixel shader variables
-// 	D3D11_MAPPED_SUBRESOURCE mappedResource;
-// 	dc->Map(ps_cPerObjBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-// 
-// 	PS_CPEROBJBUFFER* dataPtr = (PS_CPEROBJBUFFER*)mappedResource.pData;
-// 
-// 	dataPtr->mat = mat;
-// 
-// 	dc->Unmap(ps_cPerObjBuffer, 0);
-
-	mBufferCache.psBuffer.mat = mat;
+	mBufferCache.psPerObjBuffer.mat = mat;
 }
 
 void BasicShader::SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
 {	
-	// Update pixel shader variables
-// 	D3D11_MAPPED_SUBRESOURCE mappedResource;
-// 	dc->Map(ps_cPerObjBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-// 
-// 	PS_CBUFFER* dataPtr = (PS_CBUFFER*)mappedResource.pData;
-// 
-// 	dataPtr->diffuseMap = tex;
-// 
-// 	dc->Unmap(ps_cPerObjBuffer, 0);
-
-	//ps_cPerObjBufferVariables.diffuseMap = tex;
-
 	dc->PSSetShaderResources(0, 1, &tex);
 }
 
@@ -447,18 +379,6 @@ bool BasicShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pS
 
 void BasicShader::SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, PointLight pointLights[])
 {
-// 	D3D11_MAPPED_SUBRESOURCE mappedResource;
-// 	dc->Map(ps_cPerFrameBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-// 
-// 	PS_CPERFRAMEBUFFER* dataPtr = (PS_CPERFRAMEBUFFER*)mappedResource.pData;
-// 
-// 	dataPtr->numPointLights = numPointLights;
-// 
-// 	for (UINT i = 0; i < numPointLights; ++i)
-// 		dataPtr->pointLights[i] = pointLights[i];
-// 
-// 	dc->Unmap(ps_cPerFrameBuffer, 0);
-
 	mBufferCache.psPerFrameBuffer.numPointLights = numPointLights;
 
 	for (UINT i = 0; i < numPointLights; ++i)
@@ -467,18 +387,6 @@ void BasicShader::SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, P
 
 void BasicShader::SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DirectionalLight dirLights[])
 {
-// 	D3D11_MAPPED_SUBRESOURCE mappedResource;
-// 	dc->Map(ps_cPerFrameBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-// 
-// 	PS_CPERFRAMEBUFFER* dataPtr = (PS_CPERFRAMEBUFFER*)mappedResource.pData;
-// 
-// 	dataPtr->numDirLights = numDirLights;
-// 
-// 	for (UINT i = 0; i < numDirLights; ++i)
-// 		dataPtr->dirLights[i] = dirLights[i];
-// 
-// 	dc->Unmap(ps_cPerFrameBuffer, 0);
-
 	mBufferCache.psPerFrameBuffer.numDirLights = numDirLights;
 
 	for (UINT i = 0; i < numDirLights; ++i)
@@ -488,10 +396,20 @@ void BasicShader::SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, Direc
 void BasicShader::SetShadowTransform(ID3D11DeviceContext* dc, const XMFLOAT4X4& shadowTransform)
 {
 	XMMATRIX sTransform = XMLoadFloat4x4(&shadowTransform);
-	mBufferCache.vsBuffer.shadowTransform = sTransform;
+	mBufferCache.vsPerObjBuffer.shadowTransform = sTransform;
 }
 
 #pragma endregion BasicShaderEnd
+
+void BasicShader::SetSpotLights(ID3D11DeviceContext* dc, UINT numSpotLights, SpotLight spotLights[])
+{
+	mBufferCache.psPerFrameBuffer.numSpotLights = numSpotLights;
+
+	for (UINT i = 0; i < numSpotLights; ++i)
+		mBufferCache.psPerFrameBuffer.spotLights[i] = spotLights[i];
+}
+
+#pragma endregion BasicShader
 
 #pragma region ShadowShader
 
@@ -600,18 +518,10 @@ void ShadowShader::updatePerObj(ID3D11DeviceContext* dc)
 // Sky shader
 //-----------------------------------------------------------------------------------------------
 #pragma region SkyShader
-SkyShader::SkyShader()
-{
-
-}
+SkyShader::SkyShader(){}
 
 SkyShader::~SkyShader()
 {
-	if (mVertexShader)
-		mVertexShader->Release();
-	if (mPixelShader)
-		mPixelShader->Release();
-
 	if (vs_cPerFrameBuffer)
 		vs_cPerFrameBuffer->Release();
 }
@@ -645,8 +555,6 @@ void SkyShader::Update(ID3D11DeviceContext* dc)
 
 	dc->Unmap(vs_cPerFrameBuffer, 0);
 	dc->VSSetConstantBuffers(0, 1, &vs_cPerFrameBuffer);
-
-	//dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
 }
 
 bool SkyShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -687,11 +595,9 @@ bool SkyShader::SetActive(ID3D11DeviceContext* dc)
 
 	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
 
-	//dc->PSSetSamplers(0, 1, &samplerState);
-
 	return true;
 }
-#pragma endregion SkyShaderEnd
+#pragma endregion SkyShader
 
 //-----------------------------------------------------------------------------------------------
 // Normal mapping skinned shader
@@ -778,7 +684,6 @@ void NormalMappedSkinned::UpdatePerObj(ID3D11DeviceContext* dc)
 	dc->Unmap(vs_cSkinnedBuffer, 0);
 
 	// Pixel shader per obj buffer
-	//D3D11_MAPPED_SUBRESOURCE mappedResource2;
 	dc->Map(ps_cPerObjBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
 	PS_CPEROBJBUFFER* dataPtr2 = (PS_CPEROBJBUFFER*)mappedResource.pData;
@@ -798,7 +703,6 @@ void NormalMappedSkinned::UpdatePerFrame(ID3D11DeviceContext* dc)
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
 	// Pixel shader per frame buffer
-	//D3D11_MAPPED_SUBRESOURCE mappedResource3;
 	dc->Map(ps_cPerFrameBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
 	PS_CPERFRAMEBUFFER* dataPtr3 = (PS_CPERFRAMEBUFFER*)mappedResource.pData;
@@ -822,6 +726,14 @@ void NormalMappedSkinned::UpdatePerFrame(ID3D11DeviceContext* dc)
 	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numPointLights; ++j)
 		dataPtr3->pointLights[j] = mBufferCache.psPerFrameBuffer.pointLights[j];
 
+	dataPtr3->numSpotLights = mBufferCache.psPerFrameBuffer.numSpotLights;
+	dataPtr3->padding8 = 0;
+	dataPtr3->padding9 = 0;
+	dataPtr3->padding10 = 0;
+
+	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numSpotLights; ++j)
+		dataPtr3->spotLights[j] = mBufferCache.psPerFrameBuffer.spotLights[j];
+
 	dc->Unmap(ps_cPerFrameBuffer, 0);
 
 	dc->PSSetConstantBuffers(0, 1, &ps_cPerFrameBuffer);
@@ -834,11 +746,6 @@ NormalMappedSkinned::NormalMappedSkinned()
 
 NormalMappedSkinned::~NormalMappedSkinned()
 {
-	if (mVertexShader)
-		mVertexShader->Release();
-	if (mPixelShader)
-		mPixelShader->Release();
-
 	if (vs_cBuffer)
 		vs_cBuffer->Release();
 	if (ps_cPerObjBuffer)
@@ -898,21 +805,6 @@ bool NormalMappedSkinned::Init(ID3D11Device* device, ID3D11InputLayout* inputLay
 	//------------------------
 	// Pixel shader buffers
 	//------------------------
-	// PER OBJECT BUFFER
-	// 	ps_cPerObjBufferVariables.world = XMMatrixIdentity();
-	// 	ps_cPerObjBufferVariables.worldViewProj = XMMatrixIdentity();
-	// 	ps_cPerObjBufferVariables.worldViewProjTex = XMMatrixIdentity();
-	// 	ps_cPerObjBufferVariables.worldInvTranspose = XMMatrixIdentity();
-	// 	ps_cPerObjBufferVariables.texTransform = XMMatrixIdentity();
-
-	// 	ps_cPerObjBufferVariables.mat.Ambient = XMFLOAT4(0.25f, 0.25f, 0.25f, 0.25f);
-	// 	ps_cPerObjBufferVariables.mat.Diffuse = XMFLOAT4(0.25f, 0.25f, 0.25f, 0.25f);
-	// 	ps_cPerObjBufferVariables.mat.Reflect = XMFLOAT4(0.25f, 0.25f, 0.25f, 0.25f);
-	// 	ps_cPerObjBufferVariables.mat.Specular = XMFLOAT4(0.25f, 0.25f, 0.25f, 0.25f);
-
-	//ps_cPerObjBufferVariables.gEyePosW = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	//ps_cPerObjBufferVariables.diffuseMap = nullptr;
-
 	ZeroMemory(&ps_cPerObjBufferVariables, sizeof(PS_CPEROBJBUFFER));
 
 	// Fill in a buffer description.
@@ -934,11 +826,6 @@ bool NormalMappedSkinned::Init(ID3D11Device* device, ID3D11InputLayout* inputLay
 	device->CreateBuffer(&ps_cbDesc, &PS_InitData, &ps_cPerObjBuffer);
 
 	// PER FRAME BUFFER
-	// 	ps_cPerFrameBufferVariables.gEyePosW = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	// 	ps_cPerFrameBufferVariables.padding = 0.0f;
-	// 	ps_cPerFrameBufferVariables.padding2 = 0;
-	// 	ps_cPerFrameBufferVariables.padding3 = 0;
-
 	ZeroMemory(&ps_cPerFrameBufferVariables, sizeof(PS_CPERFRAMEBUFFER));
 
 	// Fill in a buffer description.
@@ -993,12 +880,549 @@ void NormalMappedSkinned::SetWorldViewProjTex(ID3D11DeviceContext* dc, XMMATRIX&
 	XMMATRIX worldInvTranspose = MathHelper::InverseTranspose(world);
 	XMMATRIX texTransform = XMMatrixScaling(1.0f, 1.0f, 1.0f);
 
-	//mBufferCache.vsBuffer.world = XMMatrixTranspose(world);
-	mBufferCache.vsBuffer.world = world;
+	mBufferCache.vsBuffer.world = XMMatrixTranspose(world);
 	mBufferCache.vsBuffer.worldInvTranspose = worldInvTranspose;
 	mBufferCache.vsBuffer.worldViewProj = XMMatrixTranspose(worldViewProj);
 	//mBufferCache.vsBuffer.worldViewProjTex = worldViewProjTex;
-	mBufferCache.vsBuffer.texTransform = texTransform;
+	mBufferCache.vsBuffer.texTransform = XMMatrixTranspose(texTransform);
 }
 
-#pragma endregion NormalMapSkinnedEnd
+void NormalMappedSkinned::SetSpotLights(ID3D11DeviceContext* dc, UINT numSpotLights, SpotLight spotLights[])
+{
+	mBufferCache.psPerFrameBuffer.numSpotLights = numSpotLights;
+
+	for (UINT i = 0; i < numSpotLights; ++i)
+	{
+		mBufferCache.psPerFrameBuffer.spotLights[i] = spotLights[i];
+	}
+}
+
+#pragma endregion NormalMapSkinned
+
+BasicDeferredShader::BasicDeferredShader()
+{
+
+}
+
+BasicDeferredShader::~BasicDeferredShader()
+{
+	if (vs_cPerObjBuffer)
+		vs_cPerObjBuffer->Release();
+}
+
+bool BasicDeferredShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
+{
+	//------------------------
+	// Vertex shader buffers
+	//------------------------
+	// PER OBJECT BUFFER
+	ZeroMemory(&vs_cPerObjBufferVariables, sizeof(VS_CPEROBJBUFFER));
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC cbDesc;
+	cbDesc.ByteWidth = sizeof(VS_CPEROBJBUFFER);
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA InitData;
+	InitData.pSysMem = &vs_cPerObjBufferVariables;
+	InitData.SysMemPitch = 0;
+	InitData.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	device->CreateBuffer(&cbDesc, &InitData, &vs_cPerObjBuffer);
+
+	//------------------------
+	// Pixel shader buffers
+	//------------------------
+	// PER OBJECT BUFFER
+	ZeroMemory(&ps_cPerObjBufferVariables, sizeof(PS_CPEROBJBUFFER));
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC cbDesc2;
+	cbDesc2.ByteWidth = sizeof(PS_CPEROBJBUFFER);
+	cbDesc2.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc2.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc2.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc2.MiscFlags = 0;
+	cbDesc2.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA InitData2;
+	InitData2.pSysMem = &ps_cPerObjBufferVariables;
+	InitData2.SysMemPitch = 0;
+	InitData2.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	device->CreateBuffer(&cbDesc2, &InitData2, &ps_cPerObjBuffer);
+
+	mInputLayout = inputLayout;
+
+	return true;
+}
+
+bool BasicDeferredShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
+{
+	mVertexShader = vShader;
+	mPixelShader = pShader;
+
+	return true;
+}
+
+bool BasicDeferredShader::SetActive(ID3D11DeviceContext* dc)
+{
+	// Set vertex layout and primitive topology
+	dc->IASetInputLayout(mInputLayout);
+
+	// Set active shaders
+	dc->VSSetShader(mVertexShader, nullptr, 0);
+	dc->PSSetShader(mPixelShader, nullptr, 0);
+
+	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
+	dc->PSSetSamplers(1, 1, &RenderStates::mAnisotropicSS);
+
+	return true;
+}
+
+void BasicDeferredShader::SetWorldViewProjTex(XMMATRIX& world, XMMATRIX& viewProj, XMMATRIX& tex)
+{
+	mBufferCache.vsPerObjBuffer.world = XMMatrixTranspose(world);
+	mBufferCache.vsPerObjBuffer.worldViewProj = XMMatrixTranspose(XMMatrixMultiply(world, viewProj));
+	mBufferCache.vsPerObjBuffer.worldInvTranspose = MathHelper::InverseTranspose(world);
+	mBufferCache.vsPerObjBuffer.texTransform = XMMatrixScaling(1.0f, 1.0f, 1.0f);
+}
+
+void BasicDeferredShader::SetMaterial(const Material& mat)
+{
+	mBufferCache.psPerObjBuffer.mat = mat;
+}
+
+void BasicDeferredShader::SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(0, 1, &tex);
+}
+
+void BasicDeferredShader::UpdatePerObj(ID3D11DeviceContext* dc)
+{
+	// Update constant shader buffers using our cache
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	// Vertex shader per obj buffer
+	dc->Map(vs_cPerObjBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	VS_CPEROBJBUFFER* dataPtr = (VS_CPEROBJBUFFER*)mappedResource.pData;
+
+	dataPtr->world = mBufferCache.vsPerObjBuffer.world;
+	dataPtr->worldViewProj = mBufferCache.vsPerObjBuffer.worldViewProj;
+	//dataPtr->worldViewProjTex = mBufferCache.vsBuffer.worldViewProjTex;
+	dataPtr->worldInvTranspose = mBufferCache.vsPerObjBuffer.worldInvTranspose;
+	dataPtr->texTransform = mBufferCache.vsPerObjBuffer.texTransform;
+
+	dc->Unmap(vs_cPerObjBuffer, 0);
+
+	dc->VSSetConstantBuffers(0, 1, &vs_cPerObjBuffer);
+
+	// Pixel shader per obj buffer
+	dc->Map(ps_cPerObjBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	PS_CPEROBJBUFFER* dataPtr2 = (PS_CPEROBJBUFFER*)mappedResource.pData;
+
+	dataPtr2->mat = mBufferCache.psPerObjBuffer.mat;
+
+	dc->Unmap(ps_cPerObjBuffer, 0);
+
+	dc->PSSetConstantBuffers(0, 1, &ps_cPerObjBuffer);
+}
+
+BasicDeferredSkinnedShader::BasicDeferredSkinnedShader()
+{
+
+}
+
+BasicDeferredSkinnedShader::~BasicDeferredSkinnedShader()
+{
+
+}
+
+bool BasicDeferredSkinnedShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
+{
+	//------------------------
+	// Vertex shader buffer
+	//------------------------
+	ZeroMemory(&vs_cPerObjBufferVariables, sizeof(VS_CPEROBJBUFFER));
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC cbDesc;
+	cbDesc.ByteWidth = sizeof(VS_CPEROBJBUFFER);
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA InitData;
+	InitData.pSysMem = &vs_cPerObjBufferVariables;
+	InitData.SysMemPitch = 0;
+	InitData.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	device->CreateBuffer(&cbDesc, &InitData, &vs_cPerObjBuffer);
+
+	// SKINNED BUFFER
+	ZeroMemory(&vs_cSkinnedBufferVariables, sizeof(VS_CSKINNEDBUFFER));
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC cbSkinDesc;
+	cbSkinDesc.ByteWidth = sizeof(VS_CSKINNEDBUFFER);
+	cbSkinDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbSkinDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbSkinDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbSkinDesc.MiscFlags = 0;
+	cbSkinDesc.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA SkinInitData;
+	SkinInitData.pSysMem = &vs_cSkinnedBufferVariables;
+	SkinInitData.SysMemPitch = 0;
+	SkinInitData.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	device->CreateBuffer(&cbSkinDesc, &SkinInitData, &vs_cSkinnedBuffer);
+
+	//------------------------
+	// Pixel shader buffers
+	//------------------------
+	// PER OBJECT BUFFER
+	ZeroMemory(&ps_cPerObjBufferVariables, sizeof(PS_CPEROBJBUFFER));
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC cbDesc2;
+	cbDesc2.ByteWidth = sizeof(PS_CPEROBJBUFFER);
+	cbDesc2.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc2.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc2.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc2.MiscFlags = 0;
+	cbDesc2.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA InitData2;
+	InitData2.pSysMem = &ps_cPerObjBufferVariables;
+	InitData2.SysMemPitch = 0;
+	InitData2.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	device->CreateBuffer(&cbDesc2, &InitData2, &ps_cPerObjBuffer);
+
+	mInputLayout = inputLayout;
+
+	return true;
+}
+
+bool BasicDeferredSkinnedShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
+{
+	mVertexShader = vShader;
+	mPixelShader = pShader;
+
+	return true;
+}
+
+bool BasicDeferredSkinnedShader::SetActive(ID3D11DeviceContext* dc)
+{
+	// Set vertex layout and primitive topology
+	dc->IASetInputLayout(mInputLayout);
+
+	// Set active shaders
+	dc->VSSetShader(mVertexShader, nullptr, 0);
+	dc->PSSetShader(mPixelShader, nullptr, 0);
+
+	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
+	dc->PSSetSamplers(1, 1, &RenderStates::mAnisotropicSS);
+
+	return true;
+}
+
+void BasicDeferredSkinnedShader::SetWorldViewProjTex(XMMATRIX& world, XMMATRIX& viewProj, XMMATRIX& tex)
+{
+	mBufferCache.vsPerObjBuffer.world = XMMatrixTranspose(world);
+	mBufferCache.vsPerObjBuffer.worldViewProj = XMMatrixTranspose(XMMatrixMultiply(world, viewProj));
+	mBufferCache.vsPerObjBuffer.worldInvTranspose = MathHelper::InverseTranspose(world);
+	mBufferCache.vsPerObjBuffer.texTransform = XMMatrixScaling(1.0f, 1.0f, 1.0f);
+}
+
+void BasicDeferredSkinnedShader::SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(0, 1, &tex);
+}
+
+void BasicDeferredSkinnedShader::SetBoneTransforms(const XMFLOAT4X4 boneTransforms[], UINT numTransforms)
+{
+	for (UINT i = 0; i < numTransforms; ++i)
+	{
+		mBufferCache.vsSkinnedBuffer.boneTransforms[i] = XMLoadFloat4x4(&boneTransforms[i]);
+		mBufferCache.vsSkinnedBuffer.boneTransforms[i] = XMMatrixTranspose(mBufferCache.vsSkinnedBuffer.boneTransforms[i]);
+	}
+
+	mBufferCache.vsSkinnedBuffer.numBoneTransforms = numTransforms;
+}
+
+void BasicDeferredSkinnedShader::UpdatePerObj(ID3D11DeviceContext* dc)
+{
+	// Update constant shader buffers using our cache
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	// Vertex shader per obj buffer
+	dc->Map(vs_cPerObjBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	VS_CPEROBJBUFFER* dataPtr = (VS_CPEROBJBUFFER*)mappedResource.pData;
+
+	dataPtr->world = mBufferCache.vsPerObjBuffer.world;
+	dataPtr->worldViewProj = mBufferCache.vsPerObjBuffer.worldViewProj;
+	//dataPtr->worldViewProjTex = mBufferCache.vsBuffer.worldViewProjTex;
+	dataPtr->worldInvTranspose = mBufferCache.vsPerObjBuffer.worldInvTranspose;
+	dataPtr->texTransform = mBufferCache.vsPerObjBuffer.texTransform;
+
+	dc->Unmap(vs_cPerObjBuffer, 0);
+
+	dc->VSSetConstantBuffers(0, 1, &vs_cPerObjBuffer);
+
+	// Vertex shader per obj skinned buffer
+	dc->Map(vs_cSkinnedBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	VS_CSKINNEDBUFFER* dataPtr3 = (VS_CSKINNEDBUFFER*)mappedResource.pData;
+
+	for (UINT i = 0; i < mBufferCache.vsSkinnedBuffer.numBoneTransforms; ++i)
+		dataPtr3->boneTransforms[i] = mBufferCache.vsSkinnedBuffer.boneTransforms[i];
+
+	dataPtr3->numBoneTransforms = mBufferCache.vsSkinnedBuffer.numBoneTransforms;
+	dataPtr3->padding = 0;
+	dataPtr3->padding2 = 0;
+	dataPtr3->padding3 = 0;
+
+	dc->Unmap(vs_cSkinnedBuffer, 0);
+
+	dc->VSSetConstantBuffers(1, 1, &vs_cSkinnedBuffer);
+
+	// Pixel shader per obj buffer
+	dc->Map(ps_cPerObjBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	PS_CPEROBJBUFFER* dataPtr2 = (PS_CPEROBJBUFFER*)mappedResource.pData;
+
+	dataPtr2->mat = mBufferCache.psPerObjBuffer.mat;
+
+	dc->Unmap(ps_cPerObjBuffer, 0);
+
+	dc->PSSetConstantBuffers(0, 1, &ps_cPerObjBuffer);
+}
+
+void BasicDeferredSkinnedShader::SetMaterial(const Material& mat)
+{
+	mBufferCache.psPerObjBuffer.mat = mat;
+}
+
+void LightDeferredShader::SetEyePosW(XMFLOAT3 eyePosW)
+{
+	mBufferCache.psPerFrameBuffer.gEyePosW = eyePosW;
+}
+
+bool LightDeferredShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
+{
+	mVertexShader = vShader;
+	mPixelShader = pShader;
+
+	return true;
+}
+
+void LightDeferredShader::SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, PointLight pointLights[])
+{
+	mBufferCache.psPerFrameBuffer.numPointLights = numPointLights;
+
+	for (UINT i = 0; i < numPointLights; ++i)
+		mBufferCache.psPerFrameBuffer.pointLights[i] = pointLights[i];
+}
+
+void LightDeferredShader::SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DirectionalLight dirLights[])
+{
+	mBufferCache.psPerFrameBuffer.numDirLights = numDirLights;
+
+	for (UINT i = 0; i < numDirLights; ++i)
+		mBufferCache.psPerFrameBuffer.dirLights[i] = dirLights[i];
+}
+
+void LightDeferredShader::SetSpotLights(ID3D11DeviceContext* dc, UINT numSpotLights, SpotLight spotLights[])
+{
+	mBufferCache.psPerFrameBuffer.numSpotLights = numSpotLights;
+
+	for (UINT i = 0; i < numSpotLights; ++i)
+		mBufferCache.psPerFrameBuffer.spotLights[i] = spotLights[i];
+}
+
+LightDeferredShader::LightDeferredShader()
+{
+
+}
+
+LightDeferredShader::~LightDeferredShader()
+{
+	if (vs_cPerObjBuffer)
+		vs_cPerObjBuffer->Release();
+	if (ps_cPerFrameBuffer)
+		ps_cPerFrameBuffer->Release();
+}
+
+bool LightDeferredShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
+{
+	//------------------------
+	// Vertex shader buffer
+	//------------------------
+	ZeroMemory(&mBufferCache.vsPerObjBuffer, sizeof(VS_CPEROBJBUFFER));
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC cbDesc;
+	cbDesc.ByteWidth = sizeof(VS_CPEROBJBUFFER);
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA InitData;
+	InitData.pSysMem = &mBufferCache.vsPerObjBuffer;
+	InitData.SysMemPitch = 0;
+	InitData.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	device->CreateBuffer(&cbDesc, &InitData, &vs_cPerObjBuffer);
+
+	//------------------------
+	// Pixel shader buffers
+	//------------------------
+	// PER FRAME BUFFER
+	ZeroMemory(&mBufferCache.psPerFrameBuffer, sizeof(PS_CPERFRAMEBUFFER));
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC ps_cPerFramebDesc;
+	ps_cPerFramebDesc.ByteWidth = sizeof(PS_CPERFRAMEBUFFER);
+	ps_cPerFramebDesc.Usage = D3D11_USAGE_DYNAMIC;
+	ps_cPerFramebDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	ps_cPerFramebDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	ps_cPerFramebDesc.MiscFlags = 0;
+	ps_cPerFramebDesc.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA PS_InitData2;
+	PS_InitData2.pSysMem = &mBufferCache.psPerFrameBuffer;
+	PS_InitData2.SysMemPitch = 0;
+	PS_InitData2.SysMemSlicePitch = 0;
+
+	device->CreateBuffer(&ps_cPerFramebDesc, &PS_InitData2, &ps_cPerFrameBuffer);
+
+	mInputLayout = inputLayout;
+
+	return true;
+}
+
+bool LightDeferredShader::SetActive(ID3D11DeviceContext* dc)
+{
+	// Set vertex layout and primitive topology
+	dc->IASetInputLayout(mInputLayout);
+
+	// Set active shaders
+	dc->VSSetShader(mVertexShader, nullptr, 0);
+	dc->PSSetShader(mPixelShader, nullptr, 0);
+
+	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
+	dc->PSSetSamplers(1, 1, &RenderStates::mAnisotropicSS);
+
+	return true;
+}
+
+void LightDeferredShader::SetDiffuseTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(0, 1, &tex);
+}
+
+void LightDeferredShader::SetNormalTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(1, 1, &tex);
+}
+
+void LightDeferredShader::SetSpecularTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(2, 1, &tex);
+}
+
+void LightDeferredShader::SetPositionTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(3, 1, &tex);
+}
+
+void LightDeferredShader::UpdatePerObj(ID3D11DeviceContext* dc)
+{
+	// Update constant shader buffers using our cache
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	// Vertex shader per obj buffer
+	dc->Map(vs_cPerObjBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	VS_CPEROBJBUFFER* dataPtr = (VS_CPEROBJBUFFER*)mappedResource.pData;
+
+	dataPtr->worldViewProj = mBufferCache.vsPerObjBuffer.worldViewProj;
+
+	dc->Unmap(vs_cPerObjBuffer, 0);
+	
+	dc->VSSetConstantBuffers(0, 1, &vs_cPerObjBuffer);
+}
+
+void LightDeferredShader::SetWorldViewProj(XMMATRIX& world, XMMATRIX& view, XMMATRIX& proj)
+{
+	XMMATRIX viewProj = XMMatrixMultiply(view, proj);
+	mBufferCache.vsPerObjBuffer.worldViewProj = XMMatrixTranspose(XMMatrixMultiply(world, viewProj));
+}
+
+void LightDeferredShader::UpdatePerFrame(ID3D11DeviceContext* dc)
+{
+	// Update constant shader buffers using our cache
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	// Pixel shader per frame buffer
+	dc->Map(ps_cPerFrameBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	PS_CPERFRAMEBUFFER* dataPtr3 = (PS_CPERFRAMEBUFFER*)mappedResource.pData;
+
+	dataPtr3->numDirLights = mBufferCache.psPerFrameBuffer.numDirLights;
+	dataPtr3->padding2 = 0;
+	dataPtr3->padding3 = 0;
+	dataPtr3->padding4 = 0;
+
+	for (UINT i = 0; i < mBufferCache.psPerFrameBuffer.numDirLights; ++i)
+		dataPtr3->dirLights[i] = mBufferCache.psPerFrameBuffer.dirLights[i];
+
+	dataPtr3->gEyePosW = mBufferCache.psPerFrameBuffer.gEyePosW;
+	dataPtr3->padding = 0.0f;
+
+	dataPtr3->numPointLights = mBufferCache.psPerFrameBuffer.numPointLights;
+	dataPtr3->padding5 = 0;
+	dataPtr3->padding6 = 0;
+	dataPtr3->padding7 = 0;
+
+	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numPointLights; ++j)
+		dataPtr3->pointLights[j] = mBufferCache.psPerFrameBuffer.pointLights[j];
+
+	dataPtr3->numSpotLights = mBufferCache.psPerFrameBuffer.numSpotLights;
+	dataPtr3->padding8 = 0;
+	dataPtr3->padding9 = 0;
+	dataPtr3->padding10 = 0;
+
+	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numSpotLights; ++j)
+		dataPtr3->spotLights[j] = mBufferCache.psPerFrameBuffer.spotLights[j];
+
+	dc->Unmap(ps_cPerFrameBuffer, 0);
+
+	dc->PSSetConstantBuffers(0, 1, &ps_cPerFrameBuffer);
+}

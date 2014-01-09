@@ -95,8 +95,6 @@ public:
 		assert(owner);
 
 		owner->getModules()->sound->SetActiveListener(m_listener);
-
-		printf("activated listener\n");
 	}
 
 private:

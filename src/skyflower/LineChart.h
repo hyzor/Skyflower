@@ -7,8 +7,6 @@
 #include <skia/SkCanvas.h>
 #include <skia/SkBitmap.h>
 
-#include <skia/SkImageEncoder.h>
-
 struct LineChartDataPoint
 {
 	float timeStamp;
@@ -24,8 +22,12 @@ public:
 	void SetSize(unsigned int width, unsigned int height);
 	void SetUnit(const std::string &unit);
 
+	unsigned int GetWidth() const;
+	unsigned int GetHeight() const;
+	void *GetPixels() const;
+
 	void AddPoint(float timeStamp, float value);
-	void Clear();
+	void ClearPoints();
 
 	void Draw(float startTime, float endTime, float resolution, float targetValue);
 
@@ -39,10 +41,6 @@ private:
 	size_t m_dataPointEnd;
 
 	std::string m_unit;
-
-
-
-	SkImageEncoder *m_imageEncoder;
 };
 
 #endif

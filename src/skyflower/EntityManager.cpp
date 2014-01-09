@@ -1306,7 +1306,7 @@ bool EntityManager::loadXML2(string xmlFile)
 			else if (componentName == "Health")
 			{
 				attr = e->Attribute("maxHP");
-				float maxHP = 0;
+				int maxHP = 0;
 				
 				if (attr != NULL)
 				{

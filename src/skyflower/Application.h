@@ -44,6 +44,7 @@ private:
 	EntityManager* entityManager;
 	CameraController *camera;
 	bool m_quit;
+	bool m_showCharts;
 };
 
 #endif

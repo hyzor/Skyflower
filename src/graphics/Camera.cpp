@@ -237,3 +237,74 @@ void Camera::LookAt(Vec3 at)
 	mRight = XMFLOAT3(right.x, right.y, right.z);
 	mLook = XMFLOAT3(dir.x, dir.y, dir.z);*/
 }
+
+void Camera::UpdateOrthoMatrix(float screenWidth, float screenHeight, float zn, float zf)
+{
+	XMMATRIX orthographicProj = XMMatrixOrthographicLH(screenWidth, screenHeight, zn, zf);
+	XMStoreFloat4x4(&mOrthographicProj, orthographicProj);
+}
+
+DirectX::XMMATRIX Camera::GetOrthoMatrix() const
+{
+	return XMLoadFloat4x4(&mOrthographicProj);
+}
+
+void Camera::UpdateBaseViewMatrix()
+{
+	/*
+	XMVECTOR right = XMLoadFloat3(&mRight);
+	XMVECTOR up = XMLoadFloat3(&mUp);
+	XMVECTOR look = XMLoadFloat3(&mLook);
+	XMVECTOR pos = XMLoadFloat3(&mPosition);
+
+	// Orthonormalize right, up and look vectors
+	look = XMVector3Normalize(look); // Unit length
+	up = XMVector3Normalize(XMVector3Cross(look, right)); // Compute new corrected vector & normalize
+
+	// Compute new corrected right vector (up & look already orthonormalized)
+	right = XMVector3Cross(up, look);
+
+	// Fill in the view matrix entries
+	float x = -XMVectorGetX(XMVector3Dot(pos, right));
+	float y = -XMVectorGetX(XMVector3Dot(pos, up));
+	float z = -XMVectorGetX(XMVector3Dot(pos, look));
+
+	XMStoreFloat3(&mRight, right);
+	XMStoreFloat3(&mUp, up);
+	XMStoreFloat3(&mLook, look);
+
+	mBaseView(0, 0) = mRight.x;
+	mBaseView(1, 0) = mRight.y;
+	mBaseView(2, 0) = mRight.z;
+	mBaseView(3, 0) = x;
+
+	mBaseView(0, 1) = mUp.x;
+	mBaseView(1, 1) = mUp.y;
+	mBaseView(2, 1) = mUp.z;
+	mBaseView(3, 1) = y;
+
+	mBaseView(0, 2) = mLook.x;
+	mBaseView(1, 2) = mLook.y;
+	mBaseView(2, 2) = mLook.z;
+	mBaseView(3, 2) = z;
+
+	mBaseView(0, 3) = 0.0f;
+	mBaseView(1, 3) = 0.0f;
+	mBaseView(2, 3) = 0.0f;
+	mBaseView(3, 3) = 1.0f;
+	*/
+
+	//XMFLOAT3 right(1.0f, 0.0f, 0.0f);
+	//XMFLOAT3 dir(0, 0, 1);
+	XMVECTOR lookat = XMLoadFloat3(&XMFLOAT3(0.0f, 0.0f, 1.0f));
+	XMVECTOR up = XMLoadFloat3(&XMFLOAT3(0.0f, 1.0f, 0.0f));
+	XMVECTOR position = XMLoadFloat3(&XMFLOAT3(mPosition.x, mPosition.y, mPosition.z));
+
+	XMMATRIX view = XMMatrixLookAtLH(position, lookat, up);// D3DXToRadian(degrees));
+	XMStoreFloat4x4(&mBaseView, view);
+}
+
+DirectX::XMMATRIX Camera::GetBaseViewMatrix() const
+{
+	return XMLoadFloat4x4(&mBaseView);
+}

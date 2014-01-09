@@ -13,7 +13,13 @@ namespace Vertex
 		XMFLOAT3 position;
 	};
 
-	struct Basic32
+	struct PosTex
+	{
+		XMFLOAT3 position;
+		XMFLOAT2 texCoord;
+	};
+
+	struct PosNormalTex
 	{
 		XMFLOAT3 position;
 		XMFLOAT3 normal;
@@ -70,7 +76,8 @@ class InputLayoutDesc
 {
 public:
 	static const D3D11_INPUT_ELEMENT_DESC Position[1];
-	static const D3D11_INPUT_ELEMENT_DESC Basic32[3];
+	static const D3D11_INPUT_ELEMENT_DESC PosTex[2];
+	static const D3D11_INPUT_ELEMENT_DESC PosNormalTex[3];
 	static const D3D11_INPUT_ELEMENT_DESC Terrain[3];
 	static const D3D11_INPUT_ELEMENT_DESC TerrainNormal[4];
 	static const D3D11_INPUT_ELEMENT_DESC Particle[5];
@@ -94,7 +101,8 @@ public:
 	//static void CreateInputLayout(ID3D11Device* device, ID3D11PixelShader* pixelShader);
 
 	static ID3D11InputLayout* Position;
-	static ID3D11InputLayout* Basic32;
+	static ID3D11InputLayout* PosTex;
+	static ID3D11InputLayout* PosNormalTex;
 	static ID3D11InputLayout* Terrain;
 	static ID3D11InputLayout* TerrainNormal;
 	static ID3D11InputLayout* Particle;

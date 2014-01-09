@@ -11,6 +11,10 @@ cbuffer cbPerFrame : register(b0)
 	int gDirLightCount;
 	int padding5, padding6, padding7;
 
+	SpotLight gSpotLights[MAX_SPOT_LIGHTS];
+	int gSpotLightCount;
+	int padding8, padding9, padding13;
+
 	float3 gEyePosW;
 	float padding;
 };
@@ -72,9 +76,9 @@ float4 main(VertexOut pIn) : SV_TARGET
 			//float3 shadow = float3(1.0f, 1.0f, 1.0f);
 			//shadow[0] = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
 
+			float4 A, D, S;
 		for (int j = 0; j < gPointLightCount; ++j)
 		{
-			float4 A, D, S;
 			ComputePointLight(gMaterial, gPointLights[j], pIn.PosW, pIn.NormalW, toEye, A, D, S);
 
 			ambient += A;
@@ -84,9 +88,16 @@ float4 main(VertexOut pIn) : SV_TARGET
 
 		for (int k = 0; k < gDirLightCount; ++k)
 		{
-			float4 A, D, S;
 			ComputeDirectionalLight(gMaterial, gDirLights[k], pIn.NormalW, toEye, A, D, S);
 
+			ambient += A;
+			diffuse += D;
+			specular += S;
+		}
+
+		for (int i = 0; i < gSpotLightCount; ++i)
+		{
+			ComputeSpotLight(gMaterial, gSpotLights[i], pIn.PosW, pIn.NormalW, toEye, A, D, S);
 			ambient += A;
 			diffuse += D;
 			specular += S;

@@ -218,7 +218,7 @@ enum BufferStatus ResourceCache::RequestBuffer(uint32_t resourceHash, unsigned i
 	}
 
 	if (emptySlot == -1) {
-		printf("ResourceCache::RequestBuffer, replacing cache entry %i (resourceHash=%#x, bufferIndex=%u, lastRequestedFrame=%u, currentFrame=%u)\n", bestSlot, m_cacheEntries[bestSlot].resourceHash, m_cacheEntries[bestSlot].bufferIndex, bestSlotFrame, m_currentFrame);
+		//printf("ResourceCache::RequestBuffer, replacing cache entry %i (resourceHash=%#x, bufferIndex=%u, lastRequestedFrame=%u, currentFrame=%u)\n", bestSlot, m_cacheEntries[bestSlot].resourceHash, m_cacheEntries[bestSlot].bufferIndex, bestSlotFrame, m_currentFrame);
 	}
 
 	int slot = (emptySlot != -1 ? emptySlot : bestSlot);
