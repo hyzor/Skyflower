@@ -24,6 +24,7 @@
 
 #include "DeferredBuffers.h"
 #include "OrthoWindow.h"
+#include "Texture2DImpl.h"
 
 const float zNear = 1.0f;
 const float zFar = 10000.0f;
@@ -91,6 +92,9 @@ private:
 
 	DeferredBuffers* mDeferredBuffers;
 	OrthoWindow* mOrthoWindow;
+
+	Texture2DImpl *mSSAOTexture;
+	ID3D11RenderTargetView *mSSAOTextureRTView;
 };
 
 #endif

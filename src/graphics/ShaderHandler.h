@@ -633,6 +633,64 @@ private:
 };
 #pragma endregion LightDeferredShader
 
+#pragma region SSAOShader
+class SSAOShader : public IShader
+{
+public:
+	SSAOShader();
+	~SSAOShader();
+
+	// Overload new and delete, because this class contains XMMATRIX (16 byte alignment)
+	void* operator new (size_t size)
+	{
+		void* p = _aligned_malloc(size, 16);
+
+		if (!p)
+			throw std::bad_alloc();
+
+		return p;
+	}
+
+	void operator delete (void* p)
+	{
+		SSAOShader* ptr = static_cast<SSAOShader*>(p);
+		_aligned_free(p);
+	}
+
+	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
+	bool SetActive(ID3D11DeviceContext* dc);
+
+	void Update(ID3D11DeviceContext* dc);
+
+	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+
+	void SetDepthTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetNormalTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetRandomTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+
+	void SetEyePos(const XMFLOAT3 &eyePos);
+	void SetZFar(float z_far);
+	void SetFramebufferSize(const XMFLOAT2 &framebufferSize);
+	void SetProjectionMatrix(const XMMATRIX& projectionMatrix);
+	void SetViewProjectionMatrix(const XMMATRIX& viewProjectionMatrix);
+
+private:
+	struct PS_CPERFRAMEBUFFER
+	{
+		XMFLOAT3 eyePos;
+		float z_far;
+		XMFLOAT2 framebufferSize;
+
+		XMMATRIX projectionMatrix;
+		XMMATRIX viewProjectionMatrix;
+		XMMATRIX inverseViewProjectionMatrix;
+	};
+
+	ID3D11Buffer* ps_cPerFrameBuffer;
+	PS_CPERFRAMEBUFFER ps_cPerFrameBufferVariables;
+};
+#pragma endregion SSAOShader
+
 #pragma region ShaderHandler
 enum ShaderType
 {
@@ -671,6 +729,7 @@ public:
 	BasicDeferredShader* mBasicDeferredShader;
 	BasicDeferredSkinnedShader* mBasicDeferredSkinnedShader;
 	LightDeferredShader* mLightDeferredShader;
+	SSAOShader* mSSAOShader;
 
 private:
 
