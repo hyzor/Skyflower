@@ -39,7 +39,7 @@ Texture2DImpl::Texture2DImpl(ID3D11Device *d3dDevice, ID3D11DeviceContext *d3dDe
 	assert(m_texture);
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
-	memset(&SRVDesc, 0, sizeof(SRVDesc));
+	memset(&SRVDesc, 0, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
 	SRVDesc.Format = format;
 	SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	SRVDesc.Texture2D.MipLevels = 1;

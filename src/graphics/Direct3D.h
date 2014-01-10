@@ -19,6 +19,7 @@ public:
 	ID3D11DeviceContext* GetImmediateContext() const;
 	ID3D11RenderTargetView* GetRenderTargetView() const;
 	ID3D11DepthStencilView* GetDepthStencilView() const;
+	ID3D11ShaderResourceView* GetDepthStencilSRView() const;
 	D3D11_VIEWPORT GetScreenViewport() const;
 	IDXGISwapChain* GetSwapChain() const;
 
@@ -29,6 +30,7 @@ private:
 	ID3D11Texture2D* mDepthStencilBuffer;
 	ID3D11RenderTargetView* mRenderTargetView;
 	ID3D11DepthStencilView* mDepthStencilView;
+	ID3D11ShaderResourceView* mDepthStencilSRView;
 	D3D11_VIEWPORT mScreenViewport;
 
 	D3D_DRIVER_TYPE md3dDriverType;
