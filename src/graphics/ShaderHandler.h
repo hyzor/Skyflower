@@ -136,7 +136,7 @@ public:
 	void SetMaterial(ID3D11DeviceContext* dc, const Material& mat);
 	void SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* shadowMap);
-	void SetShadowTransform(ID3D11DeviceContext* dc, const XMFLOAT4X4& shadowTransform);
+	void SetShadowTransform(ID3D11DeviceContext* dc, const XMMATRIX& shadowTransform);
 
 	void SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, PointLight pointLights[]);
 	void SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DirectionalLight dirLights[]);
@@ -384,6 +384,75 @@ private:
 };
 #pragma endregion NormalMappedSkinnedShader
 
+#pragma region SkinnedShadowShader
+class SkinnedShadowShader : public IShader
+{
+public:
+	SkinnedShadowShader();
+	~SkinnedShadowShader();
+
+	// Overload new and delete, because this class contains XMMATRIX (16 byte alignment)
+	void* operator new (size_t size)
+	{
+		void* p = _aligned_malloc(size, 16);
+
+		if (!p)
+			throw std::bad_alloc();
+
+		return p;
+	}
+
+	void operator delete (void* p)
+	{
+		SkinnedShadowShader* ptr = static_cast<SkinnedShadowShader*>(p);
+		_aligned_free(p);
+	}
+
+	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
+	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+	bool BindVertexShader(ID3D11VertexShader* vShader);
+	bool SetActive(ID3D11DeviceContext* dc);
+
+	void SetLightWVP(ID3D11DeviceContext* dc, XMMATRIX& lwvp);
+
+	void SetBoneTransforms(ID3D11DeviceContext* dc, const XMFLOAT4X4 boneTransforms[], UINT numTransforms);
+
+	void UpdatePerObj(ID3D11DeviceContext* dc);
+	void UpdatePerFrame(ID3D11DeviceContext* dc);
+
+private:
+	void Update(ID3D11DeviceContext* dc) { ; }
+
+	struct VS_CPEROBJBUFFER
+	{
+		XMMATRIX lightWVP;
+	};
+
+	struct VS_CSKINNEDBUFFER
+	{
+		XMMATRIX boneTransforms[96];
+		UINT numBoneTransforms;
+		int padding, padding2, padding3;
+	};
+
+	struct BUFFERCACHE
+	{
+		VS_CPEROBJBUFFER vsBuffer;
+		VS_CSKINNEDBUFFER vsSkinBuffer;
+	};
+
+	struct BUFFERCACHE mBufferCache;
+
+	// VS
+	ID3D11Buffer* vs_cBuffer;
+	VS_CPEROBJBUFFER vs_cBufferVariables;
+
+	// VS skinned
+	ID3D11Buffer* vs_cSkinnedBuffer;
+	VS_CSKINNEDBUFFER vs_cSkinnedBufferVariables;
+};
+#pragma endregion SkinnedShadowShaderEnd
+
 struct Shader
 {
 	std::string Name;
@@ -412,6 +481,7 @@ public:
 	SkyShader* mSkyShader;
 	NormalMappedSkinned* mNormalSkinned;
 	ShadowShader* mShadowShader;
+	SkinnedShadowShader* mSkinnedShadowShader;
 
 private:
 

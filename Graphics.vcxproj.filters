@@ -199,6 +199,15 @@
     <FxCompile Include="src\graphics\Shaders\ShadowBuildVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\ShadowBuildPS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SkinnedShadowBuildPS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SkinnedShadowBuildVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\graphics\Shaders\LightDef.hlsli">

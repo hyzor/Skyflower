@@ -25,6 +25,7 @@ public:
 
 
 	virtual CameraController *CreateCameraController() = 0;
+	virtual void UpdateSceneData() = 0;
 };
 
 DLL_API GraphicsEngine* CreateGraphicsEngine();

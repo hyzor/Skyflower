@@ -13,14 +13,12 @@
 #include <string>
 #include "Sky.h"
 #include "Shadowmap.h"
-#include "ShaderHandler.h"
 #include "RenderStates.h"
 #include <SpriteBatch.h>
 #include <SpriteFont.h>
 
 #include "Character.h"
 #include "GraphicsEngine.h"
-#include "InstanceImpl.h"
 
 class GraphicsEngineImpl : public GraphicsEngine
 {
@@ -43,6 +41,7 @@ public:
 	void DeleteInstance(AnimatedInstance* ai);
 
 	void OnResize();
+	void UpdateSceneData();
 
 private:
 	Direct3D* mD3D;
@@ -71,6 +70,8 @@ private:
 
 	SpriteBatch* mSpriteBatch;
 	SpriteFont* mSpriteFont;
+
+	DirectX::BoundingSphere mSceneBounds;
 };
 
 #endif

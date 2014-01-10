@@ -42,6 +42,12 @@ const D3D11_INPUT_ELEMENT_DESC InputLayoutDesc::PosNormalTexTanSkinned[6] =
 	{"BONEINDICES",  0, DXGI_FORMAT_R8G8B8A8_UINT,   0, 60, D3D11_INPUT_PER_VERTEX_DATA, 0}
 };
 
+const D3D11_INPUT_ELEMENT_DESC InputLayoutDesc::PosSkinned[3] =
+{
+	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	{ "WEIGHTS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	{ "BONEINDICES", 0, DXGI_FORMAT_R8G8B8A8_UINT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+};
 
 //===========================================================================
 // Input layouts
@@ -51,6 +57,7 @@ ID3D11InputLayout* InputLayouts::Basic32 = 0;
 ID3D11InputLayout* InputLayouts::Particle = 0;
 ID3D11InputLayout* InputLayouts::PosNormalTexTan = 0;
 ID3D11InputLayout* InputLayouts::PosNormalTexTanSkinned = 0;
+ID3D11InputLayout* InputLayouts::PosSkinned = 0;
 
 /*
 void InputLayouts::InitAll(ID3D11Device* device)
@@ -100,6 +107,7 @@ void InputLayouts::DestroyAll()
 	ReleaseCOM(Particle);
 	ReleaseCOM(PosNormalTexTan);
 	ReleaseCOM(PosNormalTexTanSkinned);
+	ReleaseCOM(PosSkinned);
 }
 
 void InputLayouts::CreateInputLayout(ID3D11Device* device,

@@ -85,21 +85,21 @@ bool GraphicsEngineImpl::Init(HWND hWindow, int width, int height, const std::st
 	dirLight.Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
 	dirLight.Diffuse = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
 	dirLight.Specular = XMFLOAT4(0.4f, 0.4f, 0.5f, 1.0f);
-	dirLight.Direction = XMFLOAT3(0.00f, -1.0f, 0.00f);
+	dirLight.Direction = XMFLOAT3(0.1f, -1.0f, 0.1f);
 
 	mDirLights.push_back(dirLight);
 
-	dirLight.Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-	dirLight.Diffuse = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
-	dirLight.Specular = XMFLOAT4(0.4f, 0.4f, 0.5f, 1.0f);
-	dirLight.Direction = XMFLOAT3(0.57735f, 0.57735f, 0.0f);
-	mDirLights.push_back(dirLight);
+	//dirLight.Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+	//dirLight.Diffuse = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
+	//dirLight.Specular = XMFLOAT4(0.4f, 0.4f, 0.5f, 1.0f);
+	//dirLight.Direction = XMFLOAT3(0.57735f, 0.57735f, 0.0f);
+	//mDirLights.push_back(dirLight);
 
-	dirLight.Ambient = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
-	dirLight.Diffuse = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-	dirLight.Specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-	dirLight.Direction = XMFLOAT3(0.0f, 0.0f, -0.57735f);
-	mDirLights.push_back(dirLight);
+	//dirLight.Ambient = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
+	//dirLight.Diffuse = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+	//dirLight.Specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	//dirLight.Direction = XMFLOAT3(0.0f, 0.0f, -0.57735f);
+	//mDirLights.push_back(dirLight);
 
 	// Point lights
 	PointLight pointLight;
@@ -111,7 +111,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, int width, int height, const std::st
 	pointLight.Diffuse = XMFLOAT4(0.25f, 0.25, 0.25f, 0.25f);
 	pointLight.Attenuation = XMFLOAT3(0.25f, 0.25, 0.25f);
 	pointLight.Range = 50.0f;
-	mPointLights.push_back(pointLight);
+	//mPointLights.push_back(pointLight);
 
 	pointLight.Position = XMFLOAT3(35.0f, 35.0f, 10.0f);
 	pointLight.Ambient = XMFLOAT4(0.25f, 0.25, 0.25f, 0.25f);
@@ -119,7 +119,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, int width, int height, const std::st
 	pointLight.Diffuse = XMFLOAT4(0.25f, 0.25, 0.25f, 0.25f);
 	pointLight.Attenuation = XMFLOAT3(0.25f, 0.25, 0.25f);
 	pointLight.Range = 75.0f;
-	mPointLights.push_back(pointLight);
+	//mPointLights.push_back(pointLight);
 
 	pointLight.Position = XMFLOAT3(-10.0f, 10.0f, -20.0f);
 	pointLight.Ambient = XMFLOAT4(0.25f, 0.25, 0.25f, 0.25f);
@@ -127,7 +127,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, int width, int height, const std::st
 	pointLight.Diffuse = XMFLOAT4(0.25f, 0.25, 0.25f, 0.25f);
 	pointLight.Attenuation = XMFLOAT3(0.25f, 0.25, 0.25f);
 	pointLight.Range = 75.0f;
-	mPointLights.push_back(pointLight);
+	//mPointLights.push_back(pointLight);
 
 	mSky = new Sky(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Textures\\SkyBox_Space.dds", 5000.0f);
 	mShadowMap = new ShadowMap(mD3D->GetDevice(), 2048, 2048);
@@ -146,6 +146,9 @@ bool GraphicsEngineImpl::Init(HWND hWindow, int width, int height, const std::st
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\NormalMapSkinnedVS.cso", "NormalMapSkinnedVS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\NormalMapSkinnedPS.cso", "NormalMapSkinnedPS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\ShadowBuildVS.cso", "ShadowBuildVS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\ShadowBuildPS.cso", "ShadowBuildPS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\SkinnedShadowBuildVS.cso", "SkinnedShadowBuildVS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\SkinnedShadowBuildPS.cso", "SkinnedShadowBuildPS", mD3D->GetDevice());
 
 	// Bind loaded shaders to shader objects
 	mShaderHandler->mBasicShader->BindShaders(mShaderHandler->GetVertexShader("BasicVS"),
@@ -154,29 +157,49 @@ bool GraphicsEngineImpl::Init(HWND hWindow, int width, int height, const std::st
 		mShaderHandler->GetPixelShader("SkyPS"));
 	mShaderHandler->mNormalSkinned->BindShaders(mShaderHandler->GetVertexShader("NormalMapSkinnedVS"),
 		mShaderHandler->GetPixelShader("NormalMapSkinnedPS"));
-	//mShaderHandler->mShadowShader->BindShaders(mShaderHandler->GetVertexShader("ShadowBuildVS"), mShaderHandler->GetPixelShader(""));
-	mShaderHandler->mShadowShader->BindVertexShader(mShaderHandler->GetVertexShader("ShadowBuildVS"));
+	mShaderHandler->mShadowShader->BindShaders(mShaderHandler->GetVertexShader("ShadowBuildVS"),
+		mShaderHandler->GetPixelShader("ShadowBuildPS"));
+	mShaderHandler->mSkinnedShadowShader->BindShaders(mShaderHandler->GetVertexShader("SkinnedShadowBuildVS"),
+		mShaderHandler->GetPixelShader("SkinnedShadowBuildPS"));
+	//mShaderHandler->mShadowShader->BindVertexShader(mShaderHandler->GetVertexShader("ShadowBuildVS"));
 
 	// Now create all the input layouts
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("BasicVS"), InputLayoutDesc::Basic32, COUNT_OF(InputLayoutDesc::Basic32), &mInputLayouts->Basic32);
-	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("ShadowBuildVS"), InputLayoutDesc::Position, COUNT_OF(InputLayoutDesc::Position), &mInputLayouts->Position);
+	//mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("ShadowBuildVS"), InputLayoutDesc::Position, COUNT_OF(InputLayoutDesc::Position), &mInputLayouts->Position);
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("SkyVS"), InputLayoutDesc::Position, COUNT_OF(InputLayoutDesc::Position), &mInputLayouts->Position);
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("NormalMapSkinnedVS"),
 		InputLayoutDesc::PosNormalTexTanSkinned,
 		COUNT_OF(InputLayoutDesc::PosNormalTexTanSkinned),
 		&mInputLayouts->PosNormalTexTanSkinned);
+	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("SkinnedShadowBuildVS"), 
+		InputLayoutDesc::PosSkinned, 
+		COUNT_OF(InputLayoutDesc::PosSkinned), 
+		&mInputLayouts->PosSkinned);
 
 	// Init all the shader objects
 	mShaderHandler->mBasicShader->Init(mD3D->GetDevice(), mInputLayouts->Basic32);
 	mShaderHandler->mSkyShader->Init(mD3D->GetDevice(), mInputLayouts->Position);
 	mShaderHandler->mNormalSkinned->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTanSkinned);
 	mShaderHandler->mShadowShader->Init(mD3D->GetDevice(), mInputLayouts->Position);
+	mShaderHandler->mSkinnedShadowShader->Init(mD3D->GetDevice(), mInputLayouts->PosSkinned);
 
 	std::string fontPath = mResourceDir + "myfile.spritefont";
 	std::wstring fontPathW(fontPath.begin(), fontPath.end());
 
 	mSpriteBatch = new SpriteBatch(mD3D->GetImmediateContext());
 	mSpriteFont = new SpriteFont(mD3D->GetDevice(), fontPathW.c_str());
+
+	//ModelInstance* test = this->CreateInstance("Models\\Worlds\\Subworld\\WoodBlock");
+	//test->SetPosition(Vec3(-36.0960396599f, 10.0f, -39.4741144045f));
+
+	//ModelInstance* test1 = this->CreateInstance("Models\\Button\\ButtonBase");
+	//test1->SetPosition(Vec3(-34.0960396599f, 40.0f, -37.4741144045));
+
+	//ModelInstance* test2 = this->CreateInstance("Models\\Placeholders\\Platform\\placeHolderPlattform");
+	//test2->SetPosition(Vec3(0.0f, 0.0f, 0.0f));
+	
+	//ModelInstance* test3 = this->CreateInstance("Models\\Placeholders\\Platform\\placeHolderPlattform");
+	//test3->SetPosition(Vec3(0.0f, 60.0f, 0.0f));
 
 	return true;
 }
@@ -195,10 +218,11 @@ void GraphicsEngineImpl::Run(float dt)
 void GraphicsEngineImpl::DrawScene()
 {
 	// Draw scene to shadowmap
+	mD3D->GetImmediateContext()->RSSetState(RenderStates::mDepthBiasRS); // This rasterizer state fixes shadow acne
 	mShadowMap->BindDsvAndSetNullRenderTarget(mD3D->GetImmediateContext());
-	mShadowMap->BuildShadowTransform(mDirLights.at(0), XMFLOAT3(0.0f, 0.0f, 0.0f), 100.0f);
-	mShaderHandler->mShadowShader->SetActive(mD3D->GetImmediateContext());
-	mShadowMap->DrawSceneToShadowMap(mInstances, mAnimatedInstances, *mCamera, mD3D->GetImmediateContext(), mShaderHandler->mShadowShader);
+	mShadowMap->BuildShadowTransform(mDirLights.at(0), mSceneBounds);
+	//mShaderHandler->mShadowShader->SetActive(mD3D->GetImmediateContext());
+	mShadowMap->DrawSceneToShadowMap(mInstances, mAnimatedInstances, mD3D->GetImmediateContext(), mShaderHandler->mShadowShader, mShaderHandler->mSkinnedShadowShader);
 	
 
 	mD3D->GetImmediateContext()->RSSetState(0);
@@ -247,13 +271,15 @@ void GraphicsEngineImpl::DrawScene()
 			XMMATRIX test = XMMatrixMultiply(mInstances[i]->GetWorld(), mShadowMap->GetLightViewProj());
 			XMFLOAT4X4 test1;
 			XMStoreFloat4x4(&test1, test);
-			mShaderHandler->mBasicShader->SetShadowTransform(mD3D->GetImmediateContext(), /*test1*/mShadowMap->GetShadowTransform());
 			for (UINT j = 0; j < mInstances[i]->model->meshCount; ++j)
 			{
 				UINT matIndex = mInstances[i]->model->meshes[j].MaterialIndex;
 
+
+
 				mShaderHandler->mBasicShader->SetMaterial(mD3D->GetImmediateContext(), mInstances[i]->model->mat[matIndex]);
-				mShaderHandler->mBasicShader->SetDiffuseMap(mD3D->GetImmediateContext(), mInstances[i]->model->diffuseMapSRV[matIndex]/*mShadowMap->getDepthMapSRV()*/);
+				mShaderHandler->mBasicShader->SetDiffuseMap(mD3D->GetImmediateContext(), /*mInstances[i]->model->diffuseMapSRV[matIndex]*/mShadowMap->getDepthMapSRV());
+				mShaderHandler->mBasicShader->SetShadowTransform(mD3D->GetImmediateContext(), /*test1*/(mInstances[i]->GetWorld() * mShadowMap->GetShadowTransform()));
 				mShaderHandler->mBasicShader->UpdatePerObj(mD3D->GetImmediateContext());
 				mD3D->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 				mInstances[i]->model->meshes[j].Draw(mD3D->GetImmediateContext());
@@ -285,8 +311,8 @@ void GraphicsEngineImpl::DrawScene()
 	mSpriteBatch->End();
 	*/
 
-	//ID3D11ShaderResourceView* nullSRV[16] = { 0 };
-	//mD3D->GetImmediateContext()->PSSetShaderResources(0, 16, nullSRV);
+	ID3D11ShaderResourceView* nullSRV[16] = { 0 };
+	mD3D->GetImmediateContext()->PSSetShaderResources(0, 16, nullSRV);
 
 	// Restore default states
 	mD3D->GetImmediateContext()->RSSetState(0);
@@ -413,4 +439,45 @@ void GraphicsEngineImpl::DeleteInstance(AnimatedInstance* ai)
 	}
 
 	delete mi;
+}
+
+void GraphicsEngineImpl::UpdateSceneData()
+{
+	//--------------------------------------------------------
+	// Compute scene bounding box
+	//--------------------------------------------------------
+	    XMFLOAT3 minPt(+MathHelper::infinity, +MathHelper::infinity, +MathHelper::infinity);
+	    XMFLOAT3 maxPt(-MathHelper::infinity, -MathHelper::infinity, -MathHelper::infinity);
+	 
+	    // Get vertex positions from all models
+	    for (UINT i = 0; i < mInstances.size(); ++i)
+	    {
+			for (UINT j = 0; j < mInstances[i]->model->meshes.size(); ++j)
+	            {
+
+					for (UINT k = 0; k < mInstances[i]->model->meshes.at(j).vertices.size(); ++k)
+					{
+						XMFLOAT3 vPos = mInstances[i]->model->meshes.at(j).vertices.at(k).position;
+						minPt.x = MathHelper::getMin(minPt.x, vPos.x);
+						minPt.y = MathHelper::getMin(minPt.x, vPos.x);
+						minPt.z = MathHelper::getMin(minPt.x, vPos.x);
+
+						maxPt.x = MathHelper::getMax(maxPt.x, vPos.x);
+						maxPt.y = MathHelper::getMax(maxPt.x, vPos.x);
+						maxPt.z = MathHelper::getMax(maxPt.x, vPos.x);
+					}
+	            }
+	    }
+	 
+	    // Sphere center is at half of these new dimensions
+	    mSceneBounds.Center = XMFLOAT3(        0.5f*(minPt.x + maxPt.x),
+	            0.5f*(minPt.y + maxPt.y),
+	            0.5f*(minPt.z + maxPt.z));
+	 
+	    // Calculate the sphere radius
+	    XMFLOAT3 extent(0.5f*(maxPt.x - minPt.x),
+	            0.5f*(maxPt.y - minPt.y),
+	            0.5f*(maxPt.z - minPt.z));
+	 
+	    mSceneBounds.Radius = sqrtf(extent.x*extent.x + extent.y*extent.y + extent.z*extent.z);
 }

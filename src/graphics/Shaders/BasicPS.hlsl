@@ -1,6 +1,7 @@
 #include "LightDef.hlsli"
 #include "BasicVS.hlsl"
 
+
 cbuffer cbPerObject : register(b0)
 {
 	Material gMaterial;
@@ -86,9 +87,12 @@ float4 main(VertexOut pIn) : SV_TARGET
 		float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 		float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-			float3 shadow = float3(1.0f, 1.0f, 1.0f);
-			shadow[0] = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
+		float3 shadow = float3(1.0f, 1.0f, 1.0f);
+		shadow[0] = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
 
+		// TEST
+
+		// ENDTEST
 		for (int j = 0; j < gPointLightCount; ++j)
 		{
 			float4 A, D, S;
@@ -98,15 +102,15 @@ float4 main(VertexOut pIn) : SV_TARGET
 			diffuse += /*shadow[j]**/D;
 			specular += /*shadow[j]**/S;
 		}
-
-		for (int k = 0; k < gDirLightCount; ++k)
+		[unroll]
+		for (int k = 0; k < 1; ++k)
 		{
 			float4 A, D, S;
 			ComputeDirectionalLight(gMaterial, gDirLights[k], pIn.NormalW, toEye, A, D, S);
 
 			ambient += A;
-			diffuse += /*shadow[k]**/D;
-			specular += /*shadow[k]**/S;
+			diffuse += shadow[k]*D;
+			specular += shadow[k]*S;
 		}
 
 		litColor = texColor * (ambient + diffuse) + specular;

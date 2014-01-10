@@ -8,13 +8,9 @@
 #ifndef GRAPHICS_SHADOWMAP_H
 #define GRAPHICS_SHADOWMAP_H
 
-//#include <d3d>
-//#include "xnacollision.h"
-#include "GenericModel.h"
-#include "Camera.h"
-#include "InstanceImpl.h"
 #include "ShaderHandler.h"
-//#include <Direct3D.h>
+#include "InstanceImpl.h"
+#include <vector>
 
 class ShadowMap
 {
@@ -29,18 +25,17 @@ public:
 
 	UINT GetWidth() const;
 	UINT GetHeight() const;
-	XMFLOAT4X4 GetShadowTransform() const;
+	XMMATRIX GetShadowTransform() const;
 	XMMATRIX GetLightViewProj() const;
 
-	void BuildShadowTransform(const DirectionalLight& light, XMFLOAT3 center,
-		float radius/*const XNA::Sphere& sceneBounds*/);
+	void BuildShadowTransform(const DirectionalLight& light, const DirectX::BoundingSphere& sceneBounds);
 
 	void DrawSceneToShadowMap(
 		const std::vector<ModelInstanceImpl*>& modelInstances,
 		const std::vector<AnimatedInstanceImpl*>& mAnimatedInstances,
-		const Camera& camera,
 		ID3D11DeviceContext* deviceContext,
-		ShadowShader* shadowShader);
+		ShadowShader* shadowShader,
+		SkinnedShadowShader* skinnedShadowShader);
 
 private:
 	UINT mWidth;
