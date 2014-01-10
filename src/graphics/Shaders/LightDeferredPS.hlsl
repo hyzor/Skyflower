@@ -18,7 +18,7 @@ cbuffer cLightBuffer : register(b0)
 	float3 gEyePosW;
 	float padding;
 
-	float4x4 gShadowTransform;
+	float4x4 gShadowTransform_PS;
 };
 
 Texture2D gDiffuseTexture : register(t0);
@@ -33,18 +33,22 @@ SamplerComparisonState samShadow : register(s2);
 
 float ReadShadowMap(float3 eyeDir)
 {
-	float4 projectedEyeDir = mul(float4(eyeDir, 1.0f), gShadowTransform);
-	projectedEyeDir = projectedEyeDir / projectedEyeDir.w;
+	float4 projectedEyeDir = mul(float4(eyeDir, 1.0f), gShadowTransform_PS);
+	//projectedEyeDir = projectedEyeDir / projectedEyeDir.w;
 
-	float shadow = float3(1.0f, 1.0f, 1.0f);
-	shadow = CalcShadowFactor(samShadow, gShadowMap, projectedEyeDir);
+	//float shadow = float3(1.0f, 1.0f, 1.0f);
+	//shadow[0] = CalcShadowFactor(samShadow, gShadowMap, projectedEyeDir);
 
-	return shadow;
+	//return shadow;
 
-	//float2 tex = projectedEyeDir.xy * float2(0.5f, 0.5f) + float2(0.5f, 0.5f);
+	return CalcShadowFactor(samShadow, gShadowMap, projectedEyeDir);
 
-	//float depthValue = gShadowMap.Sample(samLinear, tex);
-	//return projectedEyeDir.z * 0.5 + 0.5 < depthValue;
+	/*
+	float2 tex = projectedEyeDir.xy * float2(0.5f, 0.5f) + float2(0.5f, 0.5f);
+
+	float depthValue = gShadowMap.Sample(samLinear, tex);
+	return projectedEyeDir.z * 0.5 + 0.5 < depthValue;
+	*/
 }
 
 float4 main(VertexOut pIn) : SV_TARGET
@@ -62,8 +66,9 @@ float4 main(VertexOut pIn) : SV_TARGET
 	// The toEye vector is used in lighting
 	float3 toEye = gEyePosW - positionW;
 
-	// Used in shadow mapping
-	float3 eyeDir = positionW - gEyePosW;
+		// Used in shadow mapping
+		float3 eyeDir = positionW - gEyePosW;
+		//eyeDir /= length(eyeDir);
 
 	// Cache the distance to the eye from this surface point.
 	float distToEye = length(toEye);
@@ -83,6 +88,10 @@ float4 main(VertexOut pIn) : SV_TARGET
 
 	float3 shadow = float3(1.0f, 1.0f, 1.0f);
 	shadow[0] = ReadShadowMap(eyeDir);
+
+	//float4 shadowPosH = mul(float4(positionW, 1.0f), gShadowTransform);
+
+	//shadow[0] = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
 
 	// Begin calculating lights
 	for (int i = 0; i < gDirLightCount; ++i)

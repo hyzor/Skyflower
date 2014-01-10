@@ -18,8 +18,8 @@ public:
 	static ID3D11SamplerState* mComparisonSS;
 
 	static ID3D11DepthStencilState* mLessEqualDSS;
-	static ID3D11DepthStencilState* mDefaultDDS;
-	static ID3D11DepthStencilState* mDisabledDDS;
+	static ID3D11DepthStencilState* mDefaultDSS;
+	static ID3D11DepthStencilState* mDisabledDSS;
 
 	static ID3D11BlendState* mDefaultBS;
 };

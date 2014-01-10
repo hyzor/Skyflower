@@ -23,6 +23,7 @@ public:
 	~ShadowMap(void);
 
 	ID3D11ShaderResourceView* getDepthMapSRV();
+	ID3D11DepthStencilView* getDepthMapDSV();
 
 	void BindDsvAndSetNullRenderTarget(ID3D11DeviceContext* dc);
 	void SetResolution(ID3D11Device* device, UINT width, UINT height);

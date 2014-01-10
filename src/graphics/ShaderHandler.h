@@ -591,6 +591,7 @@ private:
 	struct VS_CPEROBJBUFFER
 	{
 		XMMATRIX worldViewProj;
+		XMMATRIX shadowTransform;
 	};
 
 	struct PS_CPERFRAMEBUFFER

@@ -125,7 +125,12 @@ ID3D11VertexShader* ShaderHandler::GetVertexShader(std::string name)
 	if (mVertexShaders[name])
 		return mVertexShaders[name];
 	else
+	{
+		std::wstringstream ErrorMsg;
+		ErrorMsg << "Failed to get vertex shader " << name.c_str();
+		MessageBox(0, ErrorMsg.str().c_str(), 0, 0);
 		return NULL;
+	}
 }
 
 ID3D11PixelShader* ShaderHandler::GetPixelShader(std::string name)
@@ -133,7 +138,12 @@ ID3D11PixelShader* ShaderHandler::GetPixelShader(std::string name)
 	if (mPixelShaders[name])
 		return mPixelShaders[name];
 	else
+	{
+		std::wstringstream ErrorMsg;
+		ErrorMsg << "Failed to get pixel shader " << name.c_str();
+		MessageBox(0, ErrorMsg.str().c_str(), 0, 0);
 		return NULL;
+	}
 }
 
 Shader* ShaderHandler::GetShader(std::string name)
@@ -146,6 +156,9 @@ Shader* ShaderHandler::GetShader(std::string name)
 		}
 	}
 
+	std::wstringstream ErrorMsg;
+	ErrorMsg << "Failed to get shader " << name.c_str();
+	MessageBox(0, ErrorMsg.str().c_str(), 0, 0);
 	return NULL;
 }
 #pragma endregion ShaderHandler
@@ -396,7 +409,7 @@ void BasicShader::SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, Direc
 void BasicShader::SetShadowTransform(ID3D11DeviceContext* dc, const XMFLOAT4X4& shadowTransform)
 {
 	XMMATRIX sTransform = XMLoadFloat4x4(&shadowTransform);
-	mBufferCache.vsPerObjBuffer.shadowTransform = sTransform;
+	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(sTransform);
 }
 
 #pragma endregion BasicShaderEnd
@@ -485,7 +498,7 @@ bool ShadowShader::SetActive(ID3D11DeviceContext* dc)
 
 	// Set active shaders
 	dc->VSSetShader(mVertexShader, nullptr, 0);
-	dc->PSSetShader(NULL, nullptr, 0);
+	dc->PSSetShader(mPixelShader, nullptr, 0);
 	
 	//test
 	//dc->OMSetDepthStencilState(DSState, 0);
@@ -1374,6 +1387,7 @@ void LightDeferredShader::UpdatePerObj(ID3D11DeviceContext* dc)
 	VS_CPEROBJBUFFER* dataPtr = (VS_CPEROBJBUFFER*)mappedResource.pData;
 
 	dataPtr->worldViewProj = mBufferCache.vsPerObjBuffer.worldViewProj;
+	dataPtr->shadowTransform = mBufferCache.vsPerObjBuffer.shadowTransform;
 
 	dc->Unmap(vs_cPerObjBuffer, 0);
 	
@@ -1438,4 +1452,5 @@ void LightDeferredShader::SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11Sha
 void LightDeferredShader::SetShadowTransform(XMMATRIX& shadowTransform)
 {
 	mBufferCache.psPerFrameBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
+	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
 }

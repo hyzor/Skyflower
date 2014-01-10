@@ -125,7 +125,7 @@ void ShadowMap::BuildShadowTransform(const DirectionalLight& light, XMFLOAT3 cen
 
 	//XMVECTOR targetPos = XMLoadFloat3(&sceneBounds.Center);
 	XMVECTOR targetPos = XMLoadFloat3(&center);
-	XMVECTOR up = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 	XMMATRIX V = XMMatrixLookAtLH(lightPos, targetPos, up);
 
@@ -239,4 +239,9 @@ XMFLOAT4X4 ShadowMap::GetShadowTransform() const
 XMMATRIX ShadowMap::GetLightViewProj() const
 {
 	return XMMatrixMultiply(XMLoadFloat4x4(&mLightView), XMLoadFloat4x4(&mLightProj));
+}
+
+ID3D11DepthStencilView* ShadowMap::getDepthMapDSV()
+{
+	return mDepthMapDSV;
 }
