@@ -42,7 +42,8 @@ private:
 
 	void MoveToTarget(Message const& msg)
 	{
-		Vec3 pos = getEntityPos();
+		//sendMessageToEntity(this->getOwnerId(), "StartMoveForward");
+		/*Vec3 pos = getEntityPos();
 		//pos.Y -= 0.01f;
 
 		std::vector<CollisionInstance*> instances = Collision::GetInstance()->GetCollisionInstances();
@@ -65,7 +66,7 @@ private:
 			pos.Y -= (1 - col)*r.Dir.Y;
 		}
 
-		updateEntityPos(pos);
+		updateEntityPos(pos);*/
 	}
 
 

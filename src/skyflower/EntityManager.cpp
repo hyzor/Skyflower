@@ -1511,21 +1511,6 @@ void EntityManager::handleCollision()
 			Vec3 pos = fEntitys[i]->returnPos();
 			Ray r = Ray(pos + Vec3(0, 15, 0), Vec3(0, -30, 0));
 
-			/*//find platform
-			Entity* col = nullptr;
-			for (int j = 0; j < this->fIdCounter; j++)
-			{
-				if (fEntitys[j]->collInst && i != j)
-				{
-					float t = fEntitys[j]->collInst->Test(r);
-					if (t > 0)
-					{
-						col = fEntitys[j];
-						break;
-					}
-				}
-			}*/
-
 			//find taget
 			Entity* p = nullptr;
 			for (int j = 0; j < this->fIdCounter; j++)
@@ -1538,8 +1523,6 @@ void EntityManager::handleCollision()
 			}
 
 
-
-
 			Field* target = modules->potentialField->CreateField(-1000, 1000, p->returnPos());
 
 			Vec3 dir;
@@ -1548,8 +1531,8 @@ void EntityManager::handleCollision()
 			else
 				dir = modules->potentialField->GetDir(pos, nullptr, nullptr);
 
-			
-			fEntitys[i]->updatePos(fEntitys[i]->returnPos() + dir);
+			fEntitys[i]->getComponent<Movement*>("Movement")->setCamera(dir, Vec3(), Vec3());
+			fEntitys[i]->getComponent<Movement*>("Movement")->moveforward();
 
 			modules->potentialField->DeleteField(target);
 

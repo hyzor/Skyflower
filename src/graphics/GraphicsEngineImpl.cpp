@@ -93,6 +93,8 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	dirLight.Specular = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
 	dirLight.Direction = XMFLOAT3(-0.57735f, -0.57735f, 0.57735f);
 
+	mDirLights.push_back(dirLight);
+
 	dirLight.Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
 	dirLight.Diffuse = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
 	dirLight.Specular = XMFLOAT4(0.4f, 0.4f, 0.5f, 1.0f);
@@ -100,17 +102,17 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 
 	mDirLights.push_back(dirLight);
 
-// 	dirLight.Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-// 	dirLight.Diffuse = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
-// 	dirLight.Specular = XMFLOAT4(0.4f, 0.4f, 0.5f, 1.0f);
-// 	dirLight.Direction = XMFLOAT3(0.57735f, 0.57735f, 0.0f);
-// 	mDirLights.push_back(dirLight);
-// 
-// 	dirLight.Ambient = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
-// 	dirLight.Diffuse = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-// 	dirLight.Specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-// 	dirLight.Direction = XMFLOAT3(0.0f, 0.0f, -0.57735f);
-// 	mDirLights.push_back(dirLight);
+ 	dirLight.Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+ 	dirLight.Diffuse = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
+ 	dirLight.Specular = XMFLOAT4(0.4f, 0.4f, 0.5f, 1.0f);
+ 	dirLight.Direction = XMFLOAT3(0.57735f, 0.57735f, 0.0f);
+ 	mDirLights.push_back(dirLight);
+ 
+ 	dirLight.Ambient = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
+ 	dirLight.Diffuse = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+ 	dirLight.Specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+ 	dirLight.Direction = XMFLOAT3(0.0f, 0.0f, -0.57735f);
+ 	mDirLights.push_back(dirLight);
 
 	// Point lights
 	PointLight pointLight;

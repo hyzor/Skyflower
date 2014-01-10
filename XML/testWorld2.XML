@@ -7,7 +7,7 @@
 		<Messenger />
 		<Movement />
 		<Gravity />
-		<!--<AI />-->
+		<AI />
 	</Platform>
     <placeHolderPlattform entityName="placeHolderPlattform2" id="2" isVisible="1" isCollidible="1" Type="object" isAnimated="0" xPos="0.0" yPos="0.0" zPos="0.0" xRot="0.78539816339744830961566084581988" yRot="0.78539816339744830961566084581988" zRot="0.5" xScale="1.5" yScale="3.0" zScale="0.75" model="Models\\Worlds\\Subworld\\placeHolderPlattform"/>
 </root>

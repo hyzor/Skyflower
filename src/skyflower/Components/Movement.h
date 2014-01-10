@@ -149,6 +149,11 @@ public:
 		}
 	}
 
+	void moveforward()
+	{
+		this->isMovingForward = true;
+	}
+
 private:
 	Physics* p;
 	bool isMovingForward;
