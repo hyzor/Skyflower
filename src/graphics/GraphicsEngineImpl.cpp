@@ -278,7 +278,7 @@ void GraphicsEngineImpl::DrawScene()
 
 
 				mShaderHandler->mBasicShader->SetMaterial(mD3D->GetImmediateContext(), mInstances[i]->model->mat[matIndex]);
-				mShaderHandler->mBasicShader->SetDiffuseMap(mD3D->GetImmediateContext(), /*mInstances[i]->model->diffuseMapSRV[matIndex]*/mShadowMap->getDepthMapSRV());
+				mShaderHandler->mBasicShader->SetDiffuseMap(mD3D->GetImmediateContext(), mInstances[i]->model->diffuseMapSRV[matIndex]/*mShadowMap->getDepthMapSRV()*/);
 				mShaderHandler->mBasicShader->SetShadowTransform(mD3D->GetImmediateContext(), /*test1*/(mInstances[i]->GetWorld() * mShadowMap->GetShadowTransform()));
 				mShaderHandler->mBasicShader->UpdatePerObj(mD3D->GetImmediateContext());
 				mD3D->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

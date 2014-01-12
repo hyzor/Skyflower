@@ -38,6 +38,7 @@ ShaderHandler::~ShaderHandler()
 	delete mSkyShader;
 	delete mNormalSkinned;
 	delete mShadowShader;
+	delete mSkinnedShadowShader;
 }
 
 void ShaderHandler::LoadCompiledVertexShader(LPCWSTR fileName, char* name, ID3D11Device* device)
