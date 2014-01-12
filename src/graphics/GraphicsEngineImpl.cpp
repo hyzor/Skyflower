@@ -171,17 +171,17 @@ bool GraphicsEngineImpl::Init(HWND hWindow, int width, int height, const std::st
 		InputLayoutDesc::PosNormalTexTanSkinned,
 		COUNT_OF(InputLayoutDesc::PosNormalTexTanSkinned),
 		&mInputLayouts->PosNormalTexTanSkinned);
-	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("SkinnedShadowBuildVS"), 
-		InputLayoutDesc::PosSkinned, 
-		COUNT_OF(InputLayoutDesc::PosSkinned), 
-		&mInputLayouts->PosSkinned);
+// 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("SkinnedShadowBuildVS"), 
+// 		InputLayoutDesc::PosSkinned, 
+// 		COUNT_OF(InputLayoutDesc::PosSkinned), 
+// 		&mInputLayouts->PosSkinned);
 
 	// Init all the shader objects
 	mShaderHandler->mBasicShader->Init(mD3D->GetDevice(), mInputLayouts->Basic32);
 	mShaderHandler->mSkyShader->Init(mD3D->GetDevice(), mInputLayouts->Position);
 	mShaderHandler->mNormalSkinned->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTanSkinned);
 	mShaderHandler->mShadowShader->Init(mD3D->GetDevice(), mInputLayouts->Position);
-	mShaderHandler->mSkinnedShadowShader->Init(mD3D->GetDevice(), mInputLayouts->PosSkinned);
+	mShaderHandler->mSkinnedShadowShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTanSkinned);
 
 	std::string fontPath = mResourceDir + "myfile.spritefont";
 	std::wstring fontPathW(fontPath.begin(), fontPath.end());
