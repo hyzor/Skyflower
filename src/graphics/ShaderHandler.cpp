@@ -508,7 +508,7 @@ bool ShadowShader::SetActive(ID3D11DeviceContext* dc)
 
 void ShadowShader::setLightWVP(ID3D11DeviceContext* dc, const XMMATRIX& lgwp)
 {
-	mBufferCache.vsBuffer.lightWorldViewProj = lgwp;
+	mBufferCache.vsBuffer.lightWorldViewProj = XMMatrixTranspose(lgwp);
 }
 
 void ShadowShader::updatePerObj(ID3D11DeviceContext* dc)
@@ -1438,6 +1438,12 @@ void LightDeferredShader::UpdatePerFrame(ID3D11DeviceContext* dc)
 		dataPtr3->spotLights[j] = mBufferCache.psPerFrameBuffer.spotLights[j];
 
 	dataPtr3->shadowTransform = mBufferCache.psPerFrameBuffer.shadowTransform;
+	dataPtr3->cameraViewMatrix = mBufferCache.psPerFrameBuffer.cameraViewMatrix;
+	dataPtr3->cameraWorldMatrix = mBufferCache.psPerFrameBuffer.cameraWorldMatrix;
+
+	dataPtr3->lightWorldMatrix = mBufferCache.psPerFrameBuffer.lightWorldMatrix;
+	dataPtr3->lightViewMatrix = mBufferCache.psPerFrameBuffer.lightViewMatrix;
+	dataPtr3->lightProjMatrix = mBufferCache.psPerFrameBuffer.lightProjMatrix;
 
 	dc->Unmap(ps_cPerFrameBuffer, 0);
 
@@ -1453,4 +1459,21 @@ void LightDeferredShader::SetShadowTransform(XMMATRIX& shadowTransform)
 {
 	mBufferCache.psPerFrameBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
 	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
+}
+
+void LightDeferredShader::SetCameraViewMatrix(XMMATRIX& camViewMatrix)
+{
+	mBufferCache.psPerFrameBuffer.cameraViewMatrix = XMMatrixTranspose(camViewMatrix);
+}
+
+void LightDeferredShader::SetCameraWorldMatrix(XMMATRIX& camWorldMatrix)
+{
+	mBufferCache.psPerFrameBuffer.cameraWorldMatrix = XMMatrixTranspose(camWorldMatrix);
+}
+
+void LightDeferredShader::SetLightWorldViewProj(XMMATRIX& lightWorld, XMMATRIX& lightView, XMMATRIX& lightProj)
+{
+	mBufferCache.psPerFrameBuffer.lightWorldMatrix = XMMatrixTranspose(lightWorld);
+	mBufferCache.psPerFrameBuffer.lightViewMatrix = XMMatrixTranspose(lightView);
+	mBufferCache.psPerFrameBuffer.lightProjMatrix = XMMatrixTranspose(lightProj);
 }

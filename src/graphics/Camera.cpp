@@ -308,3 +308,22 @@ DirectX::XMMATRIX Camera::GetBaseViewMatrix() const
 {
 	return XMLoadFloat4x4(&mBaseView);
 }
+
+void Camera::Update()
+{
+	XMVECTOR pos = XMLoadFloat3(&mPosition);
+	XMMATRIX offset = XMMatrixTranslationFromVector(pos);
+	XMMATRIX mrot = XMMatrixRotationX(0.0f);
+	mrot *= XMMatrixRotationY(0.0f);
+	mrot *= XMMatrixRotationZ(0.0f);
+	XMMATRIX mscale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
+
+	XMMATRIX world = mscale*mrot*offset;
+
+	XMStoreFloat4x4(&mWorld, world);
+}
+
+DirectX::XMMATRIX Camera::GetWorldMatrix() const
+{
+	return XMLoadFloat4x4(&mWorld);
+}

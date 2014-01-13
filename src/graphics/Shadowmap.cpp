@@ -157,6 +157,15 @@ void ShadowMap::BuildShadowTransform(const DirectionalLight& light, XMFLOAT3 cen
 
 	XMMATRIX S = V*P*T;
 
+	XMMATRIX offset = XMMatrixTranslationFromVector(lightPos);
+	XMMATRIX mrot = XMMatrixRotationX(0.0f);
+	mrot *= XMMatrixRotationY(0.0f);
+	mrot *= XMMatrixRotationZ(0.0f);
+	XMMATRIX mscale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
+
+	XMMATRIX world = mscale*mrot*offset;
+
+	XMStoreFloat4x4(&mLightWorld, world);
 	XMStoreFloat4x4(&mLightView, V);
 	XMStoreFloat4x4(&mLightProj, P);
 	XMStoreFloat4x4(&mShadowTransform, S);
@@ -192,7 +201,7 @@ void ShadowMap::DrawSceneToShadowMap(
 	// Draw opaque tessellated objects
 	//------------------------------------------------------------------
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	deviceContext->IASetInputLayout(InputLayouts::Position);
+	//deviceContext->IASetInputLayout(InputLayouts::Position);
 
 	//for (UINT pass = 0; pass < techDesc.Passes; ++pass)
 	//{
@@ -244,4 +253,19 @@ XMMATRIX ShadowMap::GetLightViewProj() const
 ID3D11DepthStencilView* ShadowMap::getDepthMapDSV()
 {
 	return mDepthMapDSV;
+}
+
+DirectX::XMMATRIX ShadowMap::GetLightWorld() const
+{
+	return XMLoadFloat4x4(&mLightWorld);
+}
+
+DirectX::XMMATRIX ShadowMap::GetLightView() const
+{
+	return XMLoadFloat4x4(&mLightView);
+}
+
+DirectX::XMMATRIX ShadowMap::GetLightProj() const
+{
+	return XMLoadFloat4x4(&mLightProj);
 }

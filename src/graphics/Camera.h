@@ -39,6 +39,7 @@ public:
 	// Set frustum (lens)
 	void SetLens(float fovY, float aspect, float zn, float zf);
 	void UpdateOrthoMatrix(float screenWidth, float screenHeight, float zn, float zf);
+	void Update();
 
 	// Get matrices
 	XMMATRIX GetViewMatrix() const;
@@ -46,6 +47,7 @@ public:
 	XMMATRIX GetViewProjMatrix() const;
 	XMMATRIX GetOrthoMatrix() const;
 	XMMATRIX GetBaseViewMatrix() const;
+	XMMATRIX GetWorldMatrix() const;
 
 	// Get near and far plane dimensions in view space coordinates
 	float GetNearWindowWidth() const;
@@ -80,6 +82,7 @@ private:
 	XMFLOAT4X4 mProj; // Projection matrix
 	XMFLOAT4X4 mOrthographicProj; // 2D Projection matrix
 	XMFLOAT4X4 mBaseView; // Base view matrix
+	XMFLOAT4X4 mWorld;
 
 	// Frustum cache
 	float mNearZ;

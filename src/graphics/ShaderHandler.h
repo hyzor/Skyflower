@@ -568,7 +568,11 @@ public:
 	bool SetActive(ID3D11DeviceContext* dc);
 
 	void SetWorldViewProj(XMMATRIX& world, XMMATRIX& view, XMMATRIX& proj);
+
 	void SetEyePosW(XMFLOAT3 eyePosW);
+	void SetCameraViewMatrix(XMMATRIX& camViewMatrix);
+	void SetCameraWorldMatrix(XMMATRIX& camWorldMatrix);
+	void SetLightWorldViewProj(XMMATRIX& lightWorld, XMMATRIX& lightView, XMMATRIX& lightProj);
 
 	void SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, PointLight pointLights[]);
 	void SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DirectionalLight dirLights[]);
@@ -619,6 +623,11 @@ private:
 		float padding;
 
 		XMMATRIX shadowTransform;
+		XMMATRIX cameraViewMatrix;
+		XMMATRIX cameraWorldMatrix;
+		XMMATRIX lightWorldMatrix;
+		XMMATRIX lightViewMatrix;
+		XMMATRIX lightProjMatrix;
 	};
 
 	struct BUFFERCACHE

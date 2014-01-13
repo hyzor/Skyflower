@@ -77,6 +77,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mCamera->UpdateOrthoMatrix(static_cast<float>(width), static_cast<float>(height), zNear, zFar);
 	mCamera->SetPosition(XMFLOAT3(0.0f, 0.0f, -400.0f));
 	mCamera->UpdateBaseViewMatrix();
+	mCamera->Update();
 
 	mDeferredBuffers = new DeferredBuffers();
 	mDeferredBuffers->Init(mD3D->GetDevice(), width, height, zNear, zFar);
@@ -206,7 +207,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 
 	// Now create all the input layouts
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("BasicVS"), InputLayoutDesc::PosNormalTex, COUNT_OF(InputLayoutDesc::PosNormalTex), &mInputLayouts->PosNormalTex);
-	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("ShadowBuildVS"), InputLayoutDesc::Position, COUNT_OF(InputLayoutDesc::Position), &mInputLayouts->Position);
+	//mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("ShadowBuildVS"), InputLayoutDesc::Position, COUNT_OF(InputLayoutDesc::Position), &mInputLayouts->Position);
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("SkyVS"), InputLayoutDesc::Position, COUNT_OF(InputLayoutDesc::Position), &mInputLayouts->Position);
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("NormalMapSkinnedVS"),
 		InputLayoutDesc::PosNormalTexTanSkinned,
@@ -221,7 +222,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mBasicDeferredShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTex);
 	mShaderHandler->mBasicDeferredSkinnedShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTanSkinned);
 	mShaderHandler->mLightDeferredShader->Init(mD3D->GetDevice(), mInputLayouts->PosTex);
-	mShaderHandler->mShadowShader->Init(mD3D->GetDevice(), mInputLayouts->Position);
+	mShaderHandler->mShadowShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTex);
 
 	std::string fontPath = mResourceDir + "myfile.spritefont";
 	std::wstring fontPathW(fontPath.begin(), fontPath.end());
@@ -255,7 +256,7 @@ void GraphicsEngineImpl::DrawScene()
 
 	// Draw scene to shadowmap
 	mShadowMap->BindDsvAndSetNullRenderTarget(mD3D->GetImmediateContext());
-	mShadowMap->BuildShadowTransform(mDirLights.at(0), XMFLOAT3(0.0f, 0.0f, 0.0f), 100.0f);
+	mShadowMap->BuildShadowTransform(mDirLights.at(0), XMFLOAT3(0.0f, 0.0f, 0.0f), 1000.0f);
 	mShaderHandler->mShadowShader->SetActive(mD3D->GetImmediateContext());
 	mShadowMap->DrawSceneToShadowMap(mInstances, mAnimatedInstances, *mCamera, mD3D->GetImmediateContext(), mShaderHandler->mShadowShader);
 
@@ -379,6 +380,8 @@ void GraphicsEngineImpl::DrawScene()
 	//XMMATRIX cameraViewProj = mCamera->GetViewMatrix()*mCamera->GetProjMatrix();
 	//mShaderHandler->mLightDeferredShader->SetShadowTransform(cameraViewProj);
 	mShaderHandler->mLightDeferredShader->SetShadowTransform(XMLoadFloat4x4(&mShadowMap->GetShadowTransform()));
+	mShaderHandler->mLightDeferredShader->SetCameraViewMatrix(mCamera->GetViewMatrix());
+	mShaderHandler->mLightDeferredShader->SetLightWorldViewProj(mShadowMap->GetLightWorld(), mShadowMap->GetLightView(), mShadowMap->GetLightProj());
 	mShaderHandler->mLightDeferredShader->UpdatePerFrame(mD3D->GetImmediateContext());
 
 	mShaderHandler->mLightDeferredShader->SetDiffuseTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(0));
@@ -422,6 +425,8 @@ void GraphicsEngineImpl::UpdateScene(float dt)
 		mAnimatedInstances[i]->model->SetKeyFrameInterval(mAnimatedInstances[i]->model->mAnimations[mAnimatedInstances[i]->model->mCurAnim].FrameStart, mAnimatedInstances[i]->model->mAnimations[mAnimatedInstances[i]->model->mCurAnim].FrameEnd);
 		mAnimatedInstances[i]->model->Update(dt);
 	}
+
+	mCamera->Update();
 }
 
 void GraphicsEngineImpl::Present()

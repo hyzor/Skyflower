@@ -32,6 +32,9 @@ public:
 	UINT GetHeight() const;
 	XMFLOAT4X4 GetShadowTransform() const;
 	XMMATRIX GetLightViewProj() const;
+	XMMATRIX GetLightWorld() const;
+	XMMATRIX GetLightView() const;
+	XMMATRIX GetLightProj() const;
 
 	void BuildShadowTransform(const DirectionalLight& light, XMFLOAT3 center,
 		float radius/*const XNA::Sphere& sceneBounds*/);
@@ -47,6 +50,7 @@ private:
 	UINT mWidth;
 	UINT mHeight;
 
+	XMFLOAT4X4 mLightWorld;
 	XMFLOAT4X4 mLightView;
 	XMFLOAT4X4 mLightProj;
 	XMFLOAT4X4 mShadowTransform;

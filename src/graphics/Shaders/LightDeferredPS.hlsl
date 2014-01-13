@@ -18,7 +18,12 @@ cbuffer cLightBuffer : register(b0)
 	float3 gEyePosW;
 	float padding;
 
-	float4x4 gShadowTransform_PS;
+	float4x4 gShadowTransform_PS; // Light: view * projection * toTexSpace
+	float4x4 gCameraView;
+	float4x4 gCameraWorld;
+	float4x4 gLightWorld;
+	float4x4 gLightView;
+	float4x4 gLightProj;
 };
 
 Texture2D gDiffuseTexture : register(t0);
@@ -33,22 +38,20 @@ SamplerComparisonState samShadow : register(s2);
 
 float ReadShadowMap(float3 eyeDir)
 {
-	float4 projectedEyeDir = mul(float4(eyeDir, 1.0f), gShadowTransform_PS);
-	//projectedEyeDir = projectedEyeDir / projectedEyeDir.w;
+	float4x4 viewWorld = gCameraView * gCameraWorld;
+		float4x4 final = (gLightView*gLightProj) * (gLightWorld*gLightView) * viewWorld;
 
-	//float shadow = float3(1.0f, 1.0f, 1.0f);
-	//shadow[0] = CalcShadowFactor(samShadow, gShadowMap, projectedEyeDir);
+		float4 projectedEyeDir = mul(float4(eyeDir, 1.0f), final);
 
-	//return shadow;
+		//float4 projectedEyeDir = mul(float4(eyeDir, 1.0f), gShadowTransform_PS);
 
-	return CalcShadowFactor(samShadow, gShadowMap, projectedEyeDir);
+		//return CalcShadowFactor(samShadow, gShadowMap, projectedEyeDir);
 
-	/*
-	float2 tex = projectedEyeDir.xy * float2(0.5f, 0.5f) + float2(0.5f, 0.5f);
+		float2 tex = projectedEyeDir.xy * float2(0.5f, 0.5f) + float2(0.5f, 0.5f);
 
-	float depthValue = gShadowMap.Sample(samLinear, tex);
+		const float bias = 0.0001f;
+	float depthValue = gShadowMap.Sample(samLinear, tex) - bias;
 	return projectedEyeDir.z * 0.5 + 0.5 < depthValue;
-	*/
 }
 
 float4 main(VertexOut pIn) : SV_TARGET
