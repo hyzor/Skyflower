@@ -161,20 +161,14 @@ bool GraphicsEngineImpl::Init(HWND hWindow, int width, int height, const std::st
 		mShaderHandler->GetPixelShader("ShadowBuildPS"));
 	mShaderHandler->mSkinnedShadowShader->BindShaders(mShaderHandler->GetVertexShader("SkinnedShadowBuildVS"),
 		mShaderHandler->GetPixelShader("SkinnedShadowBuildPS"));
-	//mShaderHandler->mShadowShader->BindVertexShader(mShaderHandler->GetVertexShader("ShadowBuildVS"));
 
 	// Now create all the input layouts
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("BasicVS"), InputLayoutDesc::Basic32, COUNT_OF(InputLayoutDesc::Basic32), &mInputLayouts->Basic32);
-	//mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("ShadowBuildVS"), InputLayoutDesc::Position, COUNT_OF(InputLayoutDesc::Position), &mInputLayouts->Position);
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("SkyVS"), InputLayoutDesc::Position, COUNT_OF(InputLayoutDesc::Position), &mInputLayouts->Position);
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("NormalMapSkinnedVS"),
 		InputLayoutDesc::PosNormalTexTanSkinned,
 		COUNT_OF(InputLayoutDesc::PosNormalTexTanSkinned),
 		&mInputLayouts->PosNormalTexTanSkinned);
-// 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("SkinnedShadowBuildVS"), 
-// 		InputLayoutDesc::PosSkinned, 
-// 		COUNT_OF(InputLayoutDesc::PosSkinned), 
-// 		&mInputLayouts->PosSkinned);
 
 	// Init all the shader objects
 	mShaderHandler->mBasicShader->Init(mD3D->GetDevice(), mInputLayouts->Basic32);
@@ -188,18 +182,6 @@ bool GraphicsEngineImpl::Init(HWND hWindow, int width, int height, const std::st
 
 	mSpriteBatch = new SpriteBatch(mD3D->GetImmediateContext());
 	mSpriteFont = new SpriteFont(mD3D->GetDevice(), fontPathW.c_str());
-
-	//ModelInstance* test = this->CreateInstance("Models\\Worlds\\Subworld\\WoodBlock");
-	//test->SetPosition(Vec3(-36.0960396599f, 10.0f, -39.4741144045f));
-
-	//ModelInstance* test1 = this->CreateInstance("Models\\Button\\ButtonBase");
-	//test1->SetPosition(Vec3(-34.0960396599f, 40.0f, -37.4741144045));
-
-	//ModelInstance* test2 = this->CreateInstance("Models\\Placeholders\\Platform\\placeHolderPlattform");
-	//test2->SetPosition(Vec3(0.0f, 0.0f, 0.0f));
-	
-	//ModelInstance* test3 = this->CreateInstance("Models\\Placeholders\\Platform\\placeHolderPlattform");
-	//test3->SetPosition(Vec3(0.0f, 60.0f, 0.0f));
 
 	return true;
 }
@@ -221,7 +203,6 @@ void GraphicsEngineImpl::DrawScene()
 	mD3D->GetImmediateContext()->RSSetState(RenderStates::mDepthBiasRS); // This rasterizer state fixes shadow acne
 	mShadowMap->BindDsvAndSetNullRenderTarget(mD3D->GetImmediateContext());
 	mShadowMap->BuildShadowTransform(mDirLights.at(0), mSceneBounds);
-	//mShaderHandler->mShadowShader->SetActive(mD3D->GetImmediateContext());
 	mShadowMap->DrawSceneToShadowMap(mInstances, mAnimatedInstances, mD3D->GetImmediateContext(), mShaderHandler->mShadowShader, mShaderHandler->mSkinnedShadowShader);
 	
 
@@ -265,21 +246,16 @@ void GraphicsEngineImpl::DrawScene()
 		{
 			mShaderHandler->mBasicShader->SetWorldViewProjTex(mD3D->GetImmediateContext(),
 				mInstances[i]->GetWorld(),
-				mCamera->GetViewProjMatrix()/*mShadowMap->GetLightViewProj()*/,
+				mCamera->GetViewProjMatrix(),
 				toTexSpace);
 
-			XMMATRIX test = XMMatrixMultiply(mInstances[i]->GetWorld(), mShadowMap->GetLightViewProj());
-			XMFLOAT4X4 test1;
-			XMStoreFloat4x4(&test1, test);
 			for (UINT j = 0; j < mInstances[i]->model->meshCount; ++j)
 			{
 				UINT matIndex = mInstances[i]->model->meshes[j].MaterialIndex;
 
-
-
 				mShaderHandler->mBasicShader->SetMaterial(mD3D->GetImmediateContext(), mInstances[i]->model->mat[matIndex]);
-				mShaderHandler->mBasicShader->SetDiffuseMap(mD3D->GetImmediateContext(), mInstances[i]->model->diffuseMapSRV[matIndex]/*mShadowMap->getDepthMapSRV()*/);
-				mShaderHandler->mBasicShader->SetShadowTransform(mD3D->GetImmediateContext(), /*test1*/(mInstances[i]->GetWorld() * mShadowMap->GetShadowTransform()));
+				mShaderHandler->mBasicShader->SetDiffuseMap(mD3D->GetImmediateContext(), mInstances[i]->model->diffuseMapSRV[matIndex]);
+				mShaderHandler->mBasicShader->SetShadowTransform(mD3D->GetImmediateContext(), (mInstances[i]->GetWorld() * mShadowMap->GetShadowTransform()));
 				mShaderHandler->mBasicShader->UpdatePerObj(mD3D->GetImmediateContext());
 				mD3D->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 				mInstances[i]->model->meshes[j].Draw(mD3D->GetImmediateContext());
@@ -292,6 +268,7 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mNormalSkinned->SetEyePosW(mD3D->GetImmediateContext(), mCamera->GetPosition());
 	mShaderHandler->mNormalSkinned->SetPointLights(mD3D->GetImmediateContext(), mPointLights.size(), mPointLights.data());
 	mShaderHandler->mNormalSkinned->SetDirLights(mD3D->GetImmediateContext(), mDirLights.size(), mDirLights.data());
+	mShaderHandler->mNormalSkinned->SetShadowMap(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
 	mShaderHandler->mNormalSkinned->UpdatePerFrame(mD3D->GetImmediateContext());
 
 	// Loop through all skinned model instances
@@ -299,6 +276,7 @@ void GraphicsEngineImpl::DrawScene()
 	{
 		if (mAnimatedInstances[i]->IsVisible())
 		{
+			mShaderHandler->mNormalSkinned->SetShadowStransform(mD3D->GetImmediateContext(), mAnimatedInstances[i]->GetWorld() * mShadowMap->GetShadowTransform());
 			mAnimatedInstances[i]->model->Draw(mD3D->GetImmediateContext(), mCamera, mShaderHandler->mNormalSkinned, mAnimatedInstances[i]->GetWorld());
 		}
 	}

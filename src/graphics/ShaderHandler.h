@@ -299,11 +299,13 @@ public:
 		XMMATRIX& world,
 		XMMATRIX& viewProj,
 		XMMATRIX& tex);
+	void SetShadowStransform(ID3D11DeviceContext* dc, XMMATRIX& );
 
 	void SetEyePosW(ID3D11DeviceContext* dc, XMFLOAT3 eyePosW);
 	void SetMaterial(ID3D11DeviceContext* dc, const Material& mat);
 	void SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetNormalMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
 	void SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, PointLight pointLights[]);
 	void SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DirectionalLight dirLights[]);
@@ -323,6 +325,7 @@ private:
 		XMMATRIX worldViewProj;
 		//XMMATRIX worldViewProjTex;
 		XMMATRIX texTransform;
+		XMMATRIX shadowTransform;
 	};
 
 	struct VS_CSKINNEDBUFFER

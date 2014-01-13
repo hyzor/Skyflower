@@ -76,7 +76,6 @@ public:
 	static const D3D11_INPUT_ELEMENT_DESC Particle[5];
 	static const D3D11_INPUT_ELEMENT_DESC PosNormalTexTan[4];
 	static const D3D11_INPUT_ELEMENT_DESC PosNormalTexTanSkinned[6];
-	static const D3D11_INPUT_ELEMENT_DESC PosSkinned[3];
 };
 
 // Input layouts
@@ -101,7 +100,6 @@ public:
 	static ID3D11InputLayout* Particle;
 	static ID3D11InputLayout* PosNormalTexTan;
 	static ID3D11InputLayout* PosNormalTexTanSkinned;
-	static ID3D11InputLayout* PosSkinned;
 };
 
 #endif

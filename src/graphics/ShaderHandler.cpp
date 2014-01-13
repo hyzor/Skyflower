@@ -548,14 +548,6 @@ bool ShadowShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
 
 	// Now create the buffer
 	device->CreateBuffer(&cbDesc, &InitData, &vs_cBuffer);
-	
-	//test
-	//D3D11_DEPTH_STENCIL_DESC dsDesc;
-	//dsDesc.DepthEnable = true;
-	//dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	//dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-
-	//device->CreateDepthStencilState(&dsDesc, &DSState);
 
 	mInputLayout = inputLayout;
 
@@ -729,6 +721,11 @@ void NormalMappedSkinned::SetNormalMap(ID3D11DeviceContext* dc, ID3D11ShaderReso
 	dc->PSSetShaderResources(1, 1, &tex);
 }
 
+void NormalMappedSkinned::SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(2, 1, &tex);
+}
+
 void NormalMappedSkinned::SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, PointLight pointLights[])
 {
 	mBufferCache.psPerFrameBuffer.numPointLights = numPointLights;
@@ -760,6 +757,7 @@ void NormalMappedSkinned::UpdatePerObj(ID3D11DeviceContext* dc)
 	//dataPtr->worldViewProjTex = mBufferCache.vsBuffer.worldViewProjTex;
 	dataPtr->worldInvTranspose = mBufferCache.vsBuffer.worldInvTranspose;
 	dataPtr->texTransform = mBufferCache.vsBuffer.texTransform;
+	dataPtr->shadowTransform = mBufferCache.vsBuffer.shadowTransform;
 
 	dc->Unmap(vs_cBuffer, 0);
 
@@ -983,6 +981,7 @@ bool NormalMappedSkinned::SetActive(ID3D11DeviceContext* dc)
 	dc->PSSetShader(mPixelShader, nullptr, 0);
 
 	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
+	dc->PSSetSamplers(1, 1, &RenderStates::mComparisonSS);
 
 	return true;
 }
@@ -1000,6 +999,11 @@ void NormalMappedSkinned::SetWorldViewProjTex(ID3D11DeviceContext* dc, XMMATRIX&
 	mBufferCache.vsBuffer.worldViewProj = XMMatrixTranspose(worldViewProj);
 	//mBufferCache.vsBuffer.worldViewProjTex = worldViewProjTex;
 	mBufferCache.vsBuffer.texTransform = texTransform;
+}
+
+void NormalMappedSkinned::SetShadowStransform(ID3D11DeviceContext* dc, XMMATRIX& shadowTransform)
+{
+	mBufferCache.vsBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
 }
 
 #pragma endregion NormalMapSkinnedEnd

@@ -167,7 +167,6 @@ void ShadowMap::DrawSceneToShadowMap(
 	XMMATRIX worldViewProj;
 
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	deviceContext->IASetInputLayout(InputLayouts::Position);
 
 	shadowShader->SetActive(deviceContext);
 
@@ -191,9 +190,7 @@ void ShadowMap::DrawSceneToShadowMap(
 	}
 
 
-	//deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	deviceContext->IASetInputLayout(InputLayouts::PosSkinned);
-
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	sShadowShader->SetActive(deviceContext);
 
 	for (UINT i = 0; i < mAnimatedInstances.size(); ++i)
