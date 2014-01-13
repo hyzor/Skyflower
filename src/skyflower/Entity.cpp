@@ -367,16 +367,22 @@ void Entity::updateRot(Vec3 rot)
 		this->modelInst->SetRotation(rot);
 	if (this->AnimInst)
 		this->AnimInst->SetRotation(rot);
+	//if (this->collInst)
+		//this->collInst->SetRotation(rot);
 }
 
 void Entity::updateScale(Vec3 scale)
 {
 	this->scale = scale;
-	this->modelInst->SetScale(scale);
+	if(this->modelInst)
+		this->modelInst->SetScale(scale);
+	if (this->collInst)
+		this->collInst->SetScale(scale);
 }
 
 void Entity::updateVisible(bool isVisible)
 {
 	this->isVisible = isVisible;
-	this->modelInst->SetVisibility(isVisible);
+	if (this->modelInst)
+		this->modelInst->SetVisibility(isVisible);
 }

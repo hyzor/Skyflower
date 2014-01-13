@@ -126,6 +126,7 @@ class EntityManager {
 		//my own
 		void sendMessageToAllEntities(string message); //sends a message to all components in all entities in that manager
 		void sendMessageToEntity(string message, string entity); //sends a message to a specific entity
+		void sendMessageToEntity(string message, EntityId entity); //sends a message to a specific entity
 		bool loadXML(EntityManager * entityManager, string xmlFile);
 		bool loadXML2(string xmlFile);
 

@@ -109,27 +109,7 @@ public:
 			p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 90.0f);
 		}
 
-		std::vector<CollisionInstance*> instances = Collision::GetInstance()->GetCollisionInstances();
-		Ray r = Ray(pos+Vec3(0,5,0), Vec3(0, -5, 0));
-		float col = 0;
-		for (size_t i = 0; i < instances.size(); i++)
-		{
-			if (instances[i] != getEntityCollision())
-			{
-				float t = instances[i]->Test(r);
-				if (t > 0)
-				{
-					col = t;
-					break;
-				}
-			}
-		}
-		if (col) //om kollision flytta tillbaka
-		{
-			pos.Y -= (1 - col)*r.Dir.Y;
-			p->setVelocity(Vec3());
-			p->setJumping(false);
-		}
+		
 
 		updateEntityPos(pos);
 		updateEntityRot(rot);
@@ -204,10 +184,7 @@ private:
 			Entity *owner = getOwner();
 
 			if (owner)
-			{
-				float soundPosition[3] = {0.0f, 0.0f, 0.0f};
-				owner->getModules()->sound->PlaySound("player/jump1.wav", soundPosition, 1.0f, true); 
-			}
+				owner->getModules()->sound->PlaySound("player/jump1.wav", &pos.X, 1.0f, false);
 		}
 
 		updateEntityPos(pos);

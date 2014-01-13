@@ -45,6 +45,8 @@ class Entity {
 			return (T)fComponents[Type].front();
 		}
 
+		Vec3 returnPos();
+
 	private:
 
 		// Entity id
@@ -126,7 +128,6 @@ class Entity {
 		string getType();
 		EntityId getEntityId();
 
-		Vec3 returnPos();
 		Vec3 returnRot();
 		Vec3 returnScale();
 		bool returnVisible();

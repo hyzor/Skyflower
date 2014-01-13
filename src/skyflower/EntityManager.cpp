@@ -606,6 +606,12 @@ void EntityManager::sendMessageToEntity(string message, string entity)
 	}
 }
 
+void EntityManager::sendMessageToEntity(string message, EntityId entity)
+{
+	Entity* e = getEntity(entity);
+	e->sendMessageToEntity(message, entity);
+}
+
 /*
 bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 {
@@ -1315,6 +1321,20 @@ bool EntityManager::loadXML2(string xmlFile)
 				Health* hp = new Health(maxHP);
 				this->addComponent(entity, hp);
 			}
+			else if (componentName == "Event")
+			{
+				attr = e->Attribute("script");
+				if (attr != nullptr)
+				{
+					Event* ev = new Event(attr);
+					this->addComponent(entity, ev);
+				}
+			}
+			else if (componentName == "Button")
+			{
+				Button* btn = new Button();
+				this->addComponent(entity, btn);
+			}
 			else
 			{
 				cout << "Unknown component with name " << componentName << " in entity " << entityName << " in file " << xmlFile << endl;
@@ -1481,7 +1501,7 @@ void EntityManager::handleCollision()
 		Entity* wall = nullptr;
 		if (fEntitys[i]->hasComponents("Gravity"))
 		{
-			float t = testMove(Ray(Vec3(0, 15, 0), Vec3(0, -5, 0)), fEntitys[i], ground); //test feet and head
+			float t = testMove(Ray(Vec3(0, 15, 0), Vec3(0, -15, 0)), fEntitys[i], ground); //test feet and head
 			//reset jump
 			if (t == -1)
 			{
@@ -1505,6 +1525,13 @@ void EntityManager::handleCollision()
 			testMove(Ray(Vec3(0, 13, -3), Vec3(0, 0, 6)), fEntitys[i], wall); // test front and back at head
 			testMove(Ray(Vec3(-3*0.71f, 13, -3*0.71f), Vec3(6*0.71f, 0, 6*0.71f)), fEntitys[i], wall); // extra test
 			testMove(Ray(Vec3(-3*0.71f, 13, 3*0.71f), Vec3(6*0.71f, 0, -6*0.71f)), fEntitys[i], wall); // extra test
+
+
+			//activate event for wall
+			if(ground)
+				ground->sendMessageToEntity("Ground", ground->fId);
+			if (wall)
+				wall->sendMessageToEntity("Wall", wall->fId);
 		}
 		if (fEntitys[i]->hasComponents("AI"))
 		{

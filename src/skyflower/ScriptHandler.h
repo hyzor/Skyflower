@@ -17,13 +17,15 @@ class ScriptHandler
 		lua_State* GetLua();
 		bool getMessage();
 
+
+		lua_State* L;
+
 	private:
 		ScriptHandler();
 		static ScriptHandler* instance;
 
 		void ReportErrors(lua_State* L, int status);
 
-		lua_State* L;
 
 		static int Print(lua_State* L);
 
