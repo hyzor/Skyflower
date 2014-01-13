@@ -190,9 +190,9 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 		mShaderHandler->GetPixelShader("NormalMapSkinnedPS"));
 	mShaderHandler->mBasicDeferredShader->BindShaders(
 		mShaderHandler->GetVertexShader("BasicDeferredVS"),
+		mShaderHandler->GetPixelShader("BasicDeferredPS"));
 	mShaderHandler->mSkinnedShadowShader->BindShaders(mShaderHandler->GetVertexShader("SkinnedShadowBuildVS"),
 		mShaderHandler->GetPixelShader("SkinnedShadowBuildPS"));
-		mShaderHandler->GetPixelShader("BasicDeferredPS"));
 	mShaderHandler->mBasicDeferredSkinnedShader->BindShaders(
 		mShaderHandler->GetVertexShader("BasicDeferredSkinnedVS"),
 		mShaderHandler->GetPixelShader("BasicDeferredSkinnedPS"));
@@ -277,67 +277,6 @@ void GraphicsEngineImpl::DrawScene()
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(0, 0);
 	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
 
-	/*
-	// Use basic shader to draw with
-	mShaderHandler->mBasicShader->SetActive(mD3D->GetImmediateContext());
-	mShaderHandler->mBasicShader->SetEyePosW(mD3D->GetImmediateContext(), mCamera->GetPosition());
-	mShaderHandler->mBasicShader->SetPointLights(mD3D->GetImmediateContext(), (UINT)mPointLights.size(), mPointLights.data());
-	mShaderHandler->mBasicShader->SetDirLights(mD3D->GetImmediateContext(), (UINT)mDirLights.size(), mDirLights.data());
-	mShaderHandler->mBasicShader->SetSpotLights(mD3D->GetImmediateContext(), (UINT)mSpotLights.size(), mSpotLights.data());
-	mShaderHandler->mBasicShader->SetShadowMap(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
-	mShaderHandler->mBasicShader->UpdatePerFrame(mD3D->GetImmediateContext());
-
-	// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
-	XMMATRIX toTexSpace(
-		0.5f, 0.0f, 0.0f, 0.0f,
-		0.0f, -0.5f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, 0.0f, 1.0f);
-
-	// Loop through all model instances
-	for (UINT i = 0; i < mInstances.size(); ++i)
-	{
-		if (mInstances[i]->IsVisible())
-		{
-			mShaderHandler->mBasicShader->SetWorldViewProjTex(mD3D->GetImmediateContext(),
-				mInstances[i]->GetWorld(),
-				mCamera->GetViewProjMatrix(),
-				toTexSpace);
-
-			for (UINT j = 0; j < mInstances[i]->model->meshCount; ++j)
-			{
-				UINT matIndex = mInstances[i]->model->meshes[j].MaterialIndex;
-
-				mShaderHandler->mBasicShader->SetMaterial(mD3D->GetImmediateContext(), mInstances[i]->model->mat[matIndex]);
-				mShaderHandler->mBasicShader->SetDiffuseMap(mD3D->GetImmediateContext(), mInstances[i]->model->diffuseMapSRV[matIndex]);
-				mShaderHandler->mBasicShader->SetShadowTransform(mD3D->GetImmediateContext(), (mInstances[i]->GetWorld() * mShadowMap->GetShadowTransform()));
-				mShaderHandler->mBasicShader->UpdatePerObj(mD3D->GetImmediateContext());
-				mD3D->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-				mInstances[i]->model->meshes[j].Draw(mD3D->GetImmediateContext());
-			}
-		}
-	}
-
-	// Use normal mapping skinned shader to draw with
-	mShaderHandler->mNormalSkinned->SetActive(mD3D->GetImmediateContext());
-	mShaderHandler->mNormalSkinned->SetEyePosW(mD3D->GetImmediateContext(), mCamera->GetPosition());
-	mShaderHandler->mNormalSkinned->SetPointLights(mD3D->GetImmediateContext(), (UINT)mPointLights.size(), mPointLights.data());
-	mShaderHandler->mNormalSkinned->SetDirLights(mD3D->GetImmediateContext(), (UINT)mDirLights.size(), mDirLights.data());
-	mShaderHandler->mNormalSkinned->SetSpotLights(mD3D->GetImmediateContext(), (UINT)mSpotLights.size(), mSpotLights.data());
-	mShaderHandler->mNormalSkinned->SetShadowMap(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
-	mShaderHandler->mNormalSkinned->UpdatePerFrame(mD3D->GetImmediateContext());
-
-	// Loop through all skinned model instances
-	for (UINT i = 0; i < mAnimatedInstances.size(); ++i)
-	{
-		if (mAnimatedInstances[i]->IsVisible())
-		{
-			mShaderHandler->mNormalSkinned->SetShadowStransform(mD3D->GetImmediateContext(), mAnimatedInstances[i]->GetWorld() * mShadowMap->GetShadowTransform());
-			mAnimatedInstances[i]->model->Draw(mD3D->GetImmediateContext(), mCamera, mShaderHandler->mNormalSkinned, mAnimatedInstances[i]->GetWorld());
-		}
-	}
-	*/
-
 	// Draw 2D stuff
 	/*
 	mSpriteBatch->Begin();
@@ -345,14 +284,6 @@ void GraphicsEngineImpl::DrawScene()
 	mSpriteFont->DrawString(mSpriteBatch, L"Test", XMFLOAT2(100.0f, 100.0f), D3dColors::Green, 0.0f, XMFLOAT2(100.0f, 100.0f), XMFLOAT2(1.0f, 1.0f));
 	mSpriteBatch->End();
 	*/
-
-	ID3D11ShaderResourceView* nullSRV[16] = { 0 };
-	mD3D->GetImmediateContext()->PSSetShaderResources(0, 16, nullSRV);
-
-	// Restore default states
-// 	mD3D->GetImmediateContext()->RSSetState(0);
-// 	mD3D->GetImmediateContext()->OMSetDepthStencilState(0, 0);
-// 	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
 
 	//------------------------------------------------------------------------------
 	// Deferred shading
@@ -377,7 +308,7 @@ void GraphicsEngineImpl::DrawScene()
 
 	//XMMATRIX cameraViewProj = mCamera->GetViewMatrix()*mCamera->GetProjMatrix();
 	//mShaderHandler->mLightDeferredShader->SetShadowTransform(cameraViewProj);
-	mShaderHandler->mLightDeferredShader->SetShadowTransform(XMLoadFloat4x4(&mShadowMap->GetShadowTransform()));
+	mShaderHandler->mLightDeferredShader->SetShadowTransform(mShadowMap->GetShadowTransform());
 	mShaderHandler->mLightDeferredShader->SetCameraViewMatrix(mCamera->GetViewMatrix());
 	mShaderHandler->mLightDeferredShader->SetLightWorldViewProj(mShadowMap->GetLightWorld(), mShadowMap->GetLightView(), mShadowMap->GetLightProj());
 	mShaderHandler->mLightDeferredShader->UpdatePerFrame(mD3D->GetImmediateContext());

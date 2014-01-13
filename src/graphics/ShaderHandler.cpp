@@ -410,7 +410,7 @@ void BasicShader::SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, Direc
 
 void BasicShader::SetShadowTransform(ID3D11DeviceContext* dc, const XMMATRIX& shadowTransform)
 {
-	mBufferCache.vsBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
+	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
 }
 
 #pragma endregion BasicShaderEnd
