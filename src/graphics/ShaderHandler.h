@@ -668,22 +668,16 @@ public:
 	void SetNormalTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetRandomTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
-	void SetEyePos(const XMFLOAT3 &eyePos);
+	void SetInverseProjectionMatrix(const XMMATRIX& inverseProjectionMatrix);
+	void SetViewMatrix(const XMMATRIX& viewMatrix);
 	void SetZFar(float z_far);
-	void SetFramebufferSize(const XMFLOAT2 &framebufferSize);
-	void SetProjectionMatrix(const XMMATRIX& projectionMatrix);
-	void SetViewProjectionMatrix(const XMMATRIX& viewProjectionMatrix);
 
 private:
 	struct PS_CPERFRAMEBUFFER
 	{
-		XMFLOAT3 eyePos;
+		XMMATRIX inverseProjectionMatrix;
+		XMMATRIX viewMatrix;
 		float z_far;
-		XMFLOAT2 framebufferSize;
-
-		XMMATRIX projectionMatrix;
-		XMMATRIX viewProjectionMatrix;
-		XMMATRIX inverseViewProjectionMatrix;
 	};
 
 	ID3D11Buffer* ps_cPerFrameBuffer;

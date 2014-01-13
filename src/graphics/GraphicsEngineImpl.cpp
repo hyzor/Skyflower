@@ -186,8 +186,8 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\BasicDeferredSkinnedPS.cso", "BasicDeferredSkinnedPS", mD3D->GetDevice());
 
 	// Post-processing shaders
-	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\SSAO_VS.cso", "SSAO_VS", mD3D->GetDevice());
-	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\SSAO_PS.cso", "SSAO_PS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\FullscreenQuadVS.cso", "FullscreenQuadVS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\AmbientOcclusionPS.cso", "AmbientOcclusionPS", mD3D->GetDevice());
 
 	// Bind loaded shaders to shader objects
 	mShaderHandler->mBasicShader->BindShaders(
@@ -211,8 +211,8 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	//mShaderHandler->mShadowShader->BindShaders(mShaderHandler->GetVertexShader("ShadowBuildVS"), mShaderHandler->GetPixelShader(""));
 	mShaderHandler->mShadowShader->BindVertexShader(mShaderHandler->GetVertexShader("ShadowBuildVS"));
 	mShaderHandler->mSSAOShader->BindShaders(
-		mShaderHandler->GetVertexShader("SSAO_VS"),
-		mShaderHandler->GetPixelShader("SSAO_PS"));
+		mShaderHandler->GetVertexShader("FullscreenQuadVS"),
+		mShaderHandler->GetPixelShader("AmbientOcclusionPS"));
 
 	// Now create all the input layouts
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("BasicVS"), InputLayoutDesc::PosNormalTex, COUNT_OF(InputLayoutDesc::PosNormalTex), &mInputLayouts->PosNormalTex);
@@ -223,7 +223,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 		COUNT_OF(InputLayoutDesc::PosNormalTexTanSkinned),
 		&mInputLayouts->PosNormalTexTanSkinned);
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("LightDeferredVS"), InputLayoutDesc::PosTex, COUNT_OF(InputLayoutDesc::PosTex), &mInputLayouts->PosTex);
-	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("SSAO_VS"), InputLayoutDesc::PosTex, COUNT_OF(InputLayoutDesc::PosTex), &mInputLayouts->PosTex);
+	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("FullscreenQuadVS"), InputLayoutDesc::PosTex, COUNT_OF(InputLayoutDesc::PosTex), &mInputLayouts->PosTex);
 
 	// Init all the shader objects
 	mShaderHandler->mBasicShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTex);
@@ -401,23 +401,23 @@ void GraphicsEngineImpl::DrawScene()
 
 
 
-	mShaderHandler->mSSAOShader->SetEyePos(mCamera->GetPosition());
-	mShaderHandler->mSSAOShader->SetZFar(mCamera->GetFarZ());
-	mShaderHandler->mSSAOShader->SetFramebufferSize(XMFLOAT2((float)mSSAOTexture->GetWidth(), (float)mSSAOTexture->GetHeight()));
-	mShaderHandler->mSSAOShader->SetProjectionMatrix(mCamera->GetProjMatrix());
-	mShaderHandler->mSSAOShader->SetViewProjectionMatrix(mCamera->GetViewProjMatrix());
-	mShaderHandler->mSSAOShader->Update(mD3D->GetImmediateContext());
-
-	mShaderHandler->mSSAOShader->SetDepthTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(3));
+	mShaderHandler->mSSAOShader->SetDepthTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
 	mShaderHandler->mSSAOShader->SetNormalTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(1));
 	mShaderHandler->mSSAOShader->SetRandomTexture(mD3D->GetImmediateContext(), mTextureMgr->CreateTexture(mResourceDir + "Textures/random.png"));
+
+	mShaderHandler->mSSAOShader->SetInverseProjectionMatrix(XMMatrixInverse(nullptr, mCamera->GetProjMatrix()));
+	mShaderHandler->mSSAOShader->SetViewMatrix(mCamera->GetViewMatrix());
+	mShaderHandler->mSSAOShader->SetZFar(zFar);
+	mShaderHandler->mSSAOShader->Update(mD3D->GetImmediateContext());
 
 	mShaderHandler->mSSAOShader->SetActive(mD3D->GetImmediateContext());
 
 	// Render a fullscreen quad without a vertex buffer using some shader magic.
 	mD3D->GetImmediateContext()->Draw(3, 0);
 
-
+	mShaderHandler->mSSAOShader->SetDepthTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mSSAOShader->SetNormalTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mSSAOShader->SetRandomTexture(mD3D->GetImmediateContext(), NULL);
 	
 	// Reset the render target to the back buffer.
 	ID3D11RenderTargetView* backBufferRenderTarget[1] = { mD3D->GetRenderTargetView() };

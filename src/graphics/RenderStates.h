@@ -14,6 +14,7 @@ public:
 	static ID3D11RasterizerState* mNoCullRS;
 
 	static ID3D11SamplerState* mLinearSS;
+	static ID3D11SamplerState* mLinearClampedSS;
 	static ID3D11SamplerState* mAnisotropicSS;
 	static ID3D11SamplerState* mComparisonSS;
 

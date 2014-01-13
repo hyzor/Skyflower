@@ -1477,7 +1477,8 @@ bool SSAOShader::SetActive(ID3D11DeviceContext* dc)
 	dc->VSSetShader(mVertexShader, nullptr, 0);
 	dc->PSSetShader(mPixelShader, nullptr, 0);
 
-	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
+	dc->PSSetSamplers(0, 1, &RenderStates::mLinearClampedSS);
+	dc->PSSetSamplers(1, 1, &RenderStates::mLinearSS);
 
 	dc->PSSetConstantBuffers(0, 1, &ps_cPerFrameBuffer);
 
@@ -1518,30 +1519,19 @@ void SSAOShader::SetRandomTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceV
 	dc->PSSetShaderResources(2, 1, &tex);
 }
 
-void SSAOShader::SetEyePos(const XMFLOAT3 &eyePos)
+void SSAOShader::SetInverseProjectionMatrix(const XMMATRIX& inverseProjectionMatrix)
 {
-	ps_cPerFrameBufferVariables.eyePos = eyePos;
+	ps_cPerFrameBufferVariables.inverseProjectionMatrix = XMMatrixTranspose(inverseProjectionMatrix);
+}
+
+void SSAOShader::SetViewMatrix(const XMMATRIX& viewMatrix)
+{
+	ps_cPerFrameBufferVariables.viewMatrix = XMMatrixTranspose(viewMatrix);
 }
 
 void SSAOShader::SetZFar(float z_far)
 {
 	ps_cPerFrameBufferVariables.z_far = z_far;
-}
-
-void SSAOShader::SetFramebufferSize(const XMFLOAT2 &framebufferSize)
-{
-	ps_cPerFrameBufferVariables.framebufferSize = framebufferSize;
-}
-
-void SSAOShader::SetProjectionMatrix(const XMMATRIX& projectionMatrix)
-{
-	ps_cPerFrameBufferVariables.projectionMatrix = XMMatrixTranspose(projectionMatrix);
-}
-
-void SSAOShader::SetViewProjectionMatrix(const XMMATRIX& viewProjectionMatrix)
-{
-	ps_cPerFrameBufferVariables.viewProjectionMatrix = XMMatrixTranspose(viewProjectionMatrix);
-	ps_cPerFrameBufferVariables.inverseViewProjectionMatrix = XMMatrixInverse(nullptr, ps_cPerFrameBufferVariables.viewProjectionMatrix);
 }
 
 #pragma endregion SSAOShader

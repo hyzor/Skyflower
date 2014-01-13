@@ -238,10 +238,10 @@
     <FxCompile Include="src\graphics\Shaders\BasicDeferredSkinnedPS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="src\graphics\Shaders\SSAO_PS.hlsl">
+    <FxCompile Include="src\graphics\Shaders\FullscreenQuadVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="src\graphics\Shaders\SSAO_VS.hlsl">
+    <FxCompile Include="src\graphics\Shaders\AmbientOcclusionPS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>
