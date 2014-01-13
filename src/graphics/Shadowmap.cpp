@@ -113,18 +113,13 @@ UINT ShadowMap::GetHeight() const
 	return mHeight;
 }
 
-void ShadowMap::BuildShadowTransform(const DirectionalLight& light, XMFLOAT3 center, float radius/*const XNA::Sphere& sceneBounds*/)
+void ShadowMap::BuildShadowTransform(const DirectionalLight& light, const DirectX::BoundingSphere& sceneBounds)
 {
 	// Only first "main" light casts a shadow
 	// So get light direction and position from first light
 	XMVECTOR lightDir = XMLoadFloat3(&light.Direction);
-
-	//XMVECTOR lightPos = -2.0f*sceneBounds.Radius*lightDir;
-
-	XMVECTOR lightPos = -2.0f*radius*lightDir;
-
-	//XMVECTOR targetPos = XMLoadFloat3(&sceneBounds.Center);
-	XMVECTOR targetPos = XMLoadFloat3(&center);
+	XMVECTOR lightPos = -2.0f*sceneBounds.Radius*lightDir;
+	XMVECTOR targetPos = XMLoadFloat3(&sceneBounds.Center);
 	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 	XMMATRIX V = XMMatrixLookAtLH(lightPos, targetPos, up);
@@ -134,18 +129,12 @@ void ShadowMap::BuildShadowTransform(const DirectionalLight& light, XMFLOAT3 cen
 	XMStoreFloat3(&sphereCenterLS, XMVector3TransformCoord(targetPos, V));
 
 	// Orthogonal frustum in light space encloses scene
-	/*float l = sphereCenterLS.x - sceneBounds.Radius;
+	float l = sphereCenterLS.x - sceneBounds.Radius;
 	float b = sphereCenterLS.y - sceneBounds.Radius;
 	float n = sphereCenterLS.z - sceneBounds.Radius;
 	float r = sphereCenterLS.x + sceneBounds.Radius;
 	float t = sphereCenterLS.y + sceneBounds.Radius;
-	float f = sphereCenterLS.z + sceneBounds.Radius;*/
-	float l = sphereCenterLS.x - radius;
-	float b = sphereCenterLS.y - radius;
-	float n = sphereCenterLS.z - radius;
-	float r = sphereCenterLS.x + radius;
-	float t = sphereCenterLS.y + radius;
-	float f = sphereCenterLS.z + radius;
+	float f = sphereCenterLS.z + sceneBounds.Radius;
 	XMMATRIX P = XMMatrixOrthographicOffCenterLH(l, r, b, t, n, f);
 
 	// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
@@ -174,75 +163,71 @@ void ShadowMap::BuildShadowTransform(const DirectionalLight& light, XMFLOAT3 cen
 void ShadowMap::DrawSceneToShadowMap(
 	const std::vector<ModelInstanceImpl*>& modelInstances,
 	const std::vector<AnimatedInstanceImpl*>& mAnimatedInstances,
-	const Camera& camera,
 	ID3D11DeviceContext* deviceContext,
-	ShadowShader* shadowShader)
+	ShadowShader* shadowShader,
+	SkinnedShadowShader* sShadowShader)
 {
 	XMMATRIX view = XMLoadFloat4x4(&mLightView);
 	XMMATRIX proj = XMLoadFloat4x4(&mLightProj);
 	XMMATRIX viewProj = XMMatrixMultiply(view, proj);
 
-	//Effects::BuildShadowMapFX->SetEyePosW(camera.GetPosition());
-	//Effects::BuildShadowMapFX->SetViewProj(viewProj);
-
-	//shadowShader->SetActive(deviceContext);
-	//shadowShader->setLightGWP(deviceContext, XMLoadFloat4x4(&mShadowTransform));
-
 	XMMATRIX world;
 	XMMATRIX worldInvTranspose;
 	XMMATRIX worldViewProj;
 
-	//ID3DX11EffectTechnique* tech = Effects::BuildShadowMapFX->TessBuildShadowMapTech;
-
-	//D3DX11_TECHNIQUE_DESC techDesc;
-	//tech->GetDesc(&techDesc);
-
-	//------------------------------------------------------------------
-	// Draw opaque tessellated objects
-	//------------------------------------------------------------------
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//deviceContext->IASetInputLayout(InputLayouts::Position);
 
-	//for (UINT pass = 0; pass < techDesc.Passes; ++pass)
-	//{
-		for (UINT i = 0; i < modelInstances.size(); ++i)
+	shadowShader->SetActive(deviceContext);
+
+	for (UINT i = 0; i < modelInstances.size(); ++i)
+	{
+		if (modelInstances[i]->IsVisible())
 		{
-			if (modelInstances[i]->IsVisible())
-			{
-				//world = XMLoadFloat4x4(&modelInstances[i]->GetWorld());
-				world = modelInstances[i]->GetWorld();
-				worldInvTranspose = MathHelper::InverseTranspose(world);
+			world = modelInstances[i]->GetWorld();
+			worldInvTranspose = MathHelper::InverseTranspose(world);
 				
-				//worldViewProj = world*view*proj;
-				worldViewProj = world*viewProj;
-				shadowShader->setLightWVP(deviceContext, worldViewProj);
-				shadowShader->updatePerObj(deviceContext);
+			worldViewProj = world*viewProj;
+			shadowShader->setLightWVP(deviceContext, worldViewProj);
+			shadowShader->updatePerObj(deviceContext);
 
-				//Effects::BuildShadowMapFX->SetWorld(world);
-				//Effects::BuildShadowMapFX->SetWorldInvTranspose(worldInvTranspose);
-				//Effects::BuildShadowMapFX->SetWorldViewProj(worldViewProj);
-				//Effects::BuildShadowMapFX->SetTexTransform(XMMatrixScaling(1.0f, 1.0f, 1.0f));
 
-				//tech->GetPassByIndex(pass)->Apply(0, deviceContext);
-
-				for (UINT j = 0; j < modelInstances[i]->model->meshCount; ++j)
-				{
-					modelInstances[i]->model->meshes[j].Draw(deviceContext);
-				}
+			for (UINT j = 0; j < modelInstances[i]->model->meshCount; ++j)
+			{
+				modelInstances[i]->model->meshes[j].Draw(deviceContext);
 			}
 		}
-	//}
-	// FX sets tessellation stages, but it does not disable them.  So do that here
-	// to turn off tessellation.
-	//deviceContext->HSSetShader(0, 0, 0);
-	//deviceContext->DSSetShader(0, 0, 0);
+	}
+
+
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	sShadowShader->SetActive(deviceContext);
+
+	for (UINT i = 0; i < mAnimatedInstances.size(); ++i)
+	{
+		if (mAnimatedInstances[i]->IsVisible())
+		{
+			world = mAnimatedInstances[i]->GetWorld();
+			worldViewProj = world * viewProj;
+
+			sShadowShader->SetLightWVP(deviceContext, worldViewProj);
+			sShadowShader->SetBoneTransforms(deviceContext, 
+				mAnimatedInstances[i]->model->mInstance.FinalTransforms.data(), 
+				mAnimatedInstances[i]->model->mInstance.FinalTransforms.size());
+
+			for (UINT j = 0; j < mAnimatedInstances[i]->model->mInstance.model->numMeshes; ++j)
+			{
+				sShadowShader->UpdatePerObj(deviceContext);
+				mAnimatedInstances[i]->model->mInstance.model->meshes[j].draw(deviceContext);
+			}
+		}
+	}
 
 	deviceContext->RSSetState(0);
 }
 
-XMFLOAT4X4 ShadowMap::GetShadowTransform() const
+XMMATRIX ShadowMap::GetShadowTransform() const
 {
-	return mShadowTransform;
+	return XMLoadFloat4x4(&mShadowTransform);
 }
 
 XMMATRIX ShadowMap::GetLightViewProj() const

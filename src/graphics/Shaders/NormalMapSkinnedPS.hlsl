@@ -26,8 +26,10 @@ cbuffer cbPerObject : register(b1)
 
 Texture2D gDiffuseMap : register(t0);
 Texture2D gNormalMap : register(t1);
+Texture2D gShadowMap : register(t2);
 
 SamplerState samLinear : register(s0);
+SamplerComparisonState samShadow : register(s1);
 
 float4 main(VertexOut pIn) : SV_TARGET
 {
@@ -73,8 +75,8 @@ float4 main(VertexOut pIn) : SV_TARGET
 			float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 			float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-			//float3 shadow = float3(1.0f, 1.0f, 1.0f);
-			//shadow[0] = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
+			float3 shadow = float3(1.0f, 1.0f, 1.0f);
+			shadow[0] = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
 
 			float4 A, D, S;
 		for (int j = 0; j < gPointLightCount; ++j)
@@ -91,8 +93,8 @@ float4 main(VertexOut pIn) : SV_TARGET
 			ComputeDirectionalLight(gMaterial, gDirLights[k], pIn.NormalW, toEye, A, D, S);
 
 			ambient += A;
-			diffuse += D;
-			specular += S;
+			diffuse += shadow[k] * D;
+			specular += shadow[k] * S;
 		}
 
 		for (int i = 0; i < gSpotLightCount; ++i)

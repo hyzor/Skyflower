@@ -10,6 +10,7 @@ ShaderHandler::ShaderHandler()
 	mBasicDeferredSkinnedShader = new BasicDeferredSkinnedShader();
 	mLightDeferredShader = new LightDeferredShader();
 	mShadowShader = new ShadowShader();
+	mSkinnedShadowShader = new SkinnedShadowShader();
 }
 
 ShaderHandler::~ShaderHandler()
@@ -41,6 +42,7 @@ ShaderHandler::~ShaderHandler()
 	delete mBasicDeferredShader;
 	delete mBasicDeferredSkinnedShader;
 	delete mLightDeferredShader;
+	delete mSkinnedShadowShader;
 }
 
 void ShaderHandler::LoadCompiledVertexShader(LPCWSTR fileName, char* name, ID3D11Device* device)
@@ -406,10 +408,9 @@ void BasicShader::SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, Direc
 		mBufferCache.psPerFrameBuffer.dirLights[i] = dirLights[i];
 }
 
-void BasicShader::SetShadowTransform(ID3D11DeviceContext* dc, const XMFLOAT4X4& shadowTransform)
+void BasicShader::SetShadowTransform(ID3D11DeviceContext* dc, const XMMATRIX& shadowTransform)
 {
-	XMMATRIX sTransform = XMLoadFloat4x4(&shadowTransform);
-	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(sTransform);
+	mBufferCache.vsBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
 }
 
 #pragma endregion BasicShaderEnd
@@ -478,14 +479,6 @@ bool ShadowShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
 
 	// Now create the buffer
 	device->CreateBuffer(&cbDesc, &InitData, &vs_cBuffer);
-	
-	//test
-	//D3D11_DEPTH_STENCIL_DESC dsDesc;
-	//dsDesc.DepthEnable = true;
-	//dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	//dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-
-	//device->CreateDepthStencilState(&dsDesc, &DSState);
 
 	mInputLayout = inputLayout;
 
@@ -647,6 +640,11 @@ void NormalMappedSkinned::SetNormalMap(ID3D11DeviceContext* dc, ID3D11ShaderReso
 	dc->PSSetShaderResources(1, 1, &tex);
 }
 
+void NormalMappedSkinned::SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(2, 1, &tex);
+}
+
 void NormalMappedSkinned::SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, PointLight pointLights[])
 {
 	mBufferCache.psPerFrameBuffer.numPointLights = numPointLights;
@@ -678,6 +676,7 @@ void NormalMappedSkinned::UpdatePerObj(ID3D11DeviceContext* dc)
 	//dataPtr->worldViewProjTex = mBufferCache.vsBuffer.worldViewProjTex;
 	dataPtr->worldInvTranspose = mBufferCache.vsBuffer.worldInvTranspose;
 	dataPtr->texTransform = mBufferCache.vsBuffer.texTransform;
+	dataPtr->shadowTransform = mBufferCache.vsBuffer.shadowTransform;
 
 	dc->Unmap(vs_cBuffer, 0);
 
@@ -882,6 +881,7 @@ bool NormalMappedSkinned::SetActive(ID3D11DeviceContext* dc)
 	dc->PSSetShader(mPixelShader, nullptr, 0);
 
 	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
+	dc->PSSetSamplers(1, 1, &RenderStates::mComparisonSS);
 
 	return true;
 }
@@ -909,6 +909,154 @@ void NormalMappedSkinned::SetSpotLights(ID3D11DeviceContext* dc, UINT numSpotLig
 		mBufferCache.psPerFrameBuffer.spotLights[i] = spotLights[i];
 	}
 }
+void NormalMappedSkinned::SetShadowStransform(ID3D11DeviceContext* dc, XMMATRIX& shadowTransform)
+{
+	mBufferCache.vsBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
+}
+
+#pragma endregion NormalMapSkinnedEnd
+
+#pragma region SkinnedShadowShader
+
+SkinnedShadowShader::SkinnedShadowShader()
+{
+
+}
+
+SkinnedShadowShader::~SkinnedShadowShader()
+{
+
+}
+
+bool SkinnedShadowShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
+{
+	mVertexShader = vShader;
+	mPixelShader = pShader;
+
+	return true;
+}
+
+bool SkinnedShadowShader::BindVertexShader(ID3D11VertexShader* vShader)
+{
+	mVertexShader = vShader;
+
+	return true;
+}
+
+bool SkinnedShadowShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
+{
+	//------------------------
+	// Vertex shader buffer
+	//------------------------
+	ZeroMemory(&vs_cBufferVariables, sizeof(VS_CPEROBJBUFFER));
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC cbDesc;
+	cbDesc.ByteWidth = sizeof(VS_CPEROBJBUFFER);
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA InitData;
+	InitData.pSysMem = &vs_cBufferVariables;
+	InitData.SysMemPitch = 0;
+	InitData.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	device->CreateBuffer(&cbDesc, &InitData, &vs_cBuffer);
+
+	// Skinned buffer
+	ZeroMemory(&vs_cSkinnedBufferVariables, sizeof(VS_CSKINNEDBUFFER));
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC cbSkinDesc;
+	cbSkinDesc.ByteWidth = sizeof(VS_CSKINNEDBUFFER);
+	cbSkinDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbSkinDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbSkinDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbSkinDesc.MiscFlags = 0;
+	cbSkinDesc.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA SkinInitData;
+	SkinInitData.pSysMem = &vs_cSkinnedBufferVariables;
+	SkinInitData.SysMemPitch = 0;
+	SkinInitData.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	device->CreateBuffer(&cbSkinDesc, &SkinInitData, &vs_cSkinnedBuffer);
+
+	// Set input layout
+	mInputLayout = inputLayout;
+
+	return true;
+}
+
+void SkinnedShadowShader::SetBoneTransforms(ID3D11DeviceContext* dc, const XMFLOAT4X4 boneTransforms[], UINT numTransforms)
+{
+	for (UINT i = 0; i < numTransforms; ++i)
+	{
+		mBufferCache.vsSkinBuffer.boneTransforms[i] = XMLoadFloat4x4(&boneTransforms[i]);
+		mBufferCache.vsSkinBuffer.boneTransforms[i] = XMMatrixTranspose(mBufferCache.vsSkinBuffer.boneTransforms[i]);
+	}
+
+	mBufferCache.vsSkinBuffer.numBoneTransforms = numTransforms;
+}
+
+void SkinnedShadowShader::SetLightWVP(ID3D11DeviceContext* dc, XMMATRIX& lwvp)
+{
+	mBufferCache.vsBuffer.lightWVP = XMMatrixTranspose(lwvp);
+}
+
+void SkinnedShadowShader::UpdatePerObj(ID3D11DeviceContext* dc)
+{
+	// Update constant shader buffers using our cache
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	// Vertex shader per obj buffer
+	dc->Map(vs_cBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	VS_CPEROBJBUFFER* dataPtr = (VS_CPEROBJBUFFER*)mappedResource.pData;
+
+	dataPtr->lightWVP = mBufferCache.vsBuffer.lightWVP;
+
+	dc->Unmap(vs_cBuffer, 0);
+
+	// Vertex shader per obj skinned buffer
+	dc->Map(vs_cSkinnedBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	VS_CSKINNEDBUFFER* dataPtr3 = (VS_CSKINNEDBUFFER*)mappedResource.pData;
+
+	for (UINT i = 0; i < mBufferCache.vsSkinBuffer.numBoneTransforms; ++i)
+		dataPtr3->boneTransforms[i] = mBufferCache.vsSkinBuffer.boneTransforms[i];
+
+	dataPtr3->numBoneTransforms = mBufferCache.vsSkinBuffer.numBoneTransforms;
+	dataPtr3->padding = 0;
+	dataPtr3->padding2 = 0;
+	dataPtr3->padding3 = 0;
+
+	dc->Unmap(vs_cSkinnedBuffer, 0);
+
+	dc->VSSetConstantBuffers(0, 1, &vs_cBuffer);
+	dc->VSSetConstantBuffers(1, 1, &vs_cSkinnedBuffer);
+}
+
+bool SkinnedShadowShader::SetActive(ID3D11DeviceContext* dc)
+{
+	// Set vertex layout and primitive topology
+	dc->IASetInputLayout(mInputLayout);
+
+	// Set active shaders
+	dc->VSSetShader(mVertexShader, nullptr, 0);
+	dc->PSSetShader(mPixelShader, nullptr, 0);
+
+	return true;
+}
+
+#pragma endregion SkinnedShadowShaderEnd
 
 #pragma endregion NormalMapSkinned
 

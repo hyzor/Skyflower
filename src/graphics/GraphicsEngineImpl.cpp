@@ -97,21 +97,15 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	dirLight.Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
 	dirLight.Diffuse = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
 	dirLight.Specular = XMFLOAT4(0.4f, 0.4f, 0.5f, 1.0f);
-	dirLight.Direction = XMFLOAT3(0.00f, -1.0f, 0.00f);
+	dirLight.Direction = XMFLOAT3(0.1f, -1.0f, 0.1f);
 
 	mDirLights.push_back(dirLight);
 
-// 	dirLight.Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-// 	dirLight.Diffuse = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
-// 	dirLight.Specular = XMFLOAT4(0.4f, 0.4f, 0.5f, 1.0f);
-// 	dirLight.Direction = XMFLOAT3(0.57735f, 0.57735f, 0.0f);
-// 	mDirLights.push_back(dirLight);
-// 
-// 	dirLight.Ambient = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
-// 	dirLight.Diffuse = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-// 	dirLight.Specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-// 	dirLight.Direction = XMFLOAT3(0.0f, 0.0f, -0.57735f);
-// 	mDirLights.push_back(dirLight);
+	//dirLight.Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+	//dirLight.Diffuse = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
+	//dirLight.Specular = XMFLOAT4(0.4f, 0.4f, 0.5f, 1.0f);
+	//dirLight.Direction = XMFLOAT3(0.57735f, 0.57735f, 0.0f);
+	//mDirLights.push_back(dirLight);
 
 	// Point lights
 	PointLight pointLight;
@@ -123,7 +117,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	pointLight.Diffuse = XMFLOAT4(0.40f, 0.40f, 0.40f, 1.0f);
 	pointLight.Attenuation = XMFLOAT3(0.1f, 0.1f, 0.0f);
 	pointLight.Range = 100.0f;
-	mPointLights.push_back(pointLight);
+	//mPointLights.push_back(pointLight);
 
 // 	pointLight.Position = XMFLOAT3(35.0f, 35.0f, 10.0f);
 // 	pointLight.Ambient = XMFLOAT4(0.25f, 0.25f, 0.25f, 0.25f);
@@ -173,6 +167,8 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\NormalMapSkinnedPS.cso", "NormalMapSkinnedPS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\ShadowBuildVS.cso", "ShadowBuildVS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\ShadowBuildPS.cso", "ShadowBuildPS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\SkinnedShadowBuildVS.cso", "SkinnedShadowBuildVS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\SkinnedShadowBuildPS.cso", "SkinnedShadowBuildPS", mD3D->GetDevice());
 
 	// Deferred shaders
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\BasicDeferredVS.cso", "BasicDeferredVS", mD3D->GetDevice());
@@ -194,6 +190,8 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 		mShaderHandler->GetPixelShader("NormalMapSkinnedPS"));
 	mShaderHandler->mBasicDeferredShader->BindShaders(
 		mShaderHandler->GetVertexShader("BasicDeferredVS"),
+	mShaderHandler->mSkinnedShadowShader->BindShaders(mShaderHandler->GetVertexShader("SkinnedShadowBuildVS"),
+		mShaderHandler->GetPixelShader("SkinnedShadowBuildPS"));
 		mShaderHandler->GetPixelShader("BasicDeferredPS"));
 	mShaderHandler->mBasicDeferredSkinnedShader->BindShaders(
 		mShaderHandler->GetVertexShader("BasicDeferredSkinnedVS"),
@@ -223,6 +221,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mBasicDeferredSkinnedShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTanSkinned);
 	mShaderHandler->mLightDeferredShader->Init(mD3D->GetDevice(), mInputLayouts->PosTex);
 	mShaderHandler->mShadowShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTex);
+	mShaderHandler->mSkinnedShadowShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTanSkinned);
 
 	std::string fontPath = mResourceDir + "myfile.spritefont";
 	std::wstring fontPathW(fontPath.begin(), fontPath.end());
@@ -255,10 +254,10 @@ void GraphicsEngineImpl::DrawScene()
 	mD3D->GetImmediateContext()->VSSetShaderResources(0, 16, nullSRV);
 
 	// Draw scene to shadowmap
+	mD3D->GetImmediateContext()->RSSetState(RenderStates::mDepthBiasRS); // This rasterizer state fixes shadow acne
 	mShadowMap->BindDsvAndSetNullRenderTarget(mD3D->GetImmediateContext());
-	mShadowMap->BuildShadowTransform(mDirLights.at(0), XMFLOAT3(0.0f, 0.0f, 0.0f), 1000.0f);
-	mShaderHandler->mShadowShader->SetActive(mD3D->GetImmediateContext());
-	mShadowMap->DrawSceneToShadowMap(mInstances, mAnimatedInstances, *mCamera, mD3D->GetImmediateContext(), mShaderHandler->mShadowShader);
+	mShadowMap->BuildShadowTransform(mDirLights.at(0), mSceneBounds);
+	mShadowMap->DrawSceneToShadowMap(mInstances, mAnimatedInstances, mD3D->GetImmediateContext(), mShaderHandler->mShadowShader, mShaderHandler->mSkinnedShadowShader);
 
 	mD3D->GetImmediateContext()->RSSetState(0);
 	// Restore back and depth buffer and viewport to the OM stage
@@ -305,16 +304,13 @@ void GraphicsEngineImpl::DrawScene()
 				mCamera->GetViewProjMatrix(),
 				toTexSpace);
 
-			XMMATRIX test = XMMatrixMultiply(mInstances[i]->GetWorld(), mShadowMap->GetLightViewProj());
-			XMFLOAT4X4 test1;
-			XMStoreFloat4x4(&test1, test);
-			mShaderHandler->mBasicShader->SetShadowTransform(mD3D->GetImmediateContext(), mShadowMap->GetShadowTransform());
 			for (UINT j = 0; j < mInstances[i]->model->meshCount; ++j)
 			{
 				UINT matIndex = mInstances[i]->model->meshes[j].MaterialIndex;
 
 				mShaderHandler->mBasicShader->SetMaterial(mD3D->GetImmediateContext(), mInstances[i]->model->mat[matIndex]);
 				mShaderHandler->mBasicShader->SetDiffuseMap(mD3D->GetImmediateContext(), mInstances[i]->model->diffuseMapSRV[matIndex]);
+				mShaderHandler->mBasicShader->SetShadowTransform(mD3D->GetImmediateContext(), (mInstances[i]->GetWorld() * mShadowMap->GetShadowTransform()));
 				mShaderHandler->mBasicShader->UpdatePerObj(mD3D->GetImmediateContext());
 				mD3D->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 				mInstances[i]->model->meshes[j].Draw(mD3D->GetImmediateContext());
@@ -328,6 +324,7 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mNormalSkinned->SetPointLights(mD3D->GetImmediateContext(), (UINT)mPointLights.size(), mPointLights.data());
 	mShaderHandler->mNormalSkinned->SetDirLights(mD3D->GetImmediateContext(), (UINT)mDirLights.size(), mDirLights.data());
 	mShaderHandler->mNormalSkinned->SetSpotLights(mD3D->GetImmediateContext(), (UINT)mSpotLights.size(), mSpotLights.data());
+	mShaderHandler->mNormalSkinned->SetShadowMap(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
 	mShaderHandler->mNormalSkinned->UpdatePerFrame(mD3D->GetImmediateContext());
 
 	// Loop through all skinned model instances
@@ -335,6 +332,7 @@ void GraphicsEngineImpl::DrawScene()
 	{
 		if (mAnimatedInstances[i]->IsVisible())
 		{
+			mShaderHandler->mNormalSkinned->SetShadowStransform(mD3D->GetImmediateContext(), mAnimatedInstances[i]->GetWorld() * mShadowMap->GetShadowTransform());
 			mAnimatedInstances[i]->model->Draw(mD3D->GetImmediateContext(), mCamera, mShaderHandler->mNormalSkinned, mAnimatedInstances[i]->GetWorld());
 		}
 	}
@@ -348,8 +346,8 @@ void GraphicsEngineImpl::DrawScene()
 	mSpriteBatch->End();
 	*/
 
-	//ID3D11ShaderResourceView* nullSRV[16] = { 0 };
-	//mD3D->GetImmediateContext()->PSSetShaderResources(0, 16, nullSRV);
+	ID3D11ShaderResourceView* nullSRV[16] = { 0 };
+	mD3D->GetImmediateContext()->PSSetShaderResources(0, 16, nullSRV);
 
 	// Restore default states
 // 	mD3D->GetImmediateContext()->RSSetState(0);
@@ -644,4 +642,44 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 
 	// Reset viewport
 	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
+}
+void GraphicsEngineImpl::UpdateSceneData()
+{
+	//--------------------------------------------------------
+	// Compute scene bounding box
+	//--------------------------------------------------------
+	    XMFLOAT3 minPt(+MathHelper::infinity, +MathHelper::infinity, +MathHelper::infinity);
+	    XMFLOAT3 maxPt(-MathHelper::infinity, -MathHelper::infinity, -MathHelper::infinity);
+	 
+	    // Get vertex positions from all models
+	    for (UINT i = 0; i < mInstances.size(); ++i)
+	    {
+			for (UINT j = 0; j < mInstances[i]->model->meshes.size(); ++j)
+	            {
+
+					for (UINT k = 0; k < mInstances[i]->model->meshes.at(j).vertices.size(); ++k)
+					{
+						XMFLOAT3 vPos = mInstances[i]->model->meshes.at(j).vertices.at(k).position;
+						minPt.x = MathHelper::getMin(minPt.x, vPos.x);
+						minPt.y = MathHelper::getMin(minPt.x, vPos.x);
+						minPt.z = MathHelper::getMin(minPt.x, vPos.x);
+
+						maxPt.x = MathHelper::getMax(maxPt.x, vPos.x);
+						maxPt.y = MathHelper::getMax(maxPt.x, vPos.x);
+						maxPt.z = MathHelper::getMax(maxPt.x, vPos.x);
+					}
+	            }
+	    }
+	 
+	    // Sphere center is at half of these new dimensions
+	    mSceneBounds.Center = XMFLOAT3(        0.5f*(minPt.x + maxPt.x),
+	            0.5f*(minPt.y + maxPt.y),
+	            0.5f*(minPt.z + maxPt.z));
+	 
+	    // Calculate the sphere radius
+	    XMFLOAT3 extent(0.5f*(maxPt.x - minPt.x),
+	            0.5f*(maxPt.y - minPt.y),
+	            0.5f*(maxPt.z - minPt.z));
+	 
+	    mSceneBounds.Radius = sqrtf(extent.x*extent.x + extent.y*extent.y + extent.z*extent.z);
 }

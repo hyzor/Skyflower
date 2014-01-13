@@ -3,6 +3,7 @@
 ID3D11RasterizerState* RenderStates::mDefaultRS = 0;
 ID3D11RasterizerState* RenderStates::mWireframeRS = 0;
 ID3D11RasterizerState* RenderStates::mNoCullRS = 0;
+ID3D11RasterizerState* RenderStates::mDepthBiasRS = 0;
 
 ID3D11SamplerState* RenderStates::mLinearSS = 0;
 ID3D11SamplerState* RenderStates::mAnisotropicSS = 0;
@@ -55,6 +56,16 @@ void RenderStates::InitAll(ID3D11Device* device)
 
 	device->CreateRasterizerState(&noCullRSdesc, &mNoCullRS);
 
+	D3D11_RASTERIZER_DESC depthBiasRSdesc;
+	ZeroMemory(&depthBiasRSdesc, sizeof(D3D11_RASTERIZER_DESC));
+	depthBiasRSdesc.DepthBias = 1000;
+	depthBiasRSdesc.DepthBiasClamp = 0.0f;
+	depthBiasRSdesc.SlopeScaledDepthBias = 1.0f;
+	depthBiasRSdesc.FillMode = D3D11_FILL_SOLID;
+	depthBiasRSdesc.CullMode = D3D11_CULL_BACK;
+
+	device->CreateRasterizerState(&depthBiasRSdesc, &mDepthBiasRS);
+
 	//-----------------------------------------------------------
 	// Sampler states
 	//-----------------------------------------------------------
@@ -103,7 +114,7 @@ void RenderStates::InitAll(ID3D11Device* device)
 	comparisonSSdesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
 	comparisonSSdesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
 	comparisonSSdesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
-	comparisonSSdesc.ComparisonFunc = D3D11_COMPARISON_LESS;
+	comparisonSSdesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
 	comparisonSSdesc.BorderColor[0] = 0.0f;
 	comparisonSSdesc.BorderColor[1] = 0.0f;
 	comparisonSSdesc.BorderColor[2] = 0.0f;
@@ -184,6 +195,7 @@ void RenderStates::DestroyAll()
 	ReleaseCOM(mDefaultRS);
 	ReleaseCOM(mWireframeRS);
 	ReleaseCOM(mNoCullRS);
+	ReleaseCOM(mDepthBiasRS);
 
 	ReleaseCOM(mLinearSS);
 	ReleaseCOM(mAnisotropicSS);
