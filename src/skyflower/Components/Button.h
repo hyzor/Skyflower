@@ -56,22 +56,9 @@ public:
 	}
 private:
 
-	void Activate(Message const& msg)
-	{
-		if (activated <= 0)
-		{
-			moveTo = startPos + Vec3(0, -4, 0);
-			sendMessage("Activated");
-		}
+	void Activate(Message const& msg);
 
-		activated = 0.5f;
-	}
-
-	void Deactivate()
-	{
-		sendMessage("Deactivated");
-		moveTo = startPos;
-	}
+	void Deactivate();
 
 	float activated;
 

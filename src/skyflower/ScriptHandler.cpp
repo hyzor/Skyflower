@@ -1,6 +1,5 @@
 #include "ScriptHandler.h"
 
-ScriptHandler* ScriptHandler::instance = nullptr;
 
 ScriptHandler::ScriptHandler()
 {
@@ -15,12 +14,6 @@ ScriptHandler::~ScriptHandler()
 	lua_close(L);
 }
 
-ScriptHandler* ScriptHandler::GetInstance()
-{
-	if (!instance)
-		instance = new ScriptHandler();
-	return instance;
-}
 
 void ScriptHandler::ReportErrors(lua_State* L, int status)
 {
@@ -39,6 +32,18 @@ void ScriptHandler::Run(std::string file)
 
 	if (s == 0)
 		s = lua_pcall(L, 0, LUA_MULTRET, 0);
+
+	ReportErrors(L, s);
+}
+
+void ScriptHandler::Load(std::string file)
+{
+	std::string path = "../../scripts/" + file;
+
+	int s = luaL_loadfile(L, path.c_str());
+	if (s == 0)
+		s = lua_pcall(L, 0, LUA_MULTRET, 0);
+
 
 	ReportErrors(L, s);
 }

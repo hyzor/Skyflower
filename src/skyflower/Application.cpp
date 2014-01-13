@@ -64,6 +64,7 @@ void Application::Start()
 
 	// Load Hub Level
 	levelHandler->load(1);
+	LevelHandler::GetInstance()->Check();
 
 	camera = m_graphicsEngine->CreateCameraController();
 	Movement* playerMove = (Movement*)entityManager->getComponent("player", "Movement");
@@ -130,6 +131,9 @@ void Application::Start()
 		m_soundEngine->Update((float)deltaTime);
 
 		m_window->PumpMessages();
+
+		if (LevelHandler::GetInstance()->Check())
+			oldTime = GetTime();
 	}
 
 	m_graphicsEngine->DeleteTexture2D(memoryChartTexture);

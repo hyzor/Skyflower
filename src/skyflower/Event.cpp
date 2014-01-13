@@ -34,3 +34,22 @@ int Event::Jump(lua_State* L)
 
 	return 0;
 }
+
+int Event::ChangeLevel(lua_State* L)
+{
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		int level = lua_tonumber(L, 1);
+		LevelHandler::GetInstance()->levelCompleted();
+		LevelHandler::GetInstance()->load(level);
+	}
+
+	return 0;
+}
+
+int Event::Level(lua_State* L)
+{
+	lua_pushinteger(L, LevelHandler::GetInstance()->currentLevel());
+	return 1;
+}

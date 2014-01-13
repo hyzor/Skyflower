@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\skyflower\Application.cpp" />
+    <ClCompile Include="src\skyflower\Button.cpp" />
     <ClCompile Include="src\skyflower\Component.cpp" />
     <ClCompile Include="src\skyflower\Entity.cpp" />
     <ClCompile Include="src\skyflower\EntityManager.cpp" />

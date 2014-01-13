@@ -8,6 +8,7 @@
 #include "shared/Vec3.h"
 #include "Entity.h"
 #include "ScriptHandler.h"
+#include "LevelHandler.h"
 
 using namespace std;
 using namespace Cistron;
@@ -19,15 +20,17 @@ public:
 	// constructor - age is fixed at creation time
 	Event(std::string file) : Component("Event")
 	{
-		//this->currentOwner = nullptr;
 		this->file = file;
-		this->L = ScriptHandler::GetInstance()->L;
 
-		lua_register(L, "PlaySound", Event::PlaySound);
-		lua_register(L, "Jump", Event::Jump);
+		sh = new ScriptHandler();
 
+		lua_register(sh->L, "PlaySound", Event::PlaySound);
+		lua_register(sh->L, "Jump", Event::Jump);
+		lua_register(sh->L, "ChangeLevel", Event::ChangeLevel);
+		lua_register(sh->L, "Level", Event::Level);
 
-		ScriptHandler::GetInstance()->Run(file);
+		sh->Run(file);
+
 	};
 	virtual ~Event() {};
 
@@ -57,29 +60,32 @@ private:
 
 	std::string file;
 
-	lua_State* L;
+
+	ScriptHandler *sh;
 
 	void Activated(Message const& msg)
 	{
-		lua_getglobal(L, "activated");
-		lua_pushnumber(L, (int)this->getOwnerId());
+		lua_getglobal(sh->L, "activated");
+		lua_pushnumber(sh->L, (int)this->getOwnerId());
 
 		entityManager = getEntityManager();
-		lua_pcall(L, 1, 0, 0);
+		lua_pcall(sh->L, 1, 0, 0);
 	}
 
 	void Deactivated(Message const& msg)
 	{
-		lua_getglobal(L, "deactivated");
-		lua_pushnumber(L, (int)this->getOwnerId());
+		lua_getglobal(sh->L, "deactivated");
+		lua_pushnumber(sh->L, (int)this->getOwnerId());
 
 		entityManager = getEntityManager();
-		lua_pcall(L, 1, 0, 0);
+		lua_pcall(sh->L, 1, 0, 0);
 	}
 
 
 	static int PlaySound(lua_State* L);
 	static int Jump(lua_State* L);
+	static int ChangeLevel(lua_State* L);
+	static int Level(lua_State* L);
 };
 
 #endif

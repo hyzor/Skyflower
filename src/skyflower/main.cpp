@@ -86,7 +86,6 @@ int main(int argc, const char *argv[])
 	//delete singletons
 	//delete levelHandler;
 	delete Collision::GetInstance();
-	delete ScriptHandler::GetInstance();
 
 	return 0;
 }

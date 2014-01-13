@@ -24,5 +24,22 @@
 		<Button />
 		<Movement />
 	</Platform>
+	
+	<Platform entityName="ButtonBase2" id="4" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
+		xPos="30.0" yPos="0.0" zPos="-30.0"  
+		xRot="0.0" yRot="0.0" zRot="0.0" 
+		xScale="1.0" yScale="1.0" zScale="1.0" 
+		model="Models\\Worlds\\Subworld\\ButtonBase" />
+	<Platform entityName="Button2" id="4" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
+		xPos="30.0" yPos="0.0" zPos="-30.0" 
+		xRot="0.0" yRot="0.0" zRot="0.0" 
+		xScale="1.0" yScale="1.0" zScale="1.0" 
+		model="Models\\Worlds\\Subworld\\Button">
+		<Messenger />
+		<Event script="testWorld2_LevelCompleted.lua" />
+		<Button />
+		<Movement />
+	</Platform>
+	
     <placeHolderPlattform entityName="placeHolderPlattform2" id="2" isVisible="1" isCollidible="1" Type="object" isAnimated="0" xPos="0.0" yPos="0.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" model="Models\\Worlds\\Subworld\\placeHolderPlattform"/>
 </root>

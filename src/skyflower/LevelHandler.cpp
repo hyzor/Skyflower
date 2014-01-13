@@ -35,12 +35,8 @@ LevelHandler* LevelHandler::GetInstance()
 }
 void LevelHandler::load(int id)
 {
-	for (int i = 1; _entityManager->getNrOfEntities() != 1; i++)
-	{
-		_entityManager->destroyEntity(i);
-	}
-	_entityManager->loadXML2(_levels.at(id)._path);
-	_current = id;
+	loadlevel = true;
+	levelid = id;
 }
 
 bool LevelHandler::isCompleted(int id) const
@@ -74,4 +70,20 @@ int LevelHandler::levelCount() const
 int LevelHandler::currentLevel() const
 {
 	return this->_current;
+}
+
+bool LevelHandler::Check()
+{
+	if (loadlevel)
+	{
+		loadlevel = false;
+		for (int i = 1; _entityManager->getNrOfEntities() != 1; i++)
+		{
+			_entityManager->destroyEntity(i);
+		}
+		_entityManager->loadXML2(_levels.at(levelid)._path);
+		_current = levelid;
+		return true;
+	}
+	return false;
 }
