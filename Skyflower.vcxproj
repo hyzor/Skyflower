@@ -19,8 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\skyflower\AI.cpp" />
     <ClCompile Include="src\skyflower\Application.cpp" />
     <ClCompile Include="src\skyflower\Button.cpp" />
+    <ClCompile Include="src\skyflower\Checkpoint.cpp" />
     <ClCompile Include="src\skyflower\Component.cpp" />
     <ClCompile Include="src\skyflower\Entity.cpp" />
     <ClCompile Include="src\skyflower\EntityManager.cpp" />
@@ -44,6 +46,7 @@
     <ClInclude Include="src\skyflower\ComponentHeaders.h" />
     <ClInclude Include="src\skyflower\Components\AI.h" />
     <ClInclude Include="src\skyflower\Components\Button.h" />
+    <ClInclude Include="src\skyflower\Components\Checkpoint.h" />
     <ClInclude Include="src\skyflower\Components\Event.h" />
     <ClInclude Include="src\skyflower\Components\Footsteps.h" />
     <ClInclude Include="src\skyflower\Components\Gravity.h" />

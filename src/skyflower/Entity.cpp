@@ -17,6 +17,7 @@ Entity::Entity(const Modules *modules, EntityId id, string type, float xPos, flo
 	this->pos.X = xPos;
 	this->pos.Y = yPos;
 	this->pos.Z = zPos;
+	spawnpos = pos;
 
 	this->rot.X = xRot;
 	this->rot.Y = yRot;
@@ -31,6 +32,9 @@ Entity::Entity(const Modules *modules, EntityId id, string type, float xPos, flo
 	this->physics = new Physics();
 
 	this->modules = modules;
+
+	ground = nullptr;
+	wall = nullptr;
 
 	if (isVisible)
 	{

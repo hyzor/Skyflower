@@ -146,6 +146,8 @@ class EntityManager {
 		Entity *getEntity(EntityId id);
 		EntityId getNrOfEntities();
 
+		const Modules *modules;
+
 	private:
 
 		/**
@@ -234,7 +236,6 @@ class EntityManager {
 
 
 		std::string m_resourceDir;
-		const Modules *modules;
 };
 
 };

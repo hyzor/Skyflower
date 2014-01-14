@@ -1,4 +1,6 @@
 <root>
+	
+	
     <Platform entityName="WoodBlock" id="3" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
 		xPos="-36.0960396599" yPos="20.0" zPos="-39.4741144045" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
@@ -7,6 +9,18 @@
 		<Messenger />
 		<Movement />
 		<Gravity />
+	</Platform>
+	<Platform entityName="WoodBlock" id="3" isVisible="1" isCollidible="0" Type="object" isAnimated="0" 
+		xPos="36.0960396599" yPos="20.0" zPos="39.4741144045" 
+		xRot="0.0" yRot="0.0" zRot="0.0" 
+		xScale="1.0" yScale="1.0" zScale="1.0" 
+		model="Models\\Worlds\\Subworld\\WoodBlock">
+		<Messenger />
+		<Movement />
+		<Gravity />
+		<Checkpoint />
+		<Event script="testWorld2_Save.lua" />
+		
 		<!--<AI />-->
 	</Platform>
 	<Platform entityName="ButtonBase" id="4" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
@@ -39,6 +53,55 @@
 		<Event script="testWorld2_LevelCompleted.lua" />
 		<Button />
 		<Movement />
+	</Platform>
+	
+	
+	<Spawnpoint entityName="WoodBlock" id="3" isVisible="0" isCollidible="0" Type="object" isAnimated="0" 
+		xPos="-36.0960396599" yPos="0.0" zPos="39.4741144045" 
+		xRot="0.0" yRot="0.0" zRot="0.0" 
+		xScale="0.0" yScale="0.0" zScale="0.0" 
+		model="">
+	</Spawnpoint>
+	
+	<Platform entityName="ButtonBase2" id="4" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
+		xPos="20.0" yPos="0.0" zPos="-30.0"  
+		xRot="0.0" yRot="0.0" zRot="0.0" 
+		xScale="1.0" yScale="1.0" zScale="1.0" 
+		model="Models\\Worlds\\Subworld\\ButtonBase" />
+	<Platform entityName="Button2" id="4" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
+		xPos="20.0" yPos="0.0" zPos="-30.0" 
+		xRot="0.0" yRot="0.0" zRot="0.0" 
+		xScale="1.0" yScale="1.0" zScale="1.0" 
+		model="Models\\Worlds\\Subworld\\Button">
+		<Messenger />
+		<Event script="testWorld2_Trap.lua" />
+		<Button />
+		<Movement />
+	</Platform>
+	
+	<Platform entityName="WoodBlock" id="3" isVisible="1" isCollidible="0" Type="object" isAnimated="0" 
+		xPos="-3600.0960396599" yPos="0.0" zPos="3900.4741144045" 
+		xRot="0.0" yRot="0.0" zRot="0.0" 
+		xScale="1.0" yScale="1.0" zScale="1.0" 
+		model="Models\\Worlds\\Subworld\\Puncha">
+		<Messenger />
+		<Movement speed="30.0f" />
+		<Gravity />
+		<Health />
+		<AI />
+	</Platform>
+	
+	<Platform entityName="WoodBlock" id="3" isVisible="1" isCollidible="0" Type="object" isAnimated="0" 
+		xPos="-3600.0960396599" yPos="0.0" zPos="3900.4741144045" 
+		xRot="0.0" yRot="0.0" zRot="0.0" 
+		xScale="1.0" yScale="1.0" zScale="1.0" 
+		model="Models\\Worlds\\Subworld\\Puncha">
+		<Messenger />
+		<Movement />
+		<Gravity />
+		<Health />
+		<AI />
+		<Event script="testWorld2_Push.lua" />
 	</Platform>
 	
     <placeHolderPlattform entityName="placeHolderPlattform2" id="2" isVisible="1" isCollidible="1" Type="object" isAnimated="0" xPos="0.0" yPos="0.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" model="Models\\Worlds\\Subworld\\placeHolderPlattform"/>

@@ -14,5 +14,6 @@
 #include "Components/Health.h"
 #include "Components/Event.h"
 #include "Components/Button.h"
+#include "Components/Checkpoint.h"
 
 #endif

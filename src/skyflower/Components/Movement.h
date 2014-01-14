@@ -18,13 +18,14 @@ class Movement : public Component {
 public:
 
 	// constructor - age is fixed at creation time
-	Movement() : Component("Movement")
+	Movement(float speed) : Component("Movement")
 	{ 
 		this->isMovingForward = false;
 		this->isMovingBackward = false;
 		this->isMovingLeft = false;
 		this->isMovingRight = false;
 		this->camLook = Vec3(0.0f, 0.0f, 0.0f);
+		this->speed = speed;
 	}
 	virtual ~Movement()
 	{
@@ -42,7 +43,6 @@ public:
 		requestMessage("StopMoveBackward", &Movement::stopMoveBackward);
 		requestMessage("StopMoveLeft", &Movement::stopMoveLeft);
 		requestMessage("StopMoveRight", &Movement::stopMoveRight);
-
 		requestMessage("Jump", &Movement::Jump);
 	}
 
@@ -58,9 +58,10 @@ public:
 		p->update(deltaTime);
 		
 
+
 		if (pos.Y < -100)
 		{
-			updateEntityPos(Vec3(0, 20, 0));
+			sendMessageToEntity(this->getOwnerId(), "Respawn");
 			p->setVelocity(Vec3(0, 0, 0));
 			return;
 		}
@@ -82,31 +83,31 @@ public:
 
 		if (this->isMovingForward) {
 			if (this->isMovingLeft) {
-				p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 0.0f - 45.0f);
+				p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, 0.0f - 45.0f);
 			}
 			else if (this->isMovingRight) {
-				p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 0.0f + 45.0f);
+				p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, 0.0f + 45.0f);
 			}
 			else {
-				p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 0.0f);
+				p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, 0.0f);
 			}
 		}
 		else if (this->isMovingBackward) {
 			if (this->isMovingLeft) {
-				p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, -90.0f + -45.0f);
+				p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, -90.0f + -45.0f);
 			}
 			else if (this->isMovingRight) {
-				p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 180.0f - 45.0f);
+				p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, 180.0f - 45.0f);
 			}
 			else {
-				p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 179.0f);
+				p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, 179.0f);
 			}
 		}
 		else if (this->isMovingLeft) {
-			p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, -90.0f);
+			p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, -90.0f);
 		}
 		else if (this->isMovingRight) {
-			p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 90.0f);
+			p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, 90.0f);
 		}
 
 		
@@ -134,6 +135,7 @@ public:
 		this->isMovingForward = true;
 	}
 
+
 private:
 	Physics* p;
 	bool isMovingForward;
@@ -141,6 +143,7 @@ private:
 	bool isMovingLeft;
 	bool isMovingRight;
 	Vec3 camLook;
+	float speed;
 
 	void startMoveForward(Message const& msg)
 	{

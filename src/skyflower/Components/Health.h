@@ -17,6 +17,7 @@ public:
 	Health(int maxHP) : Component("Health")
 	{ 
 		this->health = maxHP;
+		this->maxHP = maxHP;
 	};
 	virtual ~Health() {};
 
@@ -26,6 +27,8 @@ public:
 	{
 		Entity *owner = getOwner();
 		assert(owner);
+
+		requestMessage("Respawn", &Health::Respawn);
 	}
 
 	void removeFromEntity()
@@ -48,6 +51,13 @@ public:
 	}
 private:
 	int health;
+	int maxHP;
+
+	void Respawn(Message const& msg)
+	{
+		updateEntityPos(getOwner()->spawnpos);
+		health = maxHP;
+	}
 };
 
 #endif

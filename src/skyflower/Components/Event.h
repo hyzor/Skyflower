@@ -28,6 +28,9 @@ public:
 		lua_register(sh->L, "Jump", Event::Jump);
 		lua_register(sh->L, "ChangeLevel", Event::ChangeLevel);
 		lua_register(sh->L, "Level", Event::Level);
+		lua_register(sh->L, "Save", Event::Save);
+		lua_register(sh->L, "Load", Event::Load);
+		lua_register(sh->L, "Spawn", Event::Spawn);
 
 		sh->Run(file);
 
@@ -81,11 +84,13 @@ private:
 		lua_pcall(sh->L, 1, 0, 0);
 	}
 
-
 	static int PlaySound(lua_State* L);
 	static int Jump(lua_State* L);
 	static int ChangeLevel(lua_State* L);
 	static int Level(lua_State* L);
+	static int Save(lua_State* L);
+	static int Load(lua_State* L);
+	static int Spawn(lua_State* L);
 };
 
 #endif

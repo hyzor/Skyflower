@@ -19,7 +19,11 @@ public:
 
 	// constructor - age is fixed at creation time
 	AI() : Component("AI")
-	{ 
+	{
+		centerradius = 0;
+		attacktime = 0;
+		nextattack = 10;
+		curDir = Vec3();
 	};
 	virtual ~AI() {};
 
@@ -27,24 +31,27 @@ public:
 
 
 	// we are added to an Entity, and thus to the component system
-	void addedToEntity() {
-		cout << "A AI was added to the system." << endl;
-
-		requestMessage("MoveToTarget", &AI::MoveToTarget);
-	}
+	void addedToEntity();
 
 	void sendAMessage(string message)
 	{
 		//cout << "hej det är jag som ropar på denna funktionen: " << this->fName << endl;
 		sendMessage(message);
 	}
+
+	void update(float dt);
+
 private:
-
-	void MoveToTarget(Message const& msg)
+	Vec3 curDir;
+	float centerradius;
+	float attacktime;
+	float nextattack;
+	void Attack(Message const& msg)
 	{
+		centerradius = 0;
+		attacktime = 2;
+		nextattack = 5;
 	}
-
-
 
 };
 

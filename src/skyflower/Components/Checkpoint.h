@@ -1,5 +1,5 @@
-#ifndef BUTTON_H
-#define BUTTON_H
+#ifndef CHECKPOINT_H
+#define CHECKPOINT_H
 
 #include "Cistron.h"
 #include <string>
@@ -13,17 +13,17 @@
 using namespace std;
 using namespace Cistron;
 
-class Button : public Component {
+class Checkpoint : public Component {
 
 public:
 
 	// constructor - age is fixed at creation time
-	Button() : Component("Button")
+	Checkpoint(Vec3 spawnpoint) : Component("Checkpoint")
 	{
+		this->spawnpoint = spawnpoint;
 		activated = 0;
-		act = false;
 	};
-	virtual ~Button() {};
+	virtual ~Checkpoint() {};
 
 
 
@@ -32,10 +32,9 @@ public:
 	void addedToEntity() {
 		cout << "A AI was added to the system." << endl;
 
-		requestMessage("Ground", &Button::Activate);
-		moveTo = getEntityPos();
-		startPos = moveTo;
-		downPos = Vec3(0, -getEntityScale().Y, 0);
+		requestMessage("Ground", &Checkpoint::Activate);
+		requestMessage("Wall", &Checkpoint::Activate);
+		requestMessage("Checkpoint", &Checkpoint::Activate);
 	}
 
 	void sendAMessage(string message)
@@ -52,13 +51,7 @@ private:
 	void Deactivate();
 
 	float activated;
-	bool act;
-
-	Vec3 moveTo;
-	Vec3 startPos;
-	Vec3 downPos;
-
-
+	Vec3 spawnpoint;
 
 };
 

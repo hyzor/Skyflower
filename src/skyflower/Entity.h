@@ -46,6 +46,12 @@ class Entity {
 		}
 
 		Vec3 returnPos();
+		Vec3 spawnpos;
+		CollisionInstance* collInst;
+		Field* field;
+
+		Entity* ground;
+		Entity* wall;
 
 	private:
 
@@ -59,9 +65,8 @@ class Entity {
 		bool isVisible;
 		ModelInstance* modelInst;
 		AnimatedInstance* AnimInst;
-		CollisionInstance* collInst;
-		Field* field;
 		Physics* physics;
+		
 
 		/**
 		 * COMPONENT MANAGEMENT

@@ -1276,7 +1276,11 @@ bool EntityManager::loadXML2(string xmlFile)
 			}
 			else if (componentName == "Movement")
 			{
-				Movement* m = new Movement();
+				float speed = 50;
+				attr = e->Attribute("speed");
+				if (attr)
+					speed = e->FloatAttribute("speed");
+				Movement* m = new Movement(speed);
 				this->addComponent(entity, m);
 			}
 			else if (componentName == "Gravity")
@@ -1334,6 +1338,23 @@ bool EntityManager::loadXML2(string xmlFile)
 			{
 				Button* btn = new Button();
 				this->addComponent(entity, btn);
+			}
+			else if (componentName == "Checkpoint")
+			{
+				Vec3 spawnpoint = Vec3(xPos, yPos, zPos);
+
+				attr = e->Attribute("xPos");
+				if (attr != nullptr)
+					spawnpoint.X = e->FloatAttribute("xPos");
+				attr = e->Attribute("yPos");
+				if (attr != nullptr)
+					spawnpoint.Y = e->FloatAttribute("yPos");
+				attr = e->Attribute("zPos");
+				if (attr != nullptr)
+					spawnpoint.Z = e->FloatAttribute("zPos");
+
+				Checkpoint* cp = new Checkpoint(spawnpoint);
+				this->addComponent(entity, cp);
 			}
 			else
 			{
@@ -1497,11 +1518,11 @@ void EntityManager::handleCollision()
 	//cout << " " << endl;
 	for (int i = 0; i < this->fIdCounter; i++)
 	{		
-		Entity* ground = nullptr;
-		Entity* wall = nullptr;
+		fEntitys[i]->ground = nullptr;
+		fEntitys[i]->wall = nullptr;
 		if (fEntitys[i]->hasComponents("Gravity"))
 		{
-			float t = testMove(Ray(Vec3(0, 15, 0), Vec3(0, -15, 0)), fEntitys[i], ground); //test feet and head
+			float t = testMove(Ray(Vec3(0, 15, 0), Vec3(0, -15, 0)), fEntitys[i], fEntitys[i]->ground); //test feet and head
 			//reset jump
 			if (t == -1)
 			{
@@ -1511,58 +1532,27 @@ void EntityManager::handleCollision()
 			else if (t == 1)
 			{
 				fEntitys[i]->physics->setVelocity(Vec3());
-				ground = nullptr;
+				fEntitys[i]->ground = nullptr;
 			}
 
 			//feet
-			testMove(Ray(Vec3(-3, 3, 0), Vec3(6, 0, 0)), fEntitys[i], wall); // test left and right at feet
-			testMove(Ray(Vec3(0, 3, -3), Vec3(0, 0, 6)), fEntitys[i], wall); // test front and back at feet
-			testMove(Ray(Vec3(-3*0.71f, 3, -3*0.71f), Vec3(6*0.71f, 0, 6*0.71f)), fEntitys[i], wall); // extra test
-			testMove(Ray(Vec3(-3*0.71f, 3, 3*0.71f), Vec3(6*0.71f, 0, -6*0.71f)), fEntitys[i], wall); // extra test
+			testMove(Ray(Vec3(-3, 3, 0), Vec3(6, 0, 0)), fEntitys[i], fEntitys[i]->wall); // test left and right at feet
+			testMove(Ray(Vec3(0, 3, -3), Vec3(0, 0, 6)), fEntitys[i], fEntitys[i]->wall); // test front and back at feet
+			testMove(Ray(Vec3(-3 * 0.71f, 3, -3 * 0.71f), Vec3(6 * 0.71f, 0, 6 * 0.71f)), fEntitys[i], fEntitys[i]->wall); // extra test
+			testMove(Ray(Vec3(-3 * 0.71f, 3, 3 * 0.71f), Vec3(6 * 0.71f, 0, -6 * 0.71f)), fEntitys[i], fEntitys[i]->wall); // extra test
 			
 			//head
-			testMove(Ray(Vec3(-3, 13, 0), Vec3(6, 0, 0)), fEntitys[i], wall); // test left and right at head
-			testMove(Ray(Vec3(0, 13, -3), Vec3(0, 0, 6)), fEntitys[i], wall); // test front and back at head
-			testMove(Ray(Vec3(-3*0.71f, 13, -3*0.71f), Vec3(6*0.71f, 0, 6*0.71f)), fEntitys[i], wall); // extra test
-			testMove(Ray(Vec3(-3*0.71f, 13, 3*0.71f), Vec3(6*0.71f, 0, -6*0.71f)), fEntitys[i], wall); // extra test
+			testMove(Ray(Vec3(-3, 13, 0), Vec3(6, 0, 0)), fEntitys[i], fEntitys[i]->wall); // test left and right at head
+			testMove(Ray(Vec3(0, 13, -3), Vec3(0, 0, 6)), fEntitys[i], fEntitys[i]->wall); // test front and back at head
+			testMove(Ray(Vec3(-3 * 0.71f, 13, -3 * 0.71f), Vec3(6 * 0.71f, 0, 6 * 0.71f)), fEntitys[i], fEntitys[i]->wall); // extra test
+			testMove(Ray(Vec3(-3 * 0.71f, 13, 3 * 0.71f), Vec3(6 * 0.71f, 0, -6 * 0.71f)), fEntitys[i], fEntitys[i]->wall); // extra test
 
 
 			//activate event for wall
-			if(ground)
-				ground->sendMessageToEntity("Ground", ground->fId);
-			if (wall)
-				wall->sendMessageToEntity("Wall", wall->fId);
-		}
-		if (fEntitys[i]->hasComponents("AI"))
-		{
-			Vec3 pos = fEntitys[i]->returnPos();
-			Ray r = Ray(pos + Vec3(0, 15, 0), Vec3(0, -30, 0));
-
-			//find taget
-			Entity* p = nullptr;
-			for (int j = 0; j < this->fIdCounter; j++)
-			{
-				if (fEntitys[j]->getType() == "player")
-				{
-					p = fEntitys[j];
-					break;
-				}
-			}
-
-
-			Field* target = modules->potentialField->CreateField(-1000, 1000, p->returnPos());
-
-			Vec3 dir;
-			if(ground)
-				dir = modules->potentialField->GetDir(pos, ground->collInst, ground->field);
-			else
-				dir = modules->potentialField->GetDir(pos, nullptr, nullptr);
-
-			fEntitys[i]->getComponent<Movement*>("Movement")->setCamera(dir, Vec3(), Vec3());
-			fEntitys[i]->getComponent<Movement*>("Movement")->moveforward();
-
-			modules->potentialField->DeleteField(target);
-
+			if (fEntitys[i]->ground)
+				fEntitys[i]->ground->sendMessageToEntity("Ground", fEntitys[i]->ground->fId);
+			if (fEntitys[i]->wall)
+				fEntitys[i]->wall->sendMessageToEntity("Wall", fEntitys[i]->wall->fId);
 		}
 	}
 }
@@ -1589,8 +1579,11 @@ float EntityManager::testMove(Ray r, Entity* e, Entity* &out)
 			float t = fEntitys[j]->collInst->Test(r);
 			if (t > 0)
 			{
-				col = t;
-				out = fEntitys[j];
+				if (col == 0 || t < col)
+				{
+					col = t;
+					out = fEntitys[j];
+				}
 			}
 		}
 	}
