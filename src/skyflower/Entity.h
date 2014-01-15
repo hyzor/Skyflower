@@ -45,6 +45,14 @@ class Entity {
 			return (T)fComponents[Type].front();
 		}
 
+		Vec3 returnPos();
+		Vec3 spawnpos;
+		CollisionInstance* collInst;
+		Field* field;
+
+		Entity* ground;
+		Entity* wall;
+
 	private:
 
 		// Entity id
@@ -57,9 +65,8 @@ class Entity {
 		bool isVisible;
 		ModelInstance* modelInst;
 		AnimatedInstance* AnimInst;
-		CollisionInstance* collInst;
-		Field* field;
 		Physics* physics;
+		
 
 		/**
 		 * COMPONENT MANAGEMENT
@@ -126,7 +133,6 @@ class Entity {
 		string getType();
 		EntityId getEntityId();
 
-		Vec3 returnPos();
 		Vec3 returnRot();
 		Vec3 returnScale();
 		bool returnVisible();

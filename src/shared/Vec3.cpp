@@ -36,6 +36,62 @@ Vec3::Vec3(int X, int Y, int Z)
 	this->Z = (float)Z;
 }
 
+Vec3::Vec3(float X, float Y, int Z)
+{
+	this->X = X;
+	this->Y = Y;
+	this->Z = (float)Z;
+}
+
+Vec3::Vec3(float X, int Y, float Z)
+{
+	this->X = X;
+	this->Y = (float)Y;
+	this->Z = Z;
+}
+
+Vec3::Vec3(float X, int Y, int Z)
+{
+	this->X = X;
+	this->Y = (float)Y;
+	this->Z = (float)Z;
+}
+
+Vec3::Vec3(int X, float Y, float Z)
+{
+	this->X = (float)X;
+	this->Y = Y;
+	this->Z = Z;
+}
+
+Vec3::Vec3(int X, float Y, int Z)
+{
+	this->X = (float)X;
+	this->Y = Y;
+	this->Z = (float)Z;
+}
+
+Vec3::Vec3(int X, int Y, float Z)
+{
+	this->X = (float)X;
+	this->Y = (float)Y;
+	this->Z = Z;
+}
+
+Vec3::Vec3(int X, float Y)
+{
+	this->X = (float)X;
+	this->Y = Y;
+	this->Z = (float)0;
+}
+
+Vec3::Vec3(float X, int Y)
+{
+	this->X = X;
+	this->Y = (float)Y;
+	this->Z = (float)0;
+}
+
 float Vec3::Length()
 {
 	return (float)sqrt(this->X*this->X + this->Y*this->Y + this->Z*this->Z);

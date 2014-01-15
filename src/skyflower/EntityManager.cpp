@@ -606,6 +606,12 @@ void EntityManager::sendMessageToEntity(string message, string entity)
 	}
 }
 
+void EntityManager::sendMessageToEntity(string message, EntityId entity)
+{
+	Entity* e = getEntity(entity);
+	e->sendMessageToEntity(message, entity);
+}
+
 /*
 bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
 {
@@ -1270,7 +1276,11 @@ bool EntityManager::loadXML2(string xmlFile)
 			}
 			else if (componentName == "Movement")
 			{
-				Movement* m = new Movement();
+				float speed = 50;
+				attr = e->Attribute("speed");
+				if (attr)
+					speed = e->FloatAttribute("speed");
+				Movement* m = new Movement(speed);
 				this->addComponent(entity, m);
 			}
 			else if (componentName == "Gravity")
@@ -1314,6 +1324,37 @@ bool EntityManager::loadXML2(string xmlFile)
 				}
 				Health* hp = new Health(maxHP);
 				this->addComponent(entity, hp);
+			}
+			else if (componentName == "Event")
+			{
+				attr = e->Attribute("script");
+				if (attr != nullptr)
+				{
+					Event* ev = new Event(attr);
+					this->addComponent(entity, ev);
+				}
+			}
+			else if (componentName == "Button")
+			{
+				Button* btn = new Button();
+				this->addComponent(entity, btn);
+			}
+			else if (componentName == "Checkpoint")
+			{
+				Vec3 spawnpoint = Vec3(xPos, yPos, zPos);
+
+				attr = e->Attribute("xPos");
+				if (attr != nullptr)
+					spawnpoint.X = e->FloatAttribute("xPos");
+				attr = e->Attribute("yPos");
+				if (attr != nullptr)
+					spawnpoint.Y = e->FloatAttribute("yPos");
+				attr = e->Attribute("zPos");
+				if (attr != nullptr)
+					spawnpoint.Z = e->FloatAttribute("zPos");
+
+				Checkpoint* cp = new Checkpoint(spawnpoint);
+				this->addComponent(entity, cp);
 			}
 			else
 			{
@@ -1477,150 +1518,88 @@ void EntityManager::handleCollision()
 	//cout << " " << endl;
 	for (int i = 0; i < this->fIdCounter; i++)
 	{		
-		
+		fEntitys[i]->ground = nullptr;
+		fEntitys[i]->wall = nullptr;
 		if (fEntitys[i]->hasComponents("Gravity"))
 		{
-			Vec3 pos = fEntitys[i]->returnPos();
-			Ray feet = Ray(pos + Vec3(0, 5, 0), Vec3(0, -5, 0));
-			Ray xcol = Ray(pos + Vec3(-3, 3, 0), Vec3(6, 0, 0));
-			Ray zcol = Ray(pos + Vec3(0, 3, -3), Vec3(0, 0, 6));
-
-			/*Ray left = Ray(pos + Vec3(0, 3, 0), Vec3(10, 0, 0));
-			Ray back = Ray(pos + Vec3(0, 3, 0), Vec3(0, 0, 10));
-			Ray right = Ray(pos + Vec3(10, 3, 0), Vec3(10, 0, 0));
-			Ray front = Ray(pos + Vec3(0, 3, 0), Vec3(0, 0, 10));*/
-
-			float colfeet = 0;
-			/*float colleft = 0;
-			float colback = 0;
-			float colright = 0;
-			float colfront = 0;*/
-			float colx = 0;
-			float colz = 0;
-			for (int j = 0; j < this->fIdCounter; j++)
+			float t = testMove(Ray(Vec3(0, 15, 0), Vec3(0, -15, 0)), fEntitys[i], fEntitys[i]->ground); //test feet and head
+			//reset jump
+			if (t == -1)
 			{
-				if (fEntitys[j]->collInst && i != j)
-				{
-					float t = fEntitys[j]->collInst->Test(feet);
-					if (t > 0)
-						colfeet = t;
-
-					/*t = fEntitys[j]->collInst->Test(left);
-					if (t > 0)
-						colleft = t;
-
-					t = fEntitys[j]->collInst->Test(back);
-					if (t > 0)
-						colback = t;
-
-					t = fEntitys[j]->collInst->Test(right);
-					if (t > 0)
-						colright = t;
-
-					t = fEntitys[j]->collInst->Test(front);
-					if (t > 0)
-						colfront = t;*/
-
-					t = fEntitys[j]->collInst->Test(xcol);
-					if (t > 0)
-						colx = t;
-
-					t = fEntitys[j]->collInst->Test(zcol);
-					if (t > 0)
-						colz = t;
-				}
-			}
-
-			if (colfeet) //om kollision flytta tillbaka
-			{
-				fEntitys[i]->updatePos(fEntitys[i]->returnPos() - Vec3(0.0f, (1 - colfeet)*feet.Dir.Y, 0.0f));
 				fEntitys[i]->physics->setVelocity(Vec3());
 				fEntitys[i]->physics->setJumping(false);
 			}
-
-			if (colx > 0.5f) //right
-				fEntitys[i]->updatePos(fEntitys[i]->returnPos() - xcol.Dir*(1 - colx));
-			else if (colx > 0) //left
-				fEntitys[i]->updatePos(fEntitys[i]->returnPos() + xcol.Dir*(colx));
-
-			if (colz > 0.5f) //front
-				fEntitys[i]->updatePos(fEntitys[i]->returnPos() - zcol.Dir*(1 - colz));
-			else if (colz > 0) //back
-				fEntitys[i]->updatePos(fEntitys[i]->returnPos() + zcol.Dir*(colz));
-
-
-			/*if (colleft > 0)
-				fEntitys[i]->updatePos(fEntitys[i]->returnPos() - left.Dir*(1 - colleft));
-			if (colback > 0)
-				fEntitys[i]->updatePos(fEntitys[i]->returnPos() - back.Dir*(1 - colback));
-			if (colright > 0)
-				fEntitys[i]->updatePos(fEntitys[i]->returnPos() - right.Dir*(1 - colright));*/
-			//if (colfront > 0)   
-				//fEntitys[i]->updatePos(fEntitys[i]->returnPos() - front.Dir*(1 - colfront));
-			//if (colback > 0)
-				//fEntitys[i]->updatePos(fEntitys[i]->returnPos() - Vec3(0.0f, 0.0f, (1 - colback)*back.Dir.Z));
-			//else if(colright > 0)
-				//fEntitys[i]->updatePos(fEntitys[i]->returnPos() - Vec3((1-colright)*right.Dir.X, 0.0f, 0.0f));
-		}
-		if (fEntitys[i]->hasComponents("AI"))
-		{
-			Vec3 pos = fEntitys[i]->returnPos();
-			Ray r = Ray(pos + Vec3(0, 15, 0), Vec3(0, -30, 0));
-
-			//find platform
-			Entity* col = nullptr;
-			for (int j = 0; j < this->fIdCounter; j++)
+			else if (t == 1)
 			{
-				if (fEntitys[j]->collInst && i != j)
-				{
-					float t = fEntitys[j]->collInst->Test(r);
-					if (t > 0)
-					{
-						col = fEntitys[j];
-						break;
-					}
-				}
+				fEntitys[i]->physics->setVelocity(Vec3());
+				fEntitys[i]->ground = nullptr;
 			}
 
-			//find taget
-			Entity* p = nullptr;
-			for (int j = 0; j < this->fIdCounter; j++)
-			{
-				if (fEntitys[j]->getType() == "player")
-				{
-					p = fEntitys[j];
-					break;
-				}
-			}
-
-
-
-
-			Field* target = modules->potentialField->CreateField(-1000, 1000, p->returnPos());
-
-			Vec3 dir;
-			if(col)
-				dir = modules->potentialField->GetDir(pos, col->collInst, col->field);
-			else
-				dir = modules->potentialField->GetDir(pos, nullptr, nullptr);
-
+			//feet
+			testMove(Ray(Vec3(-3, 3, 0), Vec3(6, 0, 0)), fEntitys[i], fEntitys[i]->wall); // test left and right at feet
+			testMove(Ray(Vec3(0, 3, -3), Vec3(0, 0, 6)), fEntitys[i], fEntitys[i]->wall); // test front and back at feet
+			testMove(Ray(Vec3(-3 * 0.71f, 3, -3 * 0.71f), Vec3(6 * 0.71f, 0, 6 * 0.71f)), fEntitys[i], fEntitys[i]->wall); // extra test
+			testMove(Ray(Vec3(-3 * 0.71f, 3, 3 * 0.71f), Vec3(6 * 0.71f, 0, -6 * 0.71f)), fEntitys[i], fEntitys[i]->wall); // extra test
 			
-			fEntitys[i]->updatePos(fEntitys[i]->returnPos() + dir);
+			//head
+			testMove(Ray(Vec3(-3, 13, 0), Vec3(6, 0, 0)), fEntitys[i], fEntitys[i]->wall); // test left and right at head
+			testMove(Ray(Vec3(0, 13, -3), Vec3(0, 0, 6)), fEntitys[i], fEntitys[i]->wall); // test front and back at head
+			testMove(Ray(Vec3(-3 * 0.71f, 13, -3 * 0.71f), Vec3(6 * 0.71f, 0, 6 * 0.71f)), fEntitys[i], fEntitys[i]->wall); // extra test
+			testMove(Ray(Vec3(-3 * 0.71f, 13, 3 * 0.71f), Vec3(6 * 0.71f, 0, -6 * 0.71f)), fEntitys[i], fEntitys[i]->wall); // extra test
 
-			modules->potentialField->DeleteField(target);
 
+			//activate event for wall
+			if (fEntitys[i]->ground)
+				fEntitys[i]->ground->sendMessageToEntity("Ground", fEntitys[i]->ground->fId);
+			if (fEntitys[i]->wall)
+				fEntitys[i]->wall->sendMessageToEntity("Wall", fEntitys[i]->wall->fId);
 		}
-
-		/*for (int j = i+1; j < this->fIdCounter; j++)
-		{
-			/*if (this->fEntitys[i]->collInst != nullptr && i != j && this->fEntitys[j]->collInst != nullptr)
-			{
-				if (this->fEntitys[i]->collInst->Test(this->fEntitys[j]->collInst))
-				{
-					//cout << "kollision!" << endl;
-				}
-			}
-			
-		}*/
 	}
+}
+
+
+float EntityManager::testMove(Ray r, Entity* e)
+{
+	Entity* col;
+	return testMove(r, e, col);
+}
+
+float EntityManager::testMove(Ray r, Entity* e, Entity* &out)
+{
+	//test ray relative to entity
+	Vec3 pos = e->returnPos();
+	r.Pos += pos;
+
+	//test collision for other collidible entitis
+	float col = 0;
+	for (int j = 0; j < this->fIdCounter; j++)
+	{
+		if (fEntitys[j]->collInst && fEntitys[j] != e)
+		{
+			float t = fEntitys[j]->collInst->Test(r);
+			if (t > 0)
+			{
+				if (col == 0 || t < col)
+				{
+					col = t;
+					out = fEntitys[j];
+				}
+			}
+		}
+	}
+
+	//collision detected
+	float dir = 0;
+	if (col > 0.5f) //feet
+	{
+		e->updatePos(pos - r.Dir*(1 - col));
+		dir = -1;
+	}
+	else if (col > 0) //head
+	{
+		e->updatePos(pos + r.Dir*(col));
+		dir = 1;
+	}
+
+	return dir;
 }

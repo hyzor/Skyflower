@@ -10,20 +10,20 @@ using namespace std;
 class ScriptHandler
 {
 	public:
-		static ScriptHandler* GetInstance();
+		ScriptHandler();
 		~ScriptHandler();
 
 		void Run(std::string file);
+		void Load(std::string file);
 		lua_State* GetLua();
 		bool getMessage();
 
-	private:
-		ScriptHandler();
-		static ScriptHandler* instance;
-
-		void ReportErrors(lua_State* L, int status);
 
 		lua_State* L;
+
+	private:
+		void ReportErrors(lua_State* L, int status);
+
 
 		static int Print(lua_State* L);
 

@@ -18,6 +18,16 @@ class DLL_API Vec3
 		Vec3(int X, int Y);
 		Vec3(int X, int Y, int Z);
 
+		Vec3(float X, float Y, int Z);
+		Vec3(float X, int Y, float Z);
+		Vec3(float X, int Y, int Z);
+		Vec3(int X, float Y, float Z);
+		Vec3(int X, float Y, int Z);
+		Vec3(int X, int Y, float Z);
+
+		Vec3(float X, int Y);
+		Vec3(int X, float Y);
+
 		float Length();
 		Vec3 Normalize();
 

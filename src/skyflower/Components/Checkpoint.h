@@ -1,5 +1,5 @@
-#ifndef AI_H
-#define AI_H
+#ifndef CHECKPOINT_H
+#define CHECKPOINT_H
 
 #include "Cistron.h"
 #include <string>
@@ -13,25 +13,29 @@
 using namespace std;
 using namespace Cistron;
 
-class AI : public Component {
+class Checkpoint : public Component {
 
 public:
 
 	// constructor - age is fixed at creation time
-	AI() : Component("AI")
+	Checkpoint(Vec3 spawnpoint) : Component("Checkpoint")
 	{
-		centerradius = 0;
-		attacktime = 0;
-		nextattack = 10;
-		curDir = Vec3();
+		this->spawnpoint = spawnpoint;
+		activated = 0;
 	};
-	virtual ~AI() {};
+	virtual ~Checkpoint() {};
 
 
 
 
 	// we are added to an Entity, and thus to the component system
-	void addedToEntity();
+	void addedToEntity() {
+		cout << "A AI was added to the system." << endl;
+
+		requestMessage("Ground", &Checkpoint::Activate);
+		requestMessage("Wall", &Checkpoint::Activate);
+		requestMessage("Checkpoint", &Checkpoint::Activate);
+	}
 
 	void sendAMessage(string message)
 	{
@@ -40,18 +44,14 @@ public:
 	}
 
 	void update(float dt);
-
 private:
-	Vec3 curDir;
-	float centerradius;
-	float attacktime;
-	float nextattack;
-	void Attack(Message const& msg)
-	{
-		centerradius = 0;
-		attacktime = 2;
-		nextattack = 5;
-	}
+
+	void Activate(Message const& msg);
+
+	void Deactivate();
+
+	float activated;
+	Vec3 spawnpoint;
 
 };
 

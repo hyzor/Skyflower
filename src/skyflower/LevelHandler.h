@@ -26,8 +26,13 @@ public:
 	void levelCompleted();
 	int levelCount() const;
 	int currentLevel() const;
+
+	bool Check();
 private:
 	
+	bool loadlevel;
+	int levelid;
+
 	LevelHandler();
 	static LevelHandler *instance;
 	int _current;

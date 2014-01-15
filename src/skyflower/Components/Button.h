@@ -1,5 +1,5 @@
-#ifndef AI_H
-#define AI_H
+#ifndef BUTTON_H
+#define BUTTON_H
 
 #include "Cistron.h"
 #include <string>
@@ -13,25 +13,30 @@
 using namespace std;
 using namespace Cistron;
 
-class AI : public Component {
+class Button : public Component {
 
 public:
 
 	// constructor - age is fixed at creation time
-	AI() : Component("AI")
+	Button() : Component("Button")
 	{
-		centerradius = 0;
-		attacktime = 0;
-		nextattack = 10;
-		curDir = Vec3();
+		activated = 0;
+		act = false;
 	};
-	virtual ~AI() {};
+	virtual ~Button() {};
 
 
 
 
 	// we are added to an Entity, and thus to the component system
-	void addedToEntity();
+	void addedToEntity() {
+		cout << "A AI was added to the system." << endl;
+
+		requestMessage("Ground", &Button::Activate);
+		moveTo = getEntityPos();
+		startPos = moveTo;
+		downPos = Vec3(0, -getEntityScale().Y, 0);
+	}
 
 	void sendAMessage(string message)
 	{
@@ -40,18 +45,20 @@ public:
 	}
 
 	void update(float dt);
-
 private:
-	Vec3 curDir;
-	float centerradius;
-	float attacktime;
-	float nextattack;
-	void Attack(Message const& msg)
-	{
-		centerradius = 0;
-		attacktime = 2;
-		nextattack = 5;
-	}
+
+	void Activate(Message const& msg);
+
+	void Deactivate();
+
+	float activated;
+	bool act;
+
+	Vec3 moveTo;
+	Vec3 startPos;
+	Vec3 downPos;
+
+
 
 };
 

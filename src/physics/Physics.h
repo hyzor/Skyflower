@@ -14,8 +14,8 @@ const float PI = 3.141592653589f;
 #define DEFAULT_GRAVITY Vec3(0.0f, -120.82f, 0.0f)
 #define DEFAULT_MASS 50.0f //In KG
 #define DEFAULT_VELOCITY Vec3(0.0f, 0.0f, 0.0f)
-#define DEFAULT_MOVEMENTSPEED 100.0f
-#define DEFAULT_JUMP_VELOCITY 100.0f
+#define DEFAULT_MOVEMENTSPEED 50.0f
+#define DEFAULT_JUMP_VELOCITY 50.0f
 
 //Currently sort of a helper class, to be held by each entity to make sure that the velocity and other entity-specific data are kept by and manipulated only by the right entity
 class DLL_API Physics
@@ -26,7 +26,7 @@ private:
 	Vec3 velocity;
 
 	//not relevant yet
-	float mass;
+	float mass; 
 	float projectileAngle;
 	
 	float dt;

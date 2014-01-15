@@ -56,7 +56,7 @@ void CollisionModel::Load(std::string file)
 		//create tree
 		tree = new ModelTreeParent(vMin, vMax);
 		for (unsigned int i = 0; i < triangles.size(); i++)
-			tree->Add(&triangles[i], 15);
+			tree->Add(&triangles[i], 3);
 
 		SaveTree(ssTree.str());
 	}
