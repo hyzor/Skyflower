@@ -42,7 +42,7 @@ int Event::ChangeLevel(lua_State* L)
 	{
 		int level = lua_tonumber(L, 1);
 		LevelHandler::GetInstance()->levelCompleted();
-		LevelHandler::GetInstance()->load(level);
+		LevelHandler::GetInstance()->queue(level);
 	}
 
 	return 0;

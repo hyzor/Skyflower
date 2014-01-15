@@ -10,6 +10,8 @@
 #include "ComponentHeaders.h"
 #include "LineChart.h"
 
+#include <thread>
+
 using namespace std;
 using namespace tinyxml2;
 using namespace Cistron;
@@ -64,9 +66,8 @@ void Application::Start()
 	//entityManager->loadXML2("Player3.xml");
 
 	// Load Hub Level
-	levelHandler->load(1);
-	LevelHandler::GetInstance()->Check();
-
+	levelHandler->queue(1);
+	levelHandler->LoadQueued();
 	camera = m_graphicsEngine->CreateCameraController();
 	Movement* playerMove = (Movement*)entityManager->getComponent("player", "Movement");
 
@@ -89,54 +90,73 @@ void Application::Start()
 	double oldTime = GetTime();
 	double time, deltaTime;
 
+	double timeSinceLight = 0;
 	m_quit = false;
+
+	thread load;
 
 	while(!m_quit)
 	{
 		time = GetTime();
 		deltaTime = time - oldTime;
 		oldTime = time;
+		timeSinceLight += deltaTime;
 
-		frameTimeChart.AddPoint((float)time, (float)(deltaTime * 1000.0));
-		memoryChart.AddPoint((float)time, GetMemoryUsage() / (1024.0f * 1024.0f));
-		
-		if (m_showCharts && time >= nextChartUpdate) {
-			nextChartUpdate = time + chartUpdateDelay;
+			frameTimeChart.AddPoint((float)time, (float)(deltaTime * 1000.0));
+			memoryChart.AddPoint((float)time, GetMemoryUsage() / (1024.0f * 1024.0f));
 
-			frameTimeChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, (1.0f / 60.0f) * 1000.0f);
-			frameTimeChartTexture->UploadData(frameTimeChart.GetPixels());
+			if (m_showCharts && time >= nextChartUpdate) {
+				nextChartUpdate = time + chartUpdateDelay;
 
-			memoryChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, 256.0f);
-			memoryChartTexture->UploadData(memoryChart.GetPixels());
-		}
+				frameTimeChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, (1.0f / 60.0f) * 1000.0f);
+				frameTimeChartTexture->UploadData(frameTimeChart.GetPixels());
 
-		camera->Follow(entityManager->getEntityPos("player"));
-		playerMove->setCamera(camera->GetLook(), camera->GetRight(), camera->GetUp());
-		camera->Update((float)deltaTime);
+				memoryChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, 256.0f);
+				memoryChartTexture->UploadData(memoryChart.GetPixels());
+			}
 
-		this->entityManager->update((float)deltaTime);
-		//this->entityManager->handleCollision();
+			camera->Follow(entityManager->getEntityPos("player"));
+			playerMove->setCamera(camera->GetLook(), camera->GetRight(), camera->GetUp());
+			camera->Update((float)deltaTime);
 
-		m_graphicsEngine->UpdateScene((float)deltaTime);
-		m_graphicsEngine->DrawScene();
-		m_graphicsEngine->Begin2D();
-		
-		if (m_showCharts) {
-			m_graphicsEngine->Draw2DTexture(frameTimeChartTexture, 0, 0);
-			m_graphicsEngine->Draw2DTexture(memoryChartTexture, 0, frameTimeChart.GetHeight() + 6);
-		}
+			if (!levelHandler->isLoading())
+			{
+				if (load.joinable())
+				{
+					load.join();
+					oldTime = GetTime();
+				}		
+				
+				this->entityManager->update((float)deltaTime);
+				m_graphicsEngine->UpdateScene((float)deltaTime);
+				m_graphicsEngine->DrawScene();
+				
+			}
+			//this->entityManager->handleCollision();
 
-		m_graphicsEngine->End2D();
-		m_graphicsEngine->Present();
+			m_graphicsEngine->Begin2D();
+			if (levelHandler->isLoading())
+			{
+				m_graphicsEngine->Draw2DTextureFile("..\\..\\content\\Textures\\Menygrafik\\fyraTreRatio.png", 0, 0);
+			}
+			if (m_showCharts) {
+				m_graphicsEngine->Draw2DTexture(frameTimeChartTexture, 0, 0);
+				m_graphicsEngine->Draw2DTexture(memoryChartTexture, 0, frameTimeChart.GetHeight() + 6);
+			}
 
-		m_soundEngine->Update((float)deltaTime);
+			m_graphicsEngine->End2D();
+			m_graphicsEngine->Present();
 
-		m_window->PumpMessages();
+			m_soundEngine->Update((float)deltaTime);
 
-		if (LevelHandler::GetInstance()->Check())
-			oldTime = GetTime();
+			m_window->PumpMessages();
+			
+			if (levelHandler->hasQueuedLevel() && !levelHandler->isLoading())
+			{
+				load = thread(&LevelHandler::LoadQueued, levelHandler);
+				oldTime = GetTime();
+			}
 	}
-
 	m_graphicsEngine->DeleteTexture2D(memoryChartTexture);
 	m_graphicsEngine->DeleteTexture2D(frameTimeChartTexture);
 	delete levelHandler;

@@ -14,6 +14,9 @@ LevelHandler::LevelHandler()
 {
 	this->_entityManager = NULL;
 	this->_current = 0;
+	this->loading = false;
+	this->queued = false;
+	this->queueID = 0;
 }
 
 LevelHandler::~LevelHandler(){}
@@ -34,7 +37,7 @@ LevelHandler* LevelHandler::GetInstance()
 		instance = new LevelHandler();
 	return instance;
 }
-void LevelHandler::load(int id)
+void LevelHandler::queue(int id)
 {
 	/*
 	// Removes all entities except for the player
@@ -47,8 +50,8 @@ void LevelHandler::load(int id)
 	_current = id;
 	*/
 
-	loadlevel = true;
-	levelid = id;
+	queued = true;
+	queueID = id;
 }
 
 bool LevelHandler::isCompleted(int id) const
@@ -84,18 +87,32 @@ int LevelHandler::currentLevel() const
 	return this->_current;
 }
 
-bool LevelHandler::Check()
+void LevelHandler::LoadQueued()
 {
-	if (loadlevel)
+	loading = true;
+	loadQueued(queueID);
+}
+
+void LevelHandler::loadQueued(int id)
+{
+	queued = false;
+	printf("Thread started\n");
+	for (int i = 0; _entityManager->getNrOfEntities() != 1; i++)
 	{
-		loadlevel = false;
-		for (int i = 1; _entityManager->getNrOfEntities() != 1; i++)
-		{
+		if (_entityManager->getEntity(i)->getType() != "player")
 			_entityManager->destroyEntity(i);
-		}
-		_entityManager->loadXML2(_levels.at(levelid)._path);
-		_current = levelid;
-		return true;
 	}
-	return false;
+	_entityManager->loadXML2(_levels.at(queueID)._path);
+	_current = queueID;
+	loading = false;
+}
+
+bool LevelHandler::hasQueuedLevel()
+{
+	return queued || (loading == true);
+}
+
+bool LevelHandler::isLoading()
+{
+	return loading;
 }
