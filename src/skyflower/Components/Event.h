@@ -69,7 +69,7 @@ private:
 	void Activated(Message const& msg)
 	{
 		lua_getglobal(sh->L, "activated");
-		lua_pushnumber(sh->L, (int)this->getOwnerId());
+		lua_pushinteger(sh->L, this->getOwnerId());
 
 		entityManager = getEntityManager();
 		lua_pcall(sh->L, 1, 0, 0);
@@ -78,7 +78,7 @@ private:
 	void Deactivated(Message const& msg)
 	{
 		lua_getglobal(sh->L, "deactivated");
-		lua_pushnumber(sh->L, (int)this->getOwnerId());
+		lua_pushinteger(sh->L, this->getOwnerId());
 
 		entityManager = getEntityManager();
 		lua_pcall(sh->L, 1, 0, 0);
