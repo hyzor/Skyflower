@@ -94,7 +94,7 @@ private:
 	OrthoWindow* mOrthoWindow;
 
 	Texture2DImpl *mSSAOTexture;
+	Texture2DImpl *mSSAOBlurTexture;
 };
 
 #endif
-
