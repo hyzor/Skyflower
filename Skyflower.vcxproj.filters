@@ -60,16 +60,16 @@
     <ClCompile Include="src\skyflower\LevelHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\skyflower\Button.cpp">
+    <ClCompile Include="src\skyflower\Components\Event.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="src\skyflower\Event.cpp">
+    <ClCompile Include="src\skyflower\Components\AI.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="src\skyflower\Checkpoint.cpp">
+    <ClCompile Include="src\skyflower\Components\Button.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="src\skyflower\AI.cpp">
+    <ClCompile Include="src\skyflower\Components\Checkpoint.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
   </ItemGroup>

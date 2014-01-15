@@ -19,14 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\skyflower\AI.cpp" />
     <ClCompile Include="src\skyflower\Application.cpp" />
-    <ClCompile Include="src\skyflower\Button.cpp" />
-    <ClCompile Include="src\skyflower\Checkpoint.cpp" />
     <ClCompile Include="src\skyflower\Component.cpp" />
+    <ClCompile Include="src\skyflower\Components\AI.cpp" />
+    <ClCompile Include="src\skyflower\Components\Button.cpp" />
+    <ClCompile Include="src\skyflower\Components\Checkpoint.cpp" />
+    <ClCompile Include="src\skyflower\Components\Event.cpp" />
     <ClCompile Include="src\skyflower\Entity.cpp" />
     <ClCompile Include="src\skyflower\EntityManager.cpp" />
-    <ClCompile Include="src\skyflower\Event.cpp" />
     <ClCompile Include="src\skyflower\Field.cpp" />
     <ClCompile Include="src\skyflower\InputHandler.cpp" />
     <ClCompile Include="src\skyflower\LevelHandler.cpp">
@@ -124,26 +124,26 @@
     <OutDir>$(SolutionDir)bin\x64\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\x64\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)_d</TargetName>
-    <IncludePath>$(SolutionDir)src\;$(SolutionDir)include/;$(SolutionDir)external/include/;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)src\skyflower\;$(SolutionDir)src\;$(SolutionDir)include/;$(SolutionDir)external/include/;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);$(SolutionDir)external/lib/x64/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)bin\x64\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\x64\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)src\;$(SolutionDir)include/;$(SolutionDir)external/include/;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)src\skyflower\;$(SolutionDir)src\;$(SolutionDir)include/;$(SolutionDir)external/include/;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);$(SolutionDir)external/lib/x64/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)bin\x86\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\x86\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)_d</TargetName>
-    <IncludePath>$(SolutionDir)src\;$(SolutionDir)include/;$(SolutionDir)external/include/;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)src\skyflower\;$(SolutionDir)src\;$(SolutionDir)include/;$(SolutionDir)external/include/;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);$(SolutionDir)external/lib/x86/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)bin\x86\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\x86\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)src\;$(SolutionDir)include/;$(SolutionDir)external/include/;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)src\skyflower\;$(SolutionDir)src\;$(SolutionDir)include/;$(SolutionDir)external/include/;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);$(SolutionDir)external/lib/x86/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
