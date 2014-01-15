@@ -20,9 +20,12 @@ cbuffer cLightBuffer : register(b0)
 
 	float4x4 gShadowTransform_PS; // Light: view * projection * toTexSpace
 	float4x4 gCameraView;
+	float4x4 gCameraInvView;
 	float4x4 gCameraWorld;
+	float4x4 gCameraProj;
 	float4x4 gLightWorld;
 	float4x4 gLightView;
+	float4x4 gLightInvView;
 	float4x4 gLightProj;
 };
 
@@ -38,20 +41,26 @@ SamplerComparisonState samShadow : register(s2);
 
 float ReadShadowMap(float3 eyeDir)
 {
-	float4x4 viewWorld = gCameraView * gCameraWorld;
-		float4x4 final = (gLightView*gLightProj) * (gLightWorld*gLightView) * viewWorld;
+	float4x4 lightWorldViewProj = gLightProj * gLightView * gCameraInvView;
+		//float4x4 final = gCameraInvView * lightWorldViewProj;
+	//float4x4 final = (gLightProj)* (gLightInvView)* gCameraInvView;
 
-		float4 projectedEyeDir = mul(float4(eyeDir, 1.0f), final);
+		//float4 projectedEyeDir = mul(float4(eyeDir, 1.0f), final);
 
-		//float4 projectedEyeDir = mul(float4(eyeDir, 1.0f), gShadowTransform_PS);
+		float4 projectedEyeDir = mul(lightWorldViewProj, float4(eyeDir, 1.0f));
 
 		//return CalcShadowFactor(samShadow, gShadowMap, projectedEyeDir);
 
-		float2 tex = projectedEyeDir.xy * float2(0.5f, 0.5f) + float2(0.5f, 0.5f);
+	
+		/*
+	projectedEyeDir = projectedEyeDir / projectedEyeDir.w;
 
-		const float bias = 0.0001f;
-	float depthValue = gShadowMap.Sample(samLinear, tex) - bias;
+	float2 tex = projectedEyeDir.xy * float2(0.5f, 0.5f) + float2(0.5f, 0.5f);
+
+	const float bias = 0.0001f;
+	float depthValue = gShadowMap.Sample(samLinear, tex).x - bias;
 	return projectedEyeDir.z * 0.5 + 0.5 < depthValue;
+	*/
 }
 
 float4 main(VertexOut pIn) : SV_TARGET
@@ -87,10 +96,16 @@ float4 main(VertexOut pIn) : SV_TARGET
 
 	float4 A, D, S;
 
-	//float shadow = ReadShadowMap(eyeDir);
-
 	float3 shadow = float3(1.0f, 1.0f, 1.0f);
-	shadow[0] = ReadShadowMap(eyeDir);
+	//shadow[0] = ReadShadowMap(eyeDir);
+	shadow[0] = CalcShadowFactor(samShadow, gShadowMap, pIn.shadowPosH);
+
+	//float4 posFormLightView = mul(float4(gEyePosW, 1.0f), gCameraProj);
+	//posFormLightView.xyz = posFormLightView.xyz / posFormLightView.w;
+	//shadow[0] = CalcShadowFactor(samShadow, gShadowMap, posFormLightView);
+
+	//float3 shadow = float3(1.0f, 1.0f, 1.0f);
+	//shadow[0] = ReadShadowMap(eyeDir);
 
 	//float4 shadowPosH = mul(float4(positionW, 1.0f), gShadowTransform);
 
@@ -100,11 +115,10 @@ float4 main(VertexOut pIn) : SV_TARGET
 	for (int i = 0; i < gDirLightCount; ++i)
 	{
 		ComputeDirectionalLight_Deferred(specular, gDirLights[i], normal, toEye, D, S);
-		diffuse_Lights += D * shadow[i];
-		specular_Lights += S * shadow[i];
+		diffuse_Lights += D * shadow[0];
+		specular_Lights += S * shadow[0];
 	}
 
-	/*
 	for (int j = 0; j < gPointLightCount; ++j)
 	{
 		ComputePointLight_Deferred(specular, gPointLights[j], positionW, normal, toEye, D, S);
@@ -119,7 +133,6 @@ float4 main(VertexOut pIn) : SV_TARGET
 		diffuse_Lights += D;
 		specular_Lights += S;
 	}
-	*/
 
 	litColor = diffuse * (ambient_Lights + diffuse_Lights) + specular_Lights;
 

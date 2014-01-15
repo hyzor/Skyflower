@@ -360,6 +360,10 @@ float CalcShadowFactor(SamplerComparisonState samShadow,
 	// Complete projection by dividing with w
 	shadowPosH.xyz /= shadowPosH.w;
 
+	// Transform from NDC space to texture space.
+	shadowPosH.x = +0.5f*shadowPosH.x + 0.5f;
+	shadowPosH.y = -0.5f*shadowPosH.y + 0.5f;
+
 	// Depth in NDC space
 	float depth = shadowPosH.z;
 

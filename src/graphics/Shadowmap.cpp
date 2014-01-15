@@ -18,6 +18,8 @@ ShadowMap::~ShadowMap(void)
 {
 	ReleaseCOM(mDepthMapSRV);
 	ReleaseCOM(mDepthMapDSV);
+// 	mRenderTargetTexture->Release();
+// 	mRenderTargetView->Release();
 }
 
 ID3D11ShaderResourceView* ShadowMap::getDepthMapSRV()
@@ -46,7 +48,7 @@ void ShadowMap::SetResolution(ID3D11Device* device, UINT width, UINT height)
 	CreateShadowMap(device, width, height);
 }
 
-void ShadowMap::CreateShadowMap(ID3D11Device* device, UINT width, UINT height)
+bool ShadowMap::CreateShadowMap(ID3D11Device* device, UINT width, UINT height)
 {
 	// Set new dimensions
 	mWidth = width;
@@ -99,8 +101,42 @@ void ShadowMap::CreateShadowMap(ID3D11Device* device, UINT width, UINT height)
 	// Create SRV
 	res = HR(device->CreateShaderResourceView(depthMap, &srvDesc, &mDepthMapSRV));
 
+// 	// Setup render target texture description
+// 	D3D11_TEXTURE2D_DESC textureDesc;
+// 	textureDesc.Width = width;
+// 	textureDesc.Height = height;
+// 	textureDesc.MipLevels = 1;
+// 	textureDesc.ArraySize = 1;
+// 	textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+// 	textureDesc.SampleDesc.Count = 1;
+// 	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+// 	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+// 	textureDesc.CPUAccessFlags = 0;
+// 	textureDesc.MiscFlags = 0;
+// 
+// 	// Create render target texture
+// 	res = device->CreateTexture2D(&textureDesc, NULL, &mRenderTargetTexture);
+// 
+// 	if (FAILED(res))
+// 		return false;
+// 
+// 	// Render target view description
+// 	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+// 	ZeroMemory(&renderTargetViewDesc, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
+// 	renderTargetViewDesc.Format = textureDesc.Format;
+// 	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+// 	renderTargetViewDesc.Texture2D.MipSlice = 0;
+// 
+// 	// Create render target views
+// 	res = device->CreateRenderTargetView(mRenderTargetTexture, &renderTargetViewDesc, &mRenderTargetView);
+// 
+// 	if (FAILED(res))
+// 		return false;
+
 	// Now release depth map reference because view already saved a reference
 	ReleaseCOM(depthMap);
+
+	return true;
 }
 
 UINT ShadowMap::GetWidth() const
@@ -167,6 +203,8 @@ void ShadowMap::DrawSceneToShadowMap(
 	ShadowShader* shadowShader,
 	SkinnedShadowShader* sShadowShader)
 {
+	//deviceContext->OMSetRenderTargets(1, &mRenderTargetView, mDepthMapDSV);
+
 	XMMATRIX view = XMLoadFloat4x4(&mLightView);
 	XMMATRIX proj = XMLoadFloat4x4(&mLightProj);
 	XMMATRIX viewProj = XMMatrixMultiply(view, proj);

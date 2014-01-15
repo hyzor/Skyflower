@@ -147,7 +147,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	spotLight.Range = 1000.0f;
 	spotLight.Position = XMFLOAT3(0.0f, 200.0f, 0.0f);
 	spotLight.Direction = XMFLOAT3(0.1f, -1.0f, 0.1f);
-	mSpotLights.push_back(spotLight);
+	//mSpotLights.push_back(spotLight);
 
 	mSky = new Sky(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Textures\\SkyBox_Space.dds", 5000.0f);
 	mShadowMap = new ShadowMap(mD3D->GetDevice(), 2048, 2048);
@@ -249,9 +249,11 @@ void GraphicsEngineImpl::Run(float dt)
 
 void GraphicsEngineImpl::DrawScene()
 {
-	ID3D11ShaderResourceView* nullSRV[16] = { 0 };
-	mD3D->GetImmediateContext()->PSSetShaderResources(0, 16, nullSRV);
-	mD3D->GetImmediateContext()->VSSetShaderResources(0, 16, nullSRV);
+	// Restore default states
+	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	mD3D->GetImmediateContext()->RSSetState(0);
+	mD3D->GetImmediateContext()->OMSetDepthStencilState(0, 0);
+	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
 
 	// Draw scene to shadowmap
 	mD3D->GetImmediateContext()->RSSetState(RenderStates::mDepthBiasRS); // This rasterizer state fixes shadow acne
@@ -270,12 +272,7 @@ void GraphicsEngineImpl::DrawScene()
 
 	// Draw sky
 	//mSky->Draw(mD3D->GetImmediateContext(), *mCamera, mShaderHandler->mSkyShader);
-
-	// Restore default states
-	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	mD3D->GetImmediateContext()->RSSetState(0);
-	mD3D->GetImmediateContext()->OMSetDepthStencilState(0, 0);
-	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
+	
 
 	// Draw 2D stuff
 	/*
@@ -294,6 +291,8 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mLightDeferredShader->SetSpecularTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mLightDeferredShader->SetPositionTexture(mD3D->GetImmediateContext(), NULL);
 
+
+
 	// Render the scene to the render buffers
 	RenderSceneToTexture();
 
@@ -309,7 +308,7 @@ void GraphicsEngineImpl::DrawScene()
 	//XMMATRIX cameraViewProj = mCamera->GetViewMatrix()*mCamera->GetProjMatrix();
 	//mShaderHandler->mLightDeferredShader->SetShadowTransform(cameraViewProj);
 	mShaderHandler->mLightDeferredShader->SetShadowTransform(mShadowMap->GetShadowTransform());
-	mShaderHandler->mLightDeferredShader->SetCameraViewMatrix(mCamera->GetViewMatrix());
+	mShaderHandler->mLightDeferredShader->SetCameraViewProjMatrix(mCamera->GetViewMatrix(), mCamera->GetProjMatrix());
 	mShaderHandler->mLightDeferredShader->SetLightWorldViewProj(mShadowMap->GetLightWorld(), mShadowMap->GetLightView(), mShadowMap->GetLightProj());
 	mShaderHandler->mLightDeferredShader->UpdatePerFrame(mD3D->GetImmediateContext());
 
@@ -339,9 +338,19 @@ void GraphicsEngineImpl::DrawScene()
 	//mSpriteFont->DrawString(mSpriteBatch, L"Test", XMFLOAT2(100.0f, 100.0f), D3dColors::Green, 0.0f, XMFLOAT2(100.0f, 100.0f), XMFLOAT2(1.0f, 1.0f));
 	mSpriteBatch->End();
 
-	mSpriteBatch->Begin(SpriteSortMode_Deferred, nullptr, nullptr, RenderStates::mDisabledDSS, nullptr);
+	mSpriteBatch->Begin(SpriteSortMode_Deferred, nullptr, nullptr, nullptr, nullptr);
 	mSpriteBatch->Draw(mShadowMap->getDepthMapSRV(), XMFLOAT2(0.0f, 600.0f), NULL, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), 0.1f);
 	mSpriteBatch->End();
+
+	ID3D11ShaderResourceView* nullSRV[16] = { 0 };
+	mD3D->GetImmediateContext()->PSSetShaderResources(0, 16, nullSRV);
+	mD3D->GetImmediateContext()->VSSetShaderResources(0, 16, nullSRV);
+
+	// Restore default states
+	//float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	mD3D->GetImmediateContext()->RSSetState(0);
+	mD3D->GetImmediateContext()->OMSetDepthStencilState(0, 0);
+	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
 
 	//mSky->Draw(mD3D->GetImmediateContext(), *mCamera, mShaderHandler->mSkyShader);
 }

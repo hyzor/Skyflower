@@ -640,7 +640,7 @@ public:
 	void SetWorldViewProj(XMMATRIX& world, XMMATRIX& view, XMMATRIX& proj);
 
 	void SetEyePosW(XMFLOAT3 eyePosW);
-	void SetCameraViewMatrix(XMMATRIX& camViewMatrix);
+	void SetCameraViewProjMatrix(XMMATRIX& camViewMatrix, XMMATRIX& proj);
 	void SetCameraWorldMatrix(XMMATRIX& camWorldMatrix);
 	void SetLightWorldViewProj(XMMATRIX& lightWorld, XMMATRIX& lightView, XMMATRIX& lightProj);
 
@@ -666,6 +666,8 @@ private:
 	{
 		XMMATRIX worldViewProj;
 		XMMATRIX shadowTransform;
+		XMMATRIX lightViewProj;
+		XMMATRIX viewProjInv;
 	};
 
 	struct PS_CPERFRAMEBUFFER
@@ -694,9 +696,12 @@ private:
 
 		XMMATRIX shadowTransform;
 		XMMATRIX cameraViewMatrix;
+		XMMATRIX cameraInvViewMatrix;
 		XMMATRIX cameraWorldMatrix;
+		XMMATRIX cameraProjMatrix;
 		XMMATRIX lightWorldMatrix;
 		XMMATRIX lightViewMatrix;
+		XMMATRIX lightInvViewMatrix;
 		XMMATRIX lightProjMatrix;
 	};
 
