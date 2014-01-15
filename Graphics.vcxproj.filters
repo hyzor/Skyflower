@@ -244,9 +244,18 @@
     <FxCompile Include="src\graphics\Shaders\AmbientOcclusionPS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\BlurHorizontalPS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\BlurVerticalPS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\graphics\Shaders\LightDef.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="src\graphics\Shaders\Blur.hlsli">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

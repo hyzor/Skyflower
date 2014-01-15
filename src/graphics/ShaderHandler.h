@@ -685,6 +685,39 @@ private:
 };
 #pragma endregion SSAOShader
 
+#pragma region BlurShader
+class BlurShader : public IShader
+{
+public:
+	BlurShader();
+	~BlurShader();
+
+	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
+	bool SetActive(ID3D11DeviceContext* dc);
+
+	void Update(ID3D11DeviceContext* dc);
+
+	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+
+	void SetFramebufferTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetDepthTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+
+	void SetFramebufferSize(const XMFLOAT2 &framebufferSize);
+	void SetZNearFar(float z_near, float z_far);
+
+private:
+	struct PS_CPERFRAMEBUFFER
+	{
+		XMFLOAT2 framebufferSize;
+		float z_near;
+		float z_far;
+	};
+
+	ID3D11Buffer* ps_cPerFrameBuffer;
+	PS_CPERFRAMEBUFFER ps_cPerFrameBufferVariables;
+};
+#pragma endregion BlurShader
+
 #pragma region ShaderHandler
 enum ShaderType
 {
@@ -724,6 +757,8 @@ public:
 	BasicDeferredSkinnedShader* mBasicDeferredSkinnedShader;
 	LightDeferredShader* mLightDeferredShader;
 	SSAOShader* mSSAOShader;
+	BlurShader* mBlurHorizontalShader;
+	BlurShader* mBlurVerticalShader;
 
 private:
 

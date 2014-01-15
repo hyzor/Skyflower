@@ -190,6 +190,8 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	// Post-processing shaders
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\FullscreenQuadVS.cso", "FullscreenQuadVS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\AmbientOcclusionPS.cso", "AmbientOcclusionPS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\BlurHorizontalPS.cso", "BlurHorizontalPS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\BlurVerticalPS.cso", "BlurVerticalPS", mD3D->GetDevice());
 
 	// Bind loaded shaders to shader objects
 	mShaderHandler->mBasicShader->BindShaders(
@@ -215,6 +217,12 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mSSAOShader->BindShaders(
 		mShaderHandler->GetVertexShader("FullscreenQuadVS"),
 		mShaderHandler->GetPixelShader("AmbientOcclusionPS"));
+	mShaderHandler->mBlurHorizontalShader->BindShaders(
+		mShaderHandler->GetVertexShader("FullscreenQuadVS"),
+		mShaderHandler->GetPixelShader("BlurHorizontalPS"));
+	mShaderHandler->mBlurVerticalShader->BindShaders(
+		mShaderHandler->GetVertexShader("FullscreenQuadVS"),
+		mShaderHandler->GetPixelShader("BlurVerticalPS"));
 
 	// Now create all the input layouts
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("BasicVS"), InputLayoutDesc::PosNormalTex, COUNT_OF(InputLayoutDesc::PosNormalTex), &mInputLayouts->PosNormalTex);
@@ -235,6 +243,8 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mLightDeferredShader->Init(mD3D->GetDevice(), mInputLayouts->PosTex);
 	mShaderHandler->mShadowShader->Init(mD3D->GetDevice(), mInputLayouts->Position);
 	mShaderHandler->mSSAOShader->Init(mD3D->GetDevice(), NULL);
+	mShaderHandler->mBlurHorizontalShader->Init(mD3D->GetDevice(), NULL);
+	mShaderHandler->mBlurVerticalShader->Init(mD3D->GetDevice(), NULL);
 
 	std::string fontPath = mResourceDir + "myfile.spritefont";
 	std::wstring fontPathW(fontPath.begin(), fontPath.end());

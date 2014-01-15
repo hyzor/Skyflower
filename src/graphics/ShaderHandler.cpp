@@ -11,6 +11,8 @@ ShaderHandler::ShaderHandler()
 	mLightDeferredShader = new LightDeferredShader();
 	mShadowShader = new ShadowShader();
 	mSSAOShader = new SSAOShader();
+	mBlurHorizontalShader = new BlurShader();
+	mBlurVerticalShader = new BlurShader();
 }
 
 ShaderHandler::~ShaderHandler()
@@ -43,6 +45,8 @@ ShaderHandler::~ShaderHandler()
 	delete mBasicDeferredSkinnedShader;
 	delete mLightDeferredShader;
 	delete mSSAOShader;
+	delete mBlurHorizontalShader;
+	delete mBlurVerticalShader;
 }
 
 void ShaderHandler::LoadCompiledVertexShader(LPCWSTR fileName, char* name, ID3D11Device* device)
@@ -1522,3 +1526,87 @@ void SSAOShader::SetZFar(float z_far)
 }
 
 #pragma endregion SSAOShader
+
+#pragma region BlurShader
+
+BlurShader::BlurShader()
+{
+}
+
+BlurShader::~BlurShader()
+{
+	if (ps_cPerFrameBuffer)
+		ps_cPerFrameBuffer->Release();
+}
+
+bool BlurShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
+{
+	memset(&ps_cPerFrameBufferVariables, 0, sizeof(PS_CPERFRAMEBUFFER));
+
+	D3D11_BUFFER_DESC cbDesc;
+	cbDesc.ByteWidth = sizeof(PS_CPERFRAMEBUFFER);
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	device->CreateBuffer(&cbDesc, NULL, &ps_cPerFrameBuffer);
+
+	return true;
+}
+
+bool BlurShader::SetActive(ID3D11DeviceContext* dc)
+{
+	// Set active shaders
+	dc->VSSetShader(mVertexShader, nullptr, 0);
+	dc->PSSetShader(mPixelShader, nullptr, 0);
+
+	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
+
+	dc->PSSetConstantBuffers(0, 1, &ps_cPerFrameBuffer);
+
+	return true;
+}
+
+void BlurShader::Update(ID3D11DeviceContext* dc)
+{
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	dc->Map(ps_cPerFrameBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	PS_CPERFRAMEBUFFER* dataPtr = (PS_CPERFRAMEBUFFER*)mappedResource.pData;
+	*dataPtr = ps_cPerFrameBufferVariables;
+
+	dc->Unmap(ps_cPerFrameBuffer, 0);
+}
+
+bool BlurShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
+{
+	mVertexShader = vShader;
+	mPixelShader = pShader;
+
+	return true;
+}
+
+void BlurShader::SetFramebufferTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(0, 1, &tex);
+}
+
+void BlurShader::SetDepthTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(1, 1, &tex);
+}
+
+void BlurShader::SetFramebufferSize(const XMFLOAT2 &framebufferSize)
+{
+	ps_cPerFrameBufferVariables.framebufferSize = framebufferSize;
+}
+
+void BlurShader::SetZNearFar(float z_near, float z_far)
+{
+	ps_cPerFrameBufferVariables.z_near = z_near;
+	ps_cPerFrameBufferVariables.z_far = z_far;
+}
+
+#pragma endregion BlurShader
