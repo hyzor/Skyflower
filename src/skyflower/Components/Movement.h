@@ -19,7 +19,7 @@ public:
 
 	// constructor - age is fixed at creation time
 	Movement() : Component("Movement")
-	{ 
+	{
 		this->isMovingForward = false;
 		this->isMovingBackward = false;
 		this->isMovingLeft = false;
@@ -56,28 +56,31 @@ public:
 		Vec3 pos = getEntityPos();
 		Vec3 rot = getEntityRot();
 		p->update(deltaTime);
-		
 
-		if (pos.Y < -100)
+
+		/*if (pos.Y < -100)
 		{
 			updateEntityPos(Vec3(0, 20, 0));
 			p->setVelocity(Vec3(0, 0, 0));
 			return;
-		}
-		// CRACH!! FIX PLZ
-		/*if (pos.Y < -100)
-		{
-			getOwner()->getComponent<Health*>("Health")->setHealth(0);
-
-			float soundPosition[3] = {0.0f, 0.0f, 0.0f};
-			getOwner()->getModules()->sound->PlaySound("player/wilhelm_scream.wav", soundPosition, 1.0f, true); 
-		}
-		if (!getOwner()->getComponent<Health*>("Health")->isAlive())
-		{
-			p->setVelocity(Vec3(0, 0, 0));
-			pos = Vec3(0, 12, 0);
-			getOwner()->getComponent<Health*>("Health")->setHealth(100);
 		}*/
+		// CRACH!! FIX PLZ
+		if (getOwner()->getComponent<Health*>("Health"))
+		{
+			if (pos.Y < -100)
+			{
+				getOwner()->getComponent<Health*>("Health")->setHealth(0);
+				float soundPosition[3] = { 0.0f, 0.0f, 0.0f };
+				getOwner()->getModules()->sound->PlaySound("player/wilhelm_scream.wav", soundPosition, 1.0f, true);
+			}
+			if (!getOwner()->getComponent<Health*>("Health")->isAlive())
+			{
+				p->setVelocity(Vec3(0, 0, 0));
+				pos = Vec3(0, 12, 0);
+				getOwner()->getComponent<Health*>("Health")->setHealth(100);
+			}
+		}
+
 		//
 
 		if (this->isMovingForward) {
@@ -109,27 +112,7 @@ public:
 			p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 90.0f);
 		}
 
-		std::vector<CollisionInstance*> instances = Collision::GetInstance()->GetCollisionInstances();
-		Ray r = Ray(pos+Vec3(0,5,0), Vec3(0, -5, 0));
-		float col = 0;
-		for (size_t i = 0; i < instances.size(); i++)
-		{
-			if (instances[i] != getEntityCollision())
-			{
-				float t = instances[i]->Test(r);
-				if (t > 0)
-				{
-					col = t;
-					break;
-				}
-			}
-		}
-		if (col) //om kollision flytta tillbaka
-		{
-			pos.Y -= (1 - col)*r.Dir.Y;
-			p->setVelocity(Vec3());
-			p->setJumping(false);
-		}
+		
 
 		updateEntityPos(pos);
 		updateEntityRot(rot);

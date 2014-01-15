@@ -197,6 +197,10 @@ void Application::OnKeyDown(unsigned short key)
 	case 'Z':
 		m_showCharts = !m_showCharts;
 		break;
+	case 'R':
+		m_graphicsEngine->clearLights();
+		entityManager->loadXML2("lights.XML");
+		break;
 	default:
 		break;
 	}

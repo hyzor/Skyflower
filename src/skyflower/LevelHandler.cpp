@@ -21,6 +21,7 @@ LevelHandler::~LevelHandler(){}
 void LevelHandler::init(EntityManager *entityManager)
 {
 	this->_entityManager = entityManager;
+	
 	for (unsigned int i = 0; i < LEVEL_COUNT; i++)
 	{
 		Level curr(i, levels[i]);
@@ -35,9 +36,11 @@ LevelHandler* LevelHandler::GetInstance()
 }
 void LevelHandler::load(int id)
 {
-	for (int i = 1; _entityManager->getNrOfEntities() != 1; i++)
+	// Removes all entities except for the player
+	for (int i = 0; _entityManager->getNrOfEntities() != 1; i++) 
 	{
-		_entityManager->destroyEntity(i);
+		if (_entityManager->getEntity(i)->getType() != "Player")
+			_entityManager->destroyEntity(i);
 	}
 	_entityManager->loadXML2(_levels.at(id)._path);
 	_current = id;
