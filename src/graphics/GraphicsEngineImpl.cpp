@@ -83,8 +83,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mDeferredBuffers = new DeferredBuffers();
 	mDeferredBuffers->Init(mD3D->GetDevice(), width, height, zNear, zFar);
 
-	//mSSAOTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8_UNORM, true);
-	mSSAOTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8G8B8A8_UNORM, true);
+	mSSAOTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8_UNORM, true);
 
 	//--------------------------------------------------------
 	// Lights
@@ -381,6 +380,7 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mLightDeferredShader->SetNormalTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mLightDeferredShader->SetSpecularTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mLightDeferredShader->SetPositionTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mLightDeferredShader->SetSSAOTexture(mD3D->GetImmediateContext(), NULL);
 
 	// Render the scene to the render buffers
 	RenderSceneToTexture();
@@ -389,28 +389,23 @@ void GraphicsEngineImpl::DrawScene()
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDisabledDDS, 1);
 
 	// SSAO pass
-#if 1
-	D3D11_VIEWPORT viewport;
-	viewport.TopLeftX = 0;
-	viewport.TopLeftY = 0;
-	viewport.Width = (float)mSSAOTexture->GetWidth();
-	viewport.Height = (float)mSSAOTexture->GetHeight();
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-
-#if 1
-	ID3D11RenderTargetView* SSAORenderTarget[1] = { mD3D->GetRenderTargetView() };
-	mD3D->GetImmediateContext()->OMSetRenderTargets(1, SSAORenderTarget, NULL);
-#else
-	ID3D11RenderTargetView* SSAORenderTarget[1] = { mSSAOTexture->GetRenderTargetView() };
-	mD3D->GetImmediateContext()->OMSetRenderTargets(1, SSAORenderTarget, NULL);
-#endif
-	mD3D->GetImmediateContext()->RSSetViewports(1, &viewport);
-
-	float clearColor[4] = {1.0, 0.0, 0.0, 1.0};
+#if 0
+	float clearColor[4] = {1.0, 1.0, 1.0, 1.0};
 	mD3D->GetImmediateContext()->ClearRenderTargetView(mSSAOTexture->GetRenderTargetView(), clearColor);
+#else
+	D3D11_VIEWPORT SSAOViewport;
+	SSAOViewport.TopLeftX = 0;
+	SSAOViewport.TopLeftY = 0;
+	SSAOViewport.Width = (float)mSSAOTexture->GetWidth();
+	SSAOViewport.Height = (float)mSSAOTexture->GetHeight();
+	SSAOViewport.MinDepth = 0.0f;
+	SSAOViewport.MaxDepth = 1.0f;
 
+	mD3D->GetImmediateContext()->RSSetViewports(1, &SSAOViewport);
 
+	// Calculate ambient occlusion
+	ID3D11RenderTargetView* renderTarget = mSSAOTexture->GetRenderTargetView();
+	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
 
 	mShaderHandler->mSSAOShader->SetDepthTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
 	mShaderHandler->mSSAOShader->SetNormalTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(1));
@@ -431,14 +426,13 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mSSAOShader->SetRandomTexture(mD3D->GetImmediateContext(), NULL);
 	
 	// Reset the render target to the back buffer.
-	ID3D11RenderTargetView* backBufferRenderTarget[1] = { mD3D->GetRenderTargetView() };
-	mD3D->GetImmediateContext()->OMSetRenderTargets(1, backBufferRenderTarget, mD3D->GetDepthStencilView());
+	renderTarget = mD3D->GetRenderTargetView();
+	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, mD3D->GetDepthStencilView());
 
 	// Reset viewport
 	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
 #endif
 
-#if 0
 	mShaderHandler->mLightDeferredShader->SetActive(mD3D->GetImmediateContext());
 	mShaderHandler->mLightDeferredShader->SetEyePosW(mCamera->GetPosition());
 	mShaderHandler->mLightDeferredShader->SetPointLights(mD3D->GetImmediateContext(), (UINT)mPointLights.size(), mPointLights.data());
@@ -450,6 +444,7 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mLightDeferredShader->SetNormalTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(1));
 	mShaderHandler->mLightDeferredShader->SetSpecularTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(2));
 	mShaderHandler->mLightDeferredShader->SetPositionTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(3));
+	mShaderHandler->mLightDeferredShader->SetSSAOTexture(mD3D->GetImmediateContext(), mSSAOTexture->GetShaderResourceView());
 
 	mShaderHandler->mLightDeferredShader->SetWorldViewProj(XMMatrixIdentity(), mCamera->GetBaseViewMatrix(), mCamera->GetOrthoMatrix());
 	mShaderHandler->mLightDeferredShader->UpdatePerObj(mD3D->GetImmediateContext());
@@ -459,7 +454,6 @@ void GraphicsEngineImpl::DrawScene()
 
 	// Turn z-buffer back on
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDefaultDDS, 1);
-#endif
 }
 
 void GraphicsEngineImpl::UpdateScene(float dt)

@@ -1368,6 +1368,11 @@ void LightDeferredShader::SetPositionTexture(ID3D11DeviceContext* dc, ID3D11Shad
 	dc->PSSetShaderResources(3, 1, &tex);
 }
 
+void LightDeferredShader::SetSSAOTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(4, 1, &tex);
+}
+
 void LightDeferredShader::UpdatePerObj(ID3D11DeviceContext* dc)
 {
 	// Update constant shader buffers using our cache

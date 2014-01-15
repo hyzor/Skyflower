@@ -36,17 +36,16 @@ float3 reconstruct_viewspace_position(float2 uv)
 // http://graphics.cs.williams.edu/papers/AlchemyHPG11/
 // http://graphics.cs.williams.edu/papers/SAOHPG12/
 
-float4 main(VertexOut input) : SV_Target
+float main(VertexOut input) : SV_Target
 {
 	float3 position = reconstruct_viewspace_position(input.uv);
 	float3 normal = normalTexture.Sample(linearSampler, input.uv).xyz;
 	// Convert from worldspace to viewspace.
 	normal = normalize(mul(float4(normal, 0.0), viewMatrix).xyz);
 
-	// FIXME: Tweak these two values.
-	const float radius = 0.75;
-	const float projection_factor = 1.25;
-
+	// FIXME: Tweak these values.
+	const float radius = 1.5;
+	const float projection_factor = 1.0;
 	const float random_texture_stride = 18.0;
 	const float epsilon = 0.0001;
 	/* Bias distance is the ambient-obscurance analog of shadow map
@@ -60,7 +59,8 @@ float4 main(VertexOut input) : SV_Target
 	const int base_samples = 16;
 	const int min_samples = 4;
 	// Decrease number of samples with increasing range.
-	int samples = max(int(base_samples / (1.0 + base_samples * (position.z / z_far))), min_samples);
+	//int samples = max(int(base_samples / (1.0 + base_samples * (position.z / z_far))), min_samples);
+	int samples = 16;
 
 	float projected_radius = projection_factor * radius / position.z;
 	float ambient_occlusion = 0.0;
@@ -82,5 +82,5 @@ float4 main(VertexOut input) : SV_Target
 	const float sigma = 2.0;
 	ambient_occlusion = pow(max(0.0, 1.0 - 2.0 * sigma / float(samples) * ambient_occlusion), contrast);
 
-	return float4(ambient_occlusion, ambient_occlusion, ambient_occlusion, 1.0);
+	return ambient_occlusion;
 }

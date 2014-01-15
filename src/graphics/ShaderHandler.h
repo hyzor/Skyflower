@@ -578,6 +578,7 @@ public:
 	void SetNormalTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetSpecularTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetPositionTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetSSAOTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
 	void UpdatePerObj(ID3D11DeviceContext* dc);
 	void UpdatePerFrame(ID3D11DeviceContext* dc);
