@@ -60,6 +60,12 @@ public:
 	Texture2D *CreateTexture2D(unsigned int width, unsigned int height);
 	void DeleteTexture2D(Texture2D *texture);
 
+	void addDirLight(Vec3 color, Vec3 direction, float intensity);
+	void addPointLight(Vec3 color, Vec3 Position, float intensity);
+	void addSpotLight(Vec3 color, Vec3 direction, Vec3 Position, float angle);
+
+	void clearLights();
+
 private:
 	Direct3D* mD3D;
 

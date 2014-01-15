@@ -5,7 +5,7 @@
 #include "Instance.h"
 #include "Texture2D.h"
 #include <string>
-
+#include "..\shared\Vec3.h"
 
 class DLL_API GraphicsEngine
 {
@@ -32,6 +32,10 @@ public:
 	virtual AnimatedInstance* CreateAnimatedInstance(std::string file) = 0;
 	virtual void DeleteInstance(AnimatedInstance* ai) = 0;
 
+	virtual void addDirLight(Vec3 color, Vec3 direction, float intensity) = 0;
+	virtual void addPointLight(Vec3 color, Vec3 Position, float intensity) = 0;
+	virtual void addSpotLight(Vec3 color, Vec3 direction, Vec3 Position, float angle) = 0;
+	virtual void clearLights() = 0;
 
 	virtual CameraController *CreateCameraController() = 0;
 

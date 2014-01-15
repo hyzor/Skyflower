@@ -55,6 +55,7 @@ void Application::Start()
 	entityManager = new EntityManager("../../XML/", &modules);
 
 	entityManager->loadXML2("player.xml");
+	entityManager->loadXML2("lights.XML");
 	levelHandler->init(entityManager);
 	//entityManager->loadXML2("player2.xml");
 	//entityManager->loadXML2("platform.xml");
@@ -200,6 +201,10 @@ void Application::OnKeyDown(unsigned short key)
 		break;
 	case 'Z':
 		m_showCharts = !m_showCharts;
+		break;
+	case 'R':
+		m_graphicsEngine->clearLights();
+		entityManager->loadXML2("lights.XML");
 		break;
 	default:
 		break;

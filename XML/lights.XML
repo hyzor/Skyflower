@@ -1,0 +1,5 @@
+<root>
+    <spotLight1 entityName="spotLight1" id="2" isVisible="0" isCollidible="0" Type="spotLight ">
+        <spotLight  dirx="0" diry="-1" dirz="0" xPos="1.0" yPos="100.0" zPos="0" r="3.0" g="0.0" b="0.0" intensity="10.0" coneAngle="5"/>
+    </spotLight1>
+</root>

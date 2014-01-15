@@ -19,7 +19,7 @@ public:
 
 	// constructor - age is fixed at creation time
 	Movement(float speed) : Component("Movement")
-	{ 
+	{
 		this->isMovingForward = false;
 		this->isMovingBackward = false;
 		this->isMovingLeft = false;
@@ -57,29 +57,26 @@ public:
 		Vec3 rot = getEntityRot();
 		p->update(deltaTime);
 		
+		Health *health = getOwner()->getComponent<Health*>("Health");
 
-
-		if (pos.Y < -100)
+		if (health)
 		{
-			sendMessageToEntity(this->getOwnerId(), "Respawn");
-			p->setVelocity(Vec3(0, 0, 0));
-			return;
+			if (pos.Y < -100)
+			{
+				health->setHealth(0);
+				float soundPosition[3] = { 0.0f, 0.0f, 0.0f };
+
+				if (getOwnerId() == 0)
+					getOwner()->getModules()->sound->PlaySound("player/wilhelm_scream.wav", soundPosition, 1.0f, true);
+			}
+			if (!health->isAlive())
+			{
+				sendMessageToEntity(this->getOwnerId(), "Respawn");
+				p->setVelocity(Vec3(0, 0, 0));
+				health->setHealth(100);
+				return;
+			}
 		}
-		// CRACH!! FIX PLZ
-		/*if (pos.Y < -100)
-		{
-			getOwner()->getComponent<Health*>("Health")->setHealth(0);
-
-			float soundPosition[3] = {0.0f, 0.0f, 0.0f};
-			getOwner()->getModules()->sound->PlaySound("player/wilhelm_scream.wav", soundPosition, 1.0f, true); 
-		}
-		if (!getOwner()->getComponent<Health*>("Health")->isAlive())
-		{
-			p->setVelocity(Vec3(0, 0, 0));
-			pos = Vec3(0, 12, 0);
-			getOwner()->getComponent<Health*>("Health")->setHealth(100);
-		}*/
-		//
 
 		if (this->isMovingForward) {
 			if (this->isMovingLeft) {

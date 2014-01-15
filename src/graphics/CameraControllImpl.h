@@ -15,31 +15,27 @@ public:
 	virtual ~CameraControllImpl();
 	 void SetPosition(Vec3 position);
 	 void SetDirection(Vec3 direction);
-	 void SetOffset(float offset);
-	 void Rotate(Vec3 rot);
+	 void SetOffset(float offset); // Set the offset from the player.
 	 void Update(float dt);
-	 void Follow(Vec3 target);
+	 void Follow(Vec3 target); // Set target for the camera to look at and follow
 	 void RotateCamera(float mouseX, float mouseY);
 	 void Zoom(float d, float speed);
-	 Vec3 GetPosition();
+	 Vec3 GetPosition(); 
 	 Vec3 GetDirection();
-	 Vec3 GetLook();
-	 Vec3 GetRight();
-	 Vec3 GetUp();
+	 Vec3 GetLook(); // Look vector
+	 Vec3 GetRight(); // Right vector
+	 Vec3 GetUp(); // Up vector
 private:
 	Camera* camera;
-	Vec3 o;
-	Vec3 target;
-	float offset;
+	Vec3 o; // Vector used for rotation calculations
+	Vec3 target; // The target of the camera. Usually the player.
+	float offset; // Distance to the target
 
-	float yaw;
-	float pitch;
-	float targetPitch;
-	float targetYaw;
-	float rot;
-	float rotx;
-	float targetY;
-	Vec3 lookat;
+	float yaw; // Current yaw in radians
+	float pitch; // Current pitch in radians
+	float targetPitch; // The target pitch. Used in Lerp calculations
+	float targetYaw; // The target yaw. Used in Lerp calculations
+	float targetY; // The Y-pos of the target. Used for Lerp.
 };
 
 DLL_API CameraController* CreateCameraControll(Camera *c);

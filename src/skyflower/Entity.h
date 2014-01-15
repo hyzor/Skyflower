@@ -38,11 +38,15 @@ class Entity {
 
 		const Modules *getModules();
 		Physics* getPhysics();
+		string getType();
 
 		template <typename T>
 		T getComponent(string Type)
 		{
-			return (T)fComponents[Type].front();
+			if (this->hasComponents(Type))
+				return (T)fComponents[Type].front();
+			else
+				return NULL;
 		}
 
 		Vec3 returnPos();
@@ -130,7 +134,6 @@ class Entity {
 		void sendAMessageToAll(string message);
 		void sendMessageToEntity(string message, EntityId id);
 
-		string getType();
 		EntityId getEntityId();
 
 		Vec3 returnRot();

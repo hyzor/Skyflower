@@ -17,7 +17,7 @@ CameraControllImpl::CameraControllImpl(Camera *c)
 	pitch = 0;
 	targetPitch = 0;
 	targetYaw = 0;
-	//RotateCamera(0, 0);
+
 	Vec3 look(camera->GetLook().x, camera->GetLook().y, camera->GetLook().z);
 }
 
@@ -53,9 +53,6 @@ Vec3 CameraControllImpl::GetPosition()
 	return pos;
 }
 
-void CameraControllImpl::Rotate(Vec3 rot)
-{}
-
 void CameraControllImpl::SetPosition(Vec3 pos)
 {
 	camera->SetPosition(XMFLOAT3(pos.X, pos.Y, pos.Z));
@@ -68,11 +65,6 @@ Vec3 CameraControllImpl::GetDirection()
 
 Vec3 CameraControllImpl::GetLook()
 {
-	//Vec3 look;
-	//look.X = camera->GetLook().x;
-	//look.Y = camera->GetLook().y;
-	//look.Z = camera->GetLook().z;
-	//return look.Normalize();
 	return o*-1.0f;
 }
 
@@ -97,7 +89,7 @@ Vec3 CameraControllImpl::GetUp()
 void CameraControllImpl::Follow(Vec3 target)
 {
 	this->target = target;
-	this->target.Y += 10;
+	this->target.Y += 10; // Place the camera slightly over the player
 }
 
 void CameraControllImpl::SetOffset(float offset)

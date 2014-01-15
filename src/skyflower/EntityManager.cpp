@@ -1052,6 +1052,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		const char* attr;
 
 		float xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale;
+		xPos = yPos = zPos = xRot = yRot = zRot = xScale = yScale = zScale = 0.0f;
 		string model = "";
 		string entityName = "";
 		bool isVisible = false;
@@ -1355,6 +1356,109 @@ bool EntityManager::loadXML2(string xmlFile)
 
 				Checkpoint* cp = new Checkpoint(spawnpoint);
 				this->addComponent(entity, cp);
+			}
+			else if (componentName == "dirLight")
+			{
+				float intensity, r, g, b, dirx, diry, dirz;
+
+				attr = e->Attribute("intensity");
+				if (attr != NULL)
+				{
+					intensity = e->FloatAttribute("intensity");
+				}
+				attr = e->Attribute("r");
+				if (attr != NULL)
+				{
+					r = e->FloatAttribute("r");
+				}
+				attr = e->Attribute("g");
+				if (attr != NULL)
+				{
+					g = e->FloatAttribute("g");
+				}
+				attr = e->Attribute("b");
+				if (attr != NULL)
+				{
+					b = e->FloatAttribute("b");
+				}
+				attr = e->Attribute("dirx");
+				if (attr != NULL)
+				{
+					dirx = e->FloatAttribute("dirx");
+				}
+				attr = e->Attribute("diry");
+				if (attr != NULL)
+				{
+					diry = e->FloatAttribute("diry");
+				}
+				attr = e->Attribute("dirz");
+				if (attr != NULL)
+				{
+					dirz = e->FloatAttribute("dirz");
+				}
+				modules->graphics->addDirLight(Vec3(r, g, b), Vec3(0.0f, -1.0f, 0.0f), intensity);
+			}
+			else if (componentName.find("Light") != string::npos)
+			{
+				float intensity, r, g, b, dirx, diry, dirz, xPos, yPos, zPos, coneAngle;
+				intensity = r = g = b = dirx = diry = dirz = xPos = yPos = zPos = coneAngle = 0;
+
+				attr = e->Attribute("intensity");
+				if (attr != NULL)
+				{
+					intensity = e->FloatAttribute("intensity");
+				}
+				attr = e->Attribute("r");
+				if (attr != NULL)
+				{
+					r = e->FloatAttribute("r");
+				}
+				attr = e->Attribute("g");
+				if (attr != NULL)
+				{
+					g = e->FloatAttribute("g");
+				}
+				attr = e->Attribute("b");
+				if (attr != NULL)
+				{
+					b = e->FloatAttribute("b");
+				}
+				attr = e->Attribute("dirx");
+				if (attr != NULL)
+				{
+					dirx = e->FloatAttribute("dirx");
+				}
+				attr = e->Attribute("diry");
+				if (attr != NULL)
+				{
+					diry = e->FloatAttribute("diry");
+				}
+				attr = e->Attribute("dirz");
+				if (attr != NULL)
+				{
+					dirz = e->FloatAttribute("dirz");
+				}
+				if (attr != NULL)
+				{
+					coneAngle = e->FloatAttribute("coneAngle");
+				}
+				attr = e->Attribute("xPos");
+				if (attr != NULL)
+				{
+					xPos = e->FloatAttribute("xPos");
+				}
+				attr = e->Attribute("yPos");
+				if (attr != NULL)
+				{
+					yPos = e->FloatAttribute("yPos");
+				}
+				attr = e->Attribute("zPos");
+				if (attr != NULL)
+				{
+					zPos = e->FloatAttribute("zPos");
+				}
+				if (componentName == "spotLight")
+					modules->graphics->addSpotLight(Vec3(r, g, b), Vec3(dirx, diry, dirz), Vec3(xPos, yPos, zPos), coneAngle);
 			}
 			else
 			{

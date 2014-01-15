@@ -147,52 +147,7 @@ float Camera::GetFarWindowHeight() const
 {
 	return mFarWindowHeight;
 }
-/*
-void Camera::UpdateViewMatrix()
-{
 
-	XMVECTOR right = XMLoadFloat3(&mRight);
-	XMVECTOR up = XMLoadFloat3(&mUp);
-	XMVECTOR look = XMLoadFloat3(&mLook);
-	XMVECTOR pos = XMLoadFloat3(&mPosition);
-
-	// Orthonormalize right, up and look vectors
-	look = XMVector3Normalize(look); // Unit length
-	up = XMVector3Normalize(XMVector3Cross(look, right)); // Compute new corrected vector & normalize
-
-	// Compute new corrected right vector (up & look already orthonormalized)
-	right = XMVector3Cross(up, look);
-
-	// Fill in the view matrix entries
-	float x = -XMVectorGetX(XMVector3Dot(pos, right));
-	float y = -XMVectorGetX(XMVector3Dot(pos, up));
-	float z = -XMVectorGetX(XMVector3Dot(pos, look));
-
-	XMStoreFloat3(&mRight, right);
-	XMStoreFloat3(&mUp, up);
-	XMStoreFloat3(&mLook, look);
-
-	mView(0, 0) = mRight.x;
-	mView(1, 0) = mRight.y;
-	mView(2, 0) = mRight.z;
-	mView(3, 0) = x;
-
-	mView(0, 1) = mUp.x;
-	mView(1, 1) = mUp.y;
-	mView(2, 1) = mUp.z;
-	mView(3, 1) = y;
-
-	mView(0, 2) = mLook.x;
-	mView(1, 2) = mLook.y;
-	mView(2, 2) = mLook.z;
-	mView(3, 2) = z;
-
-	mView(0, 3) = 0.0f;
-	mView(1, 3) = 0.0f;
-	mView(2, 3) = 0.0f;
-	mView(3, 3) = 1.0f;
-}
-*/
 
 DirectX::BoundingFrustum Camera::GetFrustum() const
 {
@@ -206,15 +161,8 @@ void Camera::ComputeFrustum()
 	mFrustum = DirectX::BoundingFrustum(GetProjMatrix());
 }
 
-void Camera::Pitch(float degrees)
-{
-	int i = 5;
-}
-
 void Camera::LookAt(Vec3 at)
 {
-	XMFLOAT3 right(1, 0, 0);
-	XMFLOAT3 dir(0, 0, 1);
 	XMVECTOR lookat = XMLoadFloat3(&XMFLOAT3(at.X, at.Y, at.Z));
 	XMVECTOR up = XMLoadFloat3(&XMFLOAT3(0, 1, 0));
 	XMVECTOR position = XMLoadFloat3(&XMFLOAT3(mPosition.x, mPosition.y, mPosition.z));
@@ -223,19 +171,8 @@ void Camera::LookAt(Vec3 at)
 	XMStoreFloat4x4(&mView, view);
 
 	mLook = XMFLOAT3(at.X - mPosition.x, at.Y - mPosition.y, at.Z - mPosition.z);
-	// Update the view vectors of both the target and camera based on the rotation represented in our yaw matrix
-	/*D3DXVec3TransformCoord(&dir, &dir, &yaw);
-	//D3DXVec3TransformCoord(&tarView, &tarView, &yaw);
-
-	// Also update the right vectors of the target and camera
-	D3DXVec3TransformCoord(&right, &right, &yaw);
-	//D3DXVec3TransformCoord(&tarRight, &tarRight, &yaw);
-
-	D3DXVec3TransformCoord(&up, &up, &yaw);
-
-	mUp = XMFLOAT3(up.x, up.y, up.z);
-	mRight = XMFLOAT3(right.x, right.y, right.z);
-	mLook = XMFLOAT3(dir.x, dir.y, dir.z);*/
+	mRight = XMFLOAT3(mView._11, mView._21, mView._31);
+	mUp = XMFLOAT3(mView._12, mView._22, mView._32);
 }
 
 void Camera::UpdateOrthoMatrix(float screenWidth, float screenHeight, float zn, float zf)
