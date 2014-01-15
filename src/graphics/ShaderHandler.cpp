@@ -1445,7 +1445,6 @@ bool SSAOShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
 {
 	memset(&ps_cPerFrameBufferVariables, 0, sizeof(PS_CPERFRAMEBUFFER));
 
-	// Fill in a buffer description.
 	D3D11_BUFFER_DESC cbDesc;
 	cbDesc.ByteWidth = sizeof(PS_CPERFRAMEBUFFER);
 	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -1454,25 +1453,13 @@ bool SSAOShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
 	cbDesc.MiscFlags = 0;
 	cbDesc.StructureByteStride = 0;
 
-	// Fill in the subresource data.
-	D3D11_SUBRESOURCE_DATA InitData;
-	InitData.pSysMem = &ps_cPerFrameBufferVariables;
-	InitData.SysMemPitch = 0;
-	InitData.SysMemSlicePitch = 0;
-
-	// Now create the buffer
-	device->CreateBuffer(&cbDesc, &InitData, &ps_cPerFrameBuffer);
-
-	mInputLayout = inputLayout;
+	device->CreateBuffer(&cbDesc, NULL, &ps_cPerFrameBuffer);
 
 	return true;
 }
 
 bool SSAOShader::SetActive(ID3D11DeviceContext* dc)
 {
-	// Set vertex layout and primitive topology
-	dc->IASetInputLayout(mInputLayout);
-
 	// Set active shaders
 	dc->VSSetShader(mVertexShader, nullptr, 0);
 	dc->PSSetShader(mPixelShader, nullptr, 0);

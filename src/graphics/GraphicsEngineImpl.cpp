@@ -225,7 +225,6 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 		COUNT_OF(InputLayoutDesc::PosNormalTexTanSkinned),
 		&mInputLayouts->PosNormalTexTanSkinned);
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("LightDeferredVS"), InputLayoutDesc::PosTex, COUNT_OF(InputLayoutDesc::PosTex), &mInputLayouts->PosTex);
-	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("FullscreenQuadVS"), InputLayoutDesc::PosTex, COUNT_OF(InputLayoutDesc::PosTex), &mInputLayouts->PosTex);
 
 	// Init all the shader objects
 	mShaderHandler->mBasicShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTex);
@@ -235,7 +234,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mBasicDeferredSkinnedShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTanSkinned);
 	mShaderHandler->mLightDeferredShader->Init(mD3D->GetDevice(), mInputLayouts->PosTex);
 	mShaderHandler->mShadowShader->Init(mD3D->GetDevice(), mInputLayouts->Position);
-	mShaderHandler->mSSAOShader->Init(mD3D->GetDevice(), mInputLayouts->PosTex);
+	mShaderHandler->mSSAOShader->Init(mD3D->GetDevice(), NULL);
 
 	std::string fontPath = mResourceDir + "myfile.spritefont";
 	std::wstring fontPathW(fontPath.begin(), fontPath.end());
