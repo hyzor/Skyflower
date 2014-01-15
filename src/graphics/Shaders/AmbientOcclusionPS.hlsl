@@ -44,8 +44,8 @@ float main(VertexOut input) : SV_Target
 	normal = normalize(mul(float4(normal, 0.0), viewMatrix).xyz);
 
 	// FIXME: Tweak these values.
-	const float radius = 1.5;
-	const float projection_factor = 1.0;
+	const float radius = 0.7;
+	const float projection_factor = 0.3;
 	const float random_texture_stride = 18.0;
 	const float epsilon = 0.0001;
 	/* Bias distance is the ambient-obscurance analog of shadow map
@@ -54,7 +54,8 @@ float main(VertexOut input) : SV_Target
 	 * compensate for the dot products becoming increasingly
 	 * sensitive to error in normal at distant points.
 	 */
-	const float bias = 0.0001;
+	//const float bias = 0.0001;
+	const float bias = 0.15;
 
 	const int base_samples = 16;
 	const int min_samples = 4;
@@ -72,13 +73,10 @@ float main(VertexOut input) : SV_Target
 		float3 occlusion_sample = reconstruct_viewspace_position(input.uv + random_direction * projected_radius);
 		float3 v = occlusion_sample - position;
 
-		// Only samples in front of the pixel contributes.
-		if (occlusion_sample.z - position.z > 0) {
-			ambient_occlusion += max(0.0, dot(v, normal) - bias * occlusion_sample.z) / (dot(v, v) + epsilon);
-		}
+		ambient_occlusion += max(0.0, dot(normalize(v), normal) - bias/* * occlusion_sample.z*/) / (dot(v, v) + epsilon);
 	}
 
-	const float contrast = 1.0;
+	const float contrast = 3.0;
 	const float sigma = 2.0;
 	ambient_occlusion = pow(max(0.0, 1.0 - 2.0 * sigma / float(samples) * ambient_occlusion), contrast);
 
