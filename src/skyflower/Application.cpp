@@ -102,61 +102,64 @@ void Application::Start()
 		oldTime = time;
 		timeSinceLight += deltaTime;
 
-			frameTimeChart.AddPoint((float)time, (float)(deltaTime * 1000.0));
-			memoryChart.AddPoint((float)time, GetMemoryUsage() / (1024.0f * 1024.0f));
+		frameTimeChart.AddPoint((float)time, (float)(deltaTime * 1000.0));
+		memoryChart.AddPoint((float)time, GetMemoryUsage() / (1024.0f * 1024.0f));
 
-			if (m_showCharts && time >= nextChartUpdate) {
-				nextChartUpdate = time + chartUpdateDelay;
+		if (m_showCharts && time >= nextChartUpdate) {
+			nextChartUpdate = time + chartUpdateDelay;
 
-				frameTimeChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, (1.0f / 60.0f) * 1000.0f);
-				frameTimeChartTexture->UploadData(frameTimeChart.GetPixels());
+			frameTimeChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, (1.0f / 60.0f) * 1000.0f);
+			frameTimeChartTexture->UploadData(frameTimeChart.GetPixels());
 
-				memoryChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, 256.0f);
-				memoryChartTexture->UploadData(memoryChart.GetPixels());
-			}
+			memoryChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, 256.0f);
+			memoryChartTexture->UploadData(memoryChart.GetPixels());
+		}
 
-			camera->Follow(entityManager->getEntityPos("player"));
-			playerMove->setCamera(camera->GetLook(), camera->GetRight(), camera->GetUp());
-			camera->Update((float)deltaTime);
+		camera->Follow(entityManager->getEntityPos("player"));
+		playerMove->setCamera(camera->GetLook(), camera->GetRight(), camera->GetUp());
+		camera->Update((float)deltaTime);
 
-			if (!levelHandler->isLoading())
+		if (!levelHandler->isLoading())
+		{
+			if (load.joinable())
 			{
-				if (load.joinable())
-				{
-					load.join();
-					oldTime = GetTime();
-				}		
-				
-				this->entityManager->update((float)deltaTime);
-				m_graphicsEngine->UpdateScene((float)deltaTime);
-				m_graphicsEngine->DrawScene();
-				
-			}
-			//this->entityManager->handleCollision();
-
-			m_graphicsEngine->Begin2D();
-			if (levelHandler->isLoading())
-			{
-				m_graphicsEngine->Draw2DTextureFile("..\\..\\content\\Textures\\Menygrafik\\fyraTreRatio.png", 0, 0);
-			}
-			if (m_showCharts) {
-				m_graphicsEngine->Draw2DTexture(frameTimeChartTexture, 0, 0);
-				m_graphicsEngine->Draw2DTexture(memoryChartTexture, 0, frameTimeChart.GetHeight() + 6);
-			}
-
-			m_graphicsEngine->End2D();
-			m_graphicsEngine->Present();
-
-			m_soundEngine->Update((float)deltaTime);
-
-			m_window->PumpMessages();
-			
-			if (levelHandler->hasQueuedLevel() && !levelHandler->isLoading())
-			{
-				load = thread(&LevelHandler::LoadQueued, levelHandler);
+				load.join();
 				oldTime = GetTime();
 			}
+			
+			this->entityManager->update((float)deltaTime);
+			m_graphicsEngine->UpdateScene((float)deltaTime);
+			m_graphicsEngine->DrawScene();
+				
+		}
+
+		//this->entityManager->handleCollision();
+
+		m_graphicsEngine->Begin2D();
+
+		if (levelHandler->isLoading())
+		{
+			m_graphicsEngine->Draw2DTextureFile("..\\..\\content\\Textures\\Menygrafik\\fyraTreRatio.png", 0, 0);
+		}
+		if (m_showCharts) {
+			m_graphicsEngine->Draw2DTexture(frameTimeChartTexture, 0, 0);
+			m_graphicsEngine->Draw2DTexture(memoryChartTexture, 0, frameTimeChart.GetHeight() + 6);
+		}
+
+		m_graphicsEngine->End2D();
+		m_graphicsEngine->Present();
+
+		m_soundEngine->Update((float)deltaTime);
+
+		m_window->PumpMessages();
+			
+		if (levelHandler->hasQueuedLevel() && !levelHandler->isLoading())
+		{
+			load = thread(&LevelHandler::LoadQueued, levelHandler);
+			oldTime = GetTime();
+		}
 	}
+
 	m_graphicsEngine->DeleteTexture2D(memoryChartTexture);
 	m_graphicsEngine->DeleteTexture2D(frameTimeChartTexture);
 	delete levelHandler;
