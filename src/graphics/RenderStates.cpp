@@ -5,6 +5,7 @@ ID3D11RasterizerState* RenderStates::mWireframeRS = 0;
 ID3D11RasterizerState* RenderStates::mNoCullRS = 0;
 
 ID3D11SamplerState* RenderStates::mLinearSS = 0;
+ID3D11SamplerState* RenderStates::mSSAODepthSS = 0;
 ID3D11SamplerState* RenderStates::mAnisotropicSS = 0;
 ID3D11SamplerState* RenderStates::mComparisonSS = 0;
 
@@ -76,6 +77,25 @@ void RenderStates::InitAll(ID3D11Device* device)
 	linearSSdesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	device->CreateSamplerState(&linearSSdesc, &mLinearSS);
+
+	// Linear SSAO Depth sampler state
+	D3D11_SAMPLER_DESC SSAODepthSSdesc;
+	ZeroMemory(&SSAODepthSSdesc, sizeof(D3D11_SAMPLER_DESC));
+	SSAODepthSSdesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	SSAODepthSSdesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	SSAODepthSSdesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	SSAODepthSSdesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+	SSAODepthSSdesc.MipLODBias = 0.0f;
+	SSAODepthSSdesc.MaxAnisotropy = 1;
+	SSAODepthSSdesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	SSAODepthSSdesc.BorderColor[0] = 1.0f;
+	SSAODepthSSdesc.BorderColor[1] = 1.0f;
+	SSAODepthSSdesc.BorderColor[2] = 1.0f;
+	SSAODepthSSdesc.BorderColor[3] = 1.0f;
+	SSAODepthSSdesc.MinLOD = 0;
+	SSAODepthSSdesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	device->CreateSamplerState(&SSAODepthSSdesc, &mSSAODepthSS);
 
 	// Anisotropic sampler state
 	D3D11_SAMPLER_DESC anisotropicSSdesc;
@@ -186,6 +206,7 @@ void RenderStates::DestroyAll()
 	ReleaseCOM(mNoCullRS);
 
 	ReleaseCOM(mLinearSS);
+	ReleaseCOM(mSSAODepthSS);
 	ReleaseCOM(mAnisotropicSS);
 	ReleaseCOM(mComparisonSS);
 

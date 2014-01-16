@@ -53,6 +53,9 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 	mOrthoWindow->Shutdown();
 	delete mOrthoWindow;
 
+	delete mSSAOTexture;
+	delete mSSAOBlurTexture;
+
 	delete mD3D;
 }
 
@@ -80,6 +83,9 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 
 	mDeferredBuffers = new DeferredBuffers();
 	mDeferredBuffers->Init(mD3D->GetDevice(), width, height, zNear, zFar);
+
+	mSSAOTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8_UNORM, true);
+	mSSAOBlurTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8_UNORM, true);
 
 	//--------------------------------------------------------
 	// Lights
@@ -200,6 +206,12 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\BasicDeferredSkinnedVS.cso", "BasicDeferredSkinnedVS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\BasicDeferredSkinnedPS.cso", "BasicDeferredSkinnedPS", mD3D->GetDevice());
 
+	// Post-processing shaders
+	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\FullscreenQuadVS.cso", "FullscreenQuadVS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\AmbientOcclusionPS.cso", "AmbientOcclusionPS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\BlurHorizontalPS.cso", "BlurHorizontalPS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\BlurVerticalPS.cso", "BlurVerticalPS", mD3D->GetDevice());
+
 	// Bind loaded shaders to shader objects
 	mShaderHandler->mBasicShader->BindShaders(
 		mShaderHandler->GetVertexShader("BasicVS"),
@@ -221,6 +233,15 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 		mShaderHandler->GetPixelShader("LightDeferredPS"));
 	//mShaderHandler->mShadowShader->BindShaders(mShaderHandler->GetVertexShader("ShadowBuildVS"), mShaderHandler->GetPixelShader(""));
 	mShaderHandler->mShadowShader->BindVertexShader(mShaderHandler->GetVertexShader("ShadowBuildVS"));
+	mShaderHandler->mSSAOShader->BindShaders(
+		mShaderHandler->GetVertexShader("FullscreenQuadVS"),
+		mShaderHandler->GetPixelShader("AmbientOcclusionPS"));
+	mShaderHandler->mBlurHorizontalShader->BindShaders(
+		mShaderHandler->GetVertexShader("FullscreenQuadVS"),
+		mShaderHandler->GetPixelShader("BlurHorizontalPS"));
+	mShaderHandler->mBlurVerticalShader->BindShaders(
+		mShaderHandler->GetVertexShader("FullscreenQuadVS"),
+		mShaderHandler->GetPixelShader("BlurVerticalPS"));
 
 	// Now create all the input layouts
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("BasicVS"), InputLayoutDesc::PosNormalTex, COUNT_OF(InputLayoutDesc::PosNormalTex), &mInputLayouts->PosNormalTex);
@@ -240,6 +261,9 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mBasicDeferredSkinnedShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTanSkinned);
 	mShaderHandler->mLightDeferredShader->Init(mD3D->GetDevice(), mInputLayouts->PosTex);
 	mShaderHandler->mShadowShader->Init(mD3D->GetDevice(), mInputLayouts->Position);
+	mShaderHandler->mSSAOShader->Init(mD3D->GetDevice(), NULL);
+	mShaderHandler->mBlurHorizontalShader->Init(mD3D->GetDevice(), NULL);
+	mShaderHandler->mBlurVerticalShader->Init(mD3D->GetDevice(), NULL);
 
 	std::string fontPath = mResourceDir + "myfile.spritefont";
 	std::wstring fontPathW(fontPath.begin(), fontPath.end());
@@ -376,12 +400,97 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mLightDeferredShader->SetNormalTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mLightDeferredShader->SetSpecularTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mLightDeferredShader->SetPositionTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mLightDeferredShader->SetSSAOTexture(mD3D->GetImmediateContext(), NULL);
 
 	// Render the scene to the render buffers
 	RenderSceneToTexture();
 
 	// Turn off Z-buffer to begin 2D-drawing
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDisabledDDS, 1);
+
+	// SSAO pass
+#if 0
+	float clearColor[4] = {1.0, 1.0, 1.0, 1.0};
+	mD3D->GetImmediateContext()->ClearRenderTargetView(mSSAOTexture->GetRenderTargetView(), clearColor);
+#else
+	D3D11_VIEWPORT SSAOViewport;
+	SSAOViewport.TopLeftX = 0;
+	SSAOViewport.TopLeftY = 0;
+	SSAOViewport.Width = (float)mSSAOTexture->GetWidth();
+	SSAOViewport.Height = (float)mSSAOTexture->GetHeight();
+	SSAOViewport.MinDepth = 0.0f;
+	SSAOViewport.MaxDepth = 1.0f;
+
+	mD3D->GetImmediateContext()->RSSetViewports(1, &SSAOViewport);
+
+	// Calculate ambient occlusion
+	ID3D11RenderTargetView* renderTarget = mSSAOTexture->GetRenderTargetView();
+	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
+
+	mShaderHandler->mSSAOShader->SetDepthTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
+	mShaderHandler->mSSAOShader->SetNormalTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(1));
+	mShaderHandler->mSSAOShader->SetRandomTexture(mD3D->GetImmediateContext(), mTextureMgr->CreateTexture(mResourceDir + "Textures/random.png"));
+
+	mShaderHandler->mSSAOShader->SetInverseProjectionMatrix(XMMatrixInverse(nullptr, mCamera->GetProjMatrix()));
+	mShaderHandler->mSSAOShader->SetViewMatrix(mCamera->GetViewMatrix());
+	mShaderHandler->mSSAOShader->SetZFar(zFar);
+	mShaderHandler->mSSAOShader->Update(mD3D->GetImmediateContext());
+
+	mShaderHandler->mSSAOShader->SetActive(mD3D->GetImmediateContext());
+
+	// Render a fullscreen quad without a vertex buffer using some shader magic.
+	mD3D->GetImmediateContext()->Draw(3, 0);
+
+	mShaderHandler->mSSAOShader->SetDepthTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mSSAOShader->SetNormalTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mSSAOShader->SetRandomTexture(mD3D->GetImmediateContext(), NULL);
+	
+	// Horizontal blur
+	renderTarget = mSSAOBlurTexture->GetRenderTargetView();
+	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
+
+	mShaderHandler->mBlurHorizontalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mSSAOTexture->GetShaderResourceView());
+	mShaderHandler->mBlurHorizontalShader->SetDepthTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
+
+	mShaderHandler->mBlurHorizontalShader->SetFramebufferSize(XMFLOAT2((float)mSSAOTexture->GetWidth(), (float)mSSAOTexture->GetHeight()));
+	mShaderHandler->mBlurHorizontalShader->SetZNearFar(zNear, zFar);
+	mShaderHandler->mBlurHorizontalShader->Update(mD3D->GetImmediateContext());
+
+	mShaderHandler->mBlurHorizontalShader->SetActive(mD3D->GetImmediateContext());
+
+	// Render a fullscreen quad without a vertex buffer using some shader magic.
+	mD3D->GetImmediateContext()->Draw(3, 0);
+
+	mShaderHandler->mBlurHorizontalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mBlurHorizontalShader->SetDepthTexture(mD3D->GetImmediateContext(), NULL);
+
+	// Vertical blur
+	renderTarget = mSSAOTexture->GetRenderTargetView();
+	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
+
+	mShaderHandler->mBlurVerticalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mSSAOBlurTexture->GetShaderResourceView());
+	mShaderHandler->mBlurVerticalShader->SetDepthTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
+
+	mShaderHandler->mBlurVerticalShader->SetFramebufferSize(XMFLOAT2((float)mSSAOTexture->GetWidth(), (float)mSSAOTexture->GetHeight()));
+	mShaderHandler->mBlurVerticalShader->SetZNearFar(zNear, zFar);
+	mShaderHandler->mBlurVerticalShader->Update(mD3D->GetImmediateContext());
+
+	mShaderHandler->mBlurVerticalShader->SetActive(mD3D->GetImmediateContext());
+
+	// Render a fullscreen quad without a vertex buffer using some shader magic.
+	mD3D->GetImmediateContext()->Draw(3, 0);
+
+	mShaderHandler->mBlurVerticalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mBlurVerticalShader->SetDepthTexture(mD3D->GetImmediateContext(), NULL);
+
+	// Reset the render target to the back buffer.
+	renderTarget = mD3D->GetRenderTargetView();
+	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, mD3D->GetDepthStencilView());
+
+	// Reset viewport
+	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
+#endif
+
 	mShaderHandler->mLightDeferredShader->SetActive(mD3D->GetImmediateContext());
 	mShaderHandler->mLightDeferredShader->SetEyePosW(mCamera->GetPosition());
 	mShaderHandler->mLightDeferredShader->SetPointLights(mD3D->GetImmediateContext(), (UINT)mPointLights.size(), mPointLights.data());
@@ -393,6 +502,7 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mLightDeferredShader->SetNormalTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(1));
 	mShaderHandler->mLightDeferredShader->SetSpecularTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(2));
 	mShaderHandler->mLightDeferredShader->SetPositionTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(3));
+	mShaderHandler->mLightDeferredShader->SetSSAOTexture(mD3D->GetImmediateContext(), mSSAOTexture->GetShaderResourceView());
 
 	mShaderHandler->mLightDeferredShader->SetWorldViewProj(XMMatrixIdentity(), mCamera->GetBaseViewMatrix(), mCamera->GetOrthoMatrix());
 	mShaderHandler->mLightDeferredShader->UpdatePerObj(mD3D->GetImmediateContext());
@@ -440,7 +550,7 @@ void GraphicsEngineImpl::Draw2DTexture(Texture2D *texture, int x, int y)
 {
 	Texture2DImpl *textureImpl = (Texture2DImpl *)texture;
 
-	mSpriteBatch->Draw(textureImpl->GetTextureView(), XMFLOAT2((float)x, (float)y));
+	mSpriteBatch->Draw(textureImpl->GetShaderResourceView(), XMFLOAT2((float)x, (float)y));
 }
 
 ModelInstance* GraphicsEngineImpl::CreateInstance(std::string file)
@@ -553,7 +663,7 @@ void GraphicsEngineImpl::DeleteInstance(AnimatedInstance* ai)
 
 Texture2D *GraphicsEngineImpl::CreateTexture2D(unsigned int width, unsigned int height)
 {
-	Texture2DImpl *texture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height);
+	Texture2DImpl *texture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8G8B8A8_UNORM, false);
  
 	return (Texture2D *)texture;
 }
@@ -572,6 +682,8 @@ void GraphicsEngineImpl::OnResize(UINT width, UINT height)
 	mCamera->UpdateOrthoMatrix(static_cast<float>(width), static_cast<float>(height), zNear, zFar);
 	// TODO:
 	//mOrthoWindow->OnResize(width, height);
+
+	// FIXME: Resize mSSAOTexture and mSSAOBlurTexture.
 }
 
 void GraphicsEngineImpl::RenderSceneToTexture()

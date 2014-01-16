@@ -578,6 +578,7 @@ public:
 	void SetNormalTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetSpecularTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetPositionTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetSSAOTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
 	void UpdatePerObj(ID3D11DeviceContext* dc);
 	void UpdatePerFrame(ID3D11DeviceContext* dc);
@@ -633,6 +634,91 @@ private:
 };
 #pragma endregion LightDeferredShader
 
+#pragma region SSAOShader
+class SSAOShader : public IShader
+{
+public:
+	SSAOShader();
+	~SSAOShader();
+
+	// Overload new and delete, because this class contains XMMATRIX (16 byte alignment)
+	void* operator new (size_t size)
+	{
+		void* p = _aligned_malloc(size, 16);
+
+		if (!p)
+			throw std::bad_alloc();
+
+		return p;
+	}
+
+	void operator delete (void* p)
+	{
+		SSAOShader* ptr = static_cast<SSAOShader*>(p);
+		_aligned_free(p);
+	}
+
+	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
+	bool SetActive(ID3D11DeviceContext* dc);
+
+	void Update(ID3D11DeviceContext* dc);
+
+	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+
+	void SetDepthTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetNormalTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetRandomTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+
+	void SetInverseProjectionMatrix(const XMMATRIX& inverseProjectionMatrix);
+	void SetViewMatrix(const XMMATRIX& viewMatrix);
+	void SetZFar(float z_far);
+
+private:
+	struct PS_CPERFRAMEBUFFER
+	{
+		XMMATRIX inverseProjectionMatrix;
+		XMMATRIX viewMatrix;
+		float z_far;
+	};
+
+	ID3D11Buffer* ps_cPerFrameBuffer;
+	PS_CPERFRAMEBUFFER ps_cPerFrameBufferVariables;
+};
+#pragma endregion SSAOShader
+
+#pragma region BlurShader
+class BlurShader : public IShader
+{
+public:
+	BlurShader();
+	~BlurShader();
+
+	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
+	bool SetActive(ID3D11DeviceContext* dc);
+
+	void Update(ID3D11DeviceContext* dc);
+
+	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+
+	void SetFramebufferTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetDepthTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+
+	void SetFramebufferSize(const XMFLOAT2 &framebufferSize);
+	void SetZNearFar(float z_near, float z_far);
+
+private:
+	struct PS_CPERFRAMEBUFFER
+	{
+		XMFLOAT2 framebufferSize;
+		float z_near;
+		float z_far;
+	};
+
+	ID3D11Buffer* ps_cPerFrameBuffer;
+	PS_CPERFRAMEBUFFER ps_cPerFrameBufferVariables;
+};
+#pragma endregion BlurShader
+
 #pragma region ShaderHandler
 enum ShaderType
 {
@@ -671,6 +757,9 @@ public:
 	BasicDeferredShader* mBasicDeferredShader;
 	BasicDeferredSkinnedShader* mBasicDeferredSkinnedShader;
 	LightDeferredShader* mLightDeferredShader;
+	SSAOShader* mSSAOShader;
+	BlurShader* mBlurHorizontalShader;
+	BlurShader* mBlurVerticalShader;
 
 private:
 

@@ -23,6 +23,7 @@ Texture2D gDiffuseTexture : register(t0);
 Texture2D gNormalTexture : register(t1);
 Texture2D gSpecularTexture : register(t2);
 Texture2D gPositionTexture : register(t3);
+Texture2D gSSAOTexture : register(t4);
 
 SamplerState samLinear : register(s0);
 SamplerState samAnisotropic : register(s1);
@@ -79,9 +80,14 @@ float4 main(VertexOut pIn) : SV_TARGET
 		specular_Lights += S;
 	}
 
+	float ambient_occlusion = gSSAOTexture.Sample(samLinear, pIn.Tex).x;
+
+	//return float4(ambient_occlusion, ambient_occlusion, ambient_occlusion, 1.0);
+
 	litColor = diffuse * (ambient_Lights + diffuse_Lights) + specular_Lights;
+	//litColor *= ambient_occlusion;
 
 	//return float4(1.0f, 1.0f, 1.0f, 1.0f);
-	litColor.a = diffuse.a;
+	litColor.a = 1.0;
 	return litColor;
 }
