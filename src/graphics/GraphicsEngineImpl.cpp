@@ -543,6 +543,8 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 		0.0f, 0.0f, 1.0f, 0.0f,
 		0.5f, 0.5f, 0.0f, 1.0f);
 
+	mShaderHandler->mBasicDeferredShader->SetShadowMap(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
+
 	// Loop through all model instances
 	for (UINT i = 0; i < mInstances.size(); ++i)
 	{
@@ -551,6 +553,11 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 			mShaderHandler->mBasicDeferredShader->SetWorldViewProjTex(mInstances[i]->GetWorld(),
 				mCamera->GetViewProjMatrix(),
 				toTexSpace);
+
+			mShaderHandler->mBasicDeferredShader->SetShadowTransformLightViewProj(
+				XMMatrixMultiply(mInstances[i]->GetWorld(), mShadowMap->GetShadowTransform()),
+				mShadowMap->GetLightView(),
+				mShadowMap->GetLightProj());
 
 			for (UINT j = 0; j < mInstances[i]->model->meshCount; ++j)
 			{
@@ -567,9 +574,13 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 
 	mShaderHandler->mBasicDeferredSkinnedShader->SetActive(mD3D->GetImmediateContext());
 
+	mShaderHandler->mBasicDeferredSkinnedShader->SetShadowMapTexture(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
+
 	// Loop through all model instances
 	for (UINT i = 0; i < mAnimatedInstances.size(); ++i)
 	{
+		mShaderHandler->mBasicDeferredSkinnedShader->SetShadowTransform(
+						XMMatrixMultiply(mAnimatedInstances[i]->GetWorld(), mShadowMap->GetShadowTransform()));
 		if (mAnimatedInstances[i]->IsVisible())
 		{
 			mAnimatedInstances[i]->model->Draw(mD3D->GetImmediateContext(), mCamera, mShaderHandler->mBasicDeferredSkinnedShader, mAnimatedInstances[i]->GetWorld());

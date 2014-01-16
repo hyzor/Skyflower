@@ -483,8 +483,11 @@ public:
 		XMMATRIX& viewProj,
 		XMMATRIX& tex);
 
+	void SetShadowTransformLightViewProj(XMMATRIX& shadowTransform, XMMATRIX& lightView, XMMATRIX& lightProj);
+
 	void SetMaterial(const Material& mat);
 	void SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
 	void UpdatePerObj(ID3D11DeviceContext* dc);
 
@@ -498,6 +501,7 @@ private:
 		XMMATRIX worldViewProj;
 		//XMMATRIX worldViewProjTex;
 		XMMATRIX texTransform;
+		XMMATRIX shadowTransform;
 	};
 
 	struct PS_CPEROBJBUFFER
@@ -562,6 +566,9 @@ public:
 
 	void UpdatePerObj(ID3D11DeviceContext* dc);
 
+	void SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetShadowTransform(XMMATRIX& shadowTransform);
+
 private:
 	void Update(ID3D11DeviceContext* dc) { ; }
 
@@ -572,6 +579,7 @@ private:
 		XMMATRIX worldViewProj;
 		//XMMATRIX worldViewProjTex;
 		XMMATRIX texTransform;
+		XMMATRIX shadowTransform;
 	};
 
 	struct VS_CSKINNEDBUFFER

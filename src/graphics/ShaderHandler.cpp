@@ -1021,7 +1021,8 @@ void SkinnedShadowShader::UpdatePerObj(ID3D11DeviceContext* dc)
 
 	VS_CPEROBJBUFFER* dataPtr = (VS_CPEROBJBUFFER*)mappedResource.pData;
 
-	dataPtr->lightWVP = mBufferCache.vsBuffer.lightWVP;
+	//dataPtr->lightWVP = mBufferCache.vsBuffer.lightWVP;
+	*dataPtr = mBufferCache.vsBuffer;
 
 	dc->Unmap(vs_cBuffer, 0);
 
@@ -1030,13 +1031,14 @@ void SkinnedShadowShader::UpdatePerObj(ID3D11DeviceContext* dc)
 
 	VS_CSKINNEDBUFFER* dataPtr3 = (VS_CSKINNEDBUFFER*)mappedResource.pData;
 
-	for (UINT i = 0; i < mBufferCache.vsSkinBuffer.numBoneTransforms; ++i)
-		dataPtr3->boneTransforms[i] = mBufferCache.vsSkinBuffer.boneTransforms[i];
-
-	dataPtr3->numBoneTransforms = mBufferCache.vsSkinBuffer.numBoneTransforms;
-	dataPtr3->padding = 0;
-	dataPtr3->padding2 = 0;
-	dataPtr3->padding3 = 0;
+// 	for (UINT i = 0; i < mBufferCache.vsSkinBuffer.numBoneTransforms; ++i)
+// 		dataPtr3->boneTransforms[i] = mBufferCache.vsSkinBuffer.boneTransforms[i];
+// 
+// 	dataPtr3->numBoneTransforms = mBufferCache.vsSkinBuffer.numBoneTransforms;
+// 	dataPtr3->padding = 0;
+// 	dataPtr3->padding2 = 0;
+// 	dataPtr3->padding3 = 0;
+	*dataPtr3 = mBufferCache.vsSkinBuffer;
 
 	dc->Unmap(vs_cSkinnedBuffer, 0);
 
@@ -1145,6 +1147,7 @@ bool BasicDeferredShader::SetActive(ID3D11DeviceContext* dc)
 
 	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
 	dc->PSSetSamplers(1, 1, &RenderStates::mAnisotropicSS);
+	dc->PSSetSamplers(2, 1, &RenderStates::mComparisonSS);
 
 	return true;
 }
@@ -1177,11 +1180,12 @@ void BasicDeferredShader::UpdatePerObj(ID3D11DeviceContext* dc)
 
 	VS_CPEROBJBUFFER* dataPtr = (VS_CPEROBJBUFFER*)mappedResource.pData;
 
-	dataPtr->world = mBufferCache.vsPerObjBuffer.world;
-	dataPtr->worldViewProj = mBufferCache.vsPerObjBuffer.worldViewProj;
-	//dataPtr->worldViewProjTex = mBufferCache.vsBuffer.worldViewProjTex;
-	dataPtr->worldInvTranspose = mBufferCache.vsPerObjBuffer.worldInvTranspose;
-	dataPtr->texTransform = mBufferCache.vsPerObjBuffer.texTransform;
+// 	dataPtr->world = mBufferCache.vsPerObjBuffer.world;
+// 	dataPtr->worldViewProj = mBufferCache.vsPerObjBuffer.worldViewProj;
+// 	//dataPtr->worldViewProjTex = mBufferCache.vsBuffer.worldViewProjTex;
+// 	dataPtr->worldInvTranspose = mBufferCache.vsPerObjBuffer.worldInvTranspose;
+// 	dataPtr->texTransform = mBufferCache.vsPerObjBuffer.texTransform;
+	*dataPtr = mBufferCache.vsPerObjBuffer;
 
 	dc->Unmap(vs_cPerObjBuffer, 0);
 
@@ -1192,11 +1196,22 @@ void BasicDeferredShader::UpdatePerObj(ID3D11DeviceContext* dc)
 
 	PS_CPEROBJBUFFER* dataPtr2 = (PS_CPEROBJBUFFER*)mappedResource.pData;
 
-	dataPtr2->mat = mBufferCache.psPerObjBuffer.mat;
+	//dataPtr2->mat = mBufferCache.psPerObjBuffer.mat;
+	*dataPtr2 = mBufferCache.psPerObjBuffer;
 
 	dc->Unmap(ps_cPerObjBuffer, 0);
 
 	dc->PSSetConstantBuffers(0, 1, &ps_cPerObjBuffer);
+}
+
+void BasicDeferredShader::SetShadowTransformLightViewProj(XMMATRIX& shadowTransform, XMMATRIX& lightView, XMMATRIX& lightProj)
+{
+	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
+}
+
+void BasicDeferredShader::SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(1, 1, &tex);
 }
 
 BasicDeferredSkinnedShader::BasicDeferredSkinnedShader()
@@ -1303,6 +1318,7 @@ bool BasicDeferredSkinnedShader::SetActive(ID3D11DeviceContext* dc)
 
 	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
 	dc->PSSetSamplers(1, 1, &RenderStates::mAnisotropicSS);
+	dc->PSSetSamplers(2, 1, &RenderStates::mComparisonSS);
 
 	return true;
 }
@@ -1341,11 +1357,13 @@ void BasicDeferredSkinnedShader::UpdatePerObj(ID3D11DeviceContext* dc)
 
 	VS_CPEROBJBUFFER* dataPtr = (VS_CPEROBJBUFFER*)mappedResource.pData;
 
-	dataPtr->world = mBufferCache.vsPerObjBuffer.world;
-	dataPtr->worldViewProj = mBufferCache.vsPerObjBuffer.worldViewProj;
-	//dataPtr->worldViewProjTex = mBufferCache.vsBuffer.worldViewProjTex;
-	dataPtr->worldInvTranspose = mBufferCache.vsPerObjBuffer.worldInvTranspose;
-	dataPtr->texTransform = mBufferCache.vsPerObjBuffer.texTransform;
+// 	dataPtr->world = mBufferCache.vsPerObjBuffer.world;
+// 	dataPtr->worldViewProj = mBufferCache.vsPerObjBuffer.worldViewProj;
+// 	//dataPtr->worldViewProjTex = mBufferCache.vsBuffer.worldViewProjTex;
+// 	dataPtr->worldInvTranspose = mBufferCache.vsPerObjBuffer.worldInvTranspose;
+// 	dataPtr->texTransform = mBufferCache.vsPerObjBuffer.texTransform;
+
+	*dataPtr = mBufferCache.vsPerObjBuffer;
 
 	dc->Unmap(vs_cPerObjBuffer, 0);
 
@@ -1356,13 +1374,14 @@ void BasicDeferredSkinnedShader::UpdatePerObj(ID3D11DeviceContext* dc)
 
 	VS_CSKINNEDBUFFER* dataPtr3 = (VS_CSKINNEDBUFFER*)mappedResource.pData;
 
-	for (UINT i = 0; i < mBufferCache.vsSkinnedBuffer.numBoneTransforms; ++i)
-		dataPtr3->boneTransforms[i] = mBufferCache.vsSkinnedBuffer.boneTransforms[i];
-
-	dataPtr3->numBoneTransforms = mBufferCache.vsSkinnedBuffer.numBoneTransforms;
-	dataPtr3->padding = 0;
-	dataPtr3->padding2 = 0;
-	dataPtr3->padding3 = 0;
+// 	for (UINT i = 0; i < mBufferCache.vsSkinnedBuffer.numBoneTransforms; ++i)
+// 		dataPtr3->boneTransforms[i] = mBufferCache.vsSkinnedBuffer.boneTransforms[i];
+// 
+// 	dataPtr3->numBoneTransforms = mBufferCache.vsSkinnedBuffer.numBoneTransforms;
+// 	dataPtr3->padding = 0;
+// 	dataPtr3->padding2 = 0;
+// 	dataPtr3->padding3 = 0;
+	*dataPtr3 = mBufferCache.vsSkinnedBuffer;
 
 	dc->Unmap(vs_cSkinnedBuffer, 0);
 
@@ -1373,7 +1392,8 @@ void BasicDeferredSkinnedShader::UpdatePerObj(ID3D11DeviceContext* dc)
 
 	PS_CPEROBJBUFFER* dataPtr2 = (PS_CPEROBJBUFFER*)mappedResource.pData;
 
-	dataPtr2->mat = mBufferCache.psPerObjBuffer.mat;
+	//dataPtr2->mat = mBufferCache.psPerObjBuffer.mat;
+	*dataPtr2 = mBufferCache.psPerObjBuffer;
 
 	dc->Unmap(ps_cPerObjBuffer, 0);
 
@@ -1383,6 +1403,16 @@ void BasicDeferredSkinnedShader::UpdatePerObj(ID3D11DeviceContext* dc)
 void BasicDeferredSkinnedShader::SetMaterial(const Material& mat)
 {
 	mBufferCache.psPerObjBuffer.mat = mat;
+}
+
+void BasicDeferredSkinnedShader::SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(1, 1, &tex);
+}
+
+void BasicDeferredSkinnedShader::SetShadowTransform(XMMATRIX& shadowTransform)
+{
+	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
 }
 
 void LightDeferredShader::SetEyePosW(XMFLOAT3 eyePosW)

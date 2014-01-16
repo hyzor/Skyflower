@@ -69,11 +69,13 @@ float4 main(VertexOut pIn) : SV_TARGET
 	float3 normal;
 	float4 specular;
 	float3 positionW;
+	float shadowFactor;
 	
 	diffuse = gDiffuseTexture.Sample(samLinear, pIn.Tex);
 	normal = gNormalTexture.Sample(samLinear, pIn.Tex).xyz;
 	specular = gSpecularTexture.Sample(samLinear, pIn.Tex);
 	positionW = gPositionTexture.Sample(samLinear, pIn.Tex).xyz;
+	shadowFactor = gDiffuseTexture.Sample(samLinear, pIn.Tex).w;
 
 	// The toEye vector is used in lighting
 	float3 toEye = gEyePosW - positionW;
@@ -115,8 +117,8 @@ float4 main(VertexOut pIn) : SV_TARGET
 	for (int i = 0; i < gDirLightCount; ++i)
 	{
 		ComputeDirectionalLight_Deferred(specular, gDirLights[i], normal, toEye, D, S);
-		diffuse_Lights += D * shadow[0];
-		specular_Lights += S * shadow[0];
+		diffuse_Lights += D * shadowFactor;
+		specular_Lights += S * shadowFactor;
 	}
 
 	for (int j = 0; j < gPointLightCount; ++j)
@@ -134,9 +136,9 @@ float4 main(VertexOut pIn) : SV_TARGET
 		specular_Lights += S;
 	}
 
-	litColor = diffuse * (ambient_Lights + diffuse_Lights) + specular_Lights;
+	litColor = float4(diffuse.xyz * (ambient_Lights.xyz + diffuse_Lights.xyz) + specular_Lights.xyz, 1.0f);
 
 	//return float4(1.0f, 1.0f, 1.0f, 1.0f);
-	litColor.a = diffuse.a;
+	//litColor.a = diffuse.a;
 	return litColor;
 }
