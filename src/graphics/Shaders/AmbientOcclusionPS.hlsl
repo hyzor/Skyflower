@@ -33,6 +33,7 @@ float3 reconstruct_viewspace_position(float2 uv)
 	return position.xyz / position.w;
 }
 
+// http://frederikaalund.com/a-comparative-study-of-screen-space-ambient-occlusion-methods
 // http://graphics.cs.williams.edu/papers/AlchemyHPG11/
 // http://graphics.cs.williams.edu/papers/SAOHPG12/
 
@@ -73,7 +74,7 @@ float main(VertexOut input) : SV_Target
 		float3 occlusion_sample = reconstruct_viewspace_position(input.uv + random_direction * projected_radius);
 		float3 v = occlusion_sample - position;
 
-		ambient_occlusion += max(0.0, dot(normalize(v), normal) - bias/* * occlusion_sample.z*/) / (dot(v, v) + epsilon);
+		ambient_occlusion += max(0.0, dot(v, normal) - bias/* * occlusion_sample.z*/) / (dot(v, v) + epsilon);
 	}
 
 	const float contrast = 3.0;

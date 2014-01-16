@@ -82,10 +82,10 @@ float4 main(VertexOut pIn) : SV_TARGET
 
 	float ambient_occlusion = gSSAOTexture.Sample(samLinear, pIn.Tex).x;
 
-	return float4(ambient_occlusion, ambient_occlusion, ambient_occlusion, 1.0);
+	//return float4(ambient_occlusion, ambient_occlusion, ambient_occlusion, 1.0);
 
 	litColor = diffuse * (ambient_Lights + diffuse_Lights) + specular_Lights;
-	litColor *= ambient_occlusion;
+	//litColor *= ambient_occlusion;
 
 	//return float4(1.0f, 1.0f, 1.0f, 1.0f);
 	litColor.a = 1.0;
