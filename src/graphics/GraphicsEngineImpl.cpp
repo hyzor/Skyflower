@@ -177,6 +177,8 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\LightDeferredPS.cso", "LightDeferredPS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\BasicDeferredSkinnedVS.cso", "BasicDeferredSkinnedVS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\BasicDeferredSkinnedPS.cso", "BasicDeferredSkinnedPS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\SkyDeferredVS.cso", "SkyDeferredVS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\SkyDeferredPS.cso", "SkyDeferredPS", mD3D->GetDevice());
 
 	// Bind loaded shaders to shader objects
 	mShaderHandler->mBasicShader->BindShaders(
@@ -201,7 +203,12 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 		mShaderHandler->GetPixelShader("LightDeferredPS"));
 	//mShaderHandler->mShadowShader->BindShaders(mShaderHandler->GetVertexShader("ShadowBuildVS"), mShaderHandler->GetPixelShader(""));
 	//mShaderHandler->mShadowShader->BindVertexShader(mShaderHandler->GetVertexShader("ShadowBuildVS"));
-	mShaderHandler->mShadowShader->BindShaders(mShaderHandler->GetVertexShader("ShadowBuildVS"), mShaderHandler->GetPixelShader("ShadowBuildPS"));
+	mShaderHandler->mShadowShader->BindShaders(
+		mShaderHandler->GetVertexShader("ShadowBuildVS"),
+		mShaderHandler->GetPixelShader("ShadowBuildPS"));
+	mShaderHandler->mSkyDeferredShader->BindShaders(
+		mShaderHandler->GetVertexShader("SkyDeferredVS"),
+		mShaderHandler->GetPixelShader("SkyDeferredPS"));
 
 	// Now create all the input layouts
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("BasicVS"), InputLayoutDesc::PosNormalTex, COUNT_OF(InputLayoutDesc::PosNormalTex), &mInputLayouts->PosNormalTex);
@@ -222,6 +229,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mLightDeferredShader->Init(mD3D->GetDevice(), mInputLayouts->PosTex);
 	mShaderHandler->mShadowShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTex);
 	mShaderHandler->mSkinnedShadowShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTanSkinned);
+	mShaderHandler->mSkyDeferredShader->Init(mD3D->GetDevice(), mInputLayouts->Position);
 
 	std::string fontPath = mResourceDir + "myfile.spritefont";
 	std::wstring fontPathW(fontPath.begin(), fontPath.end());
@@ -272,15 +280,6 @@ void GraphicsEngineImpl::DrawScene()
 
 	// Draw sky
 	//mSky->Draw(mD3D->GetImmediateContext(), *mCamera, mShaderHandler->mSkyShader);
-	
-
-	// Draw 2D stuff
-	/*
-	mSpriteBatch->Begin();
-	mSpriteBatch->Draw(mTextureMgr->CreateTexture("..\\..\\content\\Models\\WoodBlock.dds"), XMFLOAT2(300.0f, 400.0f));
-	mSpriteFont->DrawString(mSpriteBatch, L"Test", XMFLOAT2(100.0f, 100.0f), D3dColors::Green, 0.0f, XMFLOAT2(100.0f, 100.0f), XMFLOAT2(1.0f, 1.0f));
-	mSpriteBatch->End();
-	*/
 
 	//------------------------------------------------------------------------------
 	// Deferred shading
@@ -326,21 +325,21 @@ void GraphicsEngineImpl::DrawScene()
 	// Turn z-buffer back on
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDefaultDSS, 1);
 
+	/*
 	mSpriteBatch->Begin();
 	mSpriteBatch->Draw(mDeferredBuffers->GetSRV(0), XMFLOAT2(0.0f, 0.0f), NULL, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), 0.2f);
 	mSpriteBatch->Draw(mDeferredBuffers->GetSRV(1), XMFLOAT2(0.0f, 150.0f), NULL, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), 0.2f);
 	mSpriteBatch->Draw(mDeferredBuffers->GetSRV(2), XMFLOAT2(0.0f, 300.0f), NULL, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), 0.2f);
 	mSpriteBatch->Draw(mDeferredBuffers->GetSRV(3), XMFLOAT2(0.0f, 450.0f), NULL, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), 0.2f);
-
-	//mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::)
-	
-	//mSpriteBatch->Draw(mDeferredBuffers->GetSRV(3), XMFLOAT2(0.0f, 200.0f), NULL, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), 0.25f);
 	//mSpriteFont->DrawString(mSpriteBatch, L"Test", XMFLOAT2(100.0f, 100.0f), D3dColors::Green, 0.0f, XMFLOAT2(100.0f, 100.0f), XMFLOAT2(1.0f, 1.0f));
 	mSpriteBatch->End();
+	*/
 
+	/*
 	mSpriteBatch->Begin(SpriteSortMode_Deferred, nullptr, nullptr, nullptr, nullptr);
 	mSpriteBatch->Draw(mShadowMap->getDepthMapSRV(), XMFLOAT2(0.0f, 600.0f), NULL, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), 0.1f);
 	mSpriteBatch->End();
+	*/
 
 	ID3D11ShaderResourceView* nullSRV[16] = { 0 };
 	mD3D->GetImmediateContext()->PSSetShaderResources(0, 16, nullSRV);
@@ -533,6 +532,14 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
 
 	mDeferredBuffers->ClearRenderTargets(mD3D->GetImmediateContext(), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f), mD3D->GetDepthStencilView());
+
+	//mShaderHandler->mSkyDeferredShader->SetActive(mD3D->GetImmediateContext());
+	mSky->Draw(mD3D->GetImmediateContext(), *mCamera, mShaderHandler->mSkyDeferredShader);
+
+	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	mD3D->GetImmediateContext()->RSSetState(0);
+	mD3D->GetImmediateContext()->OMSetDepthStencilState(0, 0);
+	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
 
 	mShaderHandler->mBasicDeferredShader->SetActive(mD3D->GetImmediateContext());
 

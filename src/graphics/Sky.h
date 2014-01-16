@@ -23,6 +23,7 @@ public:
 	ID3D11ShaderResourceView* cubeMapSRV();
 
 	void Draw(ID3D11DeviceContext* dc, const Camera& cam, SkyShader* skyShader);
+	void Draw(ID3D11DeviceContext* dc, const Camera& cam, SkyDeferredShader* skyShader);
 
 private:
 	// Buffers

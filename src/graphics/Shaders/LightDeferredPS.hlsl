@@ -39,6 +39,7 @@ SamplerState samLinear : register(s0);
 SamplerState samAnisotropic : register(s1);
 SamplerComparisonState samShadow : register(s2);
 
+// UNUSED
 float ReadShadowMap(float3 eyeDir)
 {
 	float4x4 lightWorldViewProj = gLightProj * gLightView * gCameraInvView;
@@ -70,6 +71,7 @@ float4 main(VertexOut pIn) : SV_TARGET
 	float4 specular;
 	float3 positionW;
 	float shadowFactor;
+	float diffuseMultiplier;
 	
 	diffuse = gDiffuseTexture.Sample(samLinear, pIn.Tex);
 	normal = gNormalTexture.Sample(samLinear, pIn.Tex).xyz;
@@ -77,11 +79,17 @@ float4 main(VertexOut pIn) : SV_TARGET
 	positionW = gPositionTexture.Sample(samLinear, pIn.Tex).xyz;
 	shadowFactor = gDiffuseTexture.Sample(samLinear, pIn.Tex).w;
 
+	// Pretty ugly, normal texture w component contains a "diffuse multiplier"
+	// which sets the inital lit diffuse color by the unlit diffuse color multiplied with
+	// the diffuseMultiplier
+	// (MAINLY FOR SKYBOX)
+	diffuseMultiplier = gNormalTexture.Sample(samLinear, pIn.Tex).w;
+
 	// The toEye vector is used in lighting
 	float3 toEye = gEyePosW - positionW;
 
 		// Used in shadow mapping
-		float3 eyeDir = positionW - gEyePosW;
+		//float3 eyeDir = positionW - gEyePosW;
 		//eyeDir /= length(eyeDir);
 
 	// Cache the distance to the eye from this surface point.
@@ -93,11 +101,13 @@ float4 main(VertexOut pIn) : SV_TARGET
 	float4 litColor = diffuse;
 
 	float4 ambient_Lights = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 diffuse_Lights = float4(0.0f, 0.0f, 0.0f, 0.0f);
+		//float4 diffuse_Lights = float4(0.0f, 0.0f, 0.0f, 0.0f);
+		float4 diffuse_Lights = float4(diffuse.x*diffuseMultiplier, diffuse.y*diffuseMultiplier, diffuse.z*diffuseMultiplier, 0.0f);
 	float4 specular_Lights = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	float4 A, D, S;
 
+	/*
 	float3 shadow = float3(1.0f, 1.0f, 1.0f);
 	//shadow[0] = ReadShadowMap(eyeDir);
 	shadow[0] = CalcShadowFactor(samShadow, gShadowMap, pIn.shadowPosH);
@@ -112,6 +122,7 @@ float4 main(VertexOut pIn) : SV_TARGET
 	//float4 shadowPosH = mul(float4(positionW, 1.0f), gShadowTransform);
 
 	//shadow[0] = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
+	*/
 
 	// Begin calculating lights
 	for (int i = 0; i < gDirLightCount; ++i)

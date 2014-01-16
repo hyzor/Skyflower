@@ -28,7 +28,7 @@ PixelOut main(VertexOut pIn)
 	// Sample color from texture
 	pOut.Color = gDiffuseMap.Sample(samAnisotropic, pIn.Tex);
 
-	pOut.Normal = float4(pIn.NormalW, 1.0f);
+	pOut.Normal = float4(pIn.NormalW, 0.0f);
 
 	pOut.Specular = gMaterial.Specular;
 

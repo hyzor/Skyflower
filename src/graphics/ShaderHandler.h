@@ -256,6 +256,59 @@ private:
 };
 #pragma endregion SkyShader
 
+#pragma region SkyDeferredShader
+class SkyDeferredShader : public IShader
+{
+public:
+	SkyDeferredShader();
+	~SkyDeferredShader();
+
+	// Override new and delete, because this class contains XMMATRIX (16 byte alignment)
+	void* operator new (size_t size)
+	{
+		void* p = _aligned_malloc(size, 16);
+
+		if (!p)
+			throw std::bad_alloc();
+
+		return p;
+	}
+
+	void operator delete (void* p)
+	{
+		BasicShader* ptr = static_cast<BasicShader*>(p);
+		_aligned_free(p);
+	}
+
+	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
+	bool SetActive(ID3D11DeviceContext* dc);
+
+	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+
+	void SetWorldViewProj(const XMMATRIX& worldViewProj);
+	void SetCubeMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* cubeMap);
+
+	void Update(ID3D11DeviceContext* dc);
+
+private:
+	struct VS_CPERFRAMEBUFFER
+	{
+		XMMATRIX WorldViewProj;
+	};
+
+	struct BUFFERCACHE
+	{
+		VS_CPERFRAMEBUFFER vsBuffer;
+	};
+
+	// VS - per frame
+	ID3D11Buffer* vs_cPerFrameBuffer;
+	VS_CPERFRAMEBUFFER vs_cPerFrameBufferVariables;
+
+	struct BUFFERCACHE mBufferCache;
+};
+#pragma endregion SkyDeferredShader
+
 #pragma region NormalMappedSkinned
 class NormalMappedSkinned : public IShader
 {
@@ -770,6 +823,7 @@ public:
 	BasicDeferredSkinnedShader* mBasicDeferredSkinnedShader;
 	LightDeferredShader* mLightDeferredShader;
 	SkinnedShadowShader* mSkinnedShadowShader;
+	SkyDeferredShader* mSkyDeferredShader;
 
 private:
 

@@ -11,6 +11,7 @@ ShaderHandler::ShaderHandler()
 	mLightDeferredShader = new LightDeferredShader();
 	mShadowShader = new ShadowShader();
 	mSkinnedShadowShader = new SkinnedShadowShader();
+	mSkyDeferredShader = new SkyDeferredShader();
 }
 
 ShaderHandler::~ShaderHandler()
@@ -43,6 +44,7 @@ ShaderHandler::~ShaderHandler()
 	delete mBasicDeferredSkinnedShader;
 	delete mLightDeferredShader;
 	delete mSkinnedShadowShader;
+	delete mSkyDeferredShader;
 }
 
 void ShaderHandler::LoadCompiledVertexShader(LPCWSTR fileName, char* name, ID3D11Device* device)
@@ -557,7 +559,8 @@ void SkyShader::Update(ID3D11DeviceContext* dc)
 
 	VS_CPERFRAMEBUFFER* dataPtr = (VS_CPERFRAMEBUFFER*)mappedResource.pData;
 
-	dataPtr->WorldViewProj = mBufferCache.vsBuffer.WorldViewProj;
+	//dataPtr->WorldViewProj = mBufferCache.vsBuffer.WorldViewProj;
+	*dataPtr = mBufferCache.vsBuffer;
 
 	dc->Unmap(vs_cPerFrameBuffer, 0);
 	dc->VSSetConstantBuffers(0, 1, &vs_cPerFrameBuffer);
@@ -1665,4 +1668,88 @@ void LightDeferredShader::SetLightWorldViewProj(XMMATRIX& lightWorld, XMMATRIX& 
 	mBufferCache.psPerFrameBuffer.lightInvViewMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, lightView));
 
 	mBufferCache.vsPerObjBuffer.lightViewProj = XMMatrixTranspose(XMMatrixMultiply(lightView, lightProj));
+}
+
+SkyDeferredShader::SkyDeferredShader()
+{
+
+}
+
+SkyDeferredShader::~SkyDeferredShader()
+{
+	if (vs_cPerFrameBuffer)
+		vs_cPerFrameBuffer->Release();
+}
+
+bool SkyDeferredShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
+{
+	ZeroMemory(&vs_cPerFrameBufferVariables, sizeof(VS_CPERFRAMEBUFFER));
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC cbDesc;
+	cbDesc.ByteWidth = sizeof(VS_CPERFRAMEBUFFER);
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA InitData;
+	InitData.pSysMem = &vs_cPerFrameBufferVariables;
+	InitData.SysMemPitch = 0;
+	InitData.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	device->CreateBuffer(&cbDesc, &InitData, &vs_cPerFrameBuffer);
+
+	mInputLayout = inputLayout;
+
+	return true;
+}
+
+bool SkyDeferredShader::SetActive(ID3D11DeviceContext* dc)
+{
+	// Set vertex layout and primitive topology
+	dc->IASetInputLayout(mInputLayout);
+
+	// Set active shaders
+	dc->VSSetShader(mVertexShader, nullptr, 0);
+	dc->PSSetShader(mPixelShader, nullptr, 0);
+
+	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
+
+	return true;
+}
+
+bool SkyDeferredShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
+{
+	mVertexShader = vShader;
+	mPixelShader = pShader;
+
+	return true;
+}
+
+void SkyDeferredShader::SetWorldViewProj(const XMMATRIX& worldViewProj)
+{
+	mBufferCache.vsBuffer.WorldViewProj = XMMatrixTranspose(worldViewProj);
+}
+
+void SkyDeferredShader::SetCubeMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* cubeMap)
+{
+	dc->PSSetShaderResources(0, 1, &cubeMap);
+}
+
+void SkyDeferredShader::Update(ID3D11DeviceContext* dc)
+{
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	dc->Map(vs_cPerFrameBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	VS_CPERFRAMEBUFFER* dataPtr = (VS_CPERFRAMEBUFFER*)mappedResource.pData;
+
+	//dataPtr->WorldViewProj = mBufferCache.vsBuffer.WorldViewProj;
+	*dataPtr = mBufferCache.vsBuffer;
+
+	dc->Unmap(vs_cPerFrameBuffer, 0);
+	dc->VSSetConstantBuffers(0, 1, &vs_cPerFrameBuffer);
 }
