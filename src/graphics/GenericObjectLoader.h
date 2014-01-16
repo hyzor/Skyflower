@@ -47,7 +47,7 @@ public:
 
 private:
 	void InitMaterial(GenericMaterial* mat);
-	void ReadMaterials(const aiScene* scene, std::vector<GenericMaterial>& materials);
+	void ReadMaterials(const aiScene* scene, std::vector<GenericMaterial>& materials, const std::string &path);
 
 	void ReadBones(aiMesh* mesh, GenericSkinnedMesh& myMesh);
 	//void ReadBoneKeyframes(aiNodeAnim* nodeAnim, BoneAnimation& boneAnimation);

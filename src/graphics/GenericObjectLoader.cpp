@@ -1,5 +1,16 @@
 #include "GenericObjectLoader.h"
 
+static std::string GetPathFromFilename(const std::string &filename)
+{
+	size_t location;
+	location = filename.find_last_of("/\\");
+
+	if (location == std::string::npos)
+		return std::string("");
+
+	return filename.substr(0, location);
+}
+
 GenericObjectLoader::GenericObjectLoader(void)
 {
 }
@@ -42,6 +53,8 @@ bool GenericObjectLoader::loadSkinnedObject(const std::string& fileName,
 		return false;
 	}
 
+	std::string path = GetPathFromFilename(fileName);
+
 	//----------------------------------------------------
 	// Read the scene
 	//----------------------------------------------------
@@ -64,7 +77,7 @@ bool GenericObjectLoader::loadSkinnedObject(const std::string& fileName,
 		//------------------------------------------------------------
 		// Read materials
 		//------------------------------------------------------------
-		ReadMaterials(scene, materials);
+		ReadMaterials(scene, materials, path);
 
 		//----------------------------------------------------------
 		// Read all scene meshes
@@ -220,6 +233,8 @@ bool GenericObjectLoader::loadSkinnedObject( const std::string& fileName, std::v
 		return false;
 	}
 
+	std::string path = GetPathFromFilename(fileName);
+
 	//----------------------------------------------------
 	// Read the scene
 	//----------------------------------------------------
@@ -242,7 +257,7 @@ bool GenericObjectLoader::loadSkinnedObject( const std::string& fileName, std::v
 		//------------------------------------------------------------
 		// Read materials
 		//------------------------------------------------------------
-		ReadMaterials(scene, materials);
+		ReadMaterials(scene, materials, path);
 
 		//----------------------------------------------------------
 		// Read all scene meshes
@@ -462,7 +477,7 @@ bool GenericObjectLoader::loadSkinnedObject( const std::string& fileName, std::v
 // Materials
 //=================================================================================
 void GenericObjectLoader::ReadMaterials(const aiScene* scene,
-							std::vector<GenericMaterial>& materials)
+							std::vector<GenericMaterial>& materials, const std::string &path)
 {
 	if (scene->HasMaterials())
 	{
@@ -512,8 +527,9 @@ void GenericObjectLoader::ReadMaterials(const aiScene* scene,
 			aiString texPath;
 			if (scene->mMaterials[curMat]->GetTexture(aiTextureType_DIFFUSE, 0, &texPath) == aiReturn_SUCCESS)
 			{
-				std::string texPathStr = texPath.C_Str();
+				std::string texPathStr = path + "\\" + texPath.C_Str();
 
+#if 0
 				// Remove characters like ".", "/" and "\" from the beginning
 				// of the texture name
 				char firstChar = texPathStr.front();
@@ -523,7 +539,6 @@ void GenericObjectLoader::ReadMaterials(const aiScene* scene,
 					firstChar = texPathStr.front();
 				}
 
-#if 0
 				char curChar;
 				int lastSlashIndex = -1;
 				//int fileExtensionIndex = 0;
@@ -547,7 +562,6 @@ void GenericObjectLoader::ReadMaterials(const aiScene* scene,
 				// At least one slash found
 				if (lastSlashIndex != -1)
 					texPathStr.erase(0, lastSlashIndex+1);
-#endif
 
 				// Replace "/" with "\" (when models have folders in their texture name) 
 				for (UINT i = 0; i < texPathStr.size(); ++i)
@@ -557,6 +571,7 @@ void GenericObjectLoader::ReadMaterials(const aiScene* scene,
 						texPathStr.replace(i, 1, "\\");
 					}
 				}
+#endif
 
 				genMat.diffuseMapName = texPathStr;
 			}
@@ -780,6 +795,8 @@ bool GenericObjectLoader::loadObject(const std::string& fileName,
 		return false;
 	}
 
+	std::string path = GetPathFromFilename(fileName);
+
 	//----------------------------------------------------
 	// Read the scene
 	//----------------------------------------------------
@@ -795,7 +812,7 @@ bool GenericObjectLoader::loadObject(const std::string& fileName,
 		//------------------------------------------------------------
 		// Read materials
 		//------------------------------------------------------------
-		ReadMaterials(scene, materials);
+		ReadMaterials(scene, materials, path);
 
 		//----------------------------------------------------------
 		// Read all scene meshes

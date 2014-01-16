@@ -566,8 +566,7 @@ ModelInstance* GraphicsEngineImpl::CreateInstance(std::string file, Vec3 pos)
 
 		mModels[file] = new GenericModel(mD3D->GetDevice(),
 			mTextureMgr,
-			mResourceDir + ss.str(),
-			mResourceDir + "Models\\");
+			mResourceDir + ss.str());
 	}
 
 	ModelInstanceImpl* mi = new ModelInstanceImpl(pos, Vec3(0.0f, 0.0f, 0.0f), Vec3(1, 1, 1));
@@ -618,8 +617,7 @@ AnimatedInstance* GraphicsEngineImpl::CreateAnimatedInstance(std::string file)
 		ss << file << ".dae";
 		mSkinnedModels[file] = new GenericSkinnedModel(mD3D->GetDevice(),
 			mTextureMgr,
-			mResourceDir + ss.str(),
-			mResourceDir + "Models\\Character\\");
+			mResourceDir + ss.str());
 	}
 
 	AnimatedInstanceImpl* mi = new AnimatedInstanceImpl(Vec3(), Vec3(), Vec3(1, 1, 1));
