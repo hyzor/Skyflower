@@ -473,6 +473,10 @@ void GraphicsEngineImpl::DrawScene()
 	mSpriteBatch->End();
 	*/
 
+	mSpriteBatch->Begin();
+	mSpriteBatch->Draw(mSSAOTexture->GetShaderResourceView(), XMFLOAT2(0.0f, 0.0f), NULL, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), 0.2f);
+	mSpriteBatch->End();
+
 	/*
 	mSpriteBatch->Begin(SpriteSortMode_Deferred, nullptr, nullptr, nullptr, nullptr);
 	mSpriteBatch->Draw(mShadowMap->getDepthMapSRV(), XMFLOAT2(0.0f, 600.0f), NULL, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), 0.1f);
@@ -784,7 +788,7 @@ void GraphicsEngineImpl::addDirLight(Vec3 color, Vec3 direction, float intensity
 	dirLight.Ambient = XMFLOAT4(intensity / 10.0f, intensity / 10.0f, intensity / 10.0f, 1.0f);
 	dirLight.Diffuse = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
 	dirLight.Direction = XMFLOAT3(direction.X, direction.Y, direction.Z);
-	dirLight.Specular = XMFLOAT4(0.4f, 0.4f, 0.4f, 1);
+	dirLight.Specular = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
 
 	mDirLights.push_back(dirLight);
 }
@@ -795,11 +799,11 @@ void GraphicsEngineImpl::addPointLight(Vec3 color, Vec3 position, float intensit
 	ZeroMemory(&pointLight, sizeof(PointLight));
 
 	pointLight.Position = XMFLOAT3(position.X, position.Y, position.Z);
-	pointLight.Ambient = XMFLOAT4(color.X, color.Y, color.Z, 1);
-	pointLight.Specular = XMFLOAT4(color.X, color.Y, color.Z, 1);
-	pointLight.Diffuse = XMFLOAT4(color.X, color.Y, color.Z, 1);
-	pointLight.Attenuation = XMFLOAT3(color.X, color.Y, color.Z);
-	pointLight.Range = 10.0f;
+	pointLight.Ambient = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
+	pointLight.Specular = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
+	pointLight.Diffuse = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
+	pointLight.Attenuation = XMFLOAT3(intensity / 100.0f, intensity / 100.0f, intensity / 100.0f);
+	pointLight.Range = 1000.0f;
 	mPointLights.push_back(pointLight);
 }
 

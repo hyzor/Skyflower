@@ -162,6 +162,60 @@ void ComputePointLight_Deferred(
 	specularOut *= atten;
 }
 
+void ComputePointLight_Deferred_Ambient(
+	float4 specular,		// Material (specular)
+	PointLight light,	// Point light source
+	float3 pos,			// Surface position
+	float3 normal,		// Surface normal
+	float3 toEye,		// Surface point being lit to the eye
+
+	out float4 ambientOut,
+	out float4 diffuseOut,
+	out float4 specularOut)
+{
+	// Initialize outputs
+	ambientOut = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	diffuseOut = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	specularOut = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+	// Define light vector (Direction from surface point to point light source)
+	float3 lightVec = light.Position - pos;
+
+		// Calculate distance from surface to light
+		float dist = length(lightVec);
+
+	// Test if out of range
+	if (dist > light.Range)
+		return;
+
+	// Normalize light vector
+	lightVec /= dist;
+
+	// Ambient
+	//ambient = mat.Ambient * light.Ambient;
+
+	// Begin calculating diffuse and specular
+	float diffuseFactor = dot(lightVec, normal);
+
+	[flatten]
+	if (diffuseFactor > 0.0f)
+	{
+		float3 v = reflect(-lightVec, normal);
+			float specFactor = pow(max(dot(v, toEye), 0.0f), specular.w);
+
+		ambientOut = light.Ambient;
+		diffuseOut = diffuseFactor * light.Diffuse;
+		specularOut = specFactor * specular * light.Specular;
+	}
+
+	// Attenuate
+	float atten = 1.0f / dot(light.Attenuation, float3(1.0f, dist, dist*dist));
+
+	ambientOut *= atten;
+	diffuseOut *= atten;
+	specularOut *= atten;
+}
+
 //=============================================================================
 // Directional light
 //=============================================================================
@@ -225,6 +279,41 @@ void ComputeDirectionalLight_Deferred(
 		float3 v = reflect(-lightVec, normal);
 		float specFactor = pow(max(dot(v, toEye), 0.0f), specular.w);
 
+		diffuseOut = diffuseFactor * light.Diffuse;
+		specularOut = specFactor * specular * light.Specular;
+	}
+}
+
+void ComputeDirectionalLight_Deferred_Ambient(
+	float4 specular,
+	DirectionalLight light,
+	float3 normal,
+	float3 toEye,
+
+	out float4 ambientOut,
+	out float4 diffuseOut,
+	out float4 specularOut)
+{
+	// Initialize outputs
+	ambientOut = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	diffuseOut = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	specularOut = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+	// Light vector aims opposite the direction the light rays travel
+	float3 lightVec = -light.Direction;
+
+		//ambient = mat.Ambient * light.Ambient;
+
+		float diffuseFactor = dot(lightVec, normal);
+
+	[flatten]
+	if (diffuseFactor > 0.0f)
+	{
+		float3 v = reflect(-lightVec, normal);
+			float specFactor = pow(max(dot(v, toEye), 0.0f), specular.w);
+
+		//ambientOut = ambient;
+		ambientOut = light.Ambient;
 		diffuseOut = diffuseFactor * light.Diffuse;
 		specularOut = specFactor * specular * light.Specular;
 	}

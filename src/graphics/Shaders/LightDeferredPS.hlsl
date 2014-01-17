@@ -125,17 +125,23 @@ float4 main(VertexOut pIn) : SV_TARGET
 	//shadow[0] = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
 	*/
 
+	float ambient_occlusion = gSSAOTexture.Sample(samLinear, pIn.Tex).x;
+
 	// Begin calculating lights
 	for (int i = 0; i < gDirLightCount; ++i)
 	{
-		ComputeDirectionalLight_Deferred(specular, gDirLights[i], normal, toEye, D, S);
+		//ComputeDirectionalLight_Deferred(specular, gDirLights[i], normal, toEye, D, S);
+		ComputeDirectionalLight_Deferred_Ambient(specular, gDirLights[i], normal, toEye, A, D, S);
+		ambient_Lights += A * ambient_occlusion * shadowFactor;
 		diffuse_Lights += D * shadowFactor;
 		specular_Lights += S * shadowFactor;
 	}
 
 	for (int j = 0; j < gPointLightCount; ++j)
 	{
-		ComputePointLight_Deferred(specular, gPointLights[j], positionW, normal, toEye, D, S);
+		//ComputePointLight_Deferred(specular, gPointLights[j], positionW, normal, toEye, D, S);
+		ComputePointLight_Deferred_Ambient(specular, gPointLights[j], positionW, normal, toEye, A, D, S);
+		ambient_Lights += A * ambient_occlusion;
 		diffuse_Lights += D;
 		specular_Lights += S;
 	}
@@ -143,20 +149,18 @@ float4 main(VertexOut pIn) : SV_TARGET
 	for (int k = 0; k < gSpotLightCount; ++k)
 	{
 		ComputeSpotLight_Deferred(specular, gSpotLights[k], positionW, normal, toEye, A, D, S);
-		ambient_Lights += A;
+		ambient_Lights += A * ambient_occlusion;
 		diffuse_Lights += D;
 		specular_Lights += S;
 	}
 
-	float ambient_occlusion = gSSAOTexture.Sample(samLinear, pIn.Tex).x;
-
 	//return float4(ambient_occlusion, ambient_occlusion, ambient_occlusion, 1.0);
 
-	litColor = diffuse * (ambient_Lights + diffuse_Lights) + specular_Lights;
+	//litColor = diffuse * (ambient_Lights + diffuse_Lights) + specular_Lights;
 	litColor = float4(diffuse.xyz * (ambient_Lights.xyz + diffuse_Lights.xyz) + specular_Lights.xyz, 1.0f);
 	//litColor *= ambient_occlusion;
 
 	//return float4(1.0f, 1.0f, 1.0f, 1.0f);
-	litColor.a = 1.0;
+	//litColor.a = 1.0;
 	return litColor;
 }
