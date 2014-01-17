@@ -97,3 +97,29 @@ void Sky::Draw(ID3D11DeviceContext* dc, const Camera& cam, SkyShader* skyShader)
 
 	dc->DrawIndexed(mIndexCount, 0, 0);
 }
+
+void Sky::Draw(ID3D11DeviceContext* dc, const Camera& cam, SkyDeferredShader* skyShader)
+{
+	// Center sky about eye in world space
+	XMFLOAT3 eyePos = cam.GetPosition();
+	XMMATRIX T = XMMatrixTranslation(eyePos.x, eyePos.y, eyePos.z);
+
+	XMMATRIX WVP = XMMatrixMultiply(T, cam.GetViewProjMatrix());
+
+	skyShader->SetActive(dc);
+	skyShader->SetWorldViewProj(WVP);
+	skyShader->SetCubeMap(dc, mCubeMapSRV);
+	skyShader->Update(dc);
+
+
+	UINT stride = sizeof(XMFLOAT3);
+	UINT offset = 0;
+	dc->IASetVertexBuffers(0, 1, &mVertexBuffer, &stride, &offset);
+	dc->IASetIndexBuffer(mIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
+	dc->IASetInputLayout(InputLayouts::Position);
+	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	dc->RSSetState(RenderStates::mNoCullRS);
+	dc->OMSetDepthStencilState(RenderStates::mLessEqualDSS, 0);
+
+	dc->DrawIndexed(mIndexCount, 0, 0);
+}

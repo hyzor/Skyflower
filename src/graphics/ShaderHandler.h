@@ -128,7 +128,7 @@ public:
 	void SetMaterial(ID3D11DeviceContext* dc, const Material& mat);
 	void SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* shadowMap);
-	void SetShadowTransform(ID3D11DeviceContext* dc, const XMFLOAT4X4& shadowTransform);
+	void SetShadowTransform(ID3D11DeviceContext* dc, const XMMATRIX& shadowTransform);
 
 	void SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, PointLight pointLights[]);
 	void SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DirectionalLight dirLights[]);
@@ -256,6 +256,59 @@ private:
 };
 #pragma endregion SkyShader
 
+#pragma region SkyDeferredShader
+class SkyDeferredShader : public IShader
+{
+public:
+	SkyDeferredShader();
+	~SkyDeferredShader();
+
+	// Override new and delete, because this class contains XMMATRIX (16 byte alignment)
+	void* operator new (size_t size)
+	{
+		void* p = _aligned_malloc(size, 16);
+
+		if (!p)
+			throw std::bad_alloc();
+
+		return p;
+	}
+
+	void operator delete (void* p)
+	{
+		BasicShader* ptr = static_cast<BasicShader*>(p);
+		_aligned_free(p);
+	}
+
+	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
+	bool SetActive(ID3D11DeviceContext* dc);
+
+	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+
+	void SetWorldViewProj(const XMMATRIX& worldViewProj);
+	void SetCubeMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* cubeMap);
+
+	void Update(ID3D11DeviceContext* dc);
+
+private:
+	struct VS_CPERFRAMEBUFFER
+	{
+		XMMATRIX WorldViewProj;
+	};
+
+	struct BUFFERCACHE
+	{
+		VS_CPERFRAMEBUFFER vsBuffer;
+	};
+
+	// VS - per frame
+	ID3D11Buffer* vs_cPerFrameBuffer;
+	VS_CPERFRAMEBUFFER vs_cPerFrameBufferVariables;
+
+	struct BUFFERCACHE mBufferCache;
+};
+#pragma endregion SkyDeferredShader
+
 #pragma region NormalMappedSkinned
 class NormalMappedSkinned : public IShader
 {
@@ -288,11 +341,13 @@ public:
 		XMMATRIX& world,
 		XMMATRIX& viewProj,
 		XMMATRIX& tex);
+	void SetShadowStransform(ID3D11DeviceContext* dc, XMMATRIX& );
 
 	void SetEyePosW(ID3D11DeviceContext* dc, XMFLOAT3 eyePosW);
 	void SetMaterial(ID3D11DeviceContext* dc, const Material& mat);
 	void SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetNormalMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
 	void SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, PointLight pointLights[]);
 	void SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DirectionalLight dirLights[]);
@@ -381,6 +436,74 @@ private:
 };
 #pragma endregion NormalMappedSkinned
 
+#pragma region SkinnedShadowShader
+class SkinnedShadowShader : public IShader
+{
+public:
+	SkinnedShadowShader();
+	~SkinnedShadowShader();
+
+	// Overload new and delete, because this class contains XMMATRIX (16 byte alignment)
+	void* operator new (size_t size)
+	{
+		void* p = _aligned_malloc(size, 16);
+
+		if (!p)
+			throw std::bad_alloc();
+
+		return p;
+	}
+
+	void operator delete (void* p)
+	{
+		SkinnedShadowShader* ptr = static_cast<SkinnedShadowShader*>(p);
+		_aligned_free(p);
+	}
+
+	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
+	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+	bool BindVertexShader(ID3D11VertexShader* vShader);
+	bool SetActive(ID3D11DeviceContext* dc);
+
+	void SetLightWVP(ID3D11DeviceContext* dc, XMMATRIX& lwvp);
+
+	void SetBoneTransforms(ID3D11DeviceContext* dc, const XMFLOAT4X4 boneTransforms[], UINT numTransforms);
+
+	void UpdatePerObj(ID3D11DeviceContext* dc);
+	void UpdatePerFrame(ID3D11DeviceContext* dc);
+
+private:
+	void Update(ID3D11DeviceContext* dc) { ; }
+
+	struct VS_CPEROBJBUFFER
+	{
+		XMMATRIX lightWVP;
+	};
+
+	struct VS_CSKINNEDBUFFER
+	{
+		XMMATRIX boneTransforms[96];
+		UINT numBoneTransforms;
+		int padding, padding2, padding3;
+	};
+
+	struct BUFFERCACHE
+	{
+		VS_CPEROBJBUFFER vsBuffer;
+		VS_CSKINNEDBUFFER vsSkinBuffer;
+	};
+
+	struct BUFFERCACHE mBufferCache;
+
+	// VS
+	ID3D11Buffer* vs_cBuffer;
+	VS_CPEROBJBUFFER vs_cBufferVariables;
+
+	// VS skinned
+	ID3D11Buffer* vs_cSkinnedBuffer;
+	VS_CSKINNEDBUFFER vs_cSkinnedBufferVariables;
+};
+#pragma endregion SkinnedShadowShaderEnd
 #pragma region BasicDeferredShader
 class BasicDeferredShader : public IShader
 {
@@ -413,8 +536,11 @@ public:
 		XMMATRIX& viewProj,
 		XMMATRIX& tex);
 
+	void SetShadowTransformLightViewProj(XMMATRIX& shadowTransform, XMMATRIX& lightView, XMMATRIX& lightProj);
+
 	void SetMaterial(const Material& mat);
 	void SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
 	void UpdatePerObj(ID3D11DeviceContext* dc);
 
@@ -428,6 +554,7 @@ private:
 		XMMATRIX worldViewProj;
 		//XMMATRIX worldViewProjTex;
 		XMMATRIX texTransform;
+		XMMATRIX shadowTransform;
 	};
 
 	struct PS_CPEROBJBUFFER
@@ -492,6 +619,9 @@ public:
 
 	void UpdatePerObj(ID3D11DeviceContext* dc);
 
+	void SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetShadowTransform(XMMATRIX& shadowTransform);
+
 private:
 	void Update(ID3D11DeviceContext* dc) { ; }
 
@@ -502,6 +632,7 @@ private:
 		XMMATRIX worldViewProj;
 		//XMMATRIX worldViewProjTex;
 		XMMATRIX texTransform;
+		XMMATRIX shadowTransform;
 	};
 
 	struct VS_CSKINNEDBUFFER
@@ -568,7 +699,11 @@ public:
 	bool SetActive(ID3D11DeviceContext* dc);
 
 	void SetWorldViewProj(XMMATRIX& world, XMMATRIX& view, XMMATRIX& proj);
+
 	void SetEyePosW(XMFLOAT3 eyePosW);
+	void SetCameraViewProjMatrix(XMMATRIX& camViewMatrix, XMMATRIX& proj);
+	void SetCameraWorldMatrix(XMMATRIX& camWorldMatrix);
+	void SetLightWorldViewProj(XMMATRIX& lightWorld, XMMATRIX& lightView, XMMATRIX& lightProj);
 
 	void SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, PointLight pointLights[]);
 	void SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DirectionalLight dirLights[]);
@@ -580,6 +715,9 @@ public:
 	void SetPositionTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetSSAOTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
+	void SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetShadowTransform(XMMATRIX& shadowTransform);
+
 	void UpdatePerObj(ID3D11DeviceContext* dc);
 	void UpdatePerFrame(ID3D11DeviceContext* dc);
 
@@ -589,6 +727,9 @@ private:
 	struct VS_CPEROBJBUFFER
 	{
 		XMMATRIX worldViewProj;
+		XMMATRIX shadowTransform;
+		XMMATRIX lightViewProj;
+		XMMATRIX viewProjInv;
 	};
 
 	struct PS_CPERFRAMEBUFFER
@@ -614,6 +755,16 @@ private:
 		// Forms into a 4D vector
 		XMFLOAT3 gEyePosW;
 		float padding;
+
+		XMMATRIX shadowTransform;
+		XMMATRIX cameraViewMatrix;
+		XMMATRIX cameraInvViewMatrix;
+		XMMATRIX cameraWorldMatrix;
+		XMMATRIX cameraProjMatrix;
+		XMMATRIX lightWorldMatrix;
+		XMMATRIX lightViewMatrix;
+		XMMATRIX lightInvViewMatrix;
+		XMMATRIX lightProjMatrix;
 	};
 
 	struct BUFFERCACHE
@@ -757,6 +908,8 @@ public:
 	BasicDeferredShader* mBasicDeferredShader;
 	BasicDeferredSkinnedShader* mBasicDeferredSkinnedShader;
 	LightDeferredShader* mLightDeferredShader;
+	SkinnedShadowShader* mSkinnedShadowShader;
+	SkyDeferredShader* mSkyDeferredShader;
 	SSAOShader* mSSAOShader;
 	BlurShader* mBlurHorizontalShader;
 	BlurShader* mBlurVerticalShader;

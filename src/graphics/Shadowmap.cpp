@@ -18,6 +18,8 @@ ShadowMap::~ShadowMap(void)
 {
 	ReleaseCOM(mDepthMapSRV);
 	ReleaseCOM(mDepthMapDSV);
+// 	mRenderTargetTexture->Release();
+// 	mRenderTargetView->Release();
 }
 
 ID3D11ShaderResourceView* ShadowMap::getDepthMapSRV()
@@ -46,7 +48,7 @@ void ShadowMap::SetResolution(ID3D11Device* device, UINT width, UINT height)
 	CreateShadowMap(device, width, height);
 }
 
-void ShadowMap::CreateShadowMap(ID3D11Device* device, UINT width, UINT height)
+bool ShadowMap::CreateShadowMap(ID3D11Device* device, UINT width, UINT height)
 {
 	// Set new dimensions
 	mWidth = width;
@@ -99,8 +101,42 @@ void ShadowMap::CreateShadowMap(ID3D11Device* device, UINT width, UINT height)
 	// Create SRV
 	res = HR(device->CreateShaderResourceView(depthMap, &srvDesc, &mDepthMapSRV));
 
+// 	// Setup render target texture description
+// 	D3D11_TEXTURE2D_DESC textureDesc;
+// 	textureDesc.Width = width;
+// 	textureDesc.Height = height;
+// 	textureDesc.MipLevels = 1;
+// 	textureDesc.ArraySize = 1;
+// 	textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+// 	textureDesc.SampleDesc.Count = 1;
+// 	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+// 	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+// 	textureDesc.CPUAccessFlags = 0;
+// 	textureDesc.MiscFlags = 0;
+// 
+// 	// Create render target texture
+// 	res = device->CreateTexture2D(&textureDesc, NULL, &mRenderTargetTexture);
+// 
+// 	if (FAILED(res))
+// 		return false;
+// 
+// 	// Render target view description
+// 	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+// 	ZeroMemory(&renderTargetViewDesc, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
+// 	renderTargetViewDesc.Format = textureDesc.Format;
+// 	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+// 	renderTargetViewDesc.Texture2D.MipSlice = 0;
+// 
+// 	// Create render target views
+// 	res = device->CreateRenderTargetView(mRenderTargetTexture, &renderTargetViewDesc, &mRenderTargetView);
+// 
+// 	if (FAILED(res))
+// 		return false;
+
 	// Now release depth map reference because view already saved a reference
 	ReleaseCOM(depthMap);
+
+	return true;
 }
 
 UINT ShadowMap::GetWidth() const
@@ -113,19 +149,14 @@ UINT ShadowMap::GetHeight() const
 	return mHeight;
 }
 
-void ShadowMap::BuildShadowTransform(const DirectionalLight& light, XMFLOAT3 center, float radius/*const XNA::Sphere& sceneBounds*/)
+void ShadowMap::BuildShadowTransform(const DirectionalLight& light, const DirectX::BoundingSphere& sceneBounds)
 {
 	// Only first "main" light casts a shadow
 	// So get light direction and position from first light
 	XMVECTOR lightDir = XMLoadFloat3(&light.Direction);
-
-	//XMVECTOR lightPos = -2.0f*sceneBounds.Radius*lightDir;
-
-	XMVECTOR lightPos = -2.0f*radius*lightDir;
-
-	//XMVECTOR targetPos = XMLoadFloat3(&sceneBounds.Center);
-	XMVECTOR targetPos = XMLoadFloat3(&center);
-	XMVECTOR up = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+	XMVECTOR lightPos = -2.0f*sceneBounds.Radius*lightDir;
+	XMVECTOR targetPos = XMLoadFloat3(&sceneBounds.Center);
+	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 	XMMATRIX V = XMMatrixLookAtLH(lightPos, targetPos, up);
 
@@ -134,18 +165,12 @@ void ShadowMap::BuildShadowTransform(const DirectionalLight& light, XMFLOAT3 cen
 	XMStoreFloat3(&sphereCenterLS, XMVector3TransformCoord(targetPos, V));
 
 	// Orthogonal frustum in light space encloses scene
-	/*float l = sphereCenterLS.x - sceneBounds.Radius;
+	float l = sphereCenterLS.x - sceneBounds.Radius;
 	float b = sphereCenterLS.y - sceneBounds.Radius;
 	float n = sphereCenterLS.z - sceneBounds.Radius;
 	float r = sphereCenterLS.x + sceneBounds.Radius;
 	float t = sphereCenterLS.y + sceneBounds.Radius;
-	float f = sphereCenterLS.z + sceneBounds.Radius;*/
-	float l = sphereCenterLS.x - radius;
-	float b = sphereCenterLS.y - radius;
-	float n = sphereCenterLS.z - radius;
-	float r = sphereCenterLS.x + radius;
-	float t = sphereCenterLS.y + radius;
-	float f = sphereCenterLS.z + radius;
+	float f = sphereCenterLS.z + sceneBounds.Radius;
 	XMMATRIX P = XMMatrixOrthographicOffCenterLH(l, r, b, t, n, f);
 
 	// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
@@ -157,6 +182,15 @@ void ShadowMap::BuildShadowTransform(const DirectionalLight& light, XMFLOAT3 cen
 
 	XMMATRIX S = V*P*T;
 
+	XMMATRIX offset = XMMatrixTranslationFromVector(lightPos);
+	XMMATRIX mrot = XMMatrixRotationX(0.0f);
+	mrot *= XMMatrixRotationY(0.0f);
+	mrot *= XMMatrixRotationZ(0.0f);
+	XMMATRIX mscale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
+
+	XMMATRIX world = mscale*mrot*offset;
+
+	XMStoreFloat4x4(&mLightWorld, world);
 	XMStoreFloat4x4(&mLightView, V);
 	XMStoreFloat4x4(&mLightProj, P);
 	XMStoreFloat4x4(&mShadowTransform, S);
@@ -165,78 +199,96 @@ void ShadowMap::BuildShadowTransform(const DirectionalLight& light, XMFLOAT3 cen
 void ShadowMap::DrawSceneToShadowMap(
 	const std::vector<ModelInstanceImpl*>& modelInstances,
 	const std::vector<AnimatedInstanceImpl*>& mAnimatedInstances,
-	const Camera& camera,
 	ID3D11DeviceContext* deviceContext,
-	ShadowShader* shadowShader)
+	ShadowShader* shadowShader,
+	SkinnedShadowShader* sShadowShader)
 {
+	//deviceContext->OMSetRenderTargets(1, &mRenderTargetView, mDepthMapDSV);
+
 	XMMATRIX view = XMLoadFloat4x4(&mLightView);
 	XMMATRIX proj = XMLoadFloat4x4(&mLightProj);
 	XMMATRIX viewProj = XMMatrixMultiply(view, proj);
-
-	//Effects::BuildShadowMapFX->SetEyePosW(camera.GetPosition());
-	//Effects::BuildShadowMapFX->SetViewProj(viewProj);
-
-	//shadowShader->SetActive(deviceContext);
-	//shadowShader->setLightGWP(deviceContext, XMLoadFloat4x4(&mShadowTransform));
 
 	XMMATRIX world;
 	XMMATRIX worldInvTranspose;
 	XMMATRIX worldViewProj;
 
-	//ID3DX11EffectTechnique* tech = Effects::BuildShadowMapFX->TessBuildShadowMapTech;
-
-	//D3DX11_TECHNIQUE_DESC techDesc;
-	//tech->GetDesc(&techDesc);
-
-	//------------------------------------------------------------------
-	// Draw opaque tessellated objects
-	//------------------------------------------------------------------
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	deviceContext->IASetInputLayout(InputLayouts::Position);
 
-	//for (UINT pass = 0; pass < techDesc.Passes; ++pass)
-	//{
-		for (UINT i = 0; i < modelInstances.size(); ++i)
+	shadowShader->SetActive(deviceContext);
+
+	for (UINT i = 0; i < modelInstances.size(); ++i)
+	{
+		if (modelInstances[i]->IsVisible())
 		{
-			if (modelInstances[i]->IsVisible())
-			{
-				//world = XMLoadFloat4x4(&modelInstances[i]->GetWorld());
-				world = modelInstances[i]->GetWorld();
-				worldInvTranspose = MathHelper::InverseTranspose(world);
+			world = modelInstances[i]->GetWorld();
+			worldInvTranspose = MathHelper::InverseTranspose(world);
 				
-				//worldViewProj = world*view*proj;
-				worldViewProj = world*viewProj;
-				shadowShader->setLightWVP(deviceContext, worldViewProj);
-				shadowShader->updatePerObj(deviceContext);
+			worldViewProj = world*viewProj;
+			shadowShader->setLightWVP(deviceContext, worldViewProj);
+			shadowShader->updatePerObj(deviceContext);
 
-				//Effects::BuildShadowMapFX->SetWorld(world);
-				//Effects::BuildShadowMapFX->SetWorldInvTranspose(worldInvTranspose);
-				//Effects::BuildShadowMapFX->SetWorldViewProj(worldViewProj);
-				//Effects::BuildShadowMapFX->SetTexTransform(XMMatrixScaling(1.0f, 1.0f, 1.0f));
 
-				//tech->GetPassByIndex(pass)->Apply(0, deviceContext);
-
-				for (UINT j = 0; j < modelInstances[i]->model->meshCount; ++j)
-				{
-					modelInstances[i]->model->meshes[j].Draw(deviceContext);
-				}
+			for (UINT j = 0; j < modelInstances[i]->model->meshCount; ++j)
+			{
+				modelInstances[i]->model->meshes[j].Draw(deviceContext);
 			}
 		}
-	//}
-	// FX sets tessellation stages, but it does not disable them.  So do that here
-	// to turn off tessellation.
-	//deviceContext->HSSetShader(0, 0, 0);
-	//deviceContext->DSSetShader(0, 0, 0);
+	}
+
+
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	sShadowShader->SetActive(deviceContext);
+
+	for (UINT i = 0; i < mAnimatedInstances.size(); ++i)
+	{
+		if (mAnimatedInstances[i]->IsVisible())
+		{
+			world = mAnimatedInstances[i]->GetWorld();
+			worldViewProj = world * viewProj;
+
+			sShadowShader->SetLightWVP(deviceContext, worldViewProj);
+			sShadowShader->SetBoneTransforms(deviceContext, 
+				mAnimatedInstances[i]->model->mInstance.FinalTransforms.data(), 
+				mAnimatedInstances[i]->model->mInstance.FinalTransforms.size());
+
+			for (UINT j = 0; j < mAnimatedInstances[i]->model->mInstance.model->numMeshes; ++j)
+			{
+				sShadowShader->UpdatePerObj(deviceContext);
+				mAnimatedInstances[i]->model->mInstance.model->meshes[j].draw(deviceContext);
+			}
+		}
+	}
 
 	deviceContext->RSSetState(0);
 }
 
-XMFLOAT4X4 ShadowMap::GetShadowTransform() const
+XMMATRIX ShadowMap::GetShadowTransform() const
 {
-	return mShadowTransform;
+	return XMLoadFloat4x4(&mShadowTransform);
 }
 
 XMMATRIX ShadowMap::GetLightViewProj() const
 {
 	return XMMatrixMultiply(XMLoadFloat4x4(&mLightView), XMLoadFloat4x4(&mLightProj));
+}
+
+ID3D11DepthStencilView* ShadowMap::getDepthMapDSV()
+{
+	return mDepthMapDSV;
+}
+
+DirectX::XMMATRIX ShadowMap::GetLightWorld() const
+{
+	return XMLoadFloat4x4(&mLightWorld);
+}
+
+DirectX::XMMATRIX ShadowMap::GetLightView() const
+{
+	return XMLoadFloat4x4(&mLightView);
+}
+
+DirectX::XMMATRIX ShadowMap::GetLightProj() const
+{
+	return XMLoadFloat4x4(&mLightProj);
 }

@@ -7,9 +7,11 @@ cbuffer cPerObject : register(b0)
 }
 
 Texture2D gDiffuseMap : register(t0);
+Texture2D gShadowMap : register(t1);
 
 SamplerState samLinear : register(s0);
 SamplerState samAnisotropic : register(s1);
+SamplerComparisonState samShadow : register(s2);
 
 struct PixelOut
 {
@@ -26,11 +28,16 @@ PixelOut main(VertexOut pIn)
 	// Sample color from texture
 	pOut.Color = gDiffuseMap.Sample(samAnisotropic, pIn.Tex);
 
-	pOut.Normal = float4(pIn.NormalW, 1.0f);
+	pOut.Normal = float4(pIn.NormalW, 0.0f);
 
 	pOut.Specular = gMaterial.Specular;
 
 	pOut.Position = float4(pIn.PosW, 1.0f);
+
+	// Bake shadow factor into color w component
+	float shadowFactor = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
+
+	pOut.Color.w = shadowFactor;
 
 	return pOut;
 }

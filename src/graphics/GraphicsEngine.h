@@ -39,6 +39,7 @@ public:
 
 	virtual CameraController *CreateCameraController() = 0;
 
+	virtual void UpdateSceneData() = 0;
 	virtual Texture2D *CreateTexture2D(unsigned int width, unsigned int height) = 0;
 	virtual void DeleteTexture2D(Texture2D *texture) = 0;
 };

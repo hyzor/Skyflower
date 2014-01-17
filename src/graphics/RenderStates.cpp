@@ -3,6 +3,7 @@
 ID3D11RasterizerState* RenderStates::mDefaultRS = 0;
 ID3D11RasterizerState* RenderStates::mWireframeRS = 0;
 ID3D11RasterizerState* RenderStates::mNoCullRS = 0;
+ID3D11RasterizerState* RenderStates::mDepthBiasRS = 0;
 
 ID3D11SamplerState* RenderStates::mLinearSS = 0;
 ID3D11SamplerState* RenderStates::mSSAODepthSS = 0;
@@ -10,8 +11,8 @@ ID3D11SamplerState* RenderStates::mAnisotropicSS = 0;
 ID3D11SamplerState* RenderStates::mComparisonSS = 0;
 
 ID3D11DepthStencilState* RenderStates::mLessEqualDSS = 0;
-ID3D11DepthStencilState* RenderStates::mDefaultDDS = 0;
-ID3D11DepthStencilState* RenderStates::mDisabledDDS = 0;
+ID3D11DepthStencilState* RenderStates::mDefaultDSS = 0;
+ID3D11DepthStencilState* RenderStates::mDisabledDSS = 0;
 
 ID3D11BlendState* RenderStates::mDefaultBS = 0;
 
@@ -55,6 +56,16 @@ void RenderStates::InitAll(ID3D11Device* device)
 	noCullRSdesc.DepthClipEnable = true;
 
 	device->CreateRasterizerState(&noCullRSdesc, &mNoCullRS);
+
+	D3D11_RASTERIZER_DESC depthBiasRSdesc;
+	ZeroMemory(&depthBiasRSdesc, sizeof(D3D11_RASTERIZER_DESC));
+	depthBiasRSdesc.DepthBias = 1000;
+	depthBiasRSdesc.DepthBiasClamp = 0.0f;
+	depthBiasRSdesc.SlopeScaledDepthBias = 1.0f;
+	depthBiasRSdesc.FillMode = D3D11_FILL_SOLID;
+	depthBiasRSdesc.CullMode = D3D11_CULL_BACK;
+
+	device->CreateRasterizerState(&depthBiasRSdesc, &mDepthBiasRS);
 
 	//-----------------------------------------------------------
 	// Sampler states
@@ -123,7 +134,7 @@ void RenderStates::InitAll(ID3D11Device* device)
 	comparisonSSdesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
 	comparisonSSdesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
 	comparisonSSdesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
-	comparisonSSdesc.ComparisonFunc = D3D11_COMPARISON_LESS;
+	comparisonSSdesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
 	comparisonSSdesc.BorderColor[0] = 0.0f;
 	comparisonSSdesc.BorderColor[1] = 0.0f;
 	comparisonSSdesc.BorderColor[2] = 0.0f;
@@ -159,7 +170,7 @@ void RenderStates::InitAll(ID3D11Device* device)
 	defaultDSSdesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
 	defaultDSSdesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
 
-	device->CreateDepthStencilState(&defaultDSSdesc, &mDefaultDDS);
+	device->CreateDepthStencilState(&defaultDSSdesc, &mDefaultDSS);
 
 	// Disabled depth stencil state
 	D3D11_DEPTH_STENCIL_DESC disabledDDSdesc;
@@ -179,7 +190,7 @@ void RenderStates::InitAll(ID3D11Device* device)
 	disabledDDSdesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 	disabledDDSdesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
-	device->CreateDepthStencilState(&disabledDDSdesc, &mDisabledDDS);
+	device->CreateDepthStencilState(&disabledDDSdesc, &mDisabledDSS);
 
 	//-----------------------------------------------------------
 	// Blend states
@@ -204,6 +215,7 @@ void RenderStates::DestroyAll()
 	ReleaseCOM(mDefaultRS);
 	ReleaseCOM(mWireframeRS);
 	ReleaseCOM(mNoCullRS);
+	ReleaseCOM(mDepthBiasRS);
 
 	ReleaseCOM(mLinearSS);
 	ReleaseCOM(mSSAODepthSS);
@@ -211,8 +223,8 @@ void RenderStates::DestroyAll()
 	ReleaseCOM(mComparisonSS);
 
 	ReleaseCOM(mLessEqualDSS);
-	ReleaseCOM(mDefaultDDS);
-	ReleaseCOM(mDisabledDDS);
+	ReleaseCOM(mDefaultDSS);
+	ReleaseCOM(mDisabledDSS);
 
 	ReleaseCOM(mDefaultBS);
 }

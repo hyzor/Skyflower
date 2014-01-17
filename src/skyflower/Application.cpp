@@ -69,6 +69,7 @@ void Application::Start()
 	levelHandler->queue(1);
 	levelHandler->LoadQueued();
 	camera = m_graphicsEngine->CreateCameraController();
+	m_graphicsEngine->UpdateSceneData();
 	Movement* playerMove = (Movement*)entityManager->getComponent("player", "Movement");
 
 	entityManager->sendMessageToEntity("ActivateListener", "player");

@@ -13,14 +13,12 @@
 #include <string>
 #include "Sky.h"
 #include "Shadowmap.h"
-#include "ShaderHandler.h"
 #include "RenderStates.h"
 #include <SpriteBatch.h>
 #include <SpriteFont.h>
 
 #include "Character.h"
 #include "GraphicsEngine.h"
-#include "InstanceImpl.h"
 
 #include "DeferredBuffers.h"
 #include "OrthoWindow.h"
@@ -60,6 +58,7 @@ public:
 
 	Texture2D *CreateTexture2D(unsigned int width, unsigned int height);
 	void DeleteTexture2D(Texture2D *texture);
+	void UpdateSceneData();
 
 	void addDirLight(Vec3 color, Vec3 direction, float intensity);
 	void addPointLight(Vec3 color, Vec3 Position, float intensity);
@@ -96,6 +95,7 @@ private:
 	SpriteBatch* mSpriteBatch;
 	SpriteFont* mSpriteFont;
 
+	DirectX::BoundingSphere mSceneBounds;
 	DeferredBuffers* mDeferredBuffers;
 	OrthoWindow* mOrthoWindow;
 

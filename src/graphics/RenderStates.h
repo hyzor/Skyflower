@@ -12,6 +12,7 @@ public:
 	static ID3D11RasterizerState* mDefaultRS;
 	static ID3D11RasterizerState* mWireframeRS;
 	static ID3D11RasterizerState* mNoCullRS;
+	static ID3D11RasterizerState* mDepthBiasRS;
 
 	static ID3D11SamplerState* mLinearSS;
 	static ID3D11SamplerState* mSSAODepthSS;
@@ -19,8 +20,8 @@ public:
 	static ID3D11SamplerState* mComparisonSS;
 
 	static ID3D11DepthStencilState* mLessEqualDSS;
-	static ID3D11DepthStencilState* mDefaultDDS;
-	static ID3D11DepthStencilState* mDisabledDDS;
+	static ID3D11DepthStencilState* mDefaultDSS;
+	static ID3D11DepthStencilState* mDisabledDSS;
 
 	static ID3D11BlendState* mDefaultBS;
 };

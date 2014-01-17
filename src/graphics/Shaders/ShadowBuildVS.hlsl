@@ -2,9 +2,14 @@ cbuffer cbPerObject : register(b0)
 {
 	float4x4 gLightWorldViewProj;
 };
+
+Texture2D gDiffuseMap;
+
 struct VertexIn
 {
 	float3 PosL : POSITION;
+	float3 NormalL : NORMAL;
+	float2 Tex : TEXCOORD;
 };
 
 struct VertexOut
