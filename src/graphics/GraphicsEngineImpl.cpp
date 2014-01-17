@@ -92,8 +92,8 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	// Lights
 	//--------------------------------------------------------
 	//Directional lights
-   	DirectionalLight dirLight;
-  	ZeroMemory(&dirLight, sizeof(DirectionalLight));
+//    	DirectionalLight dirLight;
+//   	ZeroMemory(&dirLight, sizeof(DirectionalLight));
 
 	/*
 	dirLight.Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
@@ -103,12 +103,12 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 
 	mDirLights.push_back(dirLight);*/
 
-	dirLight.Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-	dirLight.Diffuse = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
-	dirLight.Specular = XMFLOAT4(0.4f, 0.4f, 0.5f, 1.0f);
-	dirLight.Direction = XMFLOAT3(0.1f, -1.0f, 0.1f);
-
-	mDirLights.push_back(dirLight);
+// 	dirLight.Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+// 	dirLight.Diffuse = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
+// 	dirLight.Specular = XMFLOAT4(0.4f, 0.4f, 0.5f, 1.0f);
+// 	dirLight.Direction = XMFLOAT3(0.1f, -1.0f, 0.1f);
+// 
+// 	mDirLights.push_back(dirLight);
 
 /* 	dirLight.Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
  	dirLight.Diffuse = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
