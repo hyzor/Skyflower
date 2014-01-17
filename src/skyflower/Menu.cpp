@@ -2,6 +2,8 @@
 
 Menu::Menu()
 {
+	m_active = false;
+	status = MenuStatus::none;
 }
 
 Menu::~Menu()
@@ -26,8 +28,8 @@ void Menu::init(GraphicsEngine *g)
 	m_buttons.push_back(mid);
 
 	Button bot;
-	bot._tex = "..\\..\\content\\Textures\\Menygrafik\\button_resume.png";
-	bot._hoverTex = "..\\..\\content\\Textures\\Menygrafik\\button_resume_hover.png";
+	bot._tex = "..\\..\\content\\Textures\\Menygrafik\\button_exit.png";
+	bot._hoverTex = "..\\..\\content\\Textures\\Menygrafik\\button_exit_hover.png";
 	bot._position = Vec3(112, 400);
 	bot._active = true;
 	m_buttons.push_back(bot);
@@ -40,23 +42,24 @@ bool Menu::isActive()
 	return m_active;
 }
 
-void Menu::setState(bool state)
+void Menu::setActive(bool active)
 {
-	m_active = state;
+	status = MenuStatus::none;
+	m_active = active;
 }
 
 void Menu::draw(GraphicsEngine *g)
 {
 	g->Draw2DTextureFile(m_bg, 0, 0);
-	for (int i = 0; i < m_buttons.size(); i++)
+	for (unsigned int i = 0; i < m_buttons.size(); i++)
 	{
 		Button current = m_buttons.at(i);
 		if (current._active)
 		{
 			if (i == selectedButton)
-				g->Draw2DTextureFile(current._hoverTex, current._position.X+10.0f, current._position.Y-10.0f);
+				g->Draw2DTextureFile(current._hoverTex, (int)current._position.X+10, (int)current._position.Y-10);
 			else
-				g->Draw2DTextureFile(current._tex, current._position.X, current._position.Y);
+				g->Draw2DTextureFile(current._tex, (int)current._position.X, (int)current._position.Y);
 		}
 		
 	}
@@ -64,6 +67,7 @@ void Menu::draw(GraphicsEngine *g)
 
 void Menu::buttonPressed(unsigned short key)
 {
+	status = MenuStatus::none;
 	bool enter = false;
 	switch (key)
 	{
@@ -85,7 +89,13 @@ void Menu::buttonPressed(unsigned short key)
 	if (enter)
 	{
 		if (selectedButton == 0)
-			m_active = false;
-
+			status = MenuStatus::resume;
+		else if (selectedButton == 2)
+			status = MenuStatus::exit;		
 	}
+}
+
+int Menu::getStatus()
+{
+	return status;
 }

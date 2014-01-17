@@ -9,6 +9,12 @@ using namespace std;
 class Menu
 {
 public:
+	enum MenuStatus
+	{
+		none,
+		resume,
+		exit
+	};
 	struct Button
 	{
 		bool _active;
@@ -26,7 +32,7 @@ public:
 	virtual ~Menu();
 
 	// Set wether or not the menu is active
-	void setState(bool show);
+	void setActive(bool active);
 
 	// Is the menu active? I don´t know bro. Better ask that mo-fo 
 	bool isActive();
@@ -34,13 +40,15 @@ public:
 	// Draw the menu
 	void draw(GraphicsEngine *g);
 
+	int getStatus();
+
 	void buttonPressed(unsigned short key);
 private:
 	bool m_active;
 	int selectedButton;
 	string m_bg;
 	std::vector<Button> m_buttons;
-
+	MenuStatus status;
 };
 
 #endif

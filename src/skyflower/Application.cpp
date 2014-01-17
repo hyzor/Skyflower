@@ -30,8 +30,6 @@ Application::~Application()
 
 void Application::Start()
 {
-	gameState = GameState::menu;
-
 	m_window = new Window(1024, 768, L"Skyflower");
 	m_window->SetListener(this);
 
@@ -99,6 +97,7 @@ void Application::Start()
 	thread load;
 	m_menu = new Menu();
 	m_menu->init(m_graphicsEngine);
+	m_menu->setActive(true);
 
 	while(!m_quit)
 	{
@@ -230,9 +229,9 @@ void Application::OnKeyDown(unsigned short key)
 		break;
 	case 'M':
 		if (m_menu->isActive())
-			m_menu->setState(false);
+			m_menu->setActive(false);
 		else
-			m_menu->setState(true);
+			m_menu->setActive(true);
 
 		break;
 	default:
@@ -246,12 +245,22 @@ void Application::OnKeyUp(unsigned short key)
 
 void Application::updateMenu(float dt)
 {
-	if (!m_menu->isActive())
-		gameState = game;
-
 	m_graphicsEngine->Begin2D();
 	m_menu->draw(m_graphicsEngine);
 	m_graphicsEngine->End2D();
+
+	switch (m_menu->getStatus())
+	{
+	case Menu::resume:
+		m_menu->setActive(false);
+		gameState = GameState::game;
+		break;
+	case Menu::exit:
+		LPDWORD lpExitCode = 0;
+		GetExitCodeProcess(m_window->GetHandle(), lpExitCode);
+		ExitProcess((UINT)lpExitCode);
+		break;
+	}
 }
 
 void Application::updateGame(float dt, Movement* playerMove)
