@@ -10,12 +10,19 @@
 #include "Sound/SoundEngine.h"
 #include "EntityManager.h"
 #include "LevelHandler.h"
-
+#include "Menu.h"
 using namespace Cistron;
 
 class Application : WindowListener, InputListener
 {
 public:
+	enum GameState
+	{
+		menu,
+		game,
+		loading
+	};
+
 	Application();
 	virtual ~Application();
 
@@ -36,6 +43,12 @@ public: // InputListener
 	void OnKeyDown(unsigned short key);
 	void OnKeyUp(unsigned short key);
 
+
+private:
+	void updateGame(float dt, Movement* playerMove);
+	void updateMenu(float dt);
+	void updateLoading(float dt);
+
 private:
 	Window *m_window;
 	InputHandler *m_inputHandler;
@@ -45,6 +58,8 @@ private:
 	CameraController *camera;
 	bool m_quit;
 	bool m_showCharts;
+	GameState gameState;
+	Menu *m_menu;
 };
 
 #endif

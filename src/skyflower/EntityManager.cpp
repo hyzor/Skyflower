@@ -1357,47 +1357,6 @@ bool EntityManager::loadXML2(string xmlFile)
 				Checkpoint* cp = new Checkpoint(spawnpoint);
 				this->addComponent(entity, cp);
 			}
-			else if (componentName == "dirLight")
-			{
-				float intensity, r, g, b, dirx, diry, dirz;
-
-				attr = e->Attribute("intensity");
-				if (attr != NULL)
-				{
-					intensity = e->FloatAttribute("intensity");
-				}
-				attr = e->Attribute("r");
-				if (attr != NULL)
-				{
-					r = e->FloatAttribute("r");
-				}
-				attr = e->Attribute("g");
-				if (attr != NULL)
-				{
-					g = e->FloatAttribute("g");
-				}
-				attr = e->Attribute("b");
-				if (attr != NULL)
-				{
-					b = e->FloatAttribute("b");
-				}
-				attr = e->Attribute("dirx");
-				if (attr != NULL)
-				{
-					dirx = e->FloatAttribute("dirx");
-				}
-				attr = e->Attribute("diry");
-				if (attr != NULL)
-				{
-					diry = e->FloatAttribute("diry");
-				}
-				attr = e->Attribute("dirz");
-				if (attr != NULL)
-				{
-					dirz = e->FloatAttribute("dirz");
-				}
-				modules->graphics->addDirLight(Vec3(r, g, b), Vec3(0.0f, -1.0f, 0.0f), intensity);
-			}
 			else if (componentName.find("Light") != string::npos)
 			{
 				float intensity, r, g, b, dirx, diry, dirz, xPos, yPos, zPos, coneAngle;
@@ -1459,6 +1418,10 @@ bool EntityManager::loadXML2(string xmlFile)
 				}
 				if (componentName == "spotLight")
 					modules->graphics->addSpotLight(Vec3(r, g, b), Vec3(dirx, diry, dirz), Vec3(xPos, yPos, zPos), coneAngle);
+				else if (componentName == "dirLight")
+					modules->graphics->addDirLight(Vec3(r, g, b), Vec3(dirx, diry, dirz), intensity);
+				else if (componentName == "pointLight")
+					modules->graphics->addPointLight(Vec3(r, g, b), Vec3(xPos, yPos, zPos), intensity);
 			}
 			else
 			{
