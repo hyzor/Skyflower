@@ -23,14 +23,32 @@ public:
 	static LevelHandler* GetInstance();
 	virtual ~LevelHandler();
 	void init(EntityManager *entityManager); 
-	bool isCompleted(int id) const; // Check if map has been completed before
-	void queue(int id); // Load a new map
-	int completedCount() const; // Number of completed maps
-	void levelCompleted(); // Completed level count
-	int levelCount() const; // Number of available levels
-	int currentLevel() const; // Current level
+
+	// Check if map has been completed before.
+	bool isCompleted(int id) const; 
+
+	// Queue a new map. Call LoadQueued() to load the map
+	void queue(int id); 
+
+	// Number of completed levels.
+	int completedCount() const;
+
+	// Mark the level as completed
+	void levelCompleted();
+
+	// Number of available levels
+	int levelCount() const; 
+
+	// ID of the current loaded level.
+	int currentLevel() const; 
+
+	// Returns true if a level is currently queued.
 	bool hasQueuedLevel();
+
+	// Load a queued level. Call queue() to queue a level.
 	void LoadQueued();
+
+	// Returns true if a level is currently loading. Useful when loading on a seperate thread.
 	bool isLoading();
 
 private:

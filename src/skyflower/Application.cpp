@@ -30,6 +30,8 @@ Application::~Application()
 
 void Application::Start()
 {
+	gameState = GameState::menu;
+
 	m_window = new Window(1024, 768, L"Skyflower");
 	m_window->SetListener(this);
 
@@ -95,6 +97,8 @@ void Application::Start()
 	m_quit = false;
 
 	thread load;
+	m_menu = new Menu();
+	m_menu->init(m_graphicsEngine);
 
 	while(!m_quit)
 	{
@@ -116,49 +120,41 @@ void Application::Start()
 			memoryChartTexture->UploadData(memoryChart.GetPixels());
 		}
 
-		camera->Follow(entityManager->getEntityPos("player"));
-		playerMove->setCamera(camera->GetLook(), camera->GetRight(), camera->GetUp());
-		camera->Update((float)deltaTime);
-
-		if (!levelHandler->isLoading())
-		{
-			if (load.joinable())
-			{
-				load.join();
-				oldTime = GetTime();
-			}
-			
-			this->entityManager->update((float)deltaTime);
-			m_graphicsEngine->UpdateScene((float)deltaTime);
-			m_graphicsEngine->DrawScene();
-				
-		}
-
-		//this->entityManager->handleCollision();
-
 		m_graphicsEngine->Begin2D();
 
-		if (levelHandler->isLoading())
-		{
-			m_graphicsEngine->Draw2DTextureFile("..\\..\\content\\Textures\\Menygrafik\\fyraTreRatio.png", 0, 0);
-		}
 		if (m_showCharts) {
 			m_graphicsEngine->Draw2DTexture(frameTimeChartTexture, 0, 0);
 			m_graphicsEngine->Draw2DTexture(memoryChartTexture, 0, frameTimeChart.GetHeight() + 6);
 		}
-
 		m_graphicsEngine->End2D();
-		m_graphicsEngine->Present();
 
 		m_soundEngine->Update((float)deltaTime);
-
 		m_window->PumpMessages();
-			
+		
+		
 		if (levelHandler->hasQueuedLevel() && !levelHandler->isLoading())
 		{
+			if (load.joinable())
+				load.join();
 			load = thread(&LevelHandler::LoadQueued, levelHandler);
-			oldTime = GetTime();
+			gameState = GameState::loading;
 		}
+			
+		switch (gameState)
+		{
+		case GameState::game:
+			updateGame((float)deltaTime, playerMove);
+			break;
+		case GameState::loading:
+			updateLoading((float)deltaTime);
+			break;
+		case GameState::menu:
+			updateMenu((float)deltaTime);
+			break;
+		}
+		
+		m_graphicsEngine->Present();
+		
 	}
 
 	m_graphicsEngine->DeleteTexture2D(memoryChartTexture);
@@ -217,6 +213,8 @@ void Application::OnMouseWheel(int delta)
 
 void Application::OnKeyDown(unsigned short key)
 {
+	if (m_menu->isActive())
+		m_menu->buttonPressed(key);
 	switch (key)
 	{
 	case VK_ESCAPE:
@@ -230,6 +228,13 @@ void Application::OnKeyDown(unsigned short key)
 		m_graphicsEngine->clearLights();
 		entityManager->loadXML2("lights.XML");
 		break;
+	case 'M':
+		if (m_menu->isActive())
+			m_menu->setState(false);
+		else
+			m_menu->setState(true);
+
+		break;
 	default:
 		break;
 	}
@@ -237,4 +242,37 @@ void Application::OnKeyDown(unsigned short key)
 
 void Application::OnKeyUp(unsigned short key)
 {
+}
+
+void Application::updateMenu(float dt)
+{
+	if (!m_menu->isActive())
+		gameState = game;
+
+	m_graphicsEngine->Begin2D();
+	m_menu->draw(m_graphicsEngine);
+	m_graphicsEngine->End2D();
+}
+
+void Application::updateGame(float dt, Movement* playerMove)
+{
+	camera->Follow(entityManager->getEntityPos("player"));
+	playerMove->setCamera(camera->GetLook(), camera->GetRight(), camera->GetUp());
+	camera->Update(dt);
+	this->entityManager->update(dt);
+	m_graphicsEngine->UpdateScene(dt);
+	m_graphicsEngine->DrawScene();
+
+	if (m_menu->isActive())
+		gameState = GameState::menu;
+}
+
+void Application::updateLoading(float dt)
+{
+	m_graphicsEngine->Begin2D();
+	m_graphicsEngine->Draw2DTextureFile("..\\..\\content\\Textures\\Menygrafik\\fyraTreRatio.png", 0, 0);
+	m_graphicsEngine->End2D();
+
+	if (!levelHandler->isLoading())
+		gameState = GameState::game;
 }

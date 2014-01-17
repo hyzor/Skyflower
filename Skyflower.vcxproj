@@ -34,6 +34,7 @@
     </ClCompile>
     <ClCompile Include="src\skyflower\LineChart.cpp" />
     <ClCompile Include="src\skyflower\main.cpp" />
+    <ClCompile Include="src\skyflower\Menu.cpp" />
     <ClCompile Include="src\skyflower\PotentialField.cpp" />
     <ClCompile Include="src\skyflower\ScriptHandler.cpp" />
     <ClCompile Include="src\skyflower\tinyxml2.cpp" />
@@ -68,6 +69,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="src\skyflower\LineChart.h" />
+    <ClInclude Include="src\skyflower\Menu.h" />
     <ClInclude Include="src\skyflower\PotentialField.h" />
     <ClInclude Include="src\skyflower\ScriptHandler.h" />
     <ClInclude Include="src\skyflower\tinyxml2.h" />
