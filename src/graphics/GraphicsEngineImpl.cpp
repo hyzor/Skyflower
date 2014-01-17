@@ -473,9 +473,11 @@ void GraphicsEngineImpl::DrawScene()
 	mSpriteBatch->End();
 	*/
 
+	/*
 	mSpriteBatch->Begin();
 	mSpriteBatch->Draw(mSSAOTexture->GetShaderResourceView(), XMFLOAT2(0.0f, 0.0f), NULL, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), 0.2f);
 	mSpriteBatch->End();
+	*/
 
 	/*
 	mSpriteBatch->Begin(SpriteSortMode_Deferred, nullptr, nullptr, nullptr, nullptr);
