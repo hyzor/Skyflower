@@ -17,7 +17,7 @@ public:
 
 	void addedToEntity()
 	{
-		cout << "Messenger lever!" << endl;
+		//cout << "Messenger lever!" << endl;
 
 		//requestMessage("All", &Messenger::printToAll);
 		//requestMessage("update", &Messenger::update);

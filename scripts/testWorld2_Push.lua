@@ -1,6 +1,6 @@
 
 function activated(id)
-	Print("Player pushed")
+	--Print("Player pushed")
 end
 
 function deactivated(id)

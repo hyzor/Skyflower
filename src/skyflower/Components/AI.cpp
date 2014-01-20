@@ -3,7 +3,7 @@
 
 void AI::addedToEntity()
 {
-	cout << "A AI was added to the system." << endl;
+	//cout << "A AI was added to the system." << endl;
 
 	requestMessage("Attack", &AI::Attack);
 

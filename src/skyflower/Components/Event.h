@@ -42,7 +42,7 @@ public:
 
 	// we are added to an Entity, and thus to the component system
 	void addedToEntity() {
-		cout << "A Event was added to the system." << endl;
+		//cout << "A Event was added to the system." << endl;
 
 		requestMessage("Activated", &Event::Activated);
 		requestMessage("Deactivated", &Event::Deactivated);

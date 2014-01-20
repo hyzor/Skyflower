@@ -1,6 +1,6 @@
 
 function activated(id)
-	Print("Trap")
+	--Print("Trap")
 	
 	--trap!
 	Spawn(10, 7) --spawn enemy(10) on spawnpoint(7)

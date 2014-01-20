@@ -30,7 +30,7 @@ public:
 
 	// we are added to an Entity, and thus to the component system
 	void addedToEntity() {
-		cout << "A AI was added to the system." << endl;
+		//cout << "A checkpoint? was added to the system." << endl;
 
 		requestMessage("Ground", &Checkpoint::Activate);
 		requestMessage("Wall", &Checkpoint::Activate);

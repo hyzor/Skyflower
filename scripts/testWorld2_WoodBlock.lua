@@ -6,9 +6,9 @@ end
 
 function deactivated(id)
 	i = id
-	Print("Test script!!")
-	Print("Testing igen!!")
-	Print(i)
+	--Print("Test script!!")
+	--Print("Testing igen!!")
+	--Print(i)
 	
 	--Jump(id)
 end
