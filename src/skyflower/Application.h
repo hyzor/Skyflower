@@ -48,6 +48,7 @@ private:
 	void updateGame(float dt, Movement* playerMove);
 	void updateMenu(float dt);
 	void updateLoading(float dt);
+	void changeGameState(GameState newState);
 
 private:
 	Window *m_window;

@@ -136,7 +136,7 @@ void Application::Start()
 			if (load.joinable())
 				load.join();
 			load = thread(&LevelHandler::LoadQueued, levelHandler);
-			gameState = GameState::loading;
+			changeGameState(GameState::loading);
 		}
 			
 		switch (gameState)
@@ -178,8 +178,11 @@ void Application::OnWindowResize(unsigned int width, unsigned int height)
 
 void Application::OnWindowActivate()
 {
-	m_inputHandler->SetMouseCapture(true);
-	m_window->SetCursorVisibility(false);
+	if (gameState == GameState::game)
+	{
+		m_inputHandler->SetMouseCapture(true);
+		m_window->SetCursorVisibility(false);
+	}
 }
 
 void Application::OnWindowDeactivate()
@@ -195,7 +198,7 @@ void Application::OnMouseMove(int deltaX, int deltaY)
 
 void Application::OnMouseButtonDown(enum MouseButton button)
 {
-	if (!m_inputHandler->IsMouseCaptured()) {
+	if (gameState == GameState::game && !m_inputHandler->IsMouseCaptured()) {
 		m_inputHandler->SetMouseCapture(true);
 		m_window->SetCursorVisibility(false);
 	}
@@ -253,7 +256,7 @@ void Application::updateMenu(float dt)
 	{
 	case Menu::resume:
 		m_menu->setActive(false);
-		gameState = GameState::game;
+		changeGameState(GameState::game);
 		break;
 	case Menu::exit:
 		LPDWORD lpExitCode = 0;
@@ -273,7 +276,7 @@ void Application::updateGame(float dt, Movement* playerMove)
 	m_graphicsEngine->DrawScene();
 
 	if (m_menu->isActive())
-		gameState = GameState::menu;
+		changeGameState(GameState::menu);
 }
 
 void Application::updateLoading(float dt)
@@ -283,5 +286,24 @@ void Application::updateLoading(float dt)
 	m_graphicsEngine->End2D();
 
 	if (!levelHandler->isLoading())
-		gameState = GameState::game;
+		changeGameState(GameState::game);
+}
+
+void Application::changeGameState(GameState newState)
+{
+	if (m_window->IsActive())
+	{
+		if (newState == GameState::game)
+		{
+			m_inputHandler->SetMouseCapture(true);
+			m_window->SetCursorVisibility(false);
+		}
+		else
+		{
+			m_inputHandler->SetMouseCapture(false);
+			m_window->SetCursorVisibility(true);
+		}
+	}
+
+	gameState = newState;
 }
