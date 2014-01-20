@@ -1,4 +1,6 @@
 #include <crtdbg.h>
+#include <cstdlib>
+#include <ctime>
 
 #include "Application.h"
 #include "Physics/collision.h"
@@ -10,6 +12,8 @@ int main(int argc, const char *argv[])
 #if defined(DEBUG) | defined(_DEBUG)
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
+
+	srand((unsigned int)time(NULL));
 
 	Application app;
 	app.Start();

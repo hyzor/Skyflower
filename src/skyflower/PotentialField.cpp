@@ -3,7 +3,6 @@
 
 PotentialField::PotentialField()
 {
-	srand((unsigned int)time(0));
 }
 
 PotentialField::~PotentialField()

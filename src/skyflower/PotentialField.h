@@ -2,8 +2,6 @@
 #define POTENTIALFIELD_H
 
 #include <vector>
-#include <stdlib.h>
-#include <time.h>
 #include <string>
 #include <sstream>
 #include <fstream>
