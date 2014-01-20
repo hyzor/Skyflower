@@ -4,7 +4,14 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 
-const int BUFFER_COUNT = 4;
+enum DeferredBuffersIndex
+{
+	Diffuse = 0,
+	Normal,
+	Specular,
+	Position,
+	Count
+};
 
 class DeferredBuffers
 {
@@ -21,9 +28,9 @@ public:
 	ID3D11ShaderResourceView* GetSRV(int view);
 
 private:
-	ID3D11Texture2D* mRenderTargetTextureArray[BUFFER_COUNT];
-	ID3D11RenderTargetView* mRenderTargetViewArray[BUFFER_COUNT];
-	ID3D11ShaderResourceView* mShaderResourceViewArray[BUFFER_COUNT];
+	ID3D11Texture2D* mRenderTargetTextureArray[DeferredBuffersIndex::Count];
+	ID3D11RenderTargetView* mRenderTargetViewArray[DeferredBuffersIndex::Count];
+	ID3D11ShaderResourceView* mShaderResourceViewArray[DeferredBuffersIndex::Count];
 
 // 	ID3D11DepthStencilView* mDepthStencilView;
 // 	ID3D11Texture2D* mDepthStencilBuffer;

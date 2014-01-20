@@ -2,7 +2,7 @@
 
 DeferredBuffers::DeferredBuffers()
 {
-	for (UINT i = 0; i < BUFFER_COUNT; ++i)
+	for (UINT i = 0; i < DeferredBuffersIndex::Count; ++i)
 	{
 		mRenderTargetTextureArray[i] = 0;
 		mRenderTargetViewArray[i] = 0;
@@ -12,7 +12,7 @@ DeferredBuffers::DeferredBuffers()
 
 DeferredBuffers::~DeferredBuffers()
 {
-	for (UINT i = 0; i < BUFFER_COUNT; i++)
+	for (UINT i = 0; i < DeferredBuffersIndex::Count; i++)
 	{
 		if (mShaderResourceViewArray[i])
 		{
@@ -56,7 +56,7 @@ bool DeferredBuffers::Init(ID3D11Device* device, UINT width, UINT height, float 
 	textureDesc.MiscFlags = 0;
 
 	// Create render target texture
-	for (UINT i = 0; i < BUFFER_COUNT; ++i)
+	for (UINT i = 0; i < DeferredBuffersIndex::Count; ++i)
 	{
 		hr = device->CreateTexture2D(&textureDesc, NULL, &mRenderTargetTextureArray[i]);
 
@@ -71,7 +71,7 @@ bool DeferredBuffers::Init(ID3D11Device* device, UINT width, UINT height, float 
 	renderTargetViewDesc.Texture2D.MipSlice = 0;
 
 	// Create render target views
-	for (UINT i = 0; i < BUFFER_COUNT; ++i)
+	for (UINT i = 0; i < DeferredBuffersIndex::Count; ++i)
 	{
 		hr = device->CreateRenderTargetView(mRenderTargetTextureArray[i], &renderTargetViewDesc, &mRenderTargetViewArray[i]);
 
@@ -86,7 +86,7 @@ bool DeferredBuffers::Init(ID3D11Device* device, UINT width, UINT height, float 
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
-	for (UINT i = 0; i < BUFFER_COUNT; ++i)
+	for (UINT i = 0; i < DeferredBuffersIndex::Count; ++i)
 	{
 		hr = device->CreateShaderResourceView(mRenderTargetTextureArray[i], &shaderResourceViewDesc, &mShaderResourceViewArray[i]);
 
@@ -99,7 +99,7 @@ bool DeferredBuffers::Init(ID3D11Device* device, UINT width, UINT height, float 
 
 void DeferredBuffers::SetRenderTargets(ID3D11DeviceContext* dc, ID3D11DepthStencilView* depthStencilView)
 {
-	dc->OMSetRenderTargets(BUFFER_COUNT, mRenderTargetViewArray, depthStencilView);
+	dc->OMSetRenderTargets(DeferredBuffersIndex::Count, mRenderTargetViewArray, depthStencilView);
 }
 
 void DeferredBuffers::ClearRenderTargets(ID3D11DeviceContext* dc, DirectX::XMFLOAT4 RGBA, ID3D11DepthStencilView* depthStencilView)
@@ -111,7 +111,7 @@ void DeferredBuffers::ClearRenderTargets(ID3D11DeviceContext* dc, DirectX::XMFLO
 	color[2] = RGBA.z;
 	color[3] = RGBA.w;
 
-	for (UINT i = 0; i < BUFFER_COUNT; ++i)
+	for (UINT i = 0; i < DeferredBuffersIndex::Count; ++i)
 	{
 		dc->ClearRenderTargetView(mRenderTargetViewArray[i], color);
 	}
