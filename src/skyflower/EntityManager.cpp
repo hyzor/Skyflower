@@ -586,7 +586,6 @@ void EntityManager::trackRequest(RequestId reqId, bool local, Component *compone
 }
 
 
-//my own
 void EntityManager::sendMessageToAllEntities(string message)
 {
 	for (int i = 0; i < this->fIdCounter; i++)
@@ -614,418 +613,6 @@ void EntityManager::sendMessageToEntity(string message, EntityId entity)
 
 /*
 bool EntityManager::loadXML(EntityManager *entityManager, string xmlFile)
-{
-	string path = m_resourceDir + xmlFile;
-
-	XMLDocument doc;
-	doc.LoadFile(path.c_str());
-
-	//Try to open the file
-	FILE *fp = fopen(path.c_str(), "r");
-	if (!fp)
-	{
-		cout << "Error opening text file" << endl;
-		return false;
-	}
-
-	//Find the root element
-	XMLElement* root = doc.FirstChildElement();
-	if (root == NULL)
-	{
-		cout << "Failed to load file: No root element." << endl;
-		doc.Clear();
-		return false;
-	}
-
-	if (xmlFile == "test1.xml")
-	{
-
-	}
-	else if (xmlFile == "test3.xml")
-	{
-		cout << "3:an här!" << endl;
-	}
-	else if (xmlFile == "test2.xml" || xmlFile == "test22.xml")
-	{
-		//For every entity that is to be created in this EntityManager
-		for (XMLElement* elem = root->FirstChildElement(); elem != NULL; elem = elem->NextSiblingElement())
-		{
-			string elemName = elem->Value();
-			const char* attr;
-
-			//if the entity type is Player
-			if (elemName == "Player")
-			{
-				float xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale;
-				string model = "";
-				bool isVisible = false;
-
-				attr = elem->Attribute("xPos");
-				if (attr != NULL)
-				{
-					xPos = elem->FloatAttribute("xPos");
-				}
-
-				attr = elem->Attribute("yPos");
-				if (attr != NULL)
-				{
-					yPos = elem->FloatAttribute("yPos");
-				}
-
-				attr = elem->Attribute("zPos");
-				if (attr != NULL)
-				{
-					zPos = elem->FloatAttribute("zPos");
-				}
-
-				attr = elem->Attribute("xRot");
-				if (attr != NULL)
-				{
-					xRot = elem->FloatAttribute("xRot");
-				}
-
-				attr = elem->Attribute("yRot");
-				if (attr != NULL)
-				{
-					yRot = elem->FloatAttribute("yRot");
-				}
-
-				attr = elem->Attribute("zRot");
-				if (attr != NULL)
-				{
-					zRot = elem->FloatAttribute("zRot");
-				}
-
-				attr = elem->Attribute("xScale");
-				if (attr != NULL)
-				{
-					xScale = elem->FloatAttribute("xScale");
-				}
-
-				attr = elem->Attribute("yScale");
-				if (attr != NULL)
-				{
-					yScale = elem->FloatAttribute("yScale");
-				}
-
-				attr = elem->Attribute("zScale");
-				if (attr != NULL)
-				{
-					zScale = elem->FloatAttribute("zScale");
-				}
-
-				attr = elem->Attribute("model");
-				if (attr != NULL)
-				{
-					model = elem->Attribute("model");
-				}
-
-				attr = elem->Attribute("isVisible");
-				if (attr != NULL)
-				{
-					isVisible = elem->BoolAttribute("isVisible");
-				}
-				//Creating the Player entity and adding it to the entitymanager
-				EntityId player = entityManager->createEntity("Player", xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, false, false);
-
-
-				//Looping through all the components for Player-entity.
-				for (XMLElement* e = elem->FirstChildElement(); e != NULL; e = e->NextSiblingElement())
-				{
-					string componentName = e->Value();
-					if (componentName == "Monster")
-					{
-						attr = e->Attribute("name");
-
-						string name = "";
-						if (attr != NULL)
-						{
-							name = e->Attribute("name");
-						}
-						else
-							return false;
-
-						//create the Monster component and add that component to the Player entity
-						Monster *m1 = new Monster(name);
-						entityManager->addComponent(player, m1);
-					}
-
-					else if (componentName == "Person")
-					{
-						attr = e->Attribute("name");
-						string name = "";
-						if (attr != NULL)
-						{
-							name = e->Attribute("name");
-						}
-						else
-							return false;
-
-						attr = e->Attribute("age");
-						int age = 0;
-						if (attr != NULL)
-						{
-							int *age2 = 0;
-							age = e->IntAttribute("age");
-						}
-						else
-							return false;
-
-						//create the Person component and add that component to the Player entity
-						Person *p1 = new Person(name, age);
-						entityManager->addComponent(player, p1);
-					}
-
-					else if (componentName == "Input")
-					{
-						Input* i = new Input();
-						entityManager->addComponent(player, i);
-					}
-
-					else if (componentName == "Movement")
-					{
-						Movement* m = new Movement();
-						entityManager->addComponent(player, m);
-					}
-				}
-			}
-			//if the entity type is Player2
-			else if (elemName == "Player2")
-			{
-				float xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale;
-				xPos = yPos = zPos = xRot = yRot = zRot = 0.0f; 
-				xScale = yScale = zScale = 1.0f;
-				string model = "";
-				bool isVisible = false;
-
-				//Creating the Player entity and adding it to the entityManager.
-				EntityId player2 = entityManager->createEntity("Player2", xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, false, false);
-
-				//Looping through all the components for Player2-entity.
-				for (XMLElement* e = elem->FirstChildElement(); e != NULL; e = e->NextSiblingElement())
-				{
-					string componentName = e->Value();
-					if (componentName == "Monster")
-					{
-						attr = e->Attribute("name");
-
-						string name = "";
-						if (attr != NULL)
-						{
-							name = e->Attribute("name");
-
-
-						}
-						else
-							return false;
-
-						//create the Monster component and add that component to the Player entity
-						Monster *m1 = new Monster(name);
-						entityManager->addComponent(player2, m1);
-
-					}
-
-					else if (componentName == "Person")
-					{
-						attr = e->Attribute("name");
-						string name = "";
-						if (attr != NULL)
-						{
-							name = e->Attribute("name");
-						}
-						else
-							return false;
-
-						attr = e->Attribute("age");
-						int age = 0;
-						if (attr != NULL)
-						{
-							int *age2 = 0;
-							age = e->IntAttribute("age");
-						}
-						else
-							return false;
-
-						//create the Person component and add that component to the Player entity
-						Person *p1 = new Person(name, age);
-						entityManager->addComponent(player2, p1);
-
-					}
-
-					else if (componentName == "Movement")
-					{
-						Movement* m = new Movement();
-						entityManager->addComponent(player2, m);
-					}
-				}
-			}
-		}
-	}
-	else if (xmlFile == "platform.xml" || xmlFile == "platform2.xml" || xmlFile == "block22.xml")
-	{
-		//For every entity that is to be created in this EntityManager
-		for (XMLElement* elem = root->FirstChildElement(); elem != NULL; elem = elem->NextSiblingElement())
-		{
-			string elemName = elem->Value();
-			const char* attr;
-
-			//if the entity type is Player
-			if (elemName == "Platform")
-			{
-				float xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale;
-				string model = "";
-				bool isVisible = false;
-				bool isCollidible = false;
-
-				attr = elem->Attribute("xPos");
-				if (attr != NULL)
-				{
-					xPos = elem->FloatAttribute("xPos");
-				}
-
-				attr = elem->Attribute("yPos");
-				if (attr != NULL)
-				{
-					yPos = elem->FloatAttribute("yPos");
-				}
-
-				attr = elem->Attribute("zPos");
-				if (attr != NULL)
-				{
-					zPos = elem->FloatAttribute("zPos");
-				}
-
-				attr = elem->Attribute("xRot");
-				if (attr != NULL)
-				{
-					xRot = elem->FloatAttribute("xRot");
-				}
-
-				attr = elem->Attribute("yRot");
-				if (attr != NULL)
-				{
-					yRot = elem->FloatAttribute("yRot");
-				}
-
-				attr = elem->Attribute("zRot");
-				if (attr != NULL)
-				{
-					zRot = elem->FloatAttribute("zRot");
-				}
-
-				attr = elem->Attribute("xScale");
-				if (attr != NULL)
-				{
-					xScale = elem->FloatAttribute("xScale");
-				}
-
-				attr = elem->Attribute("yScale");
-				if (attr != NULL)
-				{
-					yScale = elem->FloatAttribute("yScale");
-				}
-
-				attr = elem->Attribute("zScale");
-				if (attr != NULL)
-				{
-					zScale = elem->FloatAttribute("zScale");
-				}
-
-				attr = elem->Attribute("model");
-				if (attr != NULL)
-				{
-					model = elem->Attribute("model");
-				}
-
-				attr = elem->Attribute("isVisible");
-				if (attr != NULL)
-				{
-					isVisible = elem->BoolAttribute("isVisible");
-				}
-
-				attr = elem->Attribute("isCollidible");
-				if (attr != NULL)
-					isCollidible = elem->BoolAttribute("isCollidible");
-
-				//Creating the Player entity and adding it to the entitymanager
-				EntityId platform = entityManager->createEntity("Platform", xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, false);
-
-
-				//Looping through all the components for Player-entity.
-				for (XMLElement* e = elem->FirstChildElement(); e != NULL; e = e->NextSiblingElement())
-				{
-					string componentName = e->Value();
-					if (componentName == "Platform")
-					{
-						bool isMovingUpDown = false;
-						bool isMovingFrontBack = false;
-						bool isMovingSideways = false;
-						cout << "hittade en Platformkomponent!" << endl;
-
-						attr = e->Attribute("isMovingUpDown");
-						if (attr != NULL)
-						{
-							isMovingUpDown = e->BoolAttribute("isMovingUpDown");
-						}
-
-						attr = e->Attribute("isMovingFrontBack");
-						if (attr != NULL)
-						{
-							isMovingFrontBack = e->BoolAttribute("isMovingFrontBack");
-						}
-
-						attr = e->Attribute("isMovingSideways");
-						if (attr != NULL)
-						{
-							isMovingSideways = e->BoolAttribute("isMovingSideways");
-						}
-
-						Platform* p = new Platform(xPos, yPos, zPos, isMovingUpDown, isMovingFrontBack, isMovingSideways);
-						entityManager->addComponent(platform, p);
-					}
-					else if (componentName == "Movement")
-					{
-						Movement* m = new Movement();
-						entityManager->addComponent(platform, m);
-					}
-					else if (componentName == "AI")
-					{
-						AI* m = new AI();
-						entityManager->addComponent(platform, m);
-					}
-					else if (componentName == "Messenger")
-					{
-						Messenger *m = new Messenger();
-						entityManager->addComponent(platform, m);
-					}
-					else if (componentName == "Monster")
-					{
-						attr = e->Attribute("name");
-
-						string name = "";
-						if (attr != NULL)
-						{
-							name = e->Attribute("name");
-						}
-						else
-							return false;
-
-						//create the Monster component and add that component to the Player entity
-						Monster *m1 = new Monster(name);
-						entityManager->addComponent(platform, m1);
-
-					}
-				}
-			}
-		}
-	}
-
-	doc.Clear();
-
-	return true;
-}*/
-
-bool EntityManager::loadXML2(string xmlFile)
 {
 	string path = m_resourceDir + xmlFile;
 	XMLDocument doc;
@@ -1059,6 +646,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		bool isCollidible = false;
 		bool isAnimated = false;
 
+		//get all the attributes for the entity
 		attr = elem->Attribute("entityName");
 		if (attr != NULL)
 		{
@@ -1199,10 +787,10 @@ bool EntityManager::loadXML2(string xmlFile)
 			cout << "failed loading attribute for isAnimated for entity " << entityName << " in file " << xmlFile << endl;
 		}
 
-		//Creating the Player entity and adding it to the entitymanager
+		//Creating the entity and adding it to the entitymanager
 		EntityId entity = this->createEntity(entityName, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, isAnimated);
 
-		//Looping through all the components for Player-entity.
+		//Looping through all the components for the entity.
 		for (XMLElement* e = elem->FirstChildElement(); e != NULL; e = e->NextSiblingElement())
 		{
 			string componentName = e->Value();
@@ -1318,7 +906,7 @@ bool EntityManager::loadXML2(string xmlFile)
 			{
 				attr = e->Attribute("maxHP");
 				int maxHP = 0;
-				
+
 				if (attr != NULL)
 				{
 					maxHP = e->IntAttribute("maxHP");
@@ -1422,6 +1010,16 @@ bool EntityManager::loadXML2(string xmlFile)
 					modules->graphics->addDirLight(Vec3(r, g, b), Vec3(dirx, diry, dirz), intensity);
 				else if (componentName == "pointLight")
 					modules->graphics->addPointLight(Vec3(r, g, b), Vec3(xPos, yPos, zPos), intensity);
+			}
+			else if (componentName == "Push")
+			{
+				Push * p = new Push();
+				this->addComponent(entity, p);
+			}
+			else if (componentName == "Pushable")
+			{
+				Pushable * p = new Pushable();
+				this->addComponent(entity, p);
 			}
 			else
 			{
@@ -1582,7 +1180,6 @@ EntityId EntityManager::getNrOfEntities()
 
 void EntityManager::handleCollision()
 {
-	//cout << " " << endl;
 	for (int i = 0; i < this->fIdCounter; i++)
 	{		
 		fEntitys[i]->ground = nullptr;
@@ -1669,4 +1266,21 @@ float EntityManager::testMove(Ray r, Entity* e, Entity* &out)
 	}
 
 	return dir;
+}
+
+void EntityManager::createSphereOnEntities()
+{
+	for (int i = 0; i < this->fIdCounter; i++)
+	{
+		if (this->fEntitys[i]->getType() == "player")
+		{
+			Vec3 temp = getEntityPos("player");
+			Sphere *s = new Sphere(temp.X, temp.Y, temp.Z);
+		}
+		else if (this->fEntitys[i]->getType() == "AI")
+		{
+			Vec3 temp = getEntityPos("AI");
+			Sphere *s = new Sphere(temp.X, temp.Y, temp.Z);
+		}
+	}
 }

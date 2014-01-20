@@ -10,8 +10,6 @@
 #include "ComponentHeaders.h"
 #include "LineChart.h"
 
-#include <thread>
-
 using namespace std;
 using namespace tinyxml2;
 using namespace Cistron;
@@ -64,6 +62,15 @@ void Application::Start()
 	//entityManager->loadXML2("block22.xml");
 	//entityManager->loadXML2("TriggerTest.xml");
 	//entityManager->loadXML2("Player3.xml");
+	//entityManager->createSphereOnEntities();
+
+	//entityManager->loadXML("player.xml");
+	//entityManager->loadXML("player2.xml");
+	entityManager->loadXML("player3.xml");
+	//entityManager->loadXML("platform.xml");
+	//entityManager->loadXML("block22.xml");
+	//entityManager->loadXML("AItest.xml");
+
 
 	// Load Hub Level
 	levelHandler->queue(1);
@@ -119,7 +126,6 @@ void Application::Start()
 			memoryChartTexture->UploadData(memoryChart.GetPixels());
 		}
 
-		m_graphicsEngine->Begin2D();
 
 		if (m_showCharts) {
 			m_graphicsEngine->Draw2DTexture(frameTimeChartTexture, 0, 0);

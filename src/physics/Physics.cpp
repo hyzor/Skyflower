@@ -71,6 +71,10 @@ Vec3 Physics::getUp() const
 	return this->orient.getUp();
 }
 
+Vec3 Physics::getVelocity() const
+{
+	return this->velocity;
+}
 void Physics::update(float dt)
 {
 	this->dt = dt;
@@ -122,6 +126,10 @@ void Physics::setJumping(bool jump)
 {
 	jumping = jump;
 }
+
+void Physics::setIsMoving(bool state)
+{
+	this->isMoving = state;}
 
 
 float Physics::lerp(float a, float b, float amount)
@@ -225,6 +233,14 @@ void Physics::moveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, float speed, Vec3 &
 	this->walk(pos, speed);
 }
 
+Vec3 Physics::movePushed(Vec3 pos)
+{
+	cout << "FLYTTAR!" << endl;
+
+	pos += pushDirection * (dt * 5);
+	return pos;
+}
+
 
 float Physics::toRadians(float degrees)
 {
@@ -274,6 +290,11 @@ void Physics::resetRot(Vec3 &rot)
 void Physics::setOrientation(Vec3 look, Vec3 right, Vec3 up)
 {
 	this->orient.setOrientation(look, right, up);
+}
+
+void Physics::setPushDirection(Vec3 direction)
+{
+	this->pushDirection = direction;
 }
 
 void Physics::moveUp(Vec3 &pos)
