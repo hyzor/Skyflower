@@ -442,10 +442,12 @@ ShadowShader::ShadowShader()
 
 ShadowShader::~ShadowShader()
 {
+	/*
 	if (mVertexShader)
 		mVertexShader->Release();
 	if (mPixelShader)
 		mPixelShader->Release();
+	*/
 
 	if (vs_cBuffer)
 		vs_cBuffer->Release();
