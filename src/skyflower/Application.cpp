@@ -259,9 +259,7 @@ void Application::updateMenu(float dt)
 		changeGameState(GameState::game);
 		break;
 	case Menu::exit:
-		LPDWORD lpExitCode = 0;
-		GetExitCodeProcess(m_window->GetHandle(), lpExitCode);
-		ExitProcess((UINT)lpExitCode);
+		m_quit = true;
 		break;
 	}
 }
