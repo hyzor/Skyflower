@@ -97,7 +97,7 @@ void Application::Start()
 	thread load;
 	m_menu = new Menu();
 	m_menu->init(m_graphicsEngine);
-	m_menu->setActive(true);
+	m_menu->setActive(false);
 
 	while(!m_quit)
 	{
@@ -248,6 +248,9 @@ void Application::OnKeyUp(unsigned short key)
 
 void Application::updateMenu(float dt)
 {
+	if (!m_menu->isActive())
+		changeGameState(GameState::game);
+
 	m_graphicsEngine->Begin2D();
 	m_menu->draw(m_graphicsEngine);
 	m_graphicsEngine->End2D();

@@ -23,6 +23,7 @@ cbuffer cLightBuffer : register(b0)
 	float4x4 gCameraInvView;
 	float4x4 gCameraWorld;
 	float4x4 gCameraProj;
+	float4x4 gCamViewProjInv;
 	float4x4 gLightWorld;
 	float4x4 gLightView;
 	float4x4 gLightInvView;
@@ -32,9 +33,10 @@ cbuffer cLightBuffer : register(b0)
 Texture2D gDiffuseTexture : register(t0);
 Texture2D gNormalTexture : register(t1);
 Texture2D gSpecularTexture : register(t2);
-Texture2D gPositionTexture : register(t3);
-Texture2D gShadowMap : register(t5);
+//Texture2D gPositionTexture : register(t3);
 Texture2D gSSAOTexture : register(t4);
+Texture2D gDepthTexture : register(t5);
+//Texture2D gShadowMap : register(t6);
 
 SamplerState samLinear : register(s0);
 SamplerState samAnisotropic : register(s1);
@@ -77,7 +79,7 @@ float4 main(VertexOut pIn) : SV_TARGET
 	diffuse = gDiffuseTexture.Sample(samLinear, pIn.Tex);
 	normal = gNormalTexture.Sample(samLinear, pIn.Tex).xyz;
 	specular = gSpecularTexture.Sample(samLinear, pIn.Tex);
-	positionW = gPositionTexture.Sample(samLinear, pIn.Tex).xyz;
+	//positionW = gPositionTexture.Sample(samLinear, pIn.Tex).xyz;
 	shadowFactor = gDiffuseTexture.Sample(samLinear, pIn.Tex).w;
 
 	// Pretty ugly, normal texture w component contains a "diffuse multiplier"
@@ -86,12 +88,21 @@ float4 main(VertexOut pIn) : SV_TARGET
 	// (MAINLY FOR SKYBOX)
 	diffuseMultiplier = gNormalTexture.Sample(samLinear, pIn.Tex).w;
 
+	// World pos reconstruction
+	float depth = gDepthTexture.Sample(samLinear, pIn.Tex).x;
+
+	float4 H = float4(pIn.Tex.x * 2.0f - 1.0f, (1.0f - pIn.Tex.y) * 2.0f - 1.0f, depth, 1.0f);
+
+	float4 D_transformed = mul(H, gCamViewProjInv);
+
+	positionW = (D_transformed / D_transformed.w).xyz;
+
 	// The toEye vector is used in lighting
 	float3 toEye = gEyePosW - positionW;
 
-	// Used in shadow mapping
-	//float3 eyeDir = positionW - gEyePosW;
-	//eyeDir /= length(eyeDir);
+		// Used in shadow mapping
+		//float3 eyeDir = positionW - gEyePosW;
+		//eyeDir /= length(eyeDir);
 
 	// Cache the distance to the eye from this surface point.
 	float distToEye = length(toEye);

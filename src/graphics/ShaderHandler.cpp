@@ -1651,7 +1651,7 @@ void LightDeferredShader::UpdatePerFrame(ID3D11DeviceContext* dc)
 
 void LightDeferredShader::SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
 {
-	dc->PSSetShaderResources(5, 1, &tex);
+	dc->PSSetShaderResources(6, 1, &tex);
 }
 
 void LightDeferredShader::SetShadowTransform(XMMATRIX& shadowTransform)
@@ -1665,6 +1665,11 @@ void LightDeferredShader::SetCameraViewProjMatrix(XMMATRIX& camViewMatrix, XMMAT
 	mBufferCache.psPerFrameBuffer.cameraViewMatrix = XMMatrixTranspose(camViewMatrix);
 	mBufferCache.psPerFrameBuffer.cameraInvViewMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, camViewMatrix));
 	mBufferCache.psPerFrameBuffer.cameraProjMatrix = XMMatrixTranspose(proj);
+
+	XMMATRIX viewProj = XMMatrixMultiply(camViewMatrix, proj);
+	XMMATRIX viewProjInv = XMMatrixInverse(nullptr, viewProj);
+
+	mBufferCache.psPerFrameBuffer.camViewProjInv = XMMatrixTranspose(viewProjInv);
 
 	mBufferCache.vsPerObjBuffer.viewProjInv = XMMatrixTranspose(XMMatrixInverse(nullptr, XMMatrixMultiply(camViewMatrix, proj)));
 }
@@ -1682,6 +1687,11 @@ void LightDeferredShader::SetLightWorldViewProj(XMMATRIX& lightWorld, XMMATRIX& 
 	mBufferCache.psPerFrameBuffer.lightInvViewMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, lightView));
 
 	mBufferCache.vsPerObjBuffer.lightViewProj = XMMatrixTranspose(XMMatrixMultiply(lightView, lightProj));
+}
+
+void LightDeferredShader::SetDepthTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(5, 1, &tex);
 }
 
 SkyDeferredShader::SkyDeferredShader()

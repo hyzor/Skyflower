@@ -715,6 +715,8 @@ public:
 	void SetPositionTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetSSAOTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
+	void SetDepthTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+
 	void SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetShadowTransform(XMMATRIX& shadowTransform);
 
@@ -761,6 +763,7 @@ private:
 		XMMATRIX cameraInvViewMatrix;
 		XMMATRIX cameraWorldMatrix;
 		XMMATRIX cameraProjMatrix;
+		XMMATRIX camViewProjInv;
 		XMMATRIX lightWorldMatrix;
 		XMMATRIX lightViewMatrix;
 		XMMATRIX lightInvViewMatrix;

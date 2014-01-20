@@ -18,7 +18,7 @@ struct PixelOut
 	float4 Color : SV_Target0;
 	float4 Normal : SV_Target1;
 	float4 Specular : SV_Target2;
-	float4 Position : SV_Target3;
+	//float4 Position : SV_Target3;
 };
 
 PixelOut main(VertexOut pIn)
@@ -32,7 +32,7 @@ PixelOut main(VertexOut pIn)
 
 	pOut.Specular = gMaterial.Specular;
 
-	pOut.Position = float4(pIn.PosW, 1.0f);
+	//pOut.Position = float4(pIn.PosW, 1.0f);
 
 	// Bake shadow factor into color w component
 	float shadowFactor = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
