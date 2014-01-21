@@ -14,7 +14,7 @@ using namespace Cistron;
 class OscillatePositionComponent : public Component {
 
 public:
-	OscillatePositionComponent(Vec3 direction, float speed, float travelDistance) : Component("Movement")
+	OscillatePositionComponent(Vec3 direction, float speed, float travelDistance) : Component("OscillatePosition")
 	{
 		this->velocity = direction.Normalize() * speed;
 		this->travelDistance = travelDistance;

@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<root>
+    <Entity entityName="AI"
+		xPos="20.0" yPos="12.0" zPos="20.0" 
+		xRot="0.0" yRot="0.0" zRot="0.0" 
+		xScale="1.0" yScale="1.0" zScale="1.0"
+		model="Models/Enemies/Puncher/Puncha"
+		isVisible="1" isCollidible="0" isAnimated="0">
+			<Movement />
+			<Gravity />
+			<Messenger />
+			<Pushable />
+			<AI />
+			<Push />
+	</Entity>
+</root>

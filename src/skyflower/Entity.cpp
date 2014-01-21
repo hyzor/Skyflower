@@ -78,6 +78,13 @@ Entity::Entity(const Modules *modules, EntityId id, string type, float xPos, flo
 		field = nullptr;
 	}
 
+	this->sphere = NULL;
+	if (this->type == "player" || this->type == "AI")
+	{
+		cout << "creating sphere!" << this->type << endl;
+		this->sphere = new Sphere(pos.X, pos.Y, pos.Z, 4);
+	}
+
 }
 Entity::~Entity() {
 
@@ -266,45 +273,13 @@ void Entity::trackRequest(RequestId reqId, Component *component) {
 }
 
 
-//my own
 void Entity::sendAMessageToAll(string message)
 {
-	//loopar igenom alla komponentamn, och sedan alla komponenter med det namnet.
-	//loop 1, går igenom alla komponentnamn
-	//loop 2, går igenom alla komponenter med det namnet
-	//for (auto iter = this->fComponents.begin(); iter != this->fComponents.end(); iter++)
-	//{
-	//	list<Component *> &components = (*iter).second;
-
-	//	for (auto iter2 = components.begin(); iter2 != components.end(); iter2++)
-	//	{
-	//		Component *component = (*iter2);
-	//		component->sendMessage("Hello");
-	//	}
-	//}
-
-
-	////loopar igenom alla komponenten med namnet messanger
-	//list<Component *> &components = this->fComponents["Monster"];
-
-	//for (auto iter2 = components.begin(); iter2 != components.end(); iter2++)
-	//{
-	//	Component *component = (*iter2);
-	//}
-
-	//första komponenten med namnet messanger
-	//this->fComponents["Monster"].front()->sendMessage(message);
+	//fins the first component in the entity with the name "Messenger"
 	if (this->fComponents.count("Messenger") != 0)
 	{
 		this->fComponents["Messenger"].front()->sendMessage(message);
 	}
-
-
-	//if (this->fComponents["Messenger"].front() != NULL)
-	//{
-	//	this->fComponents["Messenger"].front()->sendMessage(message);
-	//}
-
 }
 
 void Entity::sendMessageToEntity(string message, EntityId id)
@@ -361,7 +336,11 @@ void Entity::updatePos(Vec3 pos)
 		this->collInst->Position = pos;
 	if (this->field)
 		this->field->Move(pos);
-	//cout << this->pos.X << endl;
+
+	if (this->sphere != NULL)
+	{
+		this->sphere->Position = pos;
+	}
 }
 
 void Entity::updateRot(Vec3 rot)

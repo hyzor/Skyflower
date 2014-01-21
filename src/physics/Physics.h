@@ -8,6 +8,9 @@
 #include "shared/Vec3.h"
 #include <math.h>
 #include "Orientation.h"
+#include <string>
+#include <iostream>
+using namespace std;
 
 const float PI = 3.141592653589f;
 
@@ -24,6 +27,7 @@ private:
 	//used for jumping and gravity calculation
 	Vec3 gravity;
 	Vec3 velocity;
+	Vec3 pushDirection;
 
 	//not relevant yet
 	float mass; 
@@ -33,6 +37,7 @@ private:
 
 	//used to keep track of an entitys state regarding jumping, in order tp prevent/enable it dynamically
 	bool jumping;
+	bool isMoving;
 
 	//A simple class that keeps track of and manipulates the orientation (meaning rotation, look/right and up -vectors) of the entity holding the physics instance
 	Orientation orient;
@@ -67,6 +72,8 @@ public:
 	void moveUp(Vec3 &pos);
 	void moveDown(Vec3 &pos);
 
+	Vec3 movePushed(Vec3 pos);
+
 	//rotate in relation to given vector plus an offset (angle)
 	void moveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, Vec3 &rot, float angleY);
 	void moveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, float speed,Vec3 &rot, float angleY);
@@ -83,6 +90,8 @@ public:
 	void setVelocity(Vec3 vel);
 	void setJumping(bool value);
 	void setOrientation(Vec3 look, Vec3 right, Vec3 up);
+	void setIsMoving(bool state);
+	void setPushDirection(Vec3 direction);
 
 	//Standard getfunctions.
 	float getMass() const;
@@ -91,6 +100,8 @@ public:
 	Vec3 getLook() const; //Fetched from Orientation
 	Vec3 getRight() const; //Fetched from Orientation
 	Vec3 getUp() const; //Fetched from Orientation
+	Vec3 getVelocity() const; //Fetched from EntityManager (used for checking if you can push something)
+	bool getIsMoving() const { return isMoving; }
 
 	static float toRadians(float degrees);
 	static float toDegrees(float radians);

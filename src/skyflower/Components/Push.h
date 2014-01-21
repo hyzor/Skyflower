@@ -1,5 +1,5 @@
-#ifndef TRIGGER_H
-#define TRIGGER_H
+#ifndef PUSH_H
+#define PUSH_H
 
 #include <cstdio>
 #include <string>
@@ -11,21 +11,19 @@
 using namespace std;
 using namespace Cistron;
 
-class Trigger : public Component {
+class Push : public Component {
 
 public:
-	Trigger(): Component("Trigger")
+	Push() : Component("Push")
 	{
 	}
 
-	virtual ~Trigger()
+	virtual ~Push()
 	{
-
 	}
 
 	void addedToEntity()
 	{
-		this->startPosition = getEntityPos();
 	}
 
 	void removeFromEntity()
@@ -38,7 +36,7 @@ public:
 	}
 
 private:
-	Vec3 startPosition;
+
 };
 
 #endif
