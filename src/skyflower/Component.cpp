@@ -17,6 +17,7 @@ using namespace std;
 Component::Component(string name) : fOwnerId(-1), fName(name), fDestroyed(false), fTrack(false), fEntityManager(0) {
 	static ComponentId IdCounter = 0;
 	fId = ++IdCounter;
+	//this->active = false;
 }
 Component::~Component() {
 }
@@ -33,7 +34,16 @@ bool Component::isValid() {
 	return fOwnerId >= 0 && fName.size() > 0 && !fDestroyed;
 }
 
+//return if the component is active or not
+bool Component::isActive()
+{
+	return this->active;
+}
 
+void Component::setActive(bool status)
+{
+	this->active = status;
+}
 
 // get owner
 EntityId Component::getOwnerId() {

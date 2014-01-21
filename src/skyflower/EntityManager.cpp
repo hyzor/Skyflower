@@ -44,8 +44,9 @@ void EntityManager::update(float deltaTime)
 {
 	for (auto iter = this->fEntitys.begin(); iter != this->fEntitys.end(); iter++)
 	{
-		if ((*iter) != NULL)
-			(*iter)->update(deltaTime);
+		Entity *entity = (*iter);
+		if (entity != NULL && entity->getIsActive())
+			entity->update(deltaTime);
 	}
 	handleCollision();
 }
@@ -1350,4 +1351,14 @@ void EntityManager::createSphereOnEntities()
 			Sphere *s = new Sphere(temp.X, temp.Y, temp.Z);
 		}
 	}
+}
+
+void EntityManager::activateEntity(int entityIndex)
+{
+	this->fEntitys[entityIndex]->setIsActive(true);
+}
+
+void EntityManager::deactivateEntity(int entityIndex)
+{
+	this->fEntitys[entityIndex]->setIsActive(false);
 }

@@ -66,10 +66,13 @@ class Entity {
 		Vec3 scale;
 		string model;
 		bool isVisible;
+		bool isActive;
 		ModelInstance* modelInst;
 		AnimatedInstance* AnimInst;
 		Physics* physics;
 		Sphere *sphere;
+		bool isAnimated;
+		bool isCollidible;
 
 		/**
 		 * COMPONENT MANAGEMENT
@@ -138,11 +141,13 @@ class Entity {
 		Vec3 returnRot();
 		Vec3 returnScale();
 		bool returnVisible();
+		bool getIsActive();
 		CollisionInstance* returnCollision();
 		void updatePos(Vec3 pos);
 		void updateRot(Vec3 rot);
 		void updateScale(Vec3 scale);
-		void updateVisible(bool isVisible);	
+		void updateVisible(bool isVisible);
+		void setIsActive(bool status);
 
 		const Modules *modules;
 };
