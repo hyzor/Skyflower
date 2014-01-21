@@ -447,9 +447,7 @@ void GraphicsEngineImpl::DrawScene()
 	// Unbind depth stencil view
 	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, nullptr);
 
-	// Depth stencil view is bound in:
-	// mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, mD3D->GetDepthStencilView());
-	// Which means I can't use it in light deferred shader
+	// Now bind the depth stencil SRV in light deferred shader
 	mShaderHandler->mLightDeferredShader->SetDepthTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
 
 	mShaderHandler->mLightDeferredShader->SetWorldViewProj(XMMatrixIdentity(), mCamera->GetBaseViewMatrix(), mCamera->GetOrthoMatrix());
