@@ -17,6 +17,7 @@ class GravityComponent : public Component {
 public:
 	GravityComponent() : Component("Gravity")
 	{
+		this->enabled = true;
 	}
 
 	virtual ~GravityComponent()
@@ -36,13 +37,24 @@ public:
 	void update(float deltaTime)
 	{
 		Vec3 pos = getEntityPos();
-		p->update(deltaTime);
-		this->p->addGravityCalc(pos);
+		this->p->addGravityCalc(pos, this->enabled);
 
 		updateEntityPos(pos);
 	}
+
+	void setEnabled(bool enabled)
+	{
+		this->enabled = enabled;
+	}
+
+	bool isEnabled()
+	{
+		return this->enabled;
+	}
+
 private:
 	Physics* p;
+	bool enabled;
 };
 
 #endif
