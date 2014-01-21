@@ -127,12 +127,9 @@ class EntityManager {
 		void sendMessageToAllEntities(string message); //sends a message to all components in all entities in that manager
 		void sendMessageToEntity(string message, string entity); //sends a message to a specific entity
 		void sendMessageToEntity(string message, EntityId entity); //sends a message to a specific entity
-<<<<<<< HEAD
-		bool loadXML2(string xmlFile);
-=======
+
 		bool loadXML(EntityManager * entityManager, string xmlFile);
 		bool loadXML(string xmlFile);
->>>>>>> Push_&_Pushable-components
 
 		Vec3 getEntityPos(string type);
 		Vec3 getEntityPos(EntityId ownerId);

@@ -611,12 +611,7 @@ void EntityManager::sendMessageToEntity(string message, EntityId entity)
 	e->sendMessageToEntity(message, entity);
 }
 
-<<<<<<< HEAD
-bool EntityManager::loadXML2(string xmlFile)
-=======
-
 bool EntityManager::loadXML(string xmlFile)
->>>>>>> Push_&_Pushable-components
 {
 	string path = m_resourceDir + xmlFile;
 	XMLDocument doc;
