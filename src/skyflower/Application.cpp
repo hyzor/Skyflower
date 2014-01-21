@@ -303,15 +303,15 @@ void Application::changeGameState(GameState newState)
 {
 	if (m_window->IsActive())
 	{
-		if (newState == GameState::game)
-		{
-			m_inputHandler->SetMouseCapture(true);
-			m_window->SetCursorVisibility(false);
-		}
-		else
+		if (newState == GameState::menu)
 		{
 			m_inputHandler->SetMouseCapture(false);
 			m_window->SetCursorVisibility(true);
+		}
+		else
+		{
+			m_inputHandler->SetMouseCapture(true);
+			m_window->SetCursorVisibility(false);
 		}
 	}
 
