@@ -48,31 +48,6 @@ SamplerState samLinear : register(s0);
 SamplerState samAnisotropic : register(s1);
 SamplerComparisonState samShadow : register(s2);
 
-// UNUSED
-float ReadShadowMap(float3 eyeDir)
-{
-	float4x4 lightWorldViewProj = gLightProj * gLightView * gCameraInvView;
-		//float4x4 final = gCameraInvView * lightWorldViewProj;
-	//float4x4 final = (gLightProj)* (gLightInvView)* gCameraInvView;
-
-		//float4 projectedEyeDir = mul(float4(eyeDir, 1.0f), final);
-
-		float4 projectedEyeDir = mul(lightWorldViewProj, float4(eyeDir, 1.0f));
-
-		//return CalcShadowFactor(samShadow, gShadowMap, projectedEyeDir);
-
-	
-		/*
-	projectedEyeDir = projectedEyeDir / projectedEyeDir.w;
-
-	float2 tex = projectedEyeDir.xy * float2(0.5f, 0.5f) + float2(0.5f, 0.5f);
-
-	const float bias = 0.0001f;
-	float depthValue = gShadowMap.Sample(samLinear, tex).x - bias;
-	return projectedEyeDir.z * 0.5 + 0.5 < depthValue;
-	*/
-}
-
 float4 main(VertexOut pIn) : SV_TARGET
 {
 	float4 diffuse;
@@ -106,9 +81,9 @@ float4 main(VertexOut pIn) : SV_TARGET
 	// The toEye vector is used in lighting
 	float3 toEye = gEyePosW - positionW;
 
-		// Used in shadow mapping
-		//float3 eyeDir = positionW - gEyePosW;
-		//eyeDir /= length(eyeDir);
+	// Direction of eye to pixel world position
+	float3 eyeDir = positionW - gEyePosW;
+	//eyeDir /= length(eyeDir);
 
 	// Cache the distance to the eye from this surface point.
 	float distToEye = length(toEye);
@@ -124,23 +99,6 @@ float4 main(VertexOut pIn) : SV_TARGET
 	float4 specular_Lights = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	float4 A, D, S;
-
-	/*
-	float3 shadow = float3(1.0f, 1.0f, 1.0f);
-	//shadow[0] = ReadShadowMap(eyeDir);
-	shadow[0] = CalcShadowFactor(samShadow, gShadowMap, pIn.shadowPosH);
-
-	//float4 posFormLightView = mul(float4(gEyePosW, 1.0f), gCameraProj);
-	//posFormLightView.xyz = posFormLightView.xyz / posFormLightView.w;
-	//shadow[0] = CalcShadowFactor(samShadow, gShadowMap, posFormLightView);
-
-	//float3 shadow = float3(1.0f, 1.0f, 1.0f);
-	//shadow[0] = ReadShadowMap(eyeDir);
-
-	//float4 shadowPosH = mul(float4(positionW, 1.0f), gShadowTransform);
-
-	//shadow[0] = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
-	*/
 
 	float ambient_occlusion = gSSAOTexture.Sample(samLinear, pIn.Tex).x;
 
@@ -171,37 +129,39 @@ float4 main(VertexOut pIn) : SV_TARGET
 		specular_Lights += S;
 	}
 
-	//return float4(ambient_occlusion, ambient_occlusion, ambient_occlusion, 1.0);
-
-	//diffuse.xyz = fogIntensity * diffuse.xyz + (1 - fogIntensity) * gFogColor.xyz
-
-	//litColor = diffuse * (ambient_Lights + diffuse_Lights) + specular_Lights;
 	litColor = float4(diffuse.xyz * (ambient_Lights.xyz + diffuse_Lights.xyz) + specular_Lights.xyz, 1.0f);
-	//litColor *= ambient_occlusion;
 
-	if (gEnableFogging)
-	{
-		float fogLerp = saturate((distToEye - gFogStart) / gFogRange);
-		//litColor = lerp(litColor, gFogColor, fogLerp);
-	}
-
+	//--------------------------------------------------
+	// Fogging
+	//--------------------------------------------------
 	// http://developer.amd.com/wordpress/media/2012/10/Wenzel-Real-time_Atmospheric_Effects_in_Games.pdf
 	// http://udn.epicgames.com/Three/HeightFog.html
 	// http://iancubin.wordpress.com/projects/opengl-volumetric-fog/
 	// http://msdn.microsoft.com/en-us/library/bb173401%28v=vs.85%29.aspx
-
-	float density = 0.01f;
-
-	if (positionW.y > 0.0f)
+	if (gEnableFogging)
 	{
-		density = density / (positionW.y / 10.0f);
+		float heightFalloff = 0.0075f; // Fog fade speed
+		float globalDensity = 0.005f;
+		float fogOffset = -100.0f; // Offset fog height
+
+		float3 eyeDirOffset = eyeDir;
+		eyeDirOffset.y -= fogOffset;
+
+		float cVolFogHeightDensityAtViewer = exp(-heightFalloff * (gEyePosW.y - fogOffset));
+		float fogInt = length(eyeDirOffset) * cVolFogHeightDensityAtViewer;
+
+		const float slopeThreshold = 0.01f;
+
+		if (abs(eyeDir.y - fogOffset) > slopeThreshold)
+		{
+			float t = heightFalloff * (eyeDir.y - fogOffset);
+			fogInt *= (1.0f - exp(-t)) / t;
+		}
+
+		float finalInt = exp(-globalDensity * fogInt);
+
+		litColor = finalInt * litColor + (1 - finalInt) * gFogColor;
 	}
 
-	float fogIntensity = 1 / pow(2.71828, distToEye * density);
-
-	litColor = fogIntensity * litColor + (1 - fogIntensity) * gFogColor;
-
-	//return float4(1.0f, 1.0f, 1.0f, 1.0f);
-	//litColor.a = 1.0;
 	return litColor;
 }
