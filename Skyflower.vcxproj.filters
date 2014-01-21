@@ -177,6 +177,8 @@
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\skyflower\Menu.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src\skyflower\GUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
