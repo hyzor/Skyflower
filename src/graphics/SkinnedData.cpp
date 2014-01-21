@@ -289,6 +289,8 @@ UINT AnimEvaluator::GetFrameIndexAt( float time, UINT frameStart, UINT frameEnd,
 	UINT nrOfFrames = (frameEnd - frameStart) + 1;
 	float framesDuration = (float)nrOfFrames * (mDuration / static_cast<float>(Transforms.size()));
 
+	//framesDuration = (float)nrOfFrames * (mDuration / /*totalNrOfFrames*/ (float)105); // <--- Possible solution
+
 	time *= mTicksPerSecond;
 
 	float _time = 0.0f;

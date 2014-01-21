@@ -59,6 +59,7 @@ public:
 	void Set(Vec3 pos, Vec3 rot, Vec3 scale);
 
 	void CreateAnimation(int id, int start, int frames);
+	void CreateAnimation(int id, int start, int frames, bool playForwards);
 	void SetAnimation(int id);
 
 	XMMATRIX GetWorld();

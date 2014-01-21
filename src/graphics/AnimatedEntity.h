@@ -49,10 +49,20 @@ public:
 			this->AnimationType = animationType;
 			this->FrameStart = frameStart;
 			this->FrameEnd = frameEnd;
+			this->playForwards = true;
+		}
+
+		Animation(UINT animationType, UINT frameStart, UINT frameEnd, bool playForwards)
+		{
+			this->AnimationType = animationType;
+			this->FrameStart = frameStart;
+			this->FrameEnd = frameEnd;
+			this->playForwards = playForwards;
 		}
 
 		UINT FrameStart, FrameEnd;
 		UINT AnimationType;
+		bool playForwards;
 	};
 
 	std::vector<Animation> mAnimations;
