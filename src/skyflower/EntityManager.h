@@ -152,6 +152,9 @@ class EntityManager {
 		void createSphereOnEntities();
 		void updateSpheres();
 
+		void activateEntity(int entityIndex);
+		void deactivateEntity(int entityIndex);
+
 		const Modules *modules;
 
 	private:

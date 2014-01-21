@@ -213,6 +213,9 @@ class Component {
 		// valid component?
 		bool isValid();
 
+		bool isActive();
+		void setActive(bool status);
+
 		// get the name of the component
 		string getName();
 
@@ -260,6 +263,8 @@ class Component {
 
 		// Entity manager is our friend
 		friend class EntityManager;
+
+		bool active;
 
 };
 
