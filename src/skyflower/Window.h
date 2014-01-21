@@ -9,7 +9,9 @@ class WindowListener
 {
 public:
 	virtual void OnWindowShouldClose() = 0;
-	virtual void OnWindowResize(unsigned int width, unsigned int height) {};
+	virtual void OnWindowResizeStart() {};
+	virtual void OnWindowResizeEnd() {};
+	virtual void OnWindowResized(unsigned int width, unsigned int height) {};
 	virtual void OnWindowActivate() {};
 	virtual void OnWindowDeactivate() {};
 };

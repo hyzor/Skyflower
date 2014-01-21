@@ -176,15 +176,21 @@ LRESULT Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	switch (uMsg)
 	{
 	case WM_ENTERSIZEMOVE:
+		if (m_listener)
+			m_listener->OnWindowResizeStart();
+
 		m_isResizing = true;
 
 		break;
 	case WM_EXITSIZEMOVE:
 		if (m_listener && !m_liveResize && m_didResize)
-			m_listener->OnWindowResize(GetWidth(), GetHeight());
+			m_listener->OnWindowResized(GetWidth(), GetHeight());
 
 		m_isResizing = false;
 		m_didResize = false;
+
+		if (m_listener)
+			m_listener->OnWindowResizeEnd();
 
 		break;
 	case WM_SIZE:
@@ -192,7 +198,7 @@ LRESULT Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			m_didResize = true;
 
 		if (m_listener && (m_liveResize || (!m_liveResize && !m_isResizing)))
-			m_listener->OnWindowResize((unsigned int)LOWORD(lParam), (unsigned int)HIWORD(lParam));
+			m_listener->OnWindowResized((unsigned int)LOWORD(lParam), (unsigned int)HIWORD(lParam));
 
 		break;
 	case WM_CLOSE:

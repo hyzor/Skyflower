@@ -78,26 +78,26 @@ void Application::Start()
 	memoryChart.SetUnit("MiB");
 	Texture2D *memoryChartTexture = m_graphicsEngine->CreateTexture2D(memoryChart.GetWidth(), memoryChart.GetHeight());
 
-	double chartUpdateDelay = 0.1;
-	double nextChartUpdate = 0.0;
-	double chartTime = 30.0;
-
-	double oldTime = GetTime();
-	double time, deltaTime;
-
-	double timeSinceLight = 0;
-	m_quit = false;
-
 	thread load;
 	m_menu = new Menu();
 	m_menu->init(m_graphicsEngine);
 	m_menu->setActive(false);
 
+	double chartUpdateDelay = 0.1;
+	double nextChartUpdate = 0.0;
+	double chartTime = 30.0;
+
+	double time, deltaTime;
+	double timeSinceLight = 0;
+
+	m_oldTime = GetTime();
+	m_quit = false;
+
 	while(!m_quit)
 	{
 		time = GetTime();
-		deltaTime = time - oldTime;
-		oldTime = time;
+		deltaTime = time - m_oldTime;
+		m_oldTime = time;
 		timeSinceLight += deltaTime;
 
 		frameTimeChart.AddPoint((float)time, (float)(deltaTime * 1000.0));
@@ -120,7 +120,7 @@ void Application::Start()
 			load = thread(&LevelHandler::LoadQueued, levelHandler);
 			changeGameState(GameState::loading);
 		}
-			
+		
 		switch (gameState)
 		{
 		case GameState::game:
@@ -164,9 +164,17 @@ void Application::OnWindowShouldClose()
 	m_quit = true;
 }
 
-void Application::OnWindowResize(unsigned int width, unsigned int height)
+void Application::OnWindowResized(unsigned int width, unsigned int height)
 {
 	m_graphicsEngine->OnResize(width, height);
+}
+
+void Application::OnWindowResizeEnd()
+{
+	// While resizing/moving the window PumpMessages will block and cause a
+	// huge delta time when the window has stopped resizing/moving. Set
+	// m_oldTime to the current time to prevent that from happening.
+	m_oldTime = GetTime();
 }
 
 void Application::OnWindowActivate()
@@ -210,6 +218,7 @@ void Application::OnKeyDown(unsigned short key)
 {
 	if (m_menu->isActive())
 		m_menu->buttonPressed(key);
+
 	switch (key)
 	{
 	case VK_ESCAPE:
