@@ -113,18 +113,6 @@ void Application::Start()
 			memoryChartTexture->UploadData(memoryChart.GetPixels());
 		}
 
-		m_graphicsEngine->Begin2D();
-
-		if (m_showCharts) {
-			m_graphicsEngine->Draw2DTexture(frameTimeChartTexture, 0, 0);
-			m_graphicsEngine->Draw2DTexture(memoryChartTexture, 0, frameTimeChart.GetHeight() + 6);
-		}
-		m_graphicsEngine->End2D();
-
-		m_soundEngine->Update((float)deltaTime);
-		m_window->PumpMessages();
-		
-		
 		if (levelHandler->hasQueuedLevel() && !levelHandler->isLoading())
 		{
 			if (load.joinable())
@@ -146,8 +134,19 @@ void Application::Start()
 			break;
 		}
 		
+		m_graphicsEngine->Begin2D();
+
+		if (m_showCharts) {
+			m_graphicsEngine->Draw2DTexture(frameTimeChartTexture, 0, 0);
+			m_graphicsEngine->Draw2DTexture(memoryChartTexture, 0, frameTimeChart.GetHeight() + 6);
+		}
+
+		m_graphicsEngine->End2D();
+
 		m_graphicsEngine->Present();
-		
+
+		m_soundEngine->Update((float)deltaTime);
+		m_window->PumpMessages();
 	}
 
 	m_graphicsEngine->DeleteTexture2D(memoryChartTexture);
