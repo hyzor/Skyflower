@@ -1,5 +1,15 @@
 <root>
-    <WoodBlock entityName="WoodBlock" id="3" isVisible="1" isCollidible="1" Type="object" isAnimated="0" xPos="-36.0960396599" yPos="0.0" zPos="-39.4741144045" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" model="Models\\Worlds\\Subworld\\WoodBlock"/>
+    
+	<Platform entityName="WoodBlock" id="3" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
+		xPos="-36.0960396599" yPos="20.0" zPos="-39.4741144045" 
+		xRot="0.0" yRot="0.0" zRot="0.0" 
+		xScale="1.0" yScale="1.0" zScale="1.0" 
+		model="Models\\Worlds\\Subworld\\WoodBlock">
+		<Messenger />
+		<Movement speed="20"/>
+		<Box />
+		<Gravity />
+	</Platform>
     <placeHolderPlattform entityName="placeHolderPlattform1" id="1" isVisible="1" isCollidible="1" Type="object" isAnimated="0" xPos="0.0" yPos="-24.6400147892" zPos="-107.418256854" xRot="0.0" yRot="0.0" zRot="0.0" xScale="0.743650139876" yScale="0.743650139876" zScale="0.743650139876" model="Models\\Worlds\\Subworld\\placeHolderPlattform"/>
     <placeHolderPlattform entityName="placeHolderPlattform2" id="2" isVisible="1" isCollidible="1" Type="object" isAnimated="0" xPos="0.0" yPos="0.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="100.0" yScale="1.0" zScale="100.0" model="Models\\Worlds\\Subworld\\placeHolderPlattform"/>
 	<Platform entityName="ButtonBase2" id="4" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 

@@ -16,6 +16,8 @@ class DLL_API CollisionInstance
 		bool Test(Triangle t);
 		bool Test(CollisionInstance* ci);
 
+		Box GetBox();
+
 		CollisionModel* Model;
 		Vec3 Position;
 	private:

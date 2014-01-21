@@ -48,6 +48,7 @@ class Entity {
 			else
 				return NULL;
 		}
+		bool hasComponents(string name);
 
 		Vec3 returnPos();
 		Vec3 spawnpos;
@@ -57,6 +58,7 @@ class Entity {
 		Entity* ground;
 		Entity* wall;
 
+		void updatePos(Vec3 pos);
 	private:
 
 		EntityId fId;
@@ -84,7 +86,6 @@ class Entity {
 		// get a component
 		list<Component*> getComponents(string name);
 
-		bool hasComponents(string name);
 
 		// get all components
 		list<Component*> getComponents();
@@ -139,7 +140,6 @@ class Entity {
 		Vec3 returnScale();
 		bool returnVisible();
 		CollisionInstance* returnCollision();
-		void updatePos(Vec3 pos);
 		void updateRot(Vec3 rot);
 		void updateScale(Vec3 scale);
 		void updateVisible(bool isVisible);	

@@ -173,5 +173,8 @@
     <ClInclude Include="src\skyflower\Menu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\skyflower\Components\BoxComp.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

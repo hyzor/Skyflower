@@ -1020,6 +1020,15 @@ bool EntityManager::loadXML(string xmlFile)
 				Pushable * p = new Pushable();
 				this->addComponent(entity, p);
 			}
+			else if (componentName == "Box")
+			{
+				float speed = 10;
+				attr = e->Attribute("speed");
+				if (attr)
+					speed = e->FloatAttribute("speed");
+				BoxComp* p = new BoxComp(speed);
+				this->addComponent(entity, p);
+			}
 			else
 			{
 				cout << "Unknown component with name " << componentName << " in entity " << entityName << " in file " << xmlFile << endl;
@@ -1185,30 +1194,94 @@ void EntityManager::handleCollision()
 		fEntitys[i]->wall = nullptr;
 		if (fEntitys[i]->hasComponents("Gravity"))
 		{
-			float t = testMove(Ray(Vec3(0, 15, 0), Vec3(0, -15, 0)), fEntitys[i], fEntitys[i]->ground); //test feet and head
-			//reset jump
-			if (t == -1)
+			vector<Ray> groundRays;
+			vector<Ray> wallRays;
+
+			if (fEntitys[i]->collInst)
 			{
-				fEntitys[i]->physics->setVelocity(Vec3());
-				fEntitys[i]->physics->setJumping(false);
+				Box bounds = fEntitys[i]->collInst->Model->GetBox();
+				
+				Box small = bounds;
+				small.Position += Vec3(2, 2, 2);
+				small.Size -= Vec3(2, 2, 2) * 2;
+
+				//ground rays
+				int amountX = small.Size.X / 1.5f;
+				for (int kx = 1; kx <= amountX; kx++)
+				{
+					int amountZ = small.Size.Z / 1.5f;
+					for (int kz = 1; kz <= amountZ; kz++)
+					{
+						Vec3 p = small.Position;
+						p.Y = bounds.Size.Y;
+						p.X = -small.Size.X/2 + (small.Size.X / (amountX + 1))*kx;
+						p.Z = -small.Size.Z/2 + (small.Size.Z / (amountZ + 1))*kz;
+
+						groundRays.push_back(Ray(p, Vec3(0, -bounds.Size.Y, 0)));
+					}
+				}
+
+				//wall rays
+				int amountY = small.Size.Y / 2;
+				for (int ky = 1; ky <= amountY; ky++)
+				{
+					float pY = small.Position.Y + (small.Size.Y / (amountY + 1))*ky;
+
+					int amountX = small.Size.X / 2;
+					for (int kx = 1; kx <= amountX; kx++)
+					{
+						float pX = -small.Size.X / 2 + (small.Size.X / (amountX + 1))*kx;
+						float pZ = -bounds.Size.Z / 2;
+
+						wallRays.push_back(Ray(Vec3(pX, pY, pZ), Vec3(0, 0, bounds.Size.Z)));
+					}
+
+					int amountZ = small.Size.Z / 2;
+					for (int kz = 1; kz <= amountZ; kz++)
+					{
+						float pZ = -small.Size.Z / 2 + (small.Size.Z / (amountZ + 1))*kz;
+						float pX = -bounds.Size.X / 2;
+
+						wallRays.push_back(Ray(Vec3(pX, pY, pZ), Vec3(bounds.Size.X, 0, 0)));
+					}
+				}
 			}
-			else if (t == 1)
+			else
 			{
-				fEntitys[i]->physics->setVelocity(Vec3());
-				fEntitys[i]->ground = nullptr;
+				//body
+				groundRays.push_back(Ray(Vec3(0, 15, 0), Vec3(0, -15, 0)));
+
+				//feet
+				wallRays.push_back(Ray(Vec3(-3, 3, 0), Vec3(6, 0, 0))); // test left and right at feet
+				wallRays.push_back(Ray(Vec3(0, 3, -3), Vec3(0, 0, 6))); // test front and back at feet
+				wallRays.push_back(Ray(Vec3(-3 * 0.71f, 3, -3 * 0.71f), Vec3(6 * 0.71f, 0, 6 * 0.71f))); // extra test
+				wallRays.push_back(Ray(Vec3(-3 * 0.71f, 3, 3 * 0.71f), Vec3(6 * 0.71f, 0, -6 * 0.71f))); // extra test
+
+				//head
+				wallRays.push_back(Ray(Vec3(-3, 13, 0), Vec3(6, 0, 0))); // test left and right at head
+				wallRays.push_back(Ray(Vec3(0, 13, -3), Vec3(0, 0, 6))); // test front and back at head
+				wallRays.push_back(Ray(Vec3(-3 * 0.71f, 13, -3 * 0.71f), Vec3(6 * 0.71f, 0, 6 * 0.71f))); // extra test
+				wallRays.push_back(Ray(Vec3(-3 * 0.71f, 13, 3 * 0.71f), Vec3(6 * 0.71f, 0, -6 * 0.71f))); // extra test
 			}
 
-			//feet
-			testMove(Ray(Vec3(-3, 3, 0), Vec3(6, 0, 0)), fEntitys[i], fEntitys[i]->wall); // test left and right at feet
-			testMove(Ray(Vec3(0, 3, -3), Vec3(0, 0, 6)), fEntitys[i], fEntitys[i]->wall); // test front and back at feet
-			testMove(Ray(Vec3(-3 * 0.71f, 3, -3 * 0.71f), Vec3(6 * 0.71f, 0, 6 * 0.71f)), fEntitys[i], fEntitys[i]->wall); // extra test
-			testMove(Ray(Vec3(-3 * 0.71f, 3, 3 * 0.71f), Vec3(6 * 0.71f, 0, -6 * 0.71f)), fEntitys[i], fEntitys[i]->wall); // extra test
-			
-			//head
-			testMove(Ray(Vec3(-3, 13, 0), Vec3(6, 0, 0)), fEntitys[i], fEntitys[i]->wall); // test left and right at head
-			testMove(Ray(Vec3(0, 13, -3), Vec3(0, 0, 6)), fEntitys[i], fEntitys[i]->wall); // test front and back at head
-			testMove(Ray(Vec3(-3 * 0.71f, 13, -3 * 0.71f), Vec3(6 * 0.71f, 0, 6 * 0.71f)), fEntitys[i], fEntitys[i]->wall); // extra test
-			testMove(Ray(Vec3(-3 * 0.71f, 13, 3 * 0.71f), Vec3(6 * 0.71f, 0, -6 * 0.71f)), fEntitys[i], fEntitys[i]->wall); // extra test
+			for (int k = 0; k < groundRays.size(); k++)
+			{
+				float t = testMove(groundRays[k], fEntitys[i], fEntitys[i]->ground); //test feet and head
+				//reset jump
+				if (t == -1)
+				{
+					fEntitys[i]->physics->setVelocity(Vec3());
+					fEntitys[i]->physics->setJumping(false);
+				}
+				else if (t == 1)
+				{
+					fEntitys[i]->physics->setVelocity(Vec3());
+					fEntitys[i]->ground = nullptr;
+				}
+			}
+
+			for (int k = 0; k < wallRays.size(); k++)
+				testMove(wallRays[k], fEntitys[i], fEntitys[i]->wall);
 
 
 			//activate event for wall
@@ -1216,6 +1289,9 @@ void EntityManager::handleCollision()
 				fEntitys[i]->ground->sendMessageToEntity("Ground", fEntitys[i]->ground->fId);
 			if (fEntitys[i]->wall)
 				fEntitys[i]->wall->sendMessageToEntity("Wall", fEntitys[i]->wall->fId);
+
+
+
 
 
 			//collision and pushing between two entities

@@ -160,3 +160,11 @@ void CollisionInstance::SetRotation(Vec3 rot)
 	rot2Inv = r2;
 	rot3Inv = r3;
 }
+
+Box CollisionInstance::GetBox()
+{
+	Box bounds = Model->GetBox();
+	bounds.Position += this->Position;
+
+	return bounds;
+}

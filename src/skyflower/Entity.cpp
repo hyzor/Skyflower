@@ -98,8 +98,11 @@ Entity::~Entity() {
 	if (modelInst)
 		this->modules->graphics->DeleteInstance(this->modelInst);
 
-	//if (AnimInst)
-		//this->modules->graphics->DeleteInstance(this->AnimInst);
+	if (AnimInst)
+		this->modules->graphics->DeleteInstance(this->AnimInst);
+
+	if (field)
+		this->modules->potentialField->DeleteField(field);
 	
 	delete this->physics;
 }
