@@ -173,6 +173,8 @@ float4 main(VertexOut pIn) : SV_TARGET
 
 	//return float4(ambient_occlusion, ambient_occlusion, ambient_occlusion, 1.0);
 
+	//diffuse.xyz = fogIntensity * diffuse.xyz + (1 - fogIntensity) * gFogColor.xyz
+
 	//litColor = diffuse * (ambient_Lights + diffuse_Lights) + specular_Lights;
 	litColor = float4(diffuse.xyz * (ambient_Lights.xyz + diffuse_Lights.xyz) + specular_Lights.xyz, 1.0f);
 	//litColor *= ambient_occlusion;
@@ -180,8 +182,24 @@ float4 main(VertexOut pIn) : SV_TARGET
 	if (gEnableFogging)
 	{
 		float fogLerp = saturate((distToEye - gFogStart) / gFogRange);
-		litColor = lerp(litColor, gFogColor, fogLerp);
+		//litColor = lerp(litColor, gFogColor, fogLerp);
 	}
+
+	// http://developer.amd.com/wordpress/media/2012/10/Wenzel-Real-time_Atmospheric_Effects_in_Games.pdf
+	// http://udn.epicgames.com/Three/HeightFog.html
+	// http://iancubin.wordpress.com/projects/opengl-volumetric-fog/
+	// http://msdn.microsoft.com/en-us/library/bb173401%28v=vs.85%29.aspx
+
+	float density = 0.01f;
+
+	if (positionW.y > 0.0f)
+	{
+		density = density / (positionW.y / 10.0f);
+	}
+
+	float fogIntensity = 1 / pow(2.71828, distToEye * density);
+
+	litColor = fogIntensity * litColor + (1 - fogIntensity) * gFogColor;
 
 	//return float4(1.0f, 1.0f, 1.0f, 1.0f);
 	//litColor.a = 1.0;
