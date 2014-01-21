@@ -50,6 +50,8 @@ public:
 		requestMessage("StopMoving", &Movement::stopMoving);
 
 		requestMessage("Jump", &Movement::Jump);
+		requestMessage("inAir", &Movement::inAir);
+		requestMessage("notInAir", &Movement::notInAir);
 	}
 
 	void removeFromEntity()
@@ -156,6 +158,7 @@ private:
 	bool isMovingBackward;
 	bool isMovingLeft;
 	bool isMovingRight;
+	bool isInAir;
 	Vec3 camLook;
 	float speed;
 	bool canMove;
@@ -207,16 +210,28 @@ private:
 	void Jump(Message const& msg)
 	{
 		Vec3 pos = getEntityPos();
-
-		if (p->jump(pos))
+		if (!isInAir)
 		{
-			Entity *owner = getOwner();
+			if (p->jump(pos))
+			{
+				Entity *owner = getOwner();
 
-			if (owner)
-				owner->getModules()->sound->PlaySound("player/jump1.wav", &pos.X, 1.0f, false);
+				if (owner)
+					owner->getModules()->sound->PlaySound("player/jump1.wav", &pos.X, 1.0f, false);
+			}
 		}
 
 		updateEntityPos(pos);
+	}
+
+	void inAir(Message const& msg)
+	{
+		this->isInAir = true;
+	}
+
+	void notInAir(Message const& msg)
+	{
+		this->isInAir = false;
 	}
 };
 

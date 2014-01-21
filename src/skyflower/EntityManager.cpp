@@ -1187,12 +1187,19 @@ void EntityManager::handleCollision()
 		{
 			float t = testMove(Ray(Vec3(0, 15, 0), Vec3(0, -15, 0)), fEntitys[i], fEntitys[i]->ground); //test feet and head
 			//reset jump
+			//colliding with feet
 			if (t == -1)
 			{
 				fEntitys[i]->physics->setVelocity(Vec3());
 				fEntitys[i]->physics->setJumping(false);
+				fEntitys[i]->sendMessageToEntity("notInAir", this->fEntitys[i]->getEntityId());
 			}
-			else if (t == 1)
+			else
+			{
+				fEntitys[i]->sendMessageToEntity("inAir", this->fEntitys[i]->getEntityId());
+			}
+			//colliding with head
+			if (t == 1)
 			{
 				fEntitys[i]->physics->setVelocity(Vec3());
 				fEntitys[i]->ground = nullptr;
