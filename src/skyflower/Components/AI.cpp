@@ -6,6 +6,8 @@ void AI::addedToEntity()
 	//cout << "A AI was added to the system." << endl;
 
 	requestMessage("Attack", &AI::Attack);
+			requestMessage("StopMoving", &AI::stopMoving);
+		requestMessage("StartMoving", &AI::startMoving);
 
 	if (!getOwner()->field)
 		getOwner()->field = getEntityManager()->modules->potentialField->CreateField(8, 8, getEntityPos());

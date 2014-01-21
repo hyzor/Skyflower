@@ -196,12 +196,12 @@ private:
 	void stopMoving(Message const& msg)
 	{
 		cout << "STOP MOVING" << endl;
-		//this->canMove = false;
+		this->canMove = false;
 	}
 
 	void startMoving(Message const& msg)
 	{
-		//this->canMove = true;
+		this->canMove = true;
 	}
 
 	void Jump(Message const& msg)

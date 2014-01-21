@@ -62,12 +62,15 @@ private:
 
 	void beingPushed(Message const& msg)
 	{
-		cout << "BEING PUSHED" << endl;
-		this->isPushed = true;
-		this->startPos = getEntityPos();
+		if (this->isPushed == false)
+		{
+			cout << "BEING PUSHED" << endl;
+			this->isPushed = true;
+			this->startPos = getEntityPos();
 
-		//stop the entity from moving, except for the push
-		sendMessageToEntity(getOwnerId(), "StopMoving");
+			//stop the entity from moving, except for the push
+			sendMessageToEntity(getOwnerId(), "StopMoving");
+		}
 	}
 
 };

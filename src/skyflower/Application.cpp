@@ -54,27 +54,14 @@ void Application::Start()
 	
 	entityManager = new EntityManager("../../XML/", &modules);
 
-	entityManager->loadXML2("player.xml");
-	entityManager->loadXML2("lights.XML");
+	entityManager->loadXML("player.xml");
+	entityManager->loadXML("lights.XML");
 	levelHandler->init(entityManager);
-	//entityManager->loadXML2("player2.xml");
-	//entityManager->loadXML2("platform.xml");
-	//entityManager->loadXML2("block22.xml");
-	//entityManager->loadXML2("TriggerTest.xml");
-	//entityManager->loadXML2("Player3.xml");
-	//entityManager->createSphereOnEntities();
-
-	//entityManager->loadXML("player.xml");
-	//entityManager->loadXML("player2.xml");
-	entityManager->loadXML("player3.xml");
-	//entityManager->loadXML("platform.xml");
-	//entityManager->loadXML("block22.xml");
-	//entityManager->loadXML("AItest.xml");
-
 
 	// Load Hub Level
 	levelHandler->queue(1);
 	levelHandler->LoadQueued();
+	entityManager->createSphereOnEntities();
 	camera = m_graphicsEngine->CreateCameraController();
 	m_graphicsEngine->UpdateSceneData();
 	Movement* playerMove = (Movement*)entityManager->getComponent("player", "Movement");
@@ -126,6 +113,7 @@ void Application::Start()
 			memoryChartTexture->UploadData(memoryChart.GetPixels());
 		}
 
+		m_graphicsEngine->Begin2D();
 
 		if (m_showCharts) {
 			m_graphicsEngine->Draw2DTexture(frameTimeChartTexture, 0, 0);
@@ -234,7 +222,7 @@ void Application::OnKeyDown(unsigned short key)
 		break;
 	case 'R':
 		m_graphicsEngine->clearLights();
-		entityManager->loadXML2("lights.XML");
+		entityManager->loadXML("lights.XML");
 		break;
 	case 'M':
 		if (m_menu->isActive())

@@ -233,10 +233,9 @@ void Physics::moveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, float speed, Vec3 &
 	this->walk(pos, speed);
 }
 
+//moving the entity that is peing pushed by another entity
 Vec3 Physics::movePushed(Vec3 pos)
 {
-	cout << "FLYTTAR!" << endl;
-
 	pos += pushDirection * (dt * 5);
 	return pos;
 }

@@ -19,6 +19,7 @@ public:
 
 	AI() : Component("AI")
 	{
+		this->canMove = true;
 		centerradius = 0;
 		attacktime = 0;
 		nextattack = 10;
@@ -26,13 +27,7 @@ public:
 	};
 	virtual ~AI() {};
 
-	void addedToEntity() {
-		cout << "A AI was added to the system." << endl;
-
-		requestMessage("MoveToTarget", &AI::MoveToTarget);
-		requestMessage("StopMoving", &AI::stopMoving);
-		requestMessage("StartMoving", &AI::startMoving);
-	}
+	void addedToEntity();
 
 	void sendAMessage(string message)	{
 	}
@@ -44,6 +39,8 @@ private:
 	float centerradius;
 	float attacktime;
 	float nextattack;
+	bool canMove;
+
 	void Attack(Message const& msg)
 	{
 		centerradius = 0;

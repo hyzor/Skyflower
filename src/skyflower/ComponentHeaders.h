@@ -14,5 +14,7 @@
 #include "Components/Event.h"
 #include "Components/Button.h"
 #include "Components/Checkpoint.h"
+#include "Components/Push.h"
+#include "Components/Pushable.h"
 
 #endif

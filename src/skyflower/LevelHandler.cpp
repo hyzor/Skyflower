@@ -102,7 +102,7 @@ void LevelHandler::loadQueued(int id)
 		if (_entityManager->getEntity(i)->getType() != "player")
 			_entityManager->destroyEntity(i);
 	}
-	_entityManager->loadXML2(_levels.at(queueID)._path);
+	_entityManager->loadXML(_levels.at(queueID)._path);
 	_current = queueID;
 	loading = false;
 }

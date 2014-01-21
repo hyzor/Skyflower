@@ -14,5 +14,6 @@
 			<Messenger />
 			<Pushable />
 			<Push />
+			<Health />
 	</Entity>
 </root>

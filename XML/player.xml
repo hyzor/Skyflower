@@ -12,6 +12,8 @@
 			<Listener />
 			<Footsteps />
 			<Messenger />
+			<Push />
+			<Pushable />
 			<Health maxHP = "100" />
 	</Entity>
 </root>

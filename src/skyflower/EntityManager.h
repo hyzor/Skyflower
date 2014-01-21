@@ -128,7 +128,7 @@ class EntityManager {
 		void sendMessageToEntity(string message, string entity); //sends a message to a specific entity
 		void sendMessageToEntity(string message, EntityId entity); //sends a message to a specific entity
 		bool loadXML(EntityManager * entityManager, string xmlFile);
-		bool loadXML2(string xmlFile);
+		bool loadXML(string xmlFile);
 
 		Vec3 getEntityPos(string type);
 		Vec3 getEntityPos(EntityId ownerId);
@@ -146,6 +146,7 @@ class EntityManager {
 		void updateEntityVisibility(bool isVisible, EntityId id);
 
 		void handleCollision();
+		void pushEntity(int entityIndex, Vec3 direction);
 		void createSphereOnEntities();
 		void updateSpheres();
 
