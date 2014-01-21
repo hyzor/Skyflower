@@ -11,6 +11,8 @@
 #include "EntityManager.h"
 #include "LevelHandler.h"
 #include "Menu.h"
+#include "GUI.h"
+
 using namespace Cistron;
 
 class Application : WindowListener, InputListener
@@ -60,6 +62,7 @@ private:
 	SoundEngine *m_soundEngine;
 	EntityManager* entityManager;
 	CameraController *camera;
+	GUI *m_GUI;
 	bool m_quit;
 	bool m_showCharts;
 	GameState gameState;

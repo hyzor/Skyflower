@@ -20,6 +20,7 @@ Application::Application()
 	m_soundEngine = NULL;
 	this->entityManager = NULL;
 	m_showCharts = false;
+	m_GUI = new GUI();
 }
 
 Application::~Application()
@@ -71,12 +72,16 @@ void Application::Start()
 	LineChart frameTimeChart(1024 * 1024);
 	frameTimeChart.SetSize(256, 128);
 	frameTimeChart.SetUnit("ms");
-	Texture2D *frameTimeChartTexture = m_graphicsEngine->CreateTexture2D(frameTimeChart.GetWidth(), frameTimeChart.GetHeight());
+	//Texture2D *frameTimeChartTexture = m_graphicsEngine->CreateTexture2D(frameTimeChart.GetWidth(), frameTimeChart.GetHeight());
+	unsigned int frameChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, 0.0f, 0.0f), 
+		m_GUI->CreateTexture2D(m_graphicsEngine, frameTimeChart.GetWidth(), frameTimeChart.GetHeight()));
 
 	LineChart memoryChart(1024 * 1024);
 	memoryChart.SetSize(256, 128);
 	memoryChart.SetUnit("MiB");
-	Texture2D *memoryChartTexture = m_graphicsEngine->CreateTexture2D(memoryChart.GetWidth(), memoryChart.GetHeight());
+	//Texture2D *memoryChartTexture = m_graphicsEngine->CreateTexture2D(memoryChart.GetWidth(), memoryChart.GetHeight());
+	unsigned int memChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, 0.0f, 0.0f),
+		m_GUI->CreateTexture2D(m_graphicsEngine, memoryChart.GetWidth(), memoryChart.GetHeight()));
 
 	thread load;
 	m_menu = new Menu();
@@ -107,10 +112,12 @@ void Application::Start()
 			nextChartUpdate = time + chartUpdateDelay;
 
 			frameTimeChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, (1.0f / 60.0f) * 1000.0f);
-			frameTimeChartTexture->UploadData(frameTimeChart.GetPixels());
+			//frameTimeChartTexture->UploadData(frameTimeChart.GetPixels());
+			m_GUI->UploadData(frameChartID, frameTimeChart.GetPixels());
 
 			memoryChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, 256.0f);
-			memoryChartTexture->UploadData(memoryChart.GetPixels());
+			m_GUI->UploadData(memChartID, memoryChart.GetPixels());
+			//memoryChartTexture->UploadData(memoryChart.GetPixels());
 		}
 
 		if (levelHandler->hasQueuedLevel() && !levelHandler->isLoading())
@@ -134,14 +141,28 @@ void Application::Start()
 			break;
 		}
 		
-		m_graphicsEngine->Begin2D();
+		//m_graphicsEngine->Begin2D();
+		GUIElement* frameChartElem = m_GUI->GetGUIElement(frameChartID);
+		GUIElement* memChartElem = m_GUI->GetGUIElement(memChartID);
 
-		if (m_showCharts) {
-			m_graphicsEngine->Draw2DTexture(frameTimeChartTexture, 0, 0);
-			m_graphicsEngine->Draw2DTexture(memoryChartTexture, 0, frameTimeChart.GetHeight() + 6);
+		if (m_showCharts) 
+		{
+			frameChartElem->SetVisible(true);
+			memChartElem->SetVisible(true);
+			memChartElem->GetDrawInput()->pos.x = 0.0f;
+			memChartElem->GetDrawInput()->pos.y = (float)(frameTimeChart.GetHeight() + 6);
+			//m_graphicsEngine->Draw2DTexture(frameTimeChartTexture, 0, 0);
+			//m_graphicsEngine->Draw2DTexture(memoryChartTexture, 0, frameTimeChart.GetHeight() + 6);
+		}
+		else
+		{
+			frameChartElem->SetVisible(false);
+			memChartElem->SetVisible(false);
 		}
 
-		m_graphicsEngine->End2D();
+		//m_graphicsEngine->End2D();
+
+		m_GUI->Draw(m_graphicsEngine);
 
 		m_graphicsEngine->Present();
 
@@ -149,8 +170,9 @@ void Application::Start()
 		m_window->PumpMessages();
 	}
 
-	m_graphicsEngine->DeleteTexture2D(memoryChartTexture);
-	m_graphicsEngine->DeleteTexture2D(frameTimeChartTexture);
+	//m_graphicsEngine->DeleteTexture2D(memoryChartTexture);
+	//m_graphicsEngine->DeleteTexture2D(frameTimeChartTexture);
+	m_GUI->Destroy(m_graphicsEngine);
 	delete levelHandler;
 	DestroyCameraController(camera);
 	delete entityManager;
@@ -284,8 +306,12 @@ void Application::updateGame(float dt, Movement* playerMove)
 
 void Application::updateLoading(float dt)
 {
+	Draw2DInput* input = new Draw2DInput();
+	input->pos.x = 0.0f;
+	input->pos.y = 0.0f;
+
 	m_graphicsEngine->Begin2D();
-	m_graphicsEngine->Draw2DTextureFile("..\\..\\content\\Textures\\Menygrafik\\fyraTreRatio.png", 0, 0);
+	m_graphicsEngine->Draw2DTextureFile("..\\..\\content\\Textures\\Menygrafik\\fyraTreRatio.png", input);
 	m_graphicsEngine->End2D();
 
 	if (!levelHandler->isLoading())

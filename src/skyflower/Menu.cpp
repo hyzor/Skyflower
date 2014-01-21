@@ -50,18 +50,21 @@ void Menu::setActive(bool active)
 
 void Menu::draw(GraphicsEngine *g)
 {
-	g->Draw2DTextureFile(m_bg, 0, 0);
+	Draw2DInput* input = new Draw2DInput();
+	input->pos.x = 0.0f;
+	input->pos.y = 0.0f;
+	g->Draw2DTextureFile(m_bg, input);
 	for (unsigned int i = 0; i < m_buttons.size(); i++)
 	{
 		Button current = m_buttons.at(i);
 		if (current._active)
 		{
 			if (i == selectedButton)
-				g->Draw2DTextureFile(current._hoverTex, (int)current._position.X+10, (int)current._position.Y-10);
+				g->Draw2DTextureFile(current._hoverTex, input);
 			else
-				g->Draw2DTextureFile(current._tex, (int)current._position.X, (int)current._position.Y);
+				g->Draw2DTextureFile(current._tex, input);
 		}
-		
+		input->pos.y += 200.0f;
 	}
 }
 

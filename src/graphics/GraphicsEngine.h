@@ -6,6 +6,33 @@
 #include "Texture2D.h"
 #include <string>
 #include "..\shared\Vec3.h"
+#include <DirectXMath.h>
+
+struct Draw2DInput
+{
+	void* operator new (size_t size)
+	{
+		void* p = _aligned_malloc(size, 16);
+
+		if (!p)
+			throw std::bad_alloc();
+
+		return p;
+	}
+
+	void operator delete (void* p)
+	{
+		Draw2DInput* ptr = static_cast<Draw2DInput*>(p);
+		_aligned_free(p);
+	}
+
+	DirectX::XMFLOAT2 pos;
+	DirectX::XMFLOAT2 scale;
+	DirectX::XMFLOAT2 origin;
+	DirectX::XMVECTOR color;
+	float rot;
+	float layerDepth;
+};
 
 class DLL_API GraphicsEngine
 {
@@ -22,8 +49,8 @@ public:
 
 	virtual void Begin2D() = 0;
 	virtual void End2D() = 0;
-	virtual void Draw2DTextureFile(const std::string file, int x, int y) = 0;
-	virtual void Draw2DTexture(Texture2D *texture, int x, int y) = 0;
+	virtual void Draw2DTextureFile(const std::string file, const Draw2DInput* input) = 0;
+	virtual void Draw2DTexture(Texture2D *texture, const Draw2DInput* input) = 0;
 
 	virtual ModelInstance* CreateInstance(std::string file) = 0;
 	virtual ModelInstance* CreateInstance(std::string file, Vec3 pos) = 0;
@@ -42,6 +69,9 @@ public:
 	virtual void UpdateSceneData() = 0;
 	virtual Texture2D *CreateTexture2D(unsigned int width, unsigned int height) = 0;
 	virtual void DeleteTexture2D(Texture2D *texture) = 0;
+
+//	virtual Text2D* CreateText2D() = 0;
+//	virtual void DeleteTexture2D(Text2D *text) = 0;
 };
 
 DLL_API GraphicsEngine* CreateGraphicsEngine();
