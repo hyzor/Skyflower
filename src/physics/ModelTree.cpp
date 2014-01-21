@@ -1,4 +1,5 @@
 #include "ModelTree.h"
+#include <iostream>
 
 ModelTreeNode::ModelTreeNode(){ Position = Vec3(); }
 ModelTreeNode::~ModelTreeNode(){}
@@ -16,8 +17,8 @@ ModelTreeParent::ModelTreeParent() : ModelTreeParent::ModelTreeNode()
 }
 ModelTreeParent::ModelTreeParent(Vec3 min, Vec3 max) : ModelTreeParent::ModelTreeNode()
 {
-	this->min = min;
-	this->max = max;
+	this->min = Vec3::Min(min, max);
+	this->max = Vec3::Max(max, min);
 
 	left = nullptr;
 	right = nullptr;
@@ -64,30 +65,50 @@ void ModelTreeParent::Add(Triangle* t, int layers)
 	//check side to add
 	bool addright = false;
 	bool addleft = false;
-	if (InfrontOfPlane(t->P1, center, normal))
+	int infront = InfrontOfPlane(t->P1, center, normal);
+	if (infront == 1)
 		addright = true;
-	else
+	else if(infront == 0)
 		addleft = true;
-	if (InfrontOfPlane(t->P2, center, normal))
+	else
+	{
+		addleft = true;
 		addright = true;
-	else
-		addleft = true;
-	if (InfrontOfPlane(t->P3, center, normal))
+	}
+	infront = InfrontOfPlane(t->P2, center, normal);
+	if (infront == 1)
 		addright = true;
-	else
+	else if(infront == 0)
 		addleft = true;
+	else
+	{
+		addleft = true;
+		addright = true;
+	}
+	infront = InfrontOfPlane(t->P3, center, normal);
+	if (infront == 1)
+		addright = true;
+	else if(infront == 0)
+		addleft = true;
+	else
+	{
+		addleft = true;
+		addright = true;
+	}
 
 	//add to side
 	if (addright)
 		right->Add(t, layers - 1);
 	if (addleft)
 		left->Add(t, layers - 1);
+
 }
 
-bool ModelTreeParent::InfrontOfPlane(Vec3 point, Vec3 &center, Vec3 &normal)
+int ModelTreeParent::InfrontOfPlane(Vec3 point, Vec3 &center, Vec3 &normal)
 {
 	point -= center;
-	return point.Dot(normal) > 0;
+	float dot = point.Dot(normal);
+	return (dot > 0)?1:(dot==0?2:0);
 }
 
 void ModelTreeLeaf::Add(Triangle* t, int layers)
@@ -109,21 +130,39 @@ float ModelTreeParent::Test(Ray &r)
 	//check side to test
 	bool testright = false;
 	bool testleft = false;
-	if (InfrontOfPlane(r.Pos, center, normal))
+	int infront = InfrontOfPlane(r.Pos, center, normal);
+	if (infront == 1)
 		testright = true;
-	else
+	else if(infront == 0)
 		testleft = true;
-	if (InfrontOfPlane(r.Pos+r.Dir, center, normal))
+	else
+	{
 		testright = true;
-	else
 		testleft = true;
+	}
+	infront = InfrontOfPlane(r.Pos + r.Dir, center, normal);
+	if (infront == 1)
+		testright = true;
+	else if(infront == 0)
+		testleft = true;
+	else
+	{
+		testright = true;
+		testleft = true;
+	}
 
 	//test side
 	float hit = 0;
 	if (testright && right)
 		hit = right->Test(r);
 	if (testleft && left)
-		hit = left->Test(r);
+	{
+		float h = left->Test(r);
+		if (hit == 0)
+			hit = h;
+		if (h != 0 && h < hit)
+			hit = h;
+	}
 	return hit;
 }
 
