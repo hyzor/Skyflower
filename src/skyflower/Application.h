@@ -64,9 +64,12 @@ private:
 	CameraController *camera;
 	GUI *m_GUI;
 	bool m_quit;
-	bool m_showCharts;
 	GameState gameState;
 	Menu *m_menu;
+
+	bool m_showCharts;
+	int m_frameChartID;
+	int m_memChartID;
 };
 
 #endif

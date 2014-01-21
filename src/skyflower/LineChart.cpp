@@ -13,9 +13,9 @@
 
 #include "LineChart.h"
 
-static float lerp(float x, float y, float a)
+static double lerp(double x, double y, double a)
 {
-	return x * (1.0f - a) + y * a;
+	return x * (1.0 - a) + y * a;
 }
 
 LineChart::LineChart(size_t maximumDataPoints)
@@ -81,7 +81,7 @@ void *LineChart::GetPixels() const
 	return m_bitmap->getPixels();
 }
 
-void LineChart::AddPoint(float timeStamp, float value)
+void LineChart::AddPoint(double timeStamp, double value)
 {
 	m_dataPoints[m_dataPointEnd].timeStamp = timeStamp;
 	m_dataPoints[m_dataPointEnd].value = value;
@@ -99,21 +99,21 @@ void LineChart::ClearPoints()
 	m_dataPointEnd = 0;
 }
 
-void LineChart::Draw(float startTime, float endTime, float resolution, float targetValue)
+void LineChart::Draw(double startTime, double endTime, double resolution, double targetValue)
 {
 	assert(m_canvas);
 	assert(m_bitmap);
 	assert(endTime > startTime);
-	assert(resolution > 0.0f);
+	assert(resolution > 0.0);
 
 	SkPath path;
 	const struct LineChartDataPoint *point;
 	const struct LineChartDataPoint *previousPoint;
-	float timeRange = endTime - startTime;
-	float nextTimeStamp = startTime;
-	float value, alpha, difference, position;
-	float maxValue = FLT_MIN;
-	float minValue = FLT_MAX;
+	double timeRange = endTime - startTime;
+	double nextTimeStamp = startTime;
+	double value, alpha, difference, position;
+	double maxValue = DBL_MIN;
+	double minValue = DBL_MAX;
 	double totalValue = 0.0;
 	size_t previousIndex;
 	int count = 0;
@@ -128,7 +128,7 @@ void LineChart::Draw(float startTime, float endTime, float resolution, float tar
 				value = point->value;
 			}
 			else {
-				previousIndex = (i - 1 < 0? m_dataPointCapacity - 1 : i - 1);
+				previousIndex = (i == 0? m_dataPointCapacity - 1 : i - 1);
 				previousPoint = &m_dataPoints[previousIndex];
 
 				difference = point->timeStamp - previousPoint->timeStamp;
@@ -147,10 +147,10 @@ void LineChart::Draw(float startTime, float endTime, float resolution, float tar
 			if (first) {
 				first = false;
 
-				path.moveTo(position, (float)m_bitmap->height() - value);
+				path.moveTo((SkScalar)position, (SkScalar)(m_bitmap->height() - value));
 			}
 			else {
-				path.lineTo(position, (float)m_bitmap->height() - value);
+				path.lineTo((SkScalar)position, (SkScalar)(m_bitmap->height() - value));
 			}
 
 			maxValue = std::max(maxValue, value);
@@ -169,16 +169,17 @@ void LineChart::Draw(float startTime, float endTime, float resolution, float tar
 	//printf("drawing %d samples, maxValue=%.1f, minValue=%.1f, lastValue=%.1f\n", count, maxValue, minValue, value);
 
 	// Add some padding to the top and bottom of the chart.
-	float drawMax = std::max(maxValue, targetValue);
-	float drawMin = std::min(minValue, targetValue);
-	float padding = (drawMax - drawMin) * 0.1f;
-	float drawRange = (drawMax + padding) + (drawMin - padding);
+	double drawMax = std::max(maxValue, targetValue);
+	double drawMin = std::min(minValue, targetValue);
+	double padding = (drawMax - drawMin) * 0.1;
+	double drawRange = (drawMax + padding) + (drawMin - padding);
 
 	// Scale the path to fit the canvas.
-	float scale = m_bitmap->height() / drawRange;
+	double scale = m_bitmap->height() / drawRange;
+	double pixelPadding = m_bitmap->height() * -(scale - 1.0);
 	SkMatrix transformation;
-	transformation.setScale(1.0f, scale);
-	transformation.postTranslate(0.0f, m_bitmap->height() * -(scale - 1.0f));
+	transformation.setScale(1.0f, (SkScalar)scale);
+	transformation.postTranslate(0.0f, (SkScalar)pixelPadding);
 	path.transform(transformation);
 
 	// Clear the canvas with transparency.
@@ -189,9 +190,9 @@ void LineChart::Draw(float startTime, float endTime, float resolution, float tar
 	backgroundPaint.setColor(SkColorSetARGB(128, 0, 0, 0));
 	backgroundPaint.setStyle(SkPaint::kFill_Style);
 	backgroundPaint.setXfermodeMode(SkXfermode::kSrcOver_Mode);
-	m_canvas->drawRect(SkRect::MakeXYWH(0.0f, 0.0f, (float)m_bitmap->width(), (float)m_bitmap->height()), backgroundPaint);
+	m_canvas->drawRect(SkRect::MakeXYWH(0.0f, 0.0f, (SkScalar)m_bitmap->width(), (SkScalar)m_bitmap->height()), backgroundPaint);
 
-	float targetLinePosition = ((float)m_bitmap->height() - targetValue) * scale + (m_bitmap->height() * -(scale - 1.0f));
+	double targetLinePosition = (m_bitmap->height() - targetValue) * scale + pixelPadding;
 
 	// Draw the target value line.
 	SkPaint linePaint;
@@ -199,7 +200,7 @@ void LineChart::Draw(float startTime, float endTime, float resolution, float tar
 	linePaint.setStyle(SkPaint::kStroke_Style);
 	linePaint.setStrokeWidth(1.0f);
 	//linePaint.setXfermodeMode(SkXfermode::kSrcOver_Mode);
-	m_canvas->drawLine(0.0f, targetLinePosition, (float)m_bitmap->width(), targetLinePosition, linePaint);
+	m_canvas->drawLine(0.0f, (SkScalar)targetLinePosition, (SkScalar)m_bitmap->width(), (SkScalar)targetLinePosition, linePaint);
 
 	// Draw the actual data point lines.
 	SkPaint pathPaint;
@@ -269,6 +270,6 @@ void LineChart::Draw(float startTime, float endTime, float resolution, float tar
 	//m_canvas->drawText(targetValueString.c_str(), targetValueString.length(), (float)m_bitmap->width(), targetLinePosition - (textPadding / 2.0f), textPaint);
 
 	// Draw the high and low values.
-	m_canvas->drawText(highValueString.c_str(), highValueString.length(), (float)m_bitmap->width(), 9.0f, textPaint);
-	m_canvas->drawText(lowValueString.c_str(), lowValueString.length(), (float)m_bitmap->width(), m_bitmap->height() - 1.0f, textPaint);
+	m_canvas->drawText(highValueString.c_str(), highValueString.length(), (SkScalar)m_bitmap->width(), 9.0f, textPaint);
+	m_canvas->drawText(lowValueString.c_str(), lowValueString.length(), (SkScalar)m_bitmap->width(), m_bitmap->height() - 1.0f, textPaint);
 }
