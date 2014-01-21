@@ -88,31 +88,31 @@ public:
 		{
 			if (this->isMovingForward) {
 				if (this->isMovingLeft) {
-					p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 0.0f - 45.0f);
+					p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, 0.0f - 45.0f);
 				}
 				else if (this->isMovingRight) {
-					p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 0.0f + 45.0f);
+					p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, 0.0f + 45.0f);
 				}
 				else {
-					p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 0.0f);
+					p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, 0.0f);
 				}
 			}
 			else if (this->isMovingBackward) {
 				if (this->isMovingLeft) {
-					p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, -90.0f + -45.0f);
+					p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, -90.0f + -45.0f);
 				}
 				else if (this->isMovingRight) {
-					p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 180.0f - 45.0f);
+					p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, 180.0f - 45.0f);
 				}
 				else {
-					p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 179.0f);
+					p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, 179.0f);
 				}
 			}
 			else if (this->isMovingLeft) {
-				p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, -90.0f);
+				p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, -90.0f);
 			}
 			else if (this->isMovingRight) {
-				p->moveRelativeVec3(pos, this->camLook, DEFAULT_MOVEMENTSPEED * deltaTime, rot, 90.0f);
+				p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, 90.0f);
 			}
 
 			if (isMovingBackward || isMovingForward || isMovingLeft || isMovingRight)
@@ -195,7 +195,6 @@ private:
 
 	void stopMoving(Message const& msg)
 	{
-		cout << "STOP MOVING" << endl;
 		this->canMove = false;
 	}
 
