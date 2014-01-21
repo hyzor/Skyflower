@@ -10,8 +10,6 @@
 #include "ComponentHeaders.h"
 #include "LineChart.h"
 
-#include <thread>
-
 using namespace std;
 using namespace tinyxml2;
 using namespace Cistron;
@@ -56,18 +54,14 @@ void Application::Start()
 	
 	entityManager = new EntityManager("../../XML/", &modules);
 
-	entityManager->loadXML2("player.xml");
-	entityManager->loadXML2("lights.XML");
+	entityManager->loadXML("player.xml");
+	entityManager->loadXML("lights.XML");
 	levelHandler->init(entityManager);
-	//entityManager->loadXML2("player2.xml");
-	//entityManager->loadXML2("platform.xml");
-	//entityManager->loadXML2("block22.xml");
-	//entityManager->loadXML2("TriggerTest.xml");
-	//entityManager->loadXML2("Player3.xml");
 
 	// Load Hub Level
 	levelHandler->queue(1);
 	levelHandler->LoadQueued();
+	entityManager->createSphereOnEntities();
 	camera = m_graphicsEngine->CreateCameraController();
 	m_graphicsEngine->UpdateSceneData();
 	Movement* playerMove = (Movement*)entityManager->getComponent("player", "Movement");
@@ -84,26 +78,26 @@ void Application::Start()
 	memoryChart.SetUnit("MiB");
 	Texture2D *memoryChartTexture = m_graphicsEngine->CreateTexture2D(memoryChart.GetWidth(), memoryChart.GetHeight());
 
-	double chartUpdateDelay = 0.1;
-	double nextChartUpdate = 0.0;
-	double chartTime = 30.0;
-
-	double oldTime = GetTime();
-	double time, deltaTime;
-
-	double timeSinceLight = 0;
-	m_quit = false;
-
 	thread load;
 	m_menu = new Menu();
 	m_menu->init(m_graphicsEngine);
 	m_menu->setActive(false);
 
+	double chartUpdateDelay = 0.1;
+	double nextChartUpdate = 0.0;
+	double chartTime = 30.0;
+
+	double time, deltaTime;
+	double timeSinceLight = 0;
+
+	m_oldTime = GetTime();
+	m_quit = false;
+
 	while(!m_quit)
 	{
 		time = GetTime();
-		deltaTime = time - oldTime;
-		oldTime = time;
+		deltaTime = time - m_oldTime;
+		m_oldTime = time;
 		timeSinceLight += deltaTime;
 
 		frameTimeChart.AddPoint((float)time, (float)(deltaTime * 1000.0));
@@ -119,18 +113,6 @@ void Application::Start()
 			memoryChartTexture->UploadData(memoryChart.GetPixels());
 		}
 
-		m_graphicsEngine->Begin2D();
-
-		if (m_showCharts) {
-			m_graphicsEngine->Draw2DTexture(frameTimeChartTexture, 0, 0);
-			m_graphicsEngine->Draw2DTexture(memoryChartTexture, 0, frameTimeChart.GetHeight() + 6);
-		}
-		m_graphicsEngine->End2D();
-
-		m_soundEngine->Update((float)deltaTime);
-		m_window->PumpMessages();
-		
-		
 		if (levelHandler->hasQueuedLevel() && !levelHandler->isLoading())
 		{
 			if (load.joinable())
@@ -138,7 +120,7 @@ void Application::Start()
 			load = thread(&LevelHandler::LoadQueued, levelHandler);
 			changeGameState(GameState::loading);
 		}
-			
+		
 		switch (gameState)
 		{
 		case GameState::game:
@@ -152,8 +134,19 @@ void Application::Start()
 			break;
 		}
 		
+		m_graphicsEngine->Begin2D();
+
+		if (m_showCharts) {
+			m_graphicsEngine->Draw2DTexture(frameTimeChartTexture, 0, 0);
+			m_graphicsEngine->Draw2DTexture(memoryChartTexture, 0, frameTimeChart.GetHeight() + 6);
+		}
+
+		m_graphicsEngine->End2D();
+
 		m_graphicsEngine->Present();
-		
+
+		m_soundEngine->Update((float)deltaTime);
+		m_window->PumpMessages();
 	}
 
 	m_graphicsEngine->DeleteTexture2D(memoryChartTexture);
@@ -171,9 +164,17 @@ void Application::OnWindowShouldClose()
 	m_quit = true;
 }
 
-void Application::OnWindowResize(unsigned int width, unsigned int height)
+void Application::OnWindowResized(unsigned int width, unsigned int height)
 {
 	m_graphicsEngine->OnResize(width, height);
+}
+
+void Application::OnWindowResizeEnd()
+{
+	// While resizing/moving the window PumpMessages will block and cause a
+	// huge delta time when the window has stopped resizing/moving. Set
+	// m_oldTime to the current time to prevent that from happening.
+	m_oldTime = GetTime();
 }
 
 void Application::OnWindowActivate()
@@ -217,6 +218,7 @@ void Application::OnKeyDown(unsigned short key)
 {
 	if (m_menu->isActive())
 		m_menu->buttonPressed(key);
+
 	switch (key)
 	{
 	case VK_ESCAPE:
@@ -228,7 +230,7 @@ void Application::OnKeyDown(unsigned short key)
 		break;
 	case 'R':
 		m_graphicsEngine->clearLights();
-		entityManager->loadXML2("lights.XML");
+		entityManager->loadXML("lights.XML");
 		break;
 	case 'M':
 		if (m_menu->isActive())

@@ -193,9 +193,6 @@ class Component {
 
 		void trackComponentRequest(string name, bool local = false);
 		void trackMessageRequest(string message);
-		
-
-
 
 		// get Entity manager this component belongs to
 		inline EntityManager* getEntityManager() {
@@ -222,6 +219,7 @@ class Component {
 		// to string
 		string toString();
 
+		// entity-functions
 		Vec3 getEntityPos();
 		Vec3 getEntityRot();
 		Vec3 getEntityScale();

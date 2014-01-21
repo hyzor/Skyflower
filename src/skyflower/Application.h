@@ -30,7 +30,8 @@ public:
 
 public: // WindowListener
 	void OnWindowShouldClose();
-	void OnWindowResize(unsigned int width, unsigned int height);
+	void OnWindowResized(unsigned int width, unsigned int height);
+	void OnWindowResizeEnd();
 	void OnWindowActivate();
 	void OnWindowDeactivate();
 
@@ -51,6 +52,8 @@ private:
 	void changeGameState(GameState newState);
 
 private:
+	double m_oldTime;
+
 	Window *m_window;
 	InputHandler *m_inputHandler;
 	GraphicsEngine *m_graphicsEngine;

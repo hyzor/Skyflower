@@ -19,6 +19,7 @@ class DLL_API Sphere
 
 		bool Test(Sphere s);
 		static bool Test(Sphere s1, Sphere s2);
+		static bool Test(Sphere *s1, Sphere *s2);
 
 	private:
 };

@@ -586,7 +586,6 @@ void EntityManager::trackRequest(RequestId reqId, bool local, Component *compone
 }
 
 
-//my own
 void EntityManager::sendMessageToAllEntities(string message)
 {
 	for (int i = 0; i < this->fIdCounter; i++)
@@ -612,7 +611,7 @@ void EntityManager::sendMessageToEntity(string message, EntityId entity)
 	e->sendMessageToEntity(message, entity);
 }
 
-bool EntityManager::loadXML2(string xmlFile)
+bool EntityManager::loadXML(string xmlFile)
 {
 	string path = m_resourceDir + xmlFile;
 	XMLDocument doc;
@@ -646,6 +645,7 @@ bool EntityManager::loadXML2(string xmlFile)
 		bool isCollidible = false;
 		bool isAnimated = false;
 
+		//get all the attributes for the entity
 		attr = elem->Attribute("entityName");
 		if (attr != NULL)
 		{
@@ -786,10 +786,10 @@ bool EntityManager::loadXML2(string xmlFile)
 			cout << "failed loading attribute for isAnimated for entity " << entityName << " in file " << xmlFile << endl;
 		}
 
-		//Creating the Player entity and adding it to the entitymanager
+		//Creating the entity and adding it to the entitymanager
 		EntityId entity = this->createEntity(entityName, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, isAnimated);
 
-		//Looping through all the components for Player-entity.
+		//Looping through all the components for the entity.
 		for (XMLElement* e = elem->FirstChildElement(); e != NULL; e = e->NextSiblingElement())
 		{
 			string componentName = e->Value();
@@ -905,7 +905,7 @@ bool EntityManager::loadXML2(string xmlFile)
 			{
 				attr = e->Attribute("maxHP");
 				int maxHP = 0;
-				
+
 				if (attr != NULL)
 				{
 					maxHP = e->IntAttribute("maxHP");
@@ -1009,6 +1009,16 @@ bool EntityManager::loadXML2(string xmlFile)
 					modules->graphics->addDirLight(Vec3(r, g, b), Vec3(dirx, diry, dirz), intensity);
 				else if (componentName == "pointLight")
 					modules->graphics->addPointLight(Vec3(r, g, b), Vec3(xPos, yPos, zPos), intensity);
+			}
+			else if (componentName == "Push")
+			{
+				Push * p = new Push();
+				this->addComponent(entity, p);
+			}
+			else if (componentName == "Pushable")
+			{
+				Pushable * p = new Pushable();
+				this->addComponent(entity, p);
 			}
 			else
 			{
@@ -1169,7 +1179,6 @@ EntityId EntityManager::getNrOfEntities()
 
 void EntityManager::handleCollision()
 {
-	//cout << " " << endl;
 	for (int i = 0; i < this->fIdCounter; i++)
 	{		
 		fEntitys[i]->ground = nullptr;
@@ -1207,8 +1216,49 @@ void EntityManager::handleCollision()
 				fEntitys[i]->ground->sendMessageToEntity("Ground", fEntitys[i]->ground->fId);
 			if (fEntitys[i]->wall)
 				fEntitys[i]->wall->sendMessageToEntity("Wall", fEntitys[i]->wall->fId);
+
+
+			//collision and pushing between two entities
+			for (int j = i + 1; j < this->fIdCounter; j++)
+			{
+				if (this->fEntitys[i]->sphere != NULL && this->fEntitys[j]->sphere != NULL)
+				{
+					bool collide;
+					collide = this->fEntitys[i]->sphere->Test(this->fEntitys[i]->sphere, this->fEntitys[j]->sphere);
+
+					//are two entities colliding?
+					if (collide)
+					{
+						Vec3 dir;
+						dir.X = this->fEntitys[j]->pos.X - this->fEntitys[i]->pos.X;
+						dir.Y = this->fEntitys[j]->pos.Y - this->fEntitys[i]->pos.Y;
+						dir.Z = this->fEntitys[j]->pos.Z - this->fEntitys[i]->pos.Z;
+
+						if (this->fEntitys[i]->getType() == "player" || this->fEntitys[j]->getType() == "player")
+						{
+							//if "i" is moving and can push, and that "j" is pushable
+							if (this->fEntitys[i]->physics->getIsMoving() && this->fEntitys[i]->hasComponents("Push") && this->fEntitys[j]->hasComponents("Pushable"))
+							{
+									pushEntity(j, dir);
+							}
+							//if "j" is moving and can push, and that "i" is pushable
+							if (this->fEntitys[j]->physics->getIsMoving() && this->fEntitys[i]->hasComponents("Push") && this->fEntitys[i]->hasComponents("Pushable"))
+							{
+								dir = dir*-1;
+								pushEntity(i, dir);
+							}
+						}
+					}
+				}
+			}
 		}
 	}
+}
+
+void EntityManager::pushEntity(int entityIndex, Vec3 direction)
+{
+	this->fEntitys[entityIndex]->physics->setPushDirection(direction);
+	this->fEntitys[entityIndex]->fComponents["Messenger"].front()->sendMessageToEntity(this->fEntitys[entityIndex]->getEntityId(), "beingPushed");
 }
 
 
@@ -1256,4 +1306,22 @@ float EntityManager::testMove(Ray r, Entity* e, Entity* &out)
 	}
 
 	return dir;
+}
+
+//used for push-collisions
+void EntityManager::createSphereOnEntities()
+{
+	for (int i = 0; i < this->fIdCounter; i++)
+	{
+		if (this->fEntitys[i]->getType() == "player")
+		{
+			Vec3 temp = getEntityPos("player");
+			Sphere *s = new Sphere(temp.X, temp.Y, temp.Z);
+		}
+		else if (this->fEntitys[i]->getType() == "AI")
+		{
+			Vec3 temp = getEntityPos("AI");
+			Sphere *s = new Sphere(temp.X, temp.Y, temp.Z);
+		}
+	}
 }

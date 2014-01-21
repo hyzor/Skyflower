@@ -43,3 +43,13 @@ bool Sphere::Test(Sphere s1, Sphere s2)
 
 	return dist < s1.Radius+s2.Radius;
 }
+
+bool Sphere::Test(Sphere *s1, Sphere *s2)
+{
+	float distX = (s2->Position.X - s1->Position.X);
+	float distY = (s2->Position.Y - s1->Position.Y);
+	float distZ = (s2->Position.Z - s1->Position.Z);
+	float dist = (float)sqrt(distX*distX + distY*distY + distZ*distZ);
+
+	return dist < s1->Radius + s2->Radius;
+}
