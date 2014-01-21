@@ -91,7 +91,7 @@ public:
 				if (getOwnerId() == 0)
 				{
 					float soundPosition[3] = { 0.0f, 0.0f, 0.0f };
-					getOwner()->getModules()->sound->PlaySound("player/wilhelm_scream.wav", soundPosition, 1.0f, true);
+					getOwner()->getModules()->sound->PlaySound("player/wilhelm_scream.wav", soundPosition, 0.25f, true);
 				}
 			}
 

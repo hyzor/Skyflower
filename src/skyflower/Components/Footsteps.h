@@ -65,7 +65,7 @@ public:
 
 			if (owner) {
 				// FIXME: Project the sound's position onto the ground.
-				owner->getModules()->sound->PlaySound(footstepSounds[rand() % ARRAY_SIZE(footstepSounds)], &originalPosition.X, 1.0f);
+				owner->getModules()->sound->PlaySound(footstepSounds[rand() % ARRAY_SIZE(footstepSounds)], &originalPosition.X, 0.5f);
 			}
 		}
 	}
