@@ -525,16 +525,16 @@ void GraphicsEngineImpl::End2D()
 	mSpriteBatch->End();
 }
 
-void GraphicsEngineImpl::Draw2DTextureFile(const std::string file, int x, int y)
+void GraphicsEngineImpl::Draw2DTextureFile(const std::string file, const Draw2DInput* input)
 {
-	mSpriteBatch->Draw(mTextureMgr->CreateTexture(file), XMFLOAT2((float)x, (float)y));
+	mSpriteBatch->Draw(mTextureMgr->CreateTexture(file), input->pos);
 }
 
-void GraphicsEngineImpl::Draw2DTexture(Texture2D *texture, int x, int y)
+void GraphicsEngineImpl::Draw2DTexture(Texture2D *texture, const Draw2DInput* input)
 {
 	Texture2DImpl *textureImpl = (Texture2DImpl *)texture;
 
-	mSpriteBatch->Draw(textureImpl->GetShaderResourceView(), XMFLOAT2((float)x, (float)y));
+	mSpriteBatch->Draw(textureImpl->GetShaderResourceView(), input->pos);
 }
 
 ModelInstance* GraphicsEngineImpl::CreateInstance(std::string file)

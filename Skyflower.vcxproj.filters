@@ -75,6 +75,12 @@
     <ClCompile Include="src\skyflower\Menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\skyflower\GUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\skyflower\GUIElement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\skyflower\Application.h">
@@ -113,9 +119,6 @@
     <ClInclude Include="src\skyflower\Components\Input.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="src\skyflower\Components\Render.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
     <ClInclude Include="src\skyflower\LineChart.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -143,9 +146,6 @@
     <ClInclude Include="src\skyflower\Components\Rotating.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="src\skyflower\Components\Trigger.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
     <ClInclude Include="src\skyflower\Components\LUAScript.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -153,6 +153,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\skyflower\Components\Health.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\Components\Push.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Pushable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\Components\Pushable.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\skyflower\Components\Event.h">
@@ -168,6 +177,12 @@
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\skyflower\Menu.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\GUI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\GUIElement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

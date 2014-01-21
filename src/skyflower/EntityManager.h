@@ -123,11 +123,13 @@ class EntityManager {
 		}
 
 
-		//my own
+		// Functions we made
 		void sendMessageToAllEntities(string message); //sends a message to all components in all entities in that manager
 		void sendMessageToEntity(string message, string entity); //sends a message to a specific entity
 		void sendMessageToEntity(string message, EntityId entity); //sends a message to a specific entity
-		bool loadXML2(string xmlFile);
+
+		bool loadXML(EntityManager * entityManager, string xmlFile);
+		bool loadXML(string xmlFile);
 
 		Vec3 getEntityPos(string type);
 		Vec3 getEntityPos(EntityId ownerId);
@@ -135,15 +137,19 @@ class EntityManager {
 		Vec3 getEntityScale(EntityId ownerId);
 		bool getEntityVisibility(EntityId ownerId);
 		CollisionInstance* getEntityCollision(EntityId ownerId);
+		Component* getComponent(string EntityName, string Componenet);
+		Entity *getEntity(EntityId id);
+		EntityId getNrOfEntities();
+
 		void updateEntityPos(Vec3 pos, EntityId id);
 		void updateEntityRot(Vec3 rot, EntityId id);
 		void updateEntityScale(Vec3 scale, EntityId id);
 		void updateEntityVisibility(bool isVisible, EntityId id);
-		Component* getComponent(string EntityName, string Componenet);
-		void handleCollision();
 
-		Entity *getEntity(EntityId id);
-		EntityId getNrOfEntities();
+		void handleCollision();
+		void pushEntity(int entityIndex, Vec3 direction);
+		void createSphereOnEntities();
+		void updateSpheres();
 
 		const Modules *modules;
 

@@ -50,7 +50,7 @@ class ModelTreeParent : public ModelTreeNode
 		void SetPosition(Vec3 pos);
 
 	private:
-		bool InfrontOfPlane(Vec3 point, Vec3 &center, Vec3 &normal);
+		int InfrontOfPlane(Vec3 point, Vec3 &center, Vec3 &normal);
 };
 
 class ModelTreeLeaf : public ModelTreeNode

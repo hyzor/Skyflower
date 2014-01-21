@@ -11,6 +11,8 @@
 #include "EntityManager.h"
 #include "LevelHandler.h"
 #include "Menu.h"
+#include "GUI.h"
+
 using namespace Cistron;
 
 class Application : WindowListener, InputListener
@@ -30,7 +32,8 @@ public:
 
 public: // WindowListener
 	void OnWindowShouldClose();
-	void OnWindowResize(unsigned int width, unsigned int height);
+	void OnWindowResized(unsigned int width, unsigned int height);
+	void OnWindowResizeEnd();
 	void OnWindowActivate();
 	void OnWindowDeactivate();
 
@@ -51,12 +54,15 @@ private:
 	void changeGameState(GameState newState);
 
 private:
+	double m_oldTime;
+
 	Window *m_window;
 	InputHandler *m_inputHandler;
 	GraphicsEngine *m_graphicsEngine;
 	SoundEngine *m_soundEngine;
 	EntityManager* entityManager;
 	CameraController *camera;
+	GUI *m_GUI;
 	bool m_quit;
 	bool m_showCharts;
 	GameState gameState;

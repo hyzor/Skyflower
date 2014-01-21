@@ -10,8 +10,6 @@
 #include "ComponentHeaders.h"
 #include "LineChart.h"
 
-#include <thread>
-
 using namespace std;
 using namespace tinyxml2;
 using namespace Cistron;
@@ -22,6 +20,7 @@ Application::Application()
 	m_soundEngine = NULL;
 	this->entityManager = NULL;
 	m_showCharts = false;
+	m_GUI = new GUI();
 }
 
 Application::~Application()
@@ -56,18 +55,14 @@ void Application::Start()
 	
 	entityManager = new EntityManager("../../XML/", &modules);
 
-	entityManager->loadXML2("player.xml");
-	entityManager->loadXML2("lights.XML");
+	entityManager->loadXML("player.xml");
+	entityManager->loadXML("lights.XML");
 	levelHandler->init(entityManager);
-	//entityManager->loadXML2("player2.xml");
-	//entityManager->loadXML2("platform.xml");
-	//entityManager->loadXML2("block22.xml");
-	//entityManager->loadXML2("TriggerTest.xml");
-	//entityManager->loadXML2("Player3.xml");
 
 	// Load Hub Level
 	levelHandler->queue(1);
 	levelHandler->LoadQueued();
+	entityManager->createSphereOnEntities();
 	camera = m_graphicsEngine->CreateCameraController();
 	m_graphicsEngine->UpdateSceneData();
 	Movement* playerMove = (Movement*)entityManager->getComponent("player", "Movement");
@@ -77,33 +72,37 @@ void Application::Start()
 	LineChart frameTimeChart(1024 * 1024);
 	frameTimeChart.SetSize(256, 128);
 	frameTimeChart.SetUnit("ms");
-	Texture2D *frameTimeChartTexture = m_graphicsEngine->CreateTexture2D(frameTimeChart.GetWidth(), frameTimeChart.GetHeight());
+	//Texture2D *frameTimeChartTexture = m_graphicsEngine->CreateTexture2D(frameTimeChart.GetWidth(), frameTimeChart.GetHeight());
+	unsigned int frameChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, 0.0f, 0.0f), 
+		m_GUI->CreateTexture2D(m_graphicsEngine, frameTimeChart.GetWidth(), frameTimeChart.GetHeight()));
 
 	LineChart memoryChart(1024 * 1024);
 	memoryChart.SetSize(256, 128);
 	memoryChart.SetUnit("MiB");
-	Texture2D *memoryChartTexture = m_graphicsEngine->CreateTexture2D(memoryChart.GetWidth(), memoryChart.GetHeight());
-
-	double chartUpdateDelay = 0.1;
-	double nextChartUpdate = 0.0;
-	double chartTime = 30.0;
-
-	double oldTime = GetTime();
-	double time, deltaTime;
-
-	double timeSinceLight = 0;
-	m_quit = false;
+	//Texture2D *memoryChartTexture = m_graphicsEngine->CreateTexture2D(memoryChart.GetWidth(), memoryChart.GetHeight());
+	unsigned int memChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, 0.0f, 0.0f),
+		m_GUI->CreateTexture2D(m_graphicsEngine, memoryChart.GetWidth(), memoryChart.GetHeight()));
 
 	thread load;
 	m_menu = new Menu();
 	m_menu->init(m_graphicsEngine);
 	m_menu->setActive(false);
 
+	double chartUpdateDelay = 0.1;
+	double nextChartUpdate = 0.0;
+	double chartTime = 30.0;
+
+	double time, deltaTime;
+	double timeSinceLight = 0;
+
+	m_oldTime = GetTime();
+	m_quit = false;
+
 	while(!m_quit)
 	{
 		time = GetTime();
-		deltaTime = time - oldTime;
-		oldTime = time;
+		deltaTime = time - m_oldTime;
+		m_oldTime = time;
 		timeSinceLight += deltaTime;
 
 		frameTimeChart.AddPoint((float)time, (float)(deltaTime * 1000.0));
@@ -113,24 +112,14 @@ void Application::Start()
 			nextChartUpdate = time + chartUpdateDelay;
 
 			frameTimeChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, (1.0f / 60.0f) * 1000.0f);
-			frameTimeChartTexture->UploadData(frameTimeChart.GetPixels());
+			//frameTimeChartTexture->UploadData(frameTimeChart.GetPixels());
+			m_GUI->UploadData(frameChartID, frameTimeChart.GetPixels());
 
 			memoryChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, 256.0f);
-			memoryChartTexture->UploadData(memoryChart.GetPixels());
+			m_GUI->UploadData(memChartID, memoryChart.GetPixels());
+			//memoryChartTexture->UploadData(memoryChart.GetPixels());
 		}
 
-		m_graphicsEngine->Begin2D();
-
-		if (m_showCharts) {
-			m_graphicsEngine->Draw2DTexture(frameTimeChartTexture, 0, 0);
-			m_graphicsEngine->Draw2DTexture(memoryChartTexture, 0, frameTimeChart.GetHeight() + 6);
-		}
-		m_graphicsEngine->End2D();
-
-		m_soundEngine->Update((float)deltaTime);
-		m_window->PumpMessages();
-		
-		
 		if (levelHandler->hasQueuedLevel() && !levelHandler->isLoading())
 		{
 			if (load.joinable())
@@ -138,7 +127,7 @@ void Application::Start()
 			load = thread(&LevelHandler::LoadQueued, levelHandler);
 			changeGameState(GameState::loading);
 		}
-			
+		
 		switch (gameState)
 		{
 		case GameState::game:
@@ -152,12 +141,38 @@ void Application::Start()
 			break;
 		}
 		
+		//m_graphicsEngine->Begin2D();
+		GUIElement* frameChartElem = m_GUI->GetGUIElement(frameChartID);
+		GUIElement* memChartElem = m_GUI->GetGUIElement(memChartID);
+
+		if (m_showCharts) 
+		{
+			frameChartElem->SetVisible(true);
+			memChartElem->SetVisible(true);
+			memChartElem->GetDrawInput()->pos.x = 0.0f;
+			memChartElem->GetDrawInput()->pos.y = (float)(frameTimeChart.GetHeight() + 6);
+			//m_graphicsEngine->Draw2DTexture(frameTimeChartTexture, 0, 0);
+			//m_graphicsEngine->Draw2DTexture(memoryChartTexture, 0, frameTimeChart.GetHeight() + 6);
+		}
+		else
+		{
+			frameChartElem->SetVisible(false);
+			memChartElem->SetVisible(false);
+		}
+
+		//m_graphicsEngine->End2D();
+
+		m_GUI->Draw(m_graphicsEngine);
+
 		m_graphicsEngine->Present();
-		
+
+		m_soundEngine->Update((float)deltaTime);
+		m_window->PumpMessages();
 	}
 
-	m_graphicsEngine->DeleteTexture2D(memoryChartTexture);
-	m_graphicsEngine->DeleteTexture2D(frameTimeChartTexture);
+	//m_graphicsEngine->DeleteTexture2D(memoryChartTexture);
+	//m_graphicsEngine->DeleteTexture2D(frameTimeChartTexture);
+	m_GUI->Destroy(m_graphicsEngine);
 	delete levelHandler;
 	DestroyCameraController(camera);
 	delete entityManager;
@@ -171,9 +186,17 @@ void Application::OnWindowShouldClose()
 	m_quit = true;
 }
 
-void Application::OnWindowResize(unsigned int width, unsigned int height)
+void Application::OnWindowResized(unsigned int width, unsigned int height)
 {
 	m_graphicsEngine->OnResize(width, height);
+}
+
+void Application::OnWindowResizeEnd()
+{
+	// While resizing/moving the window PumpMessages will block and cause a
+	// huge delta time when the window has stopped resizing/moving. Set
+	// m_oldTime to the current time to prevent that from happening.
+	m_oldTime = GetTime();
 }
 
 void Application::OnWindowActivate()
@@ -217,6 +240,7 @@ void Application::OnKeyDown(unsigned short key)
 {
 	if (m_menu->isActive())
 		m_menu->buttonPressed(key);
+
 	switch (key)
 	{
 	case VK_ESCAPE:
@@ -228,7 +252,7 @@ void Application::OnKeyDown(unsigned short key)
 		break;
 	case 'R':
 		m_graphicsEngine->clearLights();
-		entityManager->loadXML2("lights.XML");
+		entityManager->loadXML("lights.XML");
 		break;
 	case 'M':
 		if (m_menu->isActive())
@@ -282,8 +306,12 @@ void Application::updateGame(float dt, Movement* playerMove)
 
 void Application::updateLoading(float dt)
 {
+	Draw2DInput* input = new Draw2DInput();
+	input->pos.x = 0.0f;
+	input->pos.y = 0.0f;
+
 	m_graphicsEngine->Begin2D();
-	m_graphicsEngine->Draw2DTextureFile("..\\..\\content\\Textures\\Menygrafik\\fyraTreRatio.png", 0, 0);
+	m_graphicsEngine->Draw2DTextureFile("..\\..\\content\\Textures\\Menygrafik\\fyraTreRatio.png", input);
 	m_graphicsEngine->End2D();
 
 	if (!levelHandler->isLoading())

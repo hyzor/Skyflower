@@ -59,7 +59,6 @@ class Entity {
 
 	private:
 
-		// Entity id
 		EntityId fId;
 		string type;
 		Vec3 pos;
@@ -70,7 +69,7 @@ class Entity {
 		ModelInstance* modelInst;
 		AnimatedInstance* AnimInst;
 		Physics* physics;
-		
+		Sphere *sphere;
 
 		/**
 		 * COMPONENT MANAGEMENT
@@ -130,7 +129,7 @@ class Entity {
 		// Entity manager is our friend
 		friend class EntityManager;
 
-		//my own
+		// Functions we made
 		void sendAMessageToAll(string message);
 		void sendMessageToEntity(string message, EntityId id);
 
@@ -143,9 +142,7 @@ class Entity {
 		void updatePos(Vec3 pos);
 		void updateRot(Vec3 rot);
 		void updateScale(Vec3 scale);
-		void updateVisible(bool isVisible);
-
-		
+		void updateVisible(bool isVisible);	
 
 		const Modules *modules;
 };

@@ -53,8 +53,8 @@ public:
 			return;
 		}
 
-		Vec3 position = getEntityPos();
-		position.Y = 0.0f;
+		Vec3 originalPosition = getEntityPos();
+		Vec3 position = Vec3(originalPosition.X, 0.0f, originalPosition.Z);
 
 		m_distanceTraveled += (position - m_oldPosition).Length();
 		m_oldPosition = position;
@@ -64,7 +64,8 @@ public:
 			Entity *owner = getOwner();
 
 			if (owner) {
-				owner->getModules()->sound->PlaySound(footstepSounds[rand() % ARRAY_SIZE(footstepSounds)], &position.X, 1.0f, false);
+				// FIXME: Project the sound's position onto the ground.
+				owner->getModules()->sound->PlaySound(footstepSounds[rand() % ARRAY_SIZE(footstepSounds)], &originalPosition.X, 1.0f);
 			}
 		}
 	}

@@ -17,9 +17,9 @@ class AI : public Component {
 
 public:
 
-	// constructor - age is fixed at creation time
 	AI() : Component("AI")
 	{
+		this->canMove = true;
 		centerradius = 0;
 		attacktime = 0;
 		nextattack = 10;
@@ -27,16 +27,9 @@ public:
 	};
 	virtual ~AI() {};
 
-
-
-
-	// we are added to an Entity, and thus to the component system
 	void addedToEntity();
 
-	void sendAMessage(string message)
-	{
-		//cout << "hej det är jag som ropar på denna funktionen: " << this->fName << endl;
-		sendMessage(message);
+	void sendAMessage(string message)	{
 	}
 
 	void update(float dt);
@@ -46,6 +39,8 @@ private:
 	float centerradius;
 	float attacktime;
 	float nextattack;
+	bool canMove;
+
 	void Attack(Message const& msg)
 	{
 		centerradius = 0;
@@ -53,6 +48,16 @@ private:
 		nextattack = 5;
 	}
 
+	void stopMoving(Message const& msg)
+	{
+		cout << "STOP MOVING" << endl;
+		this->canMove = false;
+	}
+
+	void startMoving(Message const& msg)
+	{
+		this->canMove = true;
+	}
 };
 
 #endif

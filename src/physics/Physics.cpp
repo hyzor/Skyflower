@@ -71,20 +71,30 @@ Vec3 Physics::getUp() const
 	return this->orient.getUp();
 }
 
+Vec3 Physics::getVelocity() const
+{
+	return this->velocity;
+}
 void Physics::update(float dt)
 {
 	this->dt = dt;
 	this->orient.update(dt);
 }
 
-void Physics::addGravityCalc(Vec3 &pos, Vec3 &velocity)
+void Physics::addGravityCalc(Vec3 &pos, Vec3 &velocity, bool addGravity)
 {
 	Vec3 previousVelocity = velocity;
 	Vec3 previousPos = pos;
 
-	velocity = previousVelocity + this->gravity * this->dt;
-	pos = previousPos + previousVelocity * this->dt + this->gravity * (this->dt * this->dt) / 2.0f;
+	velocity = previousVelocity;
+	pos = previousPos + previousVelocity * this->dt;
 	//this->orient.setPos(pos);
+
+	if (addGravity)
+	{
+		velocity += this->gravity * this->dt;
+		pos += this->gravity * (this->dt * this->dt) / 2.0f;
+	}
 }
 
 void Physics::setVelocity(Vec3 vel)
@@ -92,13 +102,18 @@ void Physics::setVelocity(Vec3 vel)
 	this->velocity = vel;
 }
 
-void Physics::addGravityCalc(Vec3 &pos)
+void Physics::addGravityCalc(Vec3 &pos, bool addGravity)
 {
 	Vec3 previousPos = pos;
 	Vec3 previousVelocity = this->velocity;
 
-	this->velocity = previousVelocity + this->gravity * this->dt;
-	pos = previousPos + previousVelocity * this->dt + this->gravity * (this->dt * this->dt) / 2.0f;
+	pos = previousPos + previousVelocity * this->dt;
+
+	if (addGravity)
+	{
+		this->velocity = previousVelocity + this->gravity * this->dt;
+		pos += this->gravity * (this->dt * this->dt) / 2.0f;
+	}
 }
 
 bool Physics::jump(Vec3 &pos)
@@ -122,6 +137,10 @@ void Physics::setJumping(bool jump)
 {
 	jumping = jump;
 }
+
+void Physics::setIsMoving(bool state)
+{
+	this->isMoving = state;}
 
 
 float Physics::lerp(float a, float b, float amount)
@@ -225,6 +244,13 @@ void Physics::moveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, float speed, Vec3 &
 	this->walk(pos, speed);
 }
 
+//moving the entity that is peing pushed by another entity
+Vec3 Physics::movePushed(Vec3 pos)
+{
+	pos += pushDirection * (dt * 5);
+	return pos;
+}
+
 
 float Physics::toRadians(float degrees)
 {
@@ -274,6 +300,11 @@ void Physics::resetRot(Vec3 &rot)
 void Physics::setOrientation(Vec3 look, Vec3 right, Vec3 up)
 {
 	this->orient.setOrientation(look, right, up);
+}
+
+void Physics::setPushDirection(Vec3 direction)
+{
+	this->pushDirection = direction;
 }
 
 void Physics::moveUp(Vec3 &pos)
