@@ -108,5 +108,38 @@
 		<Event script="testWorld2_Push.lua" />
 	</Platform>
 	
+	<!-- SCENERY -->
+	<Platform entityName="Mountain" id="14" isVisible="1" isCollidible="0" Type="object" isAnimated="0" 
+		xPos="36.0960396599" yPos="-350.0" zPos="39.4741144045" 
+		xRot="0.0" yRot="0.0" zRot="0.0" 
+		xScale="1.0" yScale="1.0" zScale="1.0" 
+		model="Models\\berg\\berg">
+		<Messenger />
+	</Platform>
+	
+		<Platform entityName="Mountain" id="15" isVisible="1" isCollidible="0" Type="object" isAnimated="0" 
+		xPos="-200.0960396599" yPos="-350.0" zPos="100.4741144045" 
+		xRot="0.0" yRot="0.0" zRot="0.0" 
+		xScale="1.0" yScale="1.0" zScale="1.0" 
+		model="Models\\berg\\berg">
+		<Messenger />
+	</Platform>
+	
+		<Platform entityName="Mountain" id="16" isVisible="1" isCollidible="0" Type="object" isAnimated="0" 
+		xPos="200.0960396599" yPos="-350.0" zPos="39.4741144045" 
+		xRot="0.0" yRot="0.0" zRot="0.0" 
+		xScale="1.0" yScale="1.0" zScale="1.0" 
+		model="Models\\berg\\berg">
+		<Messenger />
+	</Platform>
+	
+		<Platform entityName="Mountain" id="17" isVisible="1" isCollidible="0" Type="object" isAnimated="0" 
+		xPos="36.0960396599" yPos="-350.0" zPos="200.4741144045" 
+		xRot="0.0" yRot="0.0" zRot="0.0" 
+		xScale="1.0" yScale="1.0" zScale="1.0" 
+		model="Models\\berg\\berg">
+		<Messenger />
+	</Platform>
+	
     <placeHolderPlattform entityName="placeHolderPlattform2" id="2" isVisible="1" isCollidible="1" Type="object" isAnimated="0" xPos="0.0" yPos="0.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" model="Models\\Worlds\\Subworld\\placeHolderPlattform"/>
 </root>

@@ -18,6 +18,12 @@ cbuffer cLightBuffer : register(b0)
 	float3 gEyePosW;
 	float padding;
 
+	int gEnableFogging;
+	float gFogRange, gFogStart;
+	int fogPadding;
+
+	float4 gFogColor;
+
 	float4x4 gShadowTransform_PS; // Light: view * projection * toTexSpace
 	float4x4 gCameraView;
 	float4x4 gCameraInvView;
@@ -170,6 +176,12 @@ float4 main(VertexOut pIn) : SV_TARGET
 	//litColor = diffuse * (ambient_Lights + diffuse_Lights) + specular_Lights;
 	litColor = float4(diffuse.xyz * (ambient_Lights.xyz + diffuse_Lights.xyz) + specular_Lights.xyz, 1.0f);
 	//litColor *= ambient_occlusion;
+
+	if (gEnableFogging)
+	{
+		float fogLerp = saturate((distToEye - gFogStart) / gFogRange);
+		litColor = lerp(litColor, gFogColor, fogLerp);
+	}
 
 	//return float4(1.0f, 1.0f, 1.0f, 1.0f);
 	//litColor.a = 1.0;
