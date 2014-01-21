@@ -18,7 +18,7 @@ const float PI = 3.141592653589f;
 #define DEFAULT_MASS 50.0f //In KG
 #define DEFAULT_VELOCITY Vec3(0.0f, 0.0f, 0.0f)
 #define DEFAULT_MOVEMENTSPEED 50.0f
-#define DEFAULT_JUMP_VELOCITY 50.0f
+#define DEFAULT_JUMP_VELOCITY 35.0f
 
 //Currently sort of a helper class, to be held by each entity to make sure that the velocity and other entity-specific data are kept by and manipulated only by the right entity
 class DLL_API Physics
@@ -38,6 +38,7 @@ private:
 	//used to keep track of an entitys state regarding jumping, in order tp prevent/enable it dynamically
 	bool jumping;
 	bool isMoving;
+	bool isBeingPushed;
 
 	//A simple class that keeps track of and manipulates the orientation (meaning rotation, look/right and up -vectors) of the entity holding the physics instance
 	Orientation orient;
@@ -54,9 +55,12 @@ public:
 	//perform a jump on the given vector that represents a position by increasing velocity in Y-axis
 	bool jump(Vec3 &pos); 
 
+	// Dessa gör mer än att bara applicera gravitationen, utan att kalla på någon av dessa
+	// funktioner fungerar ingen velocity alls, alltså kan man inte hoppa om man inte kallar
+	// någon av dessa funktion. Därav den dumma addGravity boolen.
 	//apply gravity the given vector that represents a position
-	void addGravityCalc(Vec3 &pos, Vec3 &velocity); 
-	void addGravityCalc(Vec3 &pos);
+	void addGravityCalc(Vec3 &pos, Vec3 &velocity, bool addGravity); 
+	void addGravityCalc(Vec3 &pos, bool addGravity);
 
 	//to be used for projectile calculations
 	void addProjectileCalc(Vec3 &pos, Vec3 &velocity, Vec3 &acceleration);
@@ -92,6 +96,7 @@ public:
 	void setOrientation(Vec3 look, Vec3 right, Vec3 up);
 	void setIsMoving(bool state);
 	void setPushDirection(Vec3 direction);
+	void setIsBeingPushed(bool state);
 
 	//Standard getfunctions.
 	float getMass() const;
@@ -102,6 +107,7 @@ public:
 	Vec3 getUp() const; //Fetched from Orientation
 	Vec3 getVelocity() const; //Fetched from EntityManager (used for checking if you can push something)
 	bool getIsMoving() const { return isMoving; }
+	bool getIsBeingPushed() const { return isBeingPushed; }
 
 	static float toRadians(float degrees);
 	static float toDegrees(float radians);

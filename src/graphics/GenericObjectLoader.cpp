@@ -437,13 +437,19 @@ bool GenericObjectLoader::loadSkinnedObject( const std::string& fileName, std::v
 		} // Mesh end
 
 		skinnedData.Transforms.resize(skinnedData.Bones.size());
-		float timeStep = 1.0f/30.0f;
+
+		// Changing from 1.0f/30.0f to 1.0f/24.0f fixed the keyframe interval issues.
+		// 24.0f is the FPS from the modelling software
+		float timeStep = 1.0f/24.0f;
 
 		// Pre-calculate animations
 		for (UINT i = 0; i < skinnedData.Animations.size(); ++i)
 		{
 			skinnedData.SetAnimIndex(i);
 			float dt = 0;
+
+			// skinnedData.Animations[i].mTicksPerSecond/30.0f
+			// means the fps is upscaled to 30 ingame.
 			for (float ticks = 0; ticks < skinnedData.Animations[i].mDuration; ticks += skinnedData.Animations[i].mTicksPerSecond/30.0f)
 			{
 				dt += timeStep;

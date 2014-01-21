@@ -9,8 +9,8 @@
 
 struct LineChartDataPoint
 {
-	float timeStamp;
-	float value;
+	double timeStamp;
+	double value;
 };
 
 class LineChart
@@ -26,10 +26,10 @@ public:
 	unsigned int GetHeight() const;
 	void *GetPixels() const;
 
-	void AddPoint(float timeStamp, float value);
+	void AddPoint(double timeStamp, double value);
 	void ClearPoints();
 
-	void Draw(float startTime, float endTime, float resolution, float targetValue);
+	void Draw(double startTime, double endTime, double resolution, double targetValue);
 
 private:
 	SkCanvas *m_canvas;

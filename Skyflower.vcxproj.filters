@@ -75,6 +75,12 @@
     <ClCompile Include="src\skyflower\Menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\skyflower\GUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\skyflower\GUIElement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\skyflower\Application.h">
@@ -171,6 +177,12 @@
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\skyflower\Menu.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\GUI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\GUIElement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\skyflower\Components\BoxComp.h">

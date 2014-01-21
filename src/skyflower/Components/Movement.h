@@ -10,14 +10,16 @@
 #include "physics/Collision.h"
 #include "Entity.h"
 #include "Health.h"
+#include "Gravity.h"
 using namespace std;
 using namespace Cistron;
+
+#define MAX_JUMP_KEY_TIME 0.4f
 
 class Movement : public Component {
 
 public:
 
-	// constructor - age is fixed at creation time
 	Movement(float speed) : Component("Movement")
 	{
 		this->isMovingForward = false;
@@ -49,7 +51,11 @@ public:
 		requestMessage("StartMoving", &Movement::startMoving);
 		requestMessage("StopMoving", &Movement::stopMoving);
 
+		requestMessage("inAir", &Movement::inAir);
+		requestMessage("notInAir", &Movement::notInAir);
+
 		requestMessage("Jump", &Movement::Jump);
+		requestMessage("StopJump", &Movement::StopJump);
 	}
 
 	void removeFromEntity()
@@ -63,6 +69,17 @@ public:
 		Vec3 rot = getEntityRot();
 		p->update(deltaTime);
 		
+		GravityComponent *gravity = getOwner()->getComponent<GravityComponent*>("Gravity");
+
+		if (gravity && !gravity->isEnabled())
+		{
+			if (this->timeUntilGravityEnable > 0.0f)
+				this->timeUntilGravityEnable -= deltaTime;
+
+			if (this->timeUntilGravityEnable <= 0.0f)
+				gravity->setEnabled(true);
+		}
+
 		Health *health = getOwner()->getComponent<Health*>("Health");
 
 		if (health)
@@ -70,11 +87,14 @@ public:
 			if (pos.Y < -100)
 			{
 				health->setHealth(0);
-				float soundPosition[3] = { 0.0f, 0.0f, 0.0f };
-
+				
 				if (getOwnerId() == 0)
-					getOwner()->getModules()->sound->PlaySound("player/wilhelm_scream.wav", soundPosition, 1.0f, true);
+				{
+					float soundPosition[3] = { 0.0f, 0.0f, 0.0f };
+					getOwner()->getModules()->sound->PlaySound("player/wilhelm_scream.wav", soundPosition, 0.25f, true);
+				}
 			}
+
 			if (!health->isAlive())
 			{
 				sendMessageToEntity(this->getOwnerId(), "Respawn");
@@ -125,8 +145,6 @@ public:
 			}
 		}
 
-		
-
 		updateEntityPos(pos);
 		updateEntityRot(rot);
 	}
@@ -160,9 +178,11 @@ private:
 	bool isMovingBackward;
 	bool isMovingLeft;
 	bool isMovingRight;
+	bool isInAir;
 	Vec3 camLook;
 	float speed;
 	bool canMove;
+	float timeUntilGravityEnable;
 
 	void startMoveForward(Message const& msg)
 	{
@@ -207,19 +227,43 @@ private:
 		this->canMove = true;
 	}
 
+	void inAir(Message const& msg)
+	{
+		this->isInAir = true;
+	}
+
+	void notInAir(Message const& msg)
+	{
+		this->isInAir = false;
+	}
+
 	void Jump(Message const& msg)
 	{
+		if (isInAir)
+			return;
+
 		Vec3 pos = getEntityPos();
 
 		if (p->jump(pos))
 		{
+			updateEntityPos(pos);
+
 			Entity *owner = getOwner();
+			GravityComponent *gravity = owner->getComponent<GravityComponent*>("Gravity");
 
-			if (owner)
-				owner->getModules()->sound->PlaySound("player/jump1.wav", &pos.X, 1.0f, false);
+			if (gravity)
+			{
+				gravity->setEnabled(false);
+				this->timeUntilGravityEnable = MAX_JUMP_KEY_TIME;
+			}
+
+			owner->getModules()->sound->PlaySound("player/jump1.wav", &pos.X, 1.0f);
 		}
+	}
 
-		updateEntityPos(pos);
+	void StopJump(Message const& msg)
+	{
+		this->timeUntilGravityEnable = 0.0f;
 	}
 };
 

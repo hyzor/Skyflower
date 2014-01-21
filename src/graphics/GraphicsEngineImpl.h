@@ -19,6 +19,7 @@
 
 #include "Character.h"
 #include "GraphicsEngine.h"
+#include "InstanceImpl.h"
 
 #include "DeferredBuffers.h"
 #include "OrthoWindow.h"
@@ -45,8 +46,8 @@ public:
 
 	void Begin2D();
 	void End2D();
-	void Draw2DTextureFile(const std::string file, int x, int y);
-	void Draw2DTexture(Texture2D *texture, int x, int y);
+	void Draw2DTextureFile(const std::string file, const Draw2DInput* input);
+	void Draw2DTexture(Texture2D *texture, const Draw2DInput* input);
 
 	ModelInstance* CreateInstance(std::string file);
 	ModelInstance* CreateInstance(std::string file, Vec3 pos);
@@ -96,6 +97,8 @@ private:
 	SpriteFont* mSpriteFont;
 
 	DirectX::BoundingSphere mSceneBounds;
+
+
 	DeferredBuffers* mDeferredBuffers;
 	OrthoWindow* mOrthoWindow;
 

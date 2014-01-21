@@ -8,6 +8,8 @@ Physics::Physics()
 	this->dt = 0.0;
 	this->velocity = DEFAULT_VELOCITY;
 	this->jumping = false;
+	this->isMoving = false;
+	this->isBeingPushed = false;
 }
 
 Physics::Physics(Vec3 pos)
@@ -18,6 +20,8 @@ Physics::Physics(Vec3 pos)
 	this->dt = 0.0;
 	this->velocity = DEFAULT_VELOCITY;
 	this->jumping = false;
+	this->isMoving = false;
+	this->isBeingPushed = false;
 }
 
 
@@ -81,14 +85,20 @@ void Physics::update(float dt)
 	this->orient.update(dt);
 }
 
-void Physics::addGravityCalc(Vec3 &pos, Vec3 &velocity)
+void Physics::addGravityCalc(Vec3 &pos, Vec3 &velocity, bool addGravity)
 {
 	Vec3 previousVelocity = velocity;
 	Vec3 previousPos = pos;
 
-	velocity = previousVelocity + this->gravity * this->dt;
-	pos = previousPos + previousVelocity * this->dt + this->gravity * (this->dt * this->dt) / 2.0f;
+	velocity = previousVelocity;
+	pos = previousPos + previousVelocity * this->dt;
 	//this->orient.setPos(pos);
+
+	if (addGravity)
+	{
+		velocity += this->gravity * this->dt;
+		pos += this->gravity * (this->dt * this->dt) / 2.0f;
+	}
 }
 
 void Physics::setVelocity(Vec3 vel)
@@ -96,13 +106,18 @@ void Physics::setVelocity(Vec3 vel)
 	this->velocity = vel;
 }
 
-void Physics::addGravityCalc(Vec3 &pos)
+void Physics::addGravityCalc(Vec3 &pos, bool addGravity)
 {
 	Vec3 previousPos = pos;
 	Vec3 previousVelocity = this->velocity;
 
-	this->velocity = previousVelocity + this->gravity * this->dt;
-	pos = previousPos + previousVelocity * this->dt + this->gravity * (this->dt * this->dt) / 2.0f;
+	pos = previousPos + previousVelocity * this->dt;
+
+	if (addGravity)
+	{
+		this->velocity = previousVelocity + this->gravity * this->dt;
+		pos += this->gravity * (this->dt * this->dt) / 2.0f;
+	}
 }
 
 bool Physics::jump(Vec3 &pos)
@@ -129,8 +144,13 @@ void Physics::setJumping(bool jump)
 
 void Physics::setIsMoving(bool state)
 {
-	this->isMoving = state;}
+	this->isMoving = state;
+}
 
+void Physics::setIsBeingPushed(bool state)
+{
+	this->isBeingPushed = state;
+}
 
 float Physics::lerp(float a, float b, float amount)
 {

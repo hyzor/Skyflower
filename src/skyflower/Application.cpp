@@ -20,6 +20,7 @@ Application::Application()
 	m_soundEngine = NULL;
 	this->entityManager = NULL;
 	m_showCharts = false;
+	m_GUI = new GUI();
 }
 
 Application::~Application()
@@ -68,15 +69,21 @@ void Application::Start()
 
 	entityManager->sendMessageToEntity("ActivateListener", "player");
 
-	LineChart frameTimeChart(1024 * 1024);
+	// Make the charts hold 60 seconds worth of values at 60fps.
+	size_t chartCapacity = 60 * 60;
+	LineChart frameTimeChart(chartCapacity);
 	frameTimeChart.SetSize(256, 128);
 	frameTimeChart.SetUnit("ms");
-	Texture2D *frameTimeChartTexture = m_graphicsEngine->CreateTexture2D(frameTimeChart.GetWidth(), frameTimeChart.GetHeight());
+	//Texture2D *frameTimeChartTexture = m_graphicsEngine->CreateTexture2D(frameTimeChart.GetWidth(), frameTimeChart.GetHeight());
+	m_frameChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, 0.0f, 0.0f), 
+		m_GUI->CreateTexture2D(m_graphicsEngine, frameTimeChart.GetWidth(), frameTimeChart.GetHeight()));
 
-	LineChart memoryChart(1024 * 1024);
+	LineChart memoryChart(chartCapacity);
 	memoryChart.SetSize(256, 128);
 	memoryChart.SetUnit("MiB");
-	Texture2D *memoryChartTexture = m_graphicsEngine->CreateTexture2D(memoryChart.GetWidth(), memoryChart.GetHeight());
+	//Texture2D *memoryChartTexture = m_graphicsEngine->CreateTexture2D(memoryChart.GetWidth(), memoryChart.GetHeight());
+	m_memChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, (float)(frameTimeChart.GetHeight() + 6), 0.0f),
+		m_GUI->CreateTexture2D(m_graphicsEngine, memoryChart.GetWidth(), memoryChart.GetHeight()));
 
 	thread load;
 	m_menu = new Menu();
@@ -100,17 +107,17 @@ void Application::Start()
 		m_oldTime = time;
 		timeSinceLight += deltaTime;
 
-		frameTimeChart.AddPoint((float)time, (float)(deltaTime * 1000.0));
-		memoryChart.AddPoint((float)time, GetMemoryUsage() / (1024.0f * 1024.0f));
+		frameTimeChart.AddPoint(time, deltaTime * 1000.0);
+		memoryChart.AddPoint(time, GetMemoryUsage() / (1024.0 * 1024.0));
 
 		if (m_showCharts && time >= nextChartUpdate) {
 			nextChartUpdate = time + chartUpdateDelay;
 
-			frameTimeChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, (1.0f / 60.0f) * 1000.0f);
-			frameTimeChartTexture->UploadData(frameTimeChart.GetPixels());
+			frameTimeChart.Draw(time - chartTime, time, 1.0 / 60.0, (1.0 / 60.0) * 1000.0);
+			m_GUI->UploadData(m_frameChartID, frameTimeChart.GetPixels());
 
-			memoryChart.Draw((float)(time - chartTime), (float)time, 1.0f / 100.0f, 256.0f);
-			memoryChartTexture->UploadData(memoryChart.GetPixels());
+			memoryChart.Draw(time - chartTime, time, 1.0 / 100.0, 256.0);
+			m_GUI->UploadData(m_memChartID, memoryChart.GetPixels());
 		}
 
 		if (levelHandler->hasQueuedLevel() && !levelHandler->isLoading())
@@ -134,23 +141,16 @@ void Application::Start()
 			break;
 		}
 		
-		m_graphicsEngine->Begin2D();
-
-		if (m_showCharts) {
-			m_graphicsEngine->Draw2DTexture(frameTimeChartTexture, 0, 0);
-			m_graphicsEngine->Draw2DTexture(memoryChartTexture, 0, frameTimeChart.GetHeight() + 6);
-		}
-
-		m_graphicsEngine->End2D();
-
+		m_GUI->Draw(m_graphicsEngine);
 		m_graphicsEngine->Present();
 
 		m_soundEngine->Update((float)deltaTime);
 		m_window->PumpMessages();
 	}
 
-	m_graphicsEngine->DeleteTexture2D(memoryChartTexture);
-	m_graphicsEngine->DeleteTexture2D(frameTimeChartTexture);
+	//m_graphicsEngine->DeleteTexture2D(memoryChartTexture);
+	//m_graphicsEngine->DeleteTexture2D(frameTimeChartTexture);
+	m_GUI->Destroy(m_graphicsEngine);
 	delete levelHandler;
 	DestroyCameraController(camera);
 	delete entityManager;
@@ -227,6 +227,9 @@ void Application::OnKeyDown(unsigned short key)
 		break;
 	case 'Z':
 		m_showCharts = !m_showCharts;
+
+		m_GUI->GetGUIElement(m_frameChartID)->SetVisible(m_showCharts);
+		m_GUI->GetGUIElement(m_memChartID)->SetVisible(m_showCharts);
 		break;
 	case 'R':
 		m_graphicsEngine->clearLights();
@@ -284,8 +287,12 @@ void Application::updateGame(float dt, Movement* playerMove)
 
 void Application::updateLoading(float dt)
 {
+	Draw2DInput* input = new Draw2DInput();
+	input->pos.x = 0.0f;
+	input->pos.y = 0.0f;
+
 	m_graphicsEngine->Begin2D();
-	m_graphicsEngine->Draw2DTextureFile("..\\..\\content\\Textures\\Menygrafik\\fyraTreRatio.png", 0, 0);
+	m_graphicsEngine->Draw2DTextureFile("..\\..\\content\\Textures\\Menygrafik\\fyraTreRatio.png", input);
 	m_graphicsEngine->End2D();
 
 	if (!levelHandler->isLoading())
@@ -296,15 +303,15 @@ void Application::changeGameState(GameState newState)
 {
 	if (m_window->IsActive())
 	{
-		if (newState == GameState::game)
-		{
-			m_inputHandler->SetMouseCapture(true);
-			m_window->SetCursorVisibility(false);
-		}
-		else
+		if (newState == GameState::menu)
 		{
 			m_inputHandler->SetMouseCapture(false);
 			m_window->SetCursorVisibility(true);
+		}
+		else
+		{
+			m_inputHandler->SetMouseCapture(true);
+			m_window->SetCursorVisibility(false);
 		}
 	}
 

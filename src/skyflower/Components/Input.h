@@ -13,7 +13,6 @@ class Input : public Component, InputListener {
 
 public:
 
-	// constructor - age is fixed at creation time
 	Input() : Component("Input")
 	{ 
 
@@ -65,7 +64,6 @@ public:
 		switch (key)
 		{
 		case 'W':
-			//sendMessage("StopMoveForward");
 			sendMessageToEntity(this->getOwnerId(), "StopMoveForward");
 			break;
 		case 'S':
@@ -76,6 +74,9 @@ public:
 			break;
 		case 'D':
 			sendMessageToEntity(this->getOwnerId(), "StopMoveRight");
+			break;
+		case VK_SPACE:
+			sendMessageToEntity(this->getOwnerId(), "StopJump");
 			break;
 		default:
 			break;

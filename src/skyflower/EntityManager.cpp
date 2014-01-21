@@ -1282,13 +1282,22 @@ void EntityManager::handleCollision()
 
 			for (int k = 0; k < wallRays.size(); k++)
 				testMove(wallRays[k], fEntitys[i], fEntitys[i]->wall);
+			
 
 
 			//activate event for wall
 			if (fEntitys[i]->ground)
 				fEntitys[i]->ground->sendMessageToEntity("Ground", fEntitys[i]->ground->fId);
 			if (fEntitys[i]->wall)
+			{
 				fEntitys[i]->wall->sendMessageToEntity("Wall", fEntitys[i]->wall->fId);
+
+				if (this->fEntitys[i]->physics->getIsBeingPushed())
+				{
+					stopPushEntity(i);
+				}
+			}
+
 
 
 
@@ -1315,7 +1324,7 @@ void EntityManager::handleCollision()
 							//if "i" is moving and can push, and that "j" is pushable
 							if (this->fEntitys[i]->physics->getIsMoving() && this->fEntitys[i]->hasComponents("Push") && this->fEntitys[j]->hasComponents("Pushable"))
 							{
-									pushEntity(j, dir);
+								pushEntity(j, dir);
 							}
 							//if "j" is moving and can push, and that "i" is pushable
 							if (this->fEntitys[j]->physics->getIsMoving() && this->fEntitys[i]->hasComponents("Push") && this->fEntitys[i]->hasComponents("Pushable"))
@@ -1335,6 +1344,11 @@ void EntityManager::pushEntity(int entityIndex, Vec3 direction)
 {
 	this->fEntitys[entityIndex]->physics->setPushDirection(direction);
 	this->fEntitys[entityIndex]->fComponents["Messenger"].front()->sendMessageToEntity(this->fEntitys[entityIndex]->getEntityId(), "beingPushed");
+}
+
+void EntityManager::stopPushEntity(int entityIndex)
+{
+	this->fEntitys[entityIndex]->fComponents["Messenger"].front()->sendMessageToEntity(this->fEntitys[entityIndex]->getEntityId(), "stopBeingPushed");
 }
 
 

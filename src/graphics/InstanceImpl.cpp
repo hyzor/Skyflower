@@ -226,7 +226,18 @@ void AnimatedInstanceImpl::CreateAnimation(int id, int start, int frames)
 	model->mAnimations.push_back(AnimatedEntity::Animation(id, start, frames));
 }
 
+void AnimatedInstanceImpl::CreateAnimation(int id, int start, int frames, bool playForwards)
+{
+	model->mAnimations.push_back(AnimatedEntity::Animation(id, start, frames, playForwards));
+}
+
 void AnimatedInstanceImpl::SetAnimation(int id)
 {
 	model->mCurAnim = id;
+
+	if (model->mAnimations[id].playForwards)
+		model->PlayAnimationForwards();
+	else
+		model->PlayAnimationBackwards();
+	
 }

@@ -39,6 +39,7 @@ public:
 	virtual void Set(Vec3 pos, Vec3 rot, Vec3 scale) = 0;
 
 	virtual void CreateAnimation(int id, int start, int frames) = 0;
+	virtual void CreateAnimation(int id, int start, int frames, bool playForwards) = 0;
 	virtual void SetAnimation(int id) = 0;
 
 };

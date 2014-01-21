@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include <windows.h>
+//#include <windows.h>
 #include <map>
 #include "d3dUtilities.h"
 #include <d3dcompiler.h>

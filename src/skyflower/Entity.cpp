@@ -3,6 +3,9 @@
 #include "Cistron.h"
 #include "Component.h"
 
+#include <iostream>
+#include <fstream>
+
 
 using namespace Cistron;
 
@@ -53,15 +56,52 @@ Entity::Entity(const Modules *modules, EntityId id, string type, float xPos, flo
 			this->AnimInst->SetScale(this->scale);
 			this->AnimInst->SetVisibility(this->isVisible);
 
-			// Cache animation keyframes
-			this->AnimInst->CreateAnimation(0, 51 + 15, 51 + 15);
-			this->AnimInst->CreateAnimation(1, 1, 24 + 7);
-			this->AnimInst->CreateAnimation(2, 1, 24 + 7);
-			this->AnimInst->CreateAnimation(3, 30 + 7, 49 + 10);
-			this->AnimInst->CreateAnimation(4, 51 + 15, 75 + 20);
-			this->AnimInst->CreateAnimation(5, 81 + 20, 105 + 25);
+			std::string keyPath = "../../content/" + model + ".key";
 
-			this->AnimInst->SetAnimation(1);
+			FILE* file;
+			file = std::fopen(keyPath.c_str(), "r");
+
+			// Open corresponding keyframes file
+			ifstream keyFramesFile;
+			keyFramesFile.open(keyPath.c_str(), ios::in);
+
+			if (!keyFramesFile.is_open())
+			{
+				std::stringstream ErrorStream;
+				ErrorStream << "Failed to load keyframes file " << keyPath;
+				std::string ErrorStreamStr = ErrorStream.str();
+				LPCSTR Text = ErrorStreamStr.c_str();
+				MessageBoxA(0, Text, 0, 0);
+			}
+			else
+			{
+				int index, start, end, playForwards;
+
+				while (keyFramesFile >> index >> start >> end >> playForwards)
+				{
+					if (end - start > 1)
+					{
+						if (end > 1)
+							end = end - 1;
+					}
+
+					this->AnimInst->CreateAnimation(index, start, end, playForwards != 0);
+				}
+
+				keyFramesFile.close();
+			}
+
+			// Cache animation keyframes
+			/*
+			this->AnimInst->CreateAnimation(0, 51, 51);
+			this->AnimInst->CreateAnimation(1, 1, 24 - 1);
+			this->AnimInst->CreateAnimation(2, 1, 24 - 1);
+			this->AnimInst->CreateAnimation(3, 30, 49 - 1);
+			this->AnimInst->CreateAnimation(4, 51, 75 - 1);
+			this->AnimInst->CreateAnimation(5, 81, 105 - 1);
+			*/
+
+			this->AnimInst->SetAnimation(0);
 		}
 	}
 	
