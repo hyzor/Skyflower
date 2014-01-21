@@ -1196,6 +1196,12 @@ void EntityManager::handleCollision()
 			}
 			else
 			{
+				//if the entity is being pushed out in the "air" it is able to move again 
+				if (fEntitys[i]->hasComponents("Pushable") && fEntitys[i]->physics->getIsBeingPushed())
+				{
+					fEntitys[i]->fComponents["Messenger"].front()->sendMessageToEntity(fEntitys[i]->getEntityId(), "stopBeingPushed");
+				}
+				//so that you can't jump while falling from something
 				fEntitys[i]->sendMessageToEntity("inAir", this->fEntitys[i]->getEntityId());
 			}
 			//colliding with head
@@ -1222,7 +1228,15 @@ void EntityManager::handleCollision()
 			if (fEntitys[i]->ground)
 				fEntitys[i]->ground->sendMessageToEntity("Ground", fEntitys[i]->ground->fId);
 			if (fEntitys[i]->wall)
+			{
 				fEntitys[i]->wall->sendMessageToEntity("Wall", fEntitys[i]->wall->fId);
+
+				if (this->fEntitys[i]->physics->getIsBeingPushed())
+				{
+					stopPushEntity(i);
+				}
+			}
+
 
 
 			//collision and pushing between two entities
@@ -1246,7 +1260,7 @@ void EntityManager::handleCollision()
 							//if "i" is moving and can push, and that "j" is pushable
 							if (this->fEntitys[i]->physics->getIsMoving() && this->fEntitys[i]->hasComponents("Push") && this->fEntitys[j]->hasComponents("Pushable"))
 							{
-									pushEntity(j, dir);
+								pushEntity(j, dir);
 							}
 							//if "j" is moving and can push, and that "i" is pushable
 							if (this->fEntitys[j]->physics->getIsMoving() && this->fEntitys[i]->hasComponents("Push") && this->fEntitys[i]->hasComponents("Pushable"))
@@ -1266,6 +1280,11 @@ void EntityManager::pushEntity(int entityIndex, Vec3 direction)
 {
 	this->fEntitys[entityIndex]->physics->setPushDirection(direction);
 	this->fEntitys[entityIndex]->fComponents["Messenger"].front()->sendMessageToEntity(this->fEntitys[entityIndex]->getEntityId(), "beingPushed");
+}
+
+void EntityManager::stopPushEntity(int entityIndex)
+{
+	this->fEntitys[entityIndex]->fComponents["Messenger"].front()->sendMessageToEntity(this->fEntitys[entityIndex]->getEntityId(), "stopBeingPushed");
 }
 
 

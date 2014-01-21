@@ -28,6 +28,7 @@ public:
 	{
 		this->p = getOwner()->getPhysics();
 		requestMessage("beingPushed", &Pushable::beingPushed);
+		requestMessage("stopBeingPushed", &Pushable::stopBeingPushed);
 	}
 
 	void removeFromEntity()
@@ -62,15 +63,21 @@ private:
 
 	void beingPushed(Message const& msg)
 	{
-		if (this->isPushed == false)
+		if (!this->isPushed)
 		{
 			cout << "BEING PUSHED" << endl;
 			this->isPushed = true;
 			this->startPos = getEntityPos();
-
+			this->p->setIsBeingPushed(true);
 			//stop the entity from moving, except for the push
 			sendMessageToEntity(getOwnerId(), "StopMoving");
 		}
+	}
+
+	void stopBeingPushed(Message const& msg)
+	{
+		this->isPushed = false;
+		sendMessageToEntity(getOwnerId(), "StartMoving");
 	}
 
 };

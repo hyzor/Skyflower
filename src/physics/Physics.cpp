@@ -8,6 +8,8 @@ Physics::Physics()
 	this->dt = 0.0;
 	this->velocity = DEFAULT_VELOCITY;
 	this->jumping = false;
+	this->isMoving = false;
+	this->isBeingPushed = false;
 }
 
 Physics::Physics(Vec3 pos)
@@ -18,6 +20,8 @@ Physics::Physics(Vec3 pos)
 	this->dt = 0.0;
 	this->velocity = DEFAULT_VELOCITY;
 	this->jumping = false;
+	this->isMoving = false;
+	this->isBeingPushed = false;
 }
 
 
@@ -140,8 +144,13 @@ void Physics::setJumping(bool jump)
 
 void Physics::setIsMoving(bool state)
 {
-	this->isMoving = state;}
+	this->isMoving = state;
+}
 
+void Physics::setIsBeingPushed(bool state)
+{
+	this->isBeingPushed = state;
+}
 
 float Physics::lerp(float a, float b, float amount)
 {

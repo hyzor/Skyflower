@@ -38,6 +38,7 @@ private:
 	//used to keep track of an entitys state regarding jumping, in order tp prevent/enable it dynamically
 	bool jumping;
 	bool isMoving;
+	bool isBeingPushed;
 
 	//A simple class that keeps track of and manipulates the orientation (meaning rotation, look/right and up -vectors) of the entity holding the physics instance
 	Orientation orient;
@@ -95,6 +96,7 @@ public:
 	void setOrientation(Vec3 look, Vec3 right, Vec3 up);
 	void setIsMoving(bool state);
 	void setPushDirection(Vec3 direction);
+	void setIsBeingPushed(bool state);
 
 	//Standard getfunctions.
 	float getMass() const;
@@ -105,6 +107,7 @@ public:
 	Vec3 getUp() const; //Fetched from Orientation
 	Vec3 getVelocity() const; //Fetched from EntityManager (used for checking if you can push something)
 	bool getIsMoving() const { return isMoving; }
+	bool getIsBeingPushed() const { return isBeingPushed; }
 
 	static float toRadians(float degrees);
 	static float toDegrees(float radians);
