@@ -14,6 +14,9 @@ Texture2DImpl::Texture2DImpl(ID3D11Device *d3dDevice, ID3D11DeviceContext *d3dDe
 	m_width = width;
 	m_height = height;
 
+	mRenderable = renderable;
+	mFormat = format;
+
 	UINT bindFlags = D3D11_BIND_SHADER_RESOURCE;
 
 	if (renderable) {
@@ -101,4 +104,66 @@ ID3D11ShaderResourceView *Texture2DImpl::GetShaderResourceView() const
 ID3D11RenderTargetView *Texture2DImpl::GetRenderTargetView() const
 {
 	return m_renderTargetView;
+}
+
+void Texture2DImpl::Resize(ID3D11Device* d3dDevice, int width, int height)
+{
+	if (m_renderTargetView) {
+		m_renderTargetView->Release();
+	}
+
+	m_shaderResourceView->Release();
+	m_texture->Release();
+
+	m_width = width;
+	m_height = height;
+
+	UINT bindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+	if (mRenderable) {
+		bindFlags |= D3D11_BIND_RENDER_TARGET;
+	}
+
+	D3D11_TEXTURE2D_DESC texDesc;
+	texDesc.Width = width;
+	texDesc.Height = height;
+	texDesc.MipLevels = 1;
+	texDesc.ArraySize = 1;
+	texDesc.Format = mFormat;
+	texDesc.SampleDesc.Count = 1;
+	texDesc.SampleDesc.Quality = 0;
+	texDesc.Usage = D3D11_USAGE_DEFAULT;
+	texDesc.BindFlags = bindFlags;
+	texDesc.CPUAccessFlags = 0;
+	texDesc.MiscFlags = 0;
+
+	HRESULT hr = d3dDevice->CreateTexture2D(&texDesc, NULL, &m_texture);
+
+	assert(SUCCEEDED(hr));
+	assert(m_texture);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
+	memset(&SRVDesc, 0, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+	SRVDesc.Format = mFormat;
+	SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	SRVDesc.Texture2D.MipLevels = 1;
+
+	hr = d3dDevice->CreateShaderResourceView(m_texture, &SRVDesc, &m_shaderResourceView);
+
+	assert(SUCCEEDED(hr));
+	assert(m_shaderResourceView);
+
+	if (mRenderable) 
+	{
+		D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+		memset(&renderTargetViewDesc, 0, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
+		renderTargetViewDesc.Format = mFormat;
+		renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+		renderTargetViewDesc.Texture2D.MipSlice = 0;
+
+		hr = d3dDevice->CreateRenderTargetView(m_texture, &renderTargetViewDesc, &m_renderTargetView);
+
+		assert(SUCCEEDED(hr));
+		assert(m_renderTargetView);
+	}
 }

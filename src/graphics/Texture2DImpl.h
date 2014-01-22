@@ -20,6 +20,8 @@ public:
 	ID3D11ShaderResourceView *GetShaderResourceView() const;
 	ID3D11RenderTargetView *GetRenderTargetView() const;
 
+	void Resize(ID3D11Device* d3dDevice, int width, int height);
+
 private:
 	ID3D11Device* m_d3dDevice;
 	ID3D11DeviceContext *m_d3dDeviceContext;
@@ -30,6 +32,8 @@ private:
 
 	unsigned int m_width;
 	unsigned int m_height;
+	bool mRenderable;
+	DXGI_FORMAT mFormat;
 };
 
 #endif

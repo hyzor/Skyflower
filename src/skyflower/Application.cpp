@@ -239,7 +239,10 @@ void Application::OnKeyDown(unsigned short key)
 		if (m_menu->isActive())
 			m_menu->setActive(false);
 		else
+		{
+			m_graphicsEngine->Clear();
 			m_menu->setActive(true);
+		}
 
 		break;
 	default:

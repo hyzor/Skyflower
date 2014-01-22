@@ -55,7 +55,9 @@ class Entity {
 		CollisionInstance* collInst;
 		Field* field;
 
-		Entity* ground;
+		//a pointer to the ground the entity stands on, if it stands on something
+		Entity* ground; 
+		//a pointer to the wall the entity is colliding with, if it is colliding with a wall
 		Entity* wall;
 
 		void updatePos(Vec3 pos);

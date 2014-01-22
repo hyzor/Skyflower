@@ -54,6 +54,7 @@
     <ClInclude Include="src\skyflower\Components\Checkpoint.h" />
     <ClInclude Include="src\skyflower\Components\Event.h" />
     <ClInclude Include="src\skyflower\Components\Footsteps.h" />
+    <ClInclude Include="src\skyflower\Components\Goal.h" />
     <ClInclude Include="src\skyflower\Components\Gravity.h" />
     <ClInclude Include="src\skyflower\Components\Health.h" />
     <ClInclude Include="src\skyflower\Components\Input.h" />

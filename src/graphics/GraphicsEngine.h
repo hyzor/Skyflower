@@ -72,6 +72,8 @@ public:
 
 //	virtual Text2D* CreateText2D() = 0;
 //	virtual void DeleteTexture2D(Text2D *text) = 0;
+
+	virtual void Clear() = 0;
 };
 
 DLL_API GraphicsEngine* CreateGraphicsEngine();

@@ -54,6 +54,7 @@
 		<Event script="testWorld2_LevelCompleted.lua" />
 		<Button />
 		<Movement />
+		<Goal />
 	</Platform>
 	
 	
