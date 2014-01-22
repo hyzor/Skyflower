@@ -3,7 +3,7 @@
 #elif defined VERTICAL
 	#define DIRECTION_SWIZZLE yx
 #else
-	"wat";
+	#error wat
 #endif
 
 struct VertexOut
@@ -20,13 +20,14 @@ cbuffer cPerFramebuffer : register(b0)
 };
 
 Texture2D framebufferTexture : register(t0);
-Texture2D depthTexture : register(t1);
+Texture2D inputTexture : register(t1);
 
-SamplerState linearSampler : register(s0);
+SamplerState linearClampedSampler : register(s0);
 
+#if defined SSAO_BLUR
 float linear_depth(float2 uv)
 {
-	float depth = depthTexture.Sample(linearSampler, uv).x;
+	float depth = inputTexture.Sample(linearClampedSampler, uv).x;
 
 	// http://www.humus.name/temp/Linearize%20depth.txt
 	float c1 = z_far / z_near;
@@ -44,7 +45,7 @@ float main(VertexOut input) : SV_Target
 	float2 pixel_size = float2(1.0, 1.0) / framebufferSize;
 	float depth = linear_depth(input.uv);
 
-	float result = framebufferTexture.Sample(linearSampler, input.uv).x;
+	float result = framebufferTexture.Sample(linearClampedSampler, input.uv).x;
 	float weight_sum = 1.0;
 
 	for(float i = 1.0; i <= kernel_radius; i += 1.0) {
@@ -53,14 +54,70 @@ float main(VertexOut input) : SV_Target
 		// Weight calculation from http://dice.se/wp-content/uploads/GDC12_Stable_SSAO_In_BF3_With_STF.pdf
 		float delta_depth = depth - linear_depth(input.uv + offset);
 		float weight = exp2(-i * i * blur_falloff - delta_depth * delta_depth);
-		result += framebufferTexture.Sample(linearSampler, input.uv + offset).x * weight;
+		result += framebufferTexture.Sample(linearClampedSampler, input.uv + offset).x * weight;
 		weight_sum += weight;
 
 		delta_depth = depth - linear_depth(input.uv - offset);
 		weight = exp2(-i * i * blur_falloff - delta_depth * delta_depth);
-		result += framebufferTexture.Sample(linearSampler, input.uv - offset).x * weight;
+		result += framebufferTexture.Sample(linearClampedSampler, input.uv - offset).x * weight;
 		weight_sum += weight;
 	}
 
 	return result / weight_sum;
 }
+#elif defined DOF_BLUR
+float4 main(VertexOut input) : SV_Target
+{
+	const int maxCoCRadiusPixels = 10; // no idea
+
+	const int kernel_taps = 6;
+	float kernel[kernel_taps + 1];
+	// 11 x 11 separated kernel weights.  This does not dictate the 
+    // blur kernel for depth of field; it is scaled to the actual
+    // kernel at each pixel.
+	kernel[6] = 0.00000000000000;  // Weight applied to outside-radius values
+
+    // Custom // Gaussian
+	kernel[5] = 0.50;//0.04153263993208;
+	kernel[4] = 0.60;//0.06352050813141;
+	kernel[3] = 0.75;//0.08822292796029;
+	kernel[2] = 0.90;//0.11143948794984;
+	kernel[1] = 1.00;//0.12815541114232;
+	kernel[0] = 1.00;//0.13425804976814;
+
+	float2 pixel_size = float2(1.0, 1.0) / framebufferSize;
+
+	//float circle_of_confusion = inputTexture.Sample(linearClampedSampler, input.uv).x;
+	//circle_of_confusion = circle_of_confusion * 2.0 - 1.0;
+
+	float3 blur_result = float3(0.0, 0.0, 0.0);
+	float weight_sum = 0.0;
+
+	for (int i = -maxCoCRadiusPixels; i <= maxCoCRadiusPixels; ++i)	{
+		float2 offset = float2(i, 0.0).DIRECTION_SWIZZLE * pixel_size;
+
+#if defined HORIZONTAL
+		float3 samppleColor = framebufferTexture.Sample(linearClampedSampler, input.uv + offset).xyz;
+#elif defined VERTICAL
+		// On the vertical blur pass the framebufferTexture is a half the size.
+		float3 samppleColor = framebufferTexture.Sample(linearClampedSampler, input.uv + offset * 0.5).xyz;
+#endif
+
+		float sampleCoC = inputTexture.Sample(linearClampedSampler, input.uv + offset).x;
+		sampleCoC = sampleCoC * 2.0 - 1.0;
+
+		float sampleRadius = sign(sampleCoC) * 3.0 + sampleCoC * max(0.0, float(maxCoCRadiusPixels) - 3.0);
+
+		// Stretch the kernel extent to the radius at pixel B.  This implicitly 
+		// performs the test of whether B's radius includes A.
+		float weight = kernel[clamp(int(float(abs(i) * (kernel_taps - 1)) / (0.001 + abs(sampleRadius * 0.8))), 0, kernel_taps)];
+        
+		blur_result += samppleColor * weight;
+		weight_sum  += weight;
+	}
+
+	return float4(blur_result / weight_sum, 1.0);
+}
+#else
+#error wat
+#endif

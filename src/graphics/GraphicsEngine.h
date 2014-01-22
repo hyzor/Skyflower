@@ -74,6 +74,8 @@ public:
 //	virtual void DeleteTexture2D(Text2D *text) = 0;
 
 	virtual void Clear() = 0;
+
+	virtual void SetDepthOfFieldFocusPlanes(float nearBlurryPlane, float nearSharpPlane, float farSharpPlane, float farBlurryPlane) = 0;
 };
 
 DLL_API GraphicsEngine* CreateGraphicsEngine();

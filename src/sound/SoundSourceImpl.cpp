@@ -14,6 +14,8 @@ SoundSourceImpl::SoundSourceImpl(ResourceCache *resourceCache) :
 	m_nextBufferIndex = 0;
 	m_pendingSeekSample = -1;
 	m_pendingSeekTime = -1.0f;
+
+	m_playbackFinishedHandler = []() {};
 }
 
 SoundSourceImpl::~SoundSourceImpl()
@@ -230,6 +232,11 @@ bool SoundSourceImpl::IsRelativeToListener() const
 	return m_sourceProxy.IsRelativeToListener();
 }
 
+void SoundSourceImpl::SetPlaybackFinishedHandler(const std::function<void()> &handler)
+{
+	m_playbackFinishedHandler = handler;
+}
+
 void SoundSourceImpl::SetVolume(float volume)
 {
 	assert(volume >= 0.0f);
@@ -267,4 +274,9 @@ void SoundSourceImpl::SetRelativeToListener(bool relative)
 void SoundSourceImpl::GetPosition(float output[3]) const
 {
 	m_sourceProxy.GetPosition(output);
+}
+
+void SoundSourceImpl::OnPlaybackFinished() const
+{
+	m_playbackFinishedHandler();
 }

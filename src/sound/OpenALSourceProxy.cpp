@@ -122,6 +122,7 @@ void OpenALSourceProxy::Update(float deltaTime)
 
 		if (state != AL_PLAYING) {
 			m_isPlaying = false;
+			m_owner->OnPlaybackFinished();
 
 			//printf("Reached end of non-streaming non-looping source, stopping\n");
 		}
@@ -135,7 +136,8 @@ void OpenALSourceProxy::Update(float deltaTime)
 			m_time = 0.0f;
 
 			if (!m_isLooping) {
-				Pause();
+				m_isPlaying = false;
+				m_owner->OnPlaybackFinished();
 			}
 		}
 	}
@@ -397,6 +399,7 @@ unsigned int OpenALSourceProxy::UnqueueProcessedBuffers()
 					if (!IsLooping() && IsPlaying()) {
 						// We reached the end of a non-looping source, stop playback.
 						Pause();
+						m_owner->OnPlaybackFinished();
 					}
 				}
 			}

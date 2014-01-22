@@ -25,6 +25,7 @@
 #include "OrthoWindow.h"
 #include "Texture2DImpl.h"
 
+const float fovY = 0.785398f; // 0.25f * MathHelper::pi
 const float zNear = 1.0f;
 const float zFar = 10000.0f;
 
@@ -69,6 +70,8 @@ public:
 
 	void Clear();
 
+	void SetDepthOfFieldFocusPlanes(float nearBlurryPlane, float nearSharpPlane, float farSharpPlane, float farBlurryPlane);
+
 private:
 	Direct3D* mD3D;
 
@@ -104,8 +107,17 @@ private:
 	DeferredBuffers* mDeferredBuffers;
 	OrthoWindow* mOrthoWindow;
 
+	Texture2DImpl *mIntermediateTexture;
+
+	float mSSAOScale;
 	Texture2DImpl *mSSAOTexture;
 	Texture2DImpl *mSSAOBlurTexture;
+
+	float mDoFScale;
+	Texture2DImpl *mDoFCoCTexture;
+	Texture2DImpl *mDoFBlurTexture1;
+	Texture2DImpl *mDoFBlurTexture2;
+	float mNearBlurryPlane, mNearSharpPlane, mFarSharpPlane, mFarBlurryPlane;
 };
 
 #endif

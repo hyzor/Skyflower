@@ -53,8 +53,14 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 	mOrthoWindow->Shutdown();
 	delete mOrthoWindow;
 
+	delete mIntermediateTexture;
+
 	delete mSSAOTexture;
 	delete mSSAOBlurTexture;
+
+	delete mDoFCoCTexture;
+	delete mDoFBlurTexture1;
+	delete mDoFBlurTexture2;
 
 	delete mD3D;
 }
@@ -76,7 +82,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 
 	// Camera
 	mCamera = new Camera();
-	mCamera->SetLens(0.25f*MathHelper::pi, static_cast<float>(width) / height, zNear, zFar);
+	mCamera->SetLens(fovY, static_cast<float>(width) / height, zNear, zFar);
 	mCamera->UpdateOrthoMatrix(static_cast<float>(width), static_cast<float>(height), zNear, zFar);
 	mCamera->SetPosition(XMFLOAT3(0.0f, 0.0f, -400.0f));
 	mCamera->UpdateBaseViewMatrix();
@@ -85,8 +91,21 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mDeferredBuffers = new DeferredBuffers();
 	mDeferredBuffers->Init(mD3D->GetDevice(), width, height, zNear, zFar);
 
-	mSSAOTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8_UNORM, true);
-	mSSAOBlurTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8_UNORM, true);
+	mIntermediateTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8G8B8A8_UNORM, true);
+
+	mSSAOScale = 1.0f;
+	mSSAOTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), (UINT)(width * mSSAOScale), (UINT)(height * mSSAOScale), DXGI_FORMAT_R8_UNORM, true);
+	mSSAOBlurTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), (UINT)(width * mSSAOScale), (UINT)(height * mSSAOScale), DXGI_FORMAT_R8_UNORM, true);
+
+	// Also change Blur.hlsi if you change mDoFScale!
+	mDoFScale = 0.5f;
+	mDoFCoCTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale), DXGI_FORMAT_R8_UNORM, true);
+	mDoFBlurTexture1 = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale), DXGI_FORMAT_R8G8B8A8_UNORM, true);
+	mDoFBlurTexture2 = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale), DXGI_FORMAT_R8G8B8A8_UNORM, true);
+	mNearBlurryPlane = 10.0f;
+	mNearSharpPlane = 75.0f;
+	mFarSharpPlane = 200.0f;
+	mFarBlurryPlane = 250.0f;
 
 	//--------------------------------------------------------
 	// Lights
@@ -217,8 +236,12 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	// Post-processing shaders
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\FullscreenQuadVS.cso", "FullscreenQuadVS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\AmbientOcclusionPS.cso", "AmbientOcclusionPS", mD3D->GetDevice());
-	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\BlurHorizontalPS.cso", "BlurHorizontalPS", mD3D->GetDevice());
-	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\BlurVerticalPS.cso", "BlurVerticalPS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\SSAOBlurHorizontalPS.cso", "SSAOBlurHorizontalPS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\SSAOBlurVerticalPS.cso", "SSAOBlurVerticalPS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\DepthOfFieldCoCPS.cso", "DepthOfFieldCoCPS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\DepthOfFieldBlurHorizontalPS.cso", "DepthOfFieldBlurHorizontalPS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\DepthOfFieldBlurVerticalPS.cso", "DepthOfFieldBlurVerticalPS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\CompositePS.cso", "CompositePS", mD3D->GetDevice());
 
 	// Bind loaded shaders to shader objects
 	mShaderHandler->mBasicShader->BindShaders(
@@ -252,12 +275,24 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mSSAOShader->BindShaders(
 		mShaderHandler->GetVertexShader("FullscreenQuadVS"),
 		mShaderHandler->GetPixelShader("AmbientOcclusionPS"));
-	mShaderHandler->mBlurHorizontalShader->BindShaders(
+	mShaderHandler->mSSAOBlurHorizontalShader->BindShaders(
 		mShaderHandler->GetVertexShader("FullscreenQuadVS"),
-		mShaderHandler->GetPixelShader("BlurHorizontalPS"));
-	mShaderHandler->mBlurVerticalShader->BindShaders(
+		mShaderHandler->GetPixelShader("SSAOBlurHorizontalPS"));
+	mShaderHandler->mSSAOBlurVerticalShader->BindShaders(
 		mShaderHandler->GetVertexShader("FullscreenQuadVS"),
-		mShaderHandler->GetPixelShader("BlurVerticalPS"));
+		mShaderHandler->GetPixelShader("SSAOBlurVerticalPS"));
+	mShaderHandler->mDepthOfFieldCoCShader->BindShaders(
+		mShaderHandler->GetVertexShader("FullscreenQuadVS"),
+		mShaderHandler->GetPixelShader("DepthOfFieldCoCPS"));
+	mShaderHandler->mDepthOfFieldBlurHorizontalShader->BindShaders(
+		mShaderHandler->GetVertexShader("FullscreenQuadVS"),
+		mShaderHandler->GetPixelShader("DepthOfFieldBlurHorizontalPS"));
+	mShaderHandler->mDepthOfFieldBlurVerticalShader->BindShaders(
+		mShaderHandler->GetVertexShader("FullscreenQuadVS"),
+		mShaderHandler->GetPixelShader("DepthOfFieldBlurVerticalPS"));
+	mShaderHandler->mCompositeShader->BindShaders(
+		mShaderHandler->GetVertexShader("FullscreenQuadVS"),
+		mShaderHandler->GetPixelShader("CompositePS"));
 
 	// Now create all the input layouts
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("BasicVS"), InputLayoutDesc::PosNormalTex, COUNT_OF(InputLayoutDesc::PosNormalTex), &mInputLayouts->PosNormalTex);
@@ -280,8 +315,12 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mSkinnedShadowShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTanSkinned);
 	mShaderHandler->mSkyDeferredShader->Init(mD3D->GetDevice(), mInputLayouts->Position);
 	mShaderHandler->mSSAOShader->Init(mD3D->GetDevice(), NULL);
-	mShaderHandler->mBlurHorizontalShader->Init(mD3D->GetDevice(), NULL);
-	mShaderHandler->mBlurVerticalShader->Init(mD3D->GetDevice(), NULL);
+	mShaderHandler->mSSAOBlurHorizontalShader->Init(mD3D->GetDevice(), NULL);
+	mShaderHandler->mSSAOBlurVerticalShader->Init(mD3D->GetDevice(), NULL);
+	mShaderHandler->mDepthOfFieldCoCShader->Init(mD3D->GetDevice(), NULL);
+	mShaderHandler->mDepthOfFieldBlurHorizontalShader->Init(mD3D->GetDevice(), NULL);
+	mShaderHandler->mDepthOfFieldBlurVerticalShader->Init(mD3D->GetDevice(), NULL);
+	mShaderHandler->mCompositeShader->Init(mD3D->GetDevice(), NULL);
 
 	std::string fontPath = mResourceDir + "myfile.spritefont";
 	std::wstring fontPathW(fontPath.begin(), fontPath.end());
@@ -383,46 +422,44 @@ void GraphicsEngineImpl::DrawScene()
 	renderTarget = mSSAOBlurTexture->GetRenderTargetView();
 	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
 
-	mShaderHandler->mBlurHorizontalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mSSAOTexture->GetShaderResourceView());
-	mShaderHandler->mBlurHorizontalShader->SetDepthTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
+	mShaderHandler->mSSAOBlurHorizontalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mSSAOTexture->GetShaderResourceView());
+	mShaderHandler->mSSAOBlurHorizontalShader->SetInputTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
 
-	mShaderHandler->mBlurHorizontalShader->SetFramebufferSize(XMFLOAT2((float)mSSAOTexture->GetWidth(), (float)mSSAOTexture->GetHeight()));
-	mShaderHandler->mBlurHorizontalShader->SetZNearFar(zNear, zFar);
-	mShaderHandler->mBlurHorizontalShader->Update(mD3D->GetImmediateContext());
+	mShaderHandler->mSSAOBlurHorizontalShader->SetFramebufferSize(XMFLOAT2((float)mSSAOTexture->GetWidth(), (float)mSSAOTexture->GetHeight()));
+	mShaderHandler->mSSAOBlurHorizontalShader->SetZNearFar(zNear, zFar);
+	mShaderHandler->mSSAOBlurHorizontalShader->Update(mD3D->GetImmediateContext());
 
-	mShaderHandler->mBlurHorizontalShader->SetActive(mD3D->GetImmediateContext());
+	mShaderHandler->mSSAOBlurHorizontalShader->SetActive(mD3D->GetImmediateContext());
 
 	// Render a fullscreen quad without a vertex buffer using some shader magic.
 	mD3D->GetImmediateContext()->Draw(3, 0);
 
-	mShaderHandler->mBlurHorizontalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), NULL);
-	mShaderHandler->mBlurHorizontalShader->SetDepthTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mSSAOBlurHorizontalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mSSAOBlurHorizontalShader->SetInputTexture(mD3D->GetImmediateContext(), NULL);
 
 	// Vertical blur
 	renderTarget = mSSAOTexture->GetRenderTargetView();
 	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
 
-	mShaderHandler->mBlurVerticalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mSSAOBlurTexture->GetShaderResourceView());
-	mShaderHandler->mBlurVerticalShader->SetDepthTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
+	mShaderHandler->mSSAOBlurVerticalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mSSAOBlurTexture->GetShaderResourceView());
+	mShaderHandler->mSSAOBlurVerticalShader->SetInputTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
 
-	mShaderHandler->mBlurVerticalShader->SetFramebufferSize(XMFLOAT2((float)mSSAOTexture->GetWidth(), (float)mSSAOTexture->GetHeight()));
-	mShaderHandler->mBlurVerticalShader->SetZNearFar(zNear, zFar);
-	mShaderHandler->mBlurVerticalShader->Update(mD3D->GetImmediateContext());
+	mShaderHandler->mSSAOBlurVerticalShader->SetFramebufferSize(XMFLOAT2((float)mSSAOTexture->GetWidth(), (float)mSSAOTexture->GetHeight()));
+	mShaderHandler->mSSAOBlurVerticalShader->SetZNearFar(zNear, zFar);
+	mShaderHandler->mSSAOBlurVerticalShader->Update(mD3D->GetImmediateContext());
 
-	mShaderHandler->mBlurVerticalShader->SetActive(mD3D->GetImmediateContext());
+	mShaderHandler->mSSAOBlurVerticalShader->SetActive(mD3D->GetImmediateContext());
 
 	// Render a fullscreen quad without a vertex buffer using some shader magic.
 	mD3D->GetImmediateContext()->Draw(3, 0);
 
-	mShaderHandler->mBlurVerticalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), NULL);
-	mShaderHandler->mBlurVerticalShader->SetDepthTexture(mD3D->GetImmediateContext(), NULL);
-
-	// Reset the render target to the back buffer.
-	renderTarget = mD3D->GetRenderTargetView();
-	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, mD3D->GetDepthStencilView());
-	// Reset viewport
- 	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
+	mShaderHandler->mSSAOBlurVerticalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mSSAOBlurVerticalShader->SetInputTexture(mD3D->GetImmediateContext(), NULL);
 #endif
+
+	renderTarget = mIntermediateTexture->GetRenderTargetView();
+	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
+ 	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
 
 	mShaderHandler->mLightDeferredShader->SetActive(mD3D->GetImmediateContext());
 	mShaderHandler->mLightDeferredShader->SetEyePosW(mCamera->GetPosition());
@@ -446,11 +483,6 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mLightDeferredShader->SetSpecularTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Specular));
 	//mShaderHandler->mLightDeferredShader->SetPositionTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Position));
 	mShaderHandler->mLightDeferredShader->SetSSAOTexture(mD3D->GetImmediateContext(), mSSAOTexture->GetShaderResourceView());
-
-	// Unbind depth stencil view
-	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, nullptr);
-
-	// Now bind the depth stencil SRV in light deferred shader
 	mShaderHandler->mLightDeferredShader->SetDepthTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
 
 	mShaderHandler->mLightDeferredShader->SetWorldViewProj(XMMatrixIdentity(), mCamera->GetBaseViewMatrix(), mCamera->GetOrthoMatrix());
@@ -466,6 +498,97 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mLightDeferredShader->SetPositionTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mLightDeferredShader->SetSSAOTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mLightDeferredShader->SetDepthTexture(mD3D->GetImmediateContext(), NULL);
+
+
+
+	// Depth of field
+	D3D11_VIEWPORT DoFViewport;
+	DoFViewport.TopLeftX = 0;
+	DoFViewport.TopLeftY = 0;
+	DoFViewport.Width = (float)mDoFCoCTexture->GetWidth();
+	DoFViewport.Height = (float)mDoFCoCTexture->GetHeight();
+	DoFViewport.MinDepth = 0.0f;
+	DoFViewport.MaxDepth = 1.0f;
+
+	mD3D->GetImmediateContext()->RSSetViewports(1, &DoFViewport);
+
+	// Calculate the circle of confusion.
+	renderTarget = mDoFCoCTexture->GetRenderTargetView();
+	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
+
+	mShaderHandler->mDepthOfFieldCoCShader->SetDepthTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
+
+	mShaderHandler->mDepthOfFieldCoCShader->SetZNearFar(zNear, zFar);
+	mShaderHandler->mDepthOfFieldCoCShader->SetFocusPlanes(mNearBlurryPlane, mNearSharpPlane, mFarSharpPlane, mFarBlurryPlane);
+	mShaderHandler->mDepthOfFieldCoCShader->Update(mD3D->GetImmediateContext());
+
+	mShaderHandler->mDepthOfFieldCoCShader->SetActive(mD3D->GetImmediateContext());
+
+	// Render a fullscreen quad without a vertex buffer using some shader magic.
+	mD3D->GetImmediateContext()->Draw(3, 0);
+
+	mShaderHandler->mDepthOfFieldCoCShader->SetDepthTexture(mD3D->GetImmediateContext(), NULL);
+
+	// Horizontal blur
+	renderTarget = mDoFBlurTexture1->GetRenderTargetView();
+	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
+
+	mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mIntermediateTexture->GetShaderResourceView());
+	mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetInputTexture(mD3D->GetImmediateContext(), mDoFCoCTexture->GetShaderResourceView());
+
+	mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetFramebufferSize(XMFLOAT2((float)mDoFCoCTexture->GetWidth(), (float)mDoFCoCTexture->GetHeight()));
+	mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetZNearFar(zNear, zFar);
+	mShaderHandler->mDepthOfFieldBlurHorizontalShader->Update(mD3D->GetImmediateContext());
+
+	mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetActive(mD3D->GetImmediateContext());
+
+	// Render a fullscreen quad without a vertex buffer using some shader magic.
+	mD3D->GetImmediateContext()->Draw(3, 0);
+
+	mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetInputTexture(mD3D->GetImmediateContext(), NULL);
+
+	// Vertical blur
+	renderTarget = mDoFBlurTexture2->GetRenderTargetView();
+	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
+
+	mShaderHandler->mDepthOfFieldBlurVerticalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mDoFBlurTexture1->GetShaderResourceView());
+	mShaderHandler->mDepthOfFieldBlurVerticalShader->SetInputTexture(mD3D->GetImmediateContext(), mDoFCoCTexture->GetShaderResourceView());
+
+	mShaderHandler->mDepthOfFieldBlurVerticalShader->SetFramebufferSize(XMFLOAT2((float)mDoFCoCTexture->GetWidth(), (float)mDoFCoCTexture->GetHeight()));
+	mShaderHandler->mDepthOfFieldBlurVerticalShader->SetZNearFar(zNear, zFar);
+	mShaderHandler->mDepthOfFieldBlurVerticalShader->Update(mD3D->GetImmediateContext());
+
+	mShaderHandler->mDepthOfFieldBlurVerticalShader->SetActive(mD3D->GetImmediateContext());
+
+	// Render a fullscreen quad without a vertex buffer using some shader magic.
+	mD3D->GetImmediateContext()->Draw(3, 0);
+
+	mShaderHandler->mDepthOfFieldBlurVerticalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mDepthOfFieldBlurVerticalShader->SetInputTexture(mD3D->GetImmediateContext(), NULL);
+
+
+
+	// Reset the render target to the back buffer.
+	renderTarget = mD3D->GetRenderTargetView();
+	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
+	// Reset viewport
+ 	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
+
+	// Composite the result of the light pass with the depth of field.
+	mShaderHandler->mCompositeShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mIntermediateTexture->GetShaderResourceView());
+	mShaderHandler->mCompositeShader->SetDoFCoCTexture(mD3D->GetImmediateContext(), mDoFCoCTexture->GetShaderResourceView());
+	mShaderHandler->mCompositeShader->SetDoFFarFieldTexture(mD3D->GetImmediateContext(), mDoFBlurTexture2->GetShaderResourceView());
+
+	mShaderHandler->mCompositeShader->Update(mD3D->GetImmediateContext());
+	mShaderHandler->mCompositeShader->SetActive(mD3D->GetImmediateContext());
+
+	// Render a fullscreen quad without a vertex buffer using some shader magic.
+	mD3D->GetImmediateContext()->Draw(3, 0);
+
+	mShaderHandler->mCompositeShader->SetFramebufferTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mCompositeShader->SetDoFCoCTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mCompositeShader->SetDoFFarFieldTexture(mD3D->GetImmediateContext(), NULL);
 
 	// Turn z-buffer back on
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDefaultDSS, 1);
@@ -664,12 +787,19 @@ void GraphicsEngineImpl::OnResize(UINT width, UINT height)
 {
 	mD3D->OnResize(width, height);
 	mDeferredBuffers->OnResize(mD3D->GetDevice(), width, height);
+	mCamera->SetLens(fovY, (float)width / height, zNear, zFar);
 	mCamera->UpdateOrthoMatrix(static_cast<float>(width), static_cast<float>(height), zNear, zFar);
 	mOrthoWindow->OnResize(mD3D->GetDevice(), width, height);
 
-	// Resize SSAO texture
-	mSSAOTexture->Resize(mD3D->GetDevice(), width, height);
-	mSSAOBlurTexture->Resize(mD3D->GetDevice(), width, height);
+	// Resize Post-processing textures
+	mIntermediateTexture->Resize(mD3D->GetDevice(), width, height);
+
+	mSSAOTexture->Resize(mD3D->GetDevice(), (UINT)(width * mSSAOScale), (UINT)(height * mSSAOScale));
+	mSSAOBlurTexture->Resize(mD3D->GetDevice(), (UINT)(width * mSSAOScale), (UINT)(height * mSSAOScale));
+
+	mDoFCoCTexture->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
+	mDoFBlurTexture1->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
+	mDoFBlurTexture2->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
 }
 
 void GraphicsEngineImpl::RenderSceneToTexture()
@@ -848,4 +978,12 @@ void GraphicsEngineImpl::Clear()
 
 	mD3D->GetImmediateContext()->ClearDepthStencilView(mD3D->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
+}
+
+void GraphicsEngineImpl::SetDepthOfFieldFocusPlanes(float nearBlurryPlane, float nearSharpPlane, float farSharpPlane, float farBlurryPlane)
+{
+	mNearBlurryPlane = nearBlurryPlane;
+	mNearSharpPlane = nearSharpPlane;
+	mFarSharpPlane = farSharpPlane;
+	mFarBlurryPlane = farBlurryPlane;
 }

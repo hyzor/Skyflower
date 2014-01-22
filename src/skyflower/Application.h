@@ -53,6 +53,8 @@ private:
 	void updateLoading(float dt);
 	void changeGameState(GameState newState);
 
+	void setBackgroundMusicList(const std::vector<std::string> &musicList);
+
 private:
 	double m_oldTime;
 
@@ -70,6 +72,13 @@ private:
 	bool m_showCharts;
 	int m_frameChartID;
 	int m_memChartID;
+
+	std::vector<std::string> m_backgroundMusicMenu;
+	std::vector<std::string> m_backgroundMusicGame;
+
+	SoundSource *m_backgroundMusic;
+	size_t m_backgroundMusicIndex;
+	const std::vector<std::string> *m_backgroundMusicList;
 };
 
 #endif

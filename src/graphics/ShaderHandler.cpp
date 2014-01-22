@@ -13,8 +13,12 @@ ShaderHandler::ShaderHandler()
 	mSkinnedShadowShader = new SkinnedShadowShader();
 	mSkyDeferredShader = new SkyDeferredShader();
 	mSSAOShader = new SSAOShader();
-	mBlurHorizontalShader = new BlurShader();
-	mBlurVerticalShader = new BlurShader();
+	mSSAOBlurHorizontalShader = new BlurShader();
+	mSSAOBlurVerticalShader = new BlurShader();
+	mDepthOfFieldCoCShader = new DepthOfFieldCoCShader();
+	mDepthOfFieldBlurHorizontalShader = new BlurShader();
+	mDepthOfFieldBlurVerticalShader = new BlurShader();
+	mCompositeShader = new CompositeShader();
 }
 
 ShaderHandler::~ShaderHandler()
@@ -49,8 +53,12 @@ ShaderHandler::~ShaderHandler()
 	delete mSkinnedShadowShader;
 	delete mSkyDeferredShader;
 	delete mSSAOShader;
-	delete mBlurHorizontalShader;
-	delete mBlurVerticalShader;
+	delete mSSAOBlurHorizontalShader;
+	delete mSSAOBlurVerticalShader;
+	delete mDepthOfFieldCoCShader;
+	delete mDepthOfFieldBlurHorizontalShader;
+	delete mDepthOfFieldBlurVerticalShader;
+	delete mCompositeShader;
 }
 
 void ShaderHandler::LoadCompiledVertexShader(LPCWSTR fileName, char* name, ID3D11Device* device)
@@ -1880,6 +1888,91 @@ void SSAOShader::SetZFar(float z_far)
 
 #pragma endregion SSAOShader
 
+#pragma region DepthOfFieldCoCShader
+
+DepthOfFieldCoCShader::DepthOfFieldCoCShader()
+{
+}
+
+DepthOfFieldCoCShader::~DepthOfFieldCoCShader()
+{
+	if (ps_cPerFrameBuffer)
+		ps_cPerFrameBuffer->Release();
+}
+
+bool DepthOfFieldCoCShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
+{
+	memset(&ps_cPerFrameBufferVariables, 0, sizeof(PS_CPERFRAMEBUFFER));
+
+	D3D11_BUFFER_DESC cbDesc;
+	cbDesc.ByteWidth = sizeof(PS_CPERFRAMEBUFFER);
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	device->CreateBuffer(&cbDesc, NULL, &ps_cPerFrameBuffer);
+
+	return true;
+}
+
+bool DepthOfFieldCoCShader::SetActive(ID3D11DeviceContext* dc)
+{
+	// Set active shaders
+	dc->VSSetShader(mVertexShader, nullptr, 0);
+	dc->PSSetShader(mPixelShader, nullptr, 0);
+
+	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
+
+	dc->PSSetConstantBuffers(0, 1, &ps_cPerFrameBuffer);
+
+	return true;
+}
+
+void DepthOfFieldCoCShader::Update(ID3D11DeviceContext* dc)
+{
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	dc->Map(ps_cPerFrameBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	PS_CPERFRAMEBUFFER* dataPtr = (PS_CPERFRAMEBUFFER*)mappedResource.pData;
+	*dataPtr = ps_cPerFrameBufferVariables;
+
+	dc->Unmap(ps_cPerFrameBuffer, 0);
+}
+
+bool DepthOfFieldCoCShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
+{
+	mVertexShader = vShader;
+	mPixelShader = pShader;
+
+	return true;
+}
+
+void DepthOfFieldCoCShader::SetDepthTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(0, 1, &tex);
+}
+
+void DepthOfFieldCoCShader::SetZNearFar(float z_near, float z_far)
+{
+	ps_cPerFrameBufferVariables.z_near = z_near;
+	ps_cPerFrameBufferVariables.z_far = z_far;
+}
+
+void DepthOfFieldCoCShader::SetFocusPlanes(float near_blurry_plane, float near_sharp_plane, float far_sharp_plane, float far_blurry_plane)
+{
+	ps_cPerFrameBufferVariables.near_blurry_plane = near_blurry_plane;
+	ps_cPerFrameBufferVariables.near_sharp_plane = near_sharp_plane;
+	ps_cPerFrameBufferVariables.far_sharp_plane = far_sharp_plane;
+	ps_cPerFrameBufferVariables.far_blurry_plane = far_blurry_plane;
+
+	ps_cPerFrameBufferVariables.near_scale = 1.0f / -(near_blurry_plane - near_sharp_plane);
+	ps_cPerFrameBufferVariables.far_scale = 1.0f / (far_blurry_plane - far_sharp_plane);
+}
+
+#pragma endregion DepthOfFieldCoCShader
+
 #pragma region BlurShader
 
 BlurShader::BlurShader()
@@ -1915,7 +2008,7 @@ bool BlurShader::SetActive(ID3D11DeviceContext* dc)
 	dc->VSSetShader(mVertexShader, nullptr, 0);
 	dc->PSSetShader(mPixelShader, nullptr, 0);
 
-	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
+	dc->PSSetSamplers(0, 1, &RenderStates::mLinearClampedSS);
 
 	dc->PSSetConstantBuffers(0, 1, &ps_cPerFrameBuffer);
 
@@ -1946,7 +2039,7 @@ void BlurShader::SetFramebufferTexture(ID3D11DeviceContext* dc, ID3D11ShaderReso
 	dc->PSSetShaderResources(0, 1, &tex);
 }
 
-void BlurShader::SetDepthTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+void BlurShader::SetInputTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
 {
 	dc->PSSetShaderResources(1, 1, &tex);
 }
@@ -1960,6 +2053,61 @@ void BlurShader::SetZNearFar(float z_near, float z_far)
 {
 	ps_cPerFrameBufferVariables.z_near = z_near;
 	ps_cPerFrameBufferVariables.z_far = z_far;
+}
+
+#pragma endregion BlurShader
+
+#pragma region CompositeShader
+
+CompositeShader::CompositeShader()
+{
+}
+
+CompositeShader::~CompositeShader()
+{
+}
+
+bool CompositeShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
+{
+	return true;
+}
+
+bool CompositeShader::SetActive(ID3D11DeviceContext* dc)
+{
+	// Set active shaders
+	dc->VSSetShader(mVertexShader, nullptr, 0);
+	dc->PSSetShader(mPixelShader, nullptr, 0);
+
+	dc->PSSetSamplers(0, 1, &RenderStates::mLinearClampedSS);
+
+	return true;
+}
+
+void CompositeShader::Update(ID3D11DeviceContext* dc)
+{
+}
+
+bool CompositeShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
+{
+	mVertexShader = vShader;
+	mPixelShader = pShader;
+
+	return true;
+}
+
+void CompositeShader::SetFramebufferTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(0, 1, &tex);
+}
+
+void CompositeShader::SetDoFCoCTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(1, 1, &tex);
+}
+
+void CompositeShader::SetDoFFarFieldTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(2, 1, &tex);
 }
 
 #pragma endregion BlurShader
