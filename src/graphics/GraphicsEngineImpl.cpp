@@ -663,12 +663,13 @@ void GraphicsEngineImpl::DeleteTexture2D(Texture2D *texture)
 void GraphicsEngineImpl::OnResize(UINT width, UINT height)
 {
 	mD3D->OnResize(width, height);
-	mDeferredBuffers->OnResize(width, height);
+	mDeferredBuffers->OnResize(mD3D->GetDevice(), width, height);
 	mCamera->UpdateOrthoMatrix(static_cast<float>(width), static_cast<float>(height), zNear, zFar);
-	// TODO:
-	//mOrthoWindow->OnResize(width, height);
+	mOrthoWindow->OnResize(mD3D->GetDevice(), width, height);
 
-	// FIXME: Resize mSSAOTexture and mSSAOBlurTexture.
+	// Resize SSAO texture
+	mSSAOTexture->Resize(mD3D->GetDevice(), width, height);
+	mSSAOBlurTexture->Resize(mD3D->GetDevice(), width, height);
 }
 
 void GraphicsEngineImpl::RenderSceneToTexture()
@@ -835,4 +836,16 @@ void GraphicsEngineImpl::clearLights()
 	mSpotLights.clear();
 	mDirLights.clear();
 	mPointLights.clear();
+}
+
+void GraphicsEngineImpl::Clear()
+{
+	mD3D->GetImmediateContext()->RSSetState(0);
+	// Restore back and depth buffer and viewport to the OM stage
+	ID3D11RenderTargetView* renderTargets[1] = { mD3D->GetRenderTargetView() };
+	mD3D->GetImmediateContext()->OMSetRenderTargets(1, renderTargets, mD3D->GetDepthStencilView());
+	mD3D->GetImmediateContext()->ClearRenderTargetView(mD3D->GetRenderTargetView(), reinterpret_cast<const float*>(&D3dColors::LightSteelBlue));
+
+	mD3D->GetImmediateContext()->ClearDepthStencilView(mD3D->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
 }

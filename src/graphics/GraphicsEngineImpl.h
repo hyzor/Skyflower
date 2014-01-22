@@ -67,6 +67,8 @@ public:
 
 	void clearLights();
 
+	void Clear();
+
 private:
 	Direct3D* mD3D;
 

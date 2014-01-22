@@ -14,6 +14,8 @@ public:
 	void Shutdown();
 	void Render(ID3D11DeviceContext* dc);
 
+	void OnResize(ID3D11Device* device, int width, int height);
+
 	int GetIndexCount();
 
 private:
