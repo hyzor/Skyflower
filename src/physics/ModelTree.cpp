@@ -108,7 +108,7 @@ int ModelTreeParent::InfrontOfPlane(Vec3 point, Vec3 &center, Vec3 &normal)
 {
 	point -= center;
 	float dot = point.Dot(normal);
-	return (dot > 0)?1:(dot==0?2:0);
+	return (dot > 0);// ? 1 : (dot == 0 ? 2 : 0);
 }
 
 void ModelTreeLeaf::Add(Triangle* t, int layers)

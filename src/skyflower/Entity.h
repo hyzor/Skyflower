@@ -48,15 +48,19 @@ class Entity {
 			else
 				return NULL;
 		}
+		bool hasComponents(string name);
 
 		Vec3 returnPos();
 		Vec3 spawnpos;
 		CollisionInstance* collInst;
 		Field* field;
 
-		Entity* ground;
+		//a pointer to the ground the entity stands on, if it stands on something
+		Entity* ground; 
+		//a pointer to the wall the entity is colliding with, if it is colliding with a wall
 		Entity* wall;
 
+		void updatePos(Vec3 pos);
 	private:
 
 		EntityId fId;
@@ -66,10 +70,13 @@ class Entity {
 		Vec3 scale;
 		string model;
 		bool isVisible;
+		bool isActive;
 		ModelInstance* modelInst;
 		AnimatedInstance* AnimInst;
 		Physics* physics;
 		Sphere *sphere;
+		bool isAnimated;
+		bool isCollidible;
 
 		/**
 		 * COMPONENT MANAGEMENT
@@ -84,7 +91,6 @@ class Entity {
 		// get a component
 		list<Component*> getComponents(string name);
 
-		bool hasComponents(string name);
 
 		// get all components
 		list<Component*> getComponents();
@@ -138,11 +144,12 @@ class Entity {
 		Vec3 returnRot();
 		Vec3 returnScale();
 		bool returnVisible();
+		bool getIsActive();
 		CollisionInstance* returnCollision();
-		void updatePos(Vec3 pos);
 		void updateRot(Vec3 rot);
 		void updateScale(Vec3 scale);
-		void updateVisible(bool isVisible);	
+		void updateVisible(bool isVisible);
+		void setIsActive(bool status);
 
 		const Modules *modules;
 };

@@ -13,7 +13,7 @@ void Checkpoint::update(float dt)
 
 	//sphere test for flower checkpoint mesh
 	Sphere cp = Sphere(getEntityPos(), 5);
-	Sphere player = Sphere(getEntityManager()->getEntity(0)->returnPos(), 5);
+	Sphere player = Sphere(getEntityManager()->getEntity(1)->returnPos(), 5);
 	if (cp.Test(player))
 		getEntityManager()->sendMessageToEntity("Checkpoint", getOwnerId());
 
@@ -23,7 +23,7 @@ void Checkpoint::Activate(Message const& msg)
 {
 	if (activated <= 0)
 	{
-		getEntityManager()->getEntity(0)->spawnpos = spawnpoint; // set player spawn
+		getEntityManager()->getEntity(1)->spawnpos = spawnpoint; // set player spawn
 		getEntityManager()->sendMessageToEntity("Activated", getOwnerId()); //event managment
 	}
 

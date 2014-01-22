@@ -15,6 +15,10 @@ using namespace Cistron;
 Entity::Entity(const Modules *modules, EntityId id, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
 	float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated) : fId(id), type(type), fFinalized(false)
 {
+
+	this->isActive = true;
+	this->isCollidible = isCollidible;
+
 	this->type = type;
 
 	this->pos.X = xPos;
@@ -32,6 +36,7 @@ Entity::Entity(const Modules *modules, EntityId id, string type, float xPos, flo
 
 	this->model = model;
 	this->isVisible = isVisible;
+	this->isAnimated = isAnimated;
 	this->physics = new Physics();
 
 	this->modules = modules;
@@ -57,9 +62,6 @@ Entity::Entity(const Modules *modules, EntityId id, string type, float xPos, flo
 			this->AnimInst->SetVisibility(this->isVisible);
 
 			std::string keyPath = "../../content/" + model + ".key";
-
-			FILE* file;
-			file = std::fopen(keyPath.c_str(), "r");
 
 			// Open corresponding keyframes file
 			ifstream keyFramesFile;
@@ -91,21 +93,11 @@ Entity::Entity(const Modules *modules, EntityId id, string type, float xPos, flo
 				keyFramesFile.close();
 			}
 
-			// Cache animation keyframes
-			/*
-			this->AnimInst->CreateAnimation(0, 51, 51);
-			this->AnimInst->CreateAnimation(1, 1, 24 - 1);
-			this->AnimInst->CreateAnimation(2, 1, 24 - 1);
-			this->AnimInst->CreateAnimation(3, 30, 49 - 1);
-			this->AnimInst->CreateAnimation(4, 51, 75 - 1);
-			this->AnimInst->CreateAnimation(5, 81, 105 - 1);
-			*/
-
 			this->AnimInst->SetAnimation(0);
 		}
 	}
 	
-	if (isCollidible && !isAnimated)
+	if (this->isCollidible && !isAnimated)
 	{
 		collInst = Collision::GetInstance()->CreateCollisionInstance(model, pos);
 		collInst->SetScale(scale);
@@ -138,14 +130,18 @@ Entity::~Entity() {
 	if (modelInst)
 		this->modules->graphics->DeleteInstance(this->modelInst);
 
-	//if (AnimInst)
-		//this->modules->graphics->DeleteInstance(this->AnimInst);
+	if (AnimInst)
+		this->modules->graphics->DeleteInstance(this->AnimInst);
+
+	if (field)
+		this->modules->potentialField->DeleteField(field);
 	
 	delete this->physics;
 }
 
 void Entity::update(float deltaTime)
 {
+
 	list<Component *> components = getComponents();
 
 	for (auto iter = components.begin(); iter != components.end(); iter++)
@@ -360,6 +356,11 @@ bool Entity::returnVisible()
 	return this->isVisible;
 }
 
+bool Entity::getIsActive()
+{
+	return this->isActive;
+}
+
 CollisionInstance* Entity::returnCollision()
 {
 	return this->collInst;
@@ -409,3 +410,30 @@ void Entity::updateVisible(bool isVisible)
 	if (this->modelInst)
 		this->modelInst->SetVisibility(isVisible);
 }
+
+void Entity::setIsActive(bool status)
+{
+	this->isActive = status;
+	if (this->isVisible)
+	{
+		this->modelInst->SetVisibility(status);
+		if (this->isAnimated)
+		{
+			this->AnimInst->SetVisibility(status);
+		}
+		if (this->isCollidible)
+		{
+			this->collInst->setIsActive(status);
+		}
+	}
+
+	for (auto iter1 = this->fComponents.begin(); iter1 != this->fComponents.end(); iter1++)
+	{
+		for (auto iter2 = iter1->second.begin(); iter2 != iter1->second.end(); iter2++)
+		{					
+			Component *component = (*iter2);
+			component->setActive(status);
+		}
+	}
+}
+

@@ -167,6 +167,11 @@ public:
 		this->isMovingForward = true;
 	}
 
+	float GetSpeed()
+	{
+		return speed;
+	}
+
 private:
 	Physics* p;
 	bool isMovingForward;

@@ -16,14 +16,21 @@ class DLL_API CollisionInstance
 		bool Test(Triangle t);
 		bool Test(CollisionInstance* ci);
 
+		Box GetBox();
+
 		CollisionModel* Model;
 		Vec3 Position;
+		bool isActive;
+
+		void setIsActive(bool status);
+
 	private:
 
 		Vec3 scaleInv;
 		Vec3 rot1Inv;
 		Vec3 rot2Inv;
 		Vec3 rot3Inv;
+		
 };
 
 

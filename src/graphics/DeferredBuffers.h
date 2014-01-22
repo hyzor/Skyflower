@@ -20,12 +20,15 @@ public:
 	~DeferredBuffers();
 
 	bool Init(ID3D11Device* device, UINT width, UINT height, float nearZ, float farZ);
-	void OnResize(UINT width, UINT height);
+	bool Init(ID3D11Device* device, UINT width, UINT height);
+	void OnResize(ID3D11Device* device, UINT width, UINT height);
 
 	void SetRenderTargets(ID3D11DeviceContext* dc, ID3D11DepthStencilView* depthStencilView);
 	void ClearRenderTargets(ID3D11DeviceContext* dc, DirectX::XMFLOAT4 RGBA, ID3D11DepthStencilView* depthStencilView);
 
 	ID3D11ShaderResourceView* GetSRV(int view);
+
+	void Shutdown();
 
 private:
 	ID3D11Texture2D* mRenderTargetTextureArray[DeferredBuffersIndex::Count];

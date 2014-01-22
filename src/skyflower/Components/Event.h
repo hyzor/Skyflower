@@ -37,32 +37,26 @@ public:
 	};
 	virtual ~Event() {};
 
-
-
-
 	// we are added to an Entity, and thus to the component system
 	void addedToEntity() {
 		//cout << "A Event was added to the system." << endl;
 
 		requestMessage("Activated", &Event::Activated);
 		requestMessage("Deactivated", &Event::Deactivated);
+		requestMessage("Goal", &Event::Goal);
 	}
 
 	void sendAMessage(string message)
 	{
 		//cout << "hej det är jag som ropar på denna funktionen: " << this->fName << endl;
 		sendMessage(message);
-	}
-
-	
+	}	
 
 	static EntityManager* entityManager;
-
 
 private:
 
 	std::string file;
-
 
 	ScriptHandler *sh;
 
@@ -82,6 +76,12 @@ private:
 
 		entityManager = getEntityManager();
 		lua_pcall(sh->L, 1, 0, 0);
+	}
+
+	void Goal(Message const& msg)
+	{
+		//TO DO
+		cout << "GOAL" << endl;
 	}
 
 	static int PlaySound(lua_State* L);

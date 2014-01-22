@@ -58,7 +58,7 @@ int Event::Save(lua_State* L)
 {
 	int n = lua_gettop(L);
 
-	Entity* player = entityManager->getEntity(0);
+	Entity* player = entityManager->getEntity(1);
 	Vec3 pos = player->returnPos();
 	if (n >= 1)
 	{

@@ -217,3 +217,9 @@ void OrthoWindow::PrepareBuffers(ID3D11DeviceContext* deviceContext)
 
 	return;
 }
+
+void OrthoWindow::OnResize(ID3D11Device* device, int width, int height)
+{
+	ShutdownBuffers();
+	InitializeBuffers(device, width, height);
+}

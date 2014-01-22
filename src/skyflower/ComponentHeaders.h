@@ -16,5 +16,7 @@
 #include "Components/Checkpoint.h"
 #include "Components/Push.h"
 #include "Components/Pushable.h"
+#include "Components/BoxComp.h"
+#include "Components/Goal.h"
 
 #endif

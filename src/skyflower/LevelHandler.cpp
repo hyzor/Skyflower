@@ -97,10 +97,15 @@ void LevelHandler::loadQueued(int id)
 {
 	queued = false;
 	printf("Thread started\n");
-	for (int i = 0; _entityManager->getNrOfEntities() != 1; i++)
+	int nrEntities = _entityManager->getNrOfEntities();
+	for (int i = 0,j = 0; i < nrEntities; i++, j++)
 	{
-		if (_entityManager->getEntity(i)->getType() != "player")
-			_entityManager->destroyEntity(i);
+		int eid = _entityManager->getEntityId(j);
+		if (_entityManager->getEntity(eid)->getType() != "player")
+		{
+			_entityManager->destroyEntity(eid);
+			j--;
+		}
 	}
 	_entityManager->loadXML(_levels.at(queueID)._path);
 	_current = queueID;

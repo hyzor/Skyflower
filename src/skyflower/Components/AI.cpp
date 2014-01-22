@@ -28,7 +28,7 @@ void AI::update(float dt)
 	Ray r = Ray(pos + Vec3(0, 15, 0), Vec3(0, -30, 0));
 
 	//find target
-	Entity* p = getEntityManager()->getEntity(0); //player id = 0
+	Entity* p = getEntityManager()->getEntity(1); //player id = 0
 
 
 	Field* target = getEntityManager()->modules->potentialField->CreateField(-1000, 1000, p->returnPos());
