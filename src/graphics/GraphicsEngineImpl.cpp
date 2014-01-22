@@ -94,16 +94,15 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 
 	mIntermediateTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8G8B8A8_UNORM, true);
 
-	mSSAOTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8_UNORM, true);
-	mSSAOBlurTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8_UNORM, true);
+	mSSAOScale = 1.0f;
+	mSSAOTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), (UINT)(width * mSSAOScale), (UINT)(height * mSSAOScale), DXGI_FORMAT_R8_UNORM, true);
+	mSSAOBlurTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), (UINT)(width * mSSAOScale), (UINT)(height * mSSAOScale), DXGI_FORMAT_R8_UNORM, true);
 
-	// FIXME: Test 4x downscale.
-	UINT DoFTextureWidth = (UINT)(width * 0.5f);
-	UINT DoFTextureHeight = (UINT)(height * 0.5f);
-	mDoFCoCTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), DoFTextureWidth, DoFTextureHeight, DXGI_FORMAT_R8_SNORM /*DXGI_FORMAT_R16_FLOAT*/, true);
-	mDoFFarFieldTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), DoFTextureWidth, DoFTextureHeight, DXGI_FORMAT_R8G8B8A8_UNORM, true);
-	mDoFNearFieldTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), DoFTextureWidth, DoFTextureHeight, DXGI_FORMAT_R8G8B8A8_UNORM, true);
-	mDoFBlurTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), DoFTextureWidth, DoFTextureHeight, DXGI_FORMAT_R8G8B8A8_UNORM, true);
+	mDoFScale = 0.5f;
+	mDoFCoCTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale), DXGI_FORMAT_R8_SNORM /*DXGI_FORMAT_R16_FLOAT*/, true);
+	mDoFFarFieldTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale), DXGI_FORMAT_R8G8B8A8_UNORM, true);
+	mDoFNearFieldTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale), DXGI_FORMAT_R8G8B8A8_UNORM, true);
+	mDoFBlurTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale), DXGI_FORMAT_R8G8B8A8_UNORM, true);
 
 	//--------------------------------------------------------
 	// Lights
@@ -788,9 +787,16 @@ void GraphicsEngineImpl::OnResize(UINT width, UINT height)
 	mCamera->UpdateOrthoMatrix(static_cast<float>(width), static_cast<float>(height), zNear, zFar);
 	mOrthoWindow->OnResize(mD3D->GetDevice(), width, height);
 
-	// Resize SSAO texture
-	mSSAOTexture->Resize(mD3D->GetDevice(), width, height);
-	mSSAOBlurTexture->Resize(mD3D->GetDevice(), width, height);
+	// Resize Post-processing textures
+	mIntermediateTexture->Resize(mD3D->GetDevice(), width, height);
+
+	mSSAOTexture->Resize(mD3D->GetDevice(), (UINT)(width * mSSAOScale), (UINT)(height * mSSAOScale));
+	mSSAOBlurTexture->Resize(mD3D->GetDevice(), (UINT)(width * mSSAOScale), (UINT)(height * mSSAOScale));
+
+	mDoFCoCTexture->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
+	mDoFFarFieldTexture->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
+	mDoFNearFieldTexture->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
+	mDoFBlurTexture->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
 }
 
 void GraphicsEngineImpl::RenderSceneToTexture()

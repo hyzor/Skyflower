@@ -106,9 +106,11 @@ private:
 
 	Texture2DImpl *mIntermediateTexture;
 
+	float mSSAOScale;
 	Texture2DImpl *mSSAOTexture;
 	Texture2DImpl *mSSAOBlurTexture;
 
+	float mDoFScale;
 	Texture2DImpl *mDoFCoCTexture;
 	Texture2DImpl *mDoFFarFieldTexture;
 	Texture2DImpl *mDoFNearFieldTexture;
