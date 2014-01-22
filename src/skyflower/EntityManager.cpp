@@ -1273,8 +1273,20 @@ void EntityManager::handleCollision()
 				{
 					fEntitys[i]->physics->setVelocity(Vec3());
 					fEntitys[i]->physics->setJumping(false);
+					fEntitys[i]->sendMessageToEntity("notInAir", this->fEntitys[i]->getEntityId());
+
 				}
-				else if (t == 1)
+				else
+				{
+					//if the entity is being pushed out in the "air" it is able to move again 
+					if (fEntitys[i]->hasComponents("Pushable") && fEntitys[i]->physics->getIsBeingPushed())
+					{
+						fEntitys[i]->fComponents["Messenger"].front()->sendMessageToEntity(fEntitys[i]->getEntityId(), "stopBeingPushed");
+					}
+					//so that you can't jump while falling from something
+					fEntitys[i]->sendMessageToEntity("inAir", this->fEntitys[i]->getEntityId());
+				}
+				if (t == 1)
 				{
 					fEntitys[i]->physics->setVelocity(Vec3());
 					fEntitys[i]->ground = nullptr;
