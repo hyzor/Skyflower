@@ -99,3 +99,23 @@ int Event::Spawn(lua_State* L)
 
 	return 0;
 }
+
+int Event::ToggleOscillatePosition(lua_State* L)
+{
+	int n = lua_gettop(L);
+
+	assert(n == 1);
+
+	EntityId entityID = lua_tointeger(L, 1);
+	Entity *entity = entityManager->getEntity(entityID);
+
+	if (entity)
+	{
+		OscillatePositionComponent *component = entity->getComponent<OscillatePositionComponent *>("OscillatePosition");
+
+		if (component)
+			component->setEnabled(!component->isEnabled());
+	}
+
+	return 0;
+}

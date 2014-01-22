@@ -14,8 +14,9 @@ using namespace Cistron;
 class OscillatePositionComponent : public Component {
 
 public:
-	OscillatePositionComponent(Vec3 direction, float speed, float travelDistance) : Component("OscillatePosition")
+	OscillatePositionComponent(bool enabled, Vec3 direction, float speed, float travelDistance) : Component("OscillatePosition")
 	{
+		this->enabled = enabled;
 		this->velocity = direction.Normalize() * speed;
 		this->travelDistance = travelDistance;
 	}
@@ -35,6 +36,9 @@ public:
 
 	void update(float deltaTime)
 	{
+		if (!this->enabled)
+			return;
+
 		Vec3 position = getEntityPos() + (this->velocity * deltaTime);
 
 		if ((this->startPosition - position).Length() >= this->travelDistance) {
@@ -44,7 +48,18 @@ public:
 		updateEntityPos(position);
 	}
 
+	void setEnabled(bool enabled)
+	{
+		this->enabled = enabled;
+	}
+
+	bool isEnabled()
+	{
+		return this->enabled;
+	}
+
 private:
+	bool enabled;
 	Vec3 startPosition;
 	Vec3 velocity;
 	float travelDistance;

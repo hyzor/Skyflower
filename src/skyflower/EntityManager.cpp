@@ -876,11 +876,18 @@ bool EntityManager::loadXML(string xmlFile)
 
 			if (componentName == "OscillatePosition")
 			{
+				bool enabled = true;
 				float xDir = 0.0f;
 				float yDir = 0.0f;
 				float zDir = 0.0f;
 				float speed = 0.0f;
 				float travelDistance = 0.0f;
+
+				attr = e->Attribute("enabled");
+				if (attr != NULL)
+					enabled = e->BoolAttribute("enabled");
+				else
+					cout << "failed loading attribute for enabled for entity " << entityName << " in file " << xmlFile << endl;
 
 				attr = e->Attribute("xDir");
 				if (attr != NULL)
@@ -912,7 +919,7 @@ bool EntityManager::loadXML(string xmlFile)
 				else
 					cout << "failed loading attribute for speed for entity " << entityName << " in file " << xmlFile << endl;
 
-				OscillatePositionComponent *component = new OscillatePositionComponent(Vec3(xDir, yDir, zDir), speed, travelDistance);
+				OscillatePositionComponent *component = new OscillatePositionComponent(enabled, Vec3(xDir, yDir, zDir), speed, travelDistance);
 				this->addComponent(entity, component);
 			}
 			else if (componentName == "Rotating")

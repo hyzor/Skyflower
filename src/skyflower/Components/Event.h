@@ -31,6 +31,7 @@ public:
 		lua_register(sh->L, "Save", Event::Save);
 		lua_register(sh->L, "Load", Event::Load);
 		lua_register(sh->L, "Spawn", Event::Spawn);
+		lua_register(sh->L, "ToggleOscillatePosition", Event::ToggleOscillatePosition);
 
 		sh->Run(file);
 
@@ -91,6 +92,7 @@ private:
 	static int Save(lua_State* L);
 	static int Load(lua_State* L);
 	static int Spawn(lua_State* L);
+	static int ToggleOscillatePosition(lua_State* L);
 };
 
 #endif

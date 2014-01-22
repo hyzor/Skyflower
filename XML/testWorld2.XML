@@ -110,6 +110,22 @@
 		<Event script="testWorld2_Push.lua" />
 	</Platform>
 	
+	<Platform entityName="ButtonBase3" id="72" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
+		xPos="-20.0" yPos="0.0" zPos="-20.0"  
+		xRot="0.0" yRot="0.0" zRot="0.0" 
+		xScale="2.0" yScale="2.0" zScale="2.0" 
+		model="Models\\Worlds\\Subworld\\ButtonBase" />
+	<Platform entityName="Button2" id="73" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
+		xPos="-20.0" yPos="0.0" zPos="-20.0" 
+		xRot="0.0" yRot="0.0" zRot="0.0" 
+		xScale="2.0" yScale="2.0" zScale="2.0" 
+		model="Models\\Worlds\\Subworld\\Button">
+		<Messenger />
+		<Event script="testWorld2_MovePlatform.lua" />
+		<Button />
+		<Movement />
+	</Platform>
+	
 	<!-- SCENERY -->
 	<Platform entityName="Mountain" id="14" isVisible="1" isCollidible="0" Type="object" isAnimated="0" 
 		xPos="36.0960396599" yPos="-450.0" zPos="39.4741144045" 
@@ -143,5 +159,7 @@
 		<Messenger />
 	</Platform>
 	
-    <placeHolderPlattform entityName="placeHolderPlattform2" id="99" isVisible="1" isCollidible="1" Type="object" isAnimated="0" xPos="0.0" yPos="0.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" model="Models\\Worlds\\Subworld\\placeHolderPlattform"/>
+    <placeHolderPlattform entityName="placeHolderPlattform2" id="99" isVisible="1" isCollidible="1" Type="object" isAnimated="0" xPos="0.0" yPos="0.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" model="Models\\Worlds\\Subworld\\placeHolderPlattform">
+		<OscillatePosition enabled="false" xDir="0.0" yDir="0.0" zDir="1.0" speed="10.0" travelDistance="15.0" />
+	</placeHolderPlattform>
 </root>
