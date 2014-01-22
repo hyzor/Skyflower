@@ -16,12 +16,12 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{72d712db-25fa-480f-81f7-fe4103183885}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Models">
+      <UniqueIdentifier>{dd18e703-b7c2-4018-9386-6a8ad130ca6d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\graphics\MathHelper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\graphics\SkinnedData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\graphics\TextureManager.cpp">
@@ -43,21 +43,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\graphics\Direct3D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\graphics\GenericMesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\graphics\GenericModel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\graphics\GenericObjectLoader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\graphics\GenericSkinnedMesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\graphics\GenericSkinnedModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\graphics\GraphicsEngine.cpp">
@@ -99,6 +84,27 @@
     <ClCompile Include="src\graphics\Texture2DImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\graphics\GenericSkinnedMesh.cpp">
+      <Filter>Models</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\GenericSkinnedModel.cpp">
+      <Filter>Models</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\GenericObjectLoader.cpp">
+      <Filter>Models</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\GenericModel.cpp">
+      <Filter>Models</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\GenericMesh.cpp">
+      <Filter>Models</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\MorphModel.cpp">
+      <Filter>Models</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\SkinnedData.cpp">
+      <Filter>Models</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\graphics\AnimatedEntity.h">
@@ -116,21 +122,6 @@
     <ClInclude Include="src\graphics\Direct3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\graphics\GenericMesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\graphics\GenericModel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\graphics\GenericObjectLoader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\graphics\GenericSkinnedMesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\graphics\GenericSkinnedModel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\graphics\GraphicsEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -141,9 +132,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics\MathHelper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\graphics\SkinnedData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics\TextureManager.h">
@@ -190,6 +178,27 @@
     </ClInclude>
     <ClInclude Include="src\graphics\Texture2D.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\GenericModel.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\GenericMesh.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\GenericObjectLoader.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\GenericSkinnedMesh.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\GenericSkinnedModel.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\MorphModel.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\SkinnedData.h">
+      <Filter>Models</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -272,6 +281,12 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="src\graphics\Shaders\BlurVerticalPS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\BasicDeferredMorphVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\BasicDeferredMorphPS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

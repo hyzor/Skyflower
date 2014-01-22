@@ -25,6 +25,8 @@
 #include "OrthoWindow.h"
 #include "Texture2DImpl.h"
 
+#include "MorphModel.h"
+
 const float zNear = 1.0f;
 const float zFar = 10000.0f;
 
@@ -85,6 +87,9 @@ private:
 
 	std::vector<ModelInstanceImpl*> mInstances;
 	std::vector<AnimatedInstanceImpl*> mAnimatedInstances;
+
+	std::vector<MorphModel*> mMorphModels;
+	std::vector<MorphModelInstance*> mMorphInstances;
 
 	std::vector<PointLight> mPointLights;
 	std::vector<DirectionalLight> mDirLights;
