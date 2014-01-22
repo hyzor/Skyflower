@@ -840,6 +840,43 @@ private:
 };
 #pragma endregion SSAOShader
 
+#pragma region DepthOfFieldCoCShader
+class DepthOfFieldCoCShader : public IShader
+{
+public:
+	DepthOfFieldCoCShader();
+	~DepthOfFieldCoCShader();
+
+	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
+	bool SetActive(ID3D11DeviceContext* dc);
+
+	void Update(ID3D11DeviceContext* dc);
+
+	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+
+	void SetDepthTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+
+	void SetZNearFar(float z_near, float z_far);
+	void SetFocusPlanes(float near_blurry_plane, float near_sharp_plane, float far_sharp_plane, float far_blurry_plane);
+
+private:
+	struct PS_CPERFRAMEBUFFER
+	{
+		float z_near;
+		float z_far;
+		float near_blurry_plane;
+		float near_sharp_plane;
+		float far_sharp_plane;
+		float far_blurry_plane;
+		float near_scale;
+		float far_scale;
+	};
+
+	ID3D11Buffer* ps_cPerFrameBuffer;
+	PS_CPERFRAMEBUFFER ps_cPerFrameBufferVariables;
+};
+#pragma endregion DepthOfFieldCoCShader
+
 #pragma region BlurShader
 class BlurShader : public IShader
 {
@@ -855,7 +892,7 @@ public:
 	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
 
 	void SetFramebufferTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
-	void SetDepthTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetInputTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
 	void SetFramebufferSize(const XMFLOAT2 &framebufferSize);
 	void SetZNearFar(float z_near, float z_far);
@@ -872,6 +909,26 @@ private:
 	PS_CPERFRAMEBUFFER ps_cPerFrameBufferVariables;
 };
 #pragma endregion BlurShader
+
+#pragma region CompositeShader
+class CompositeShader : public IShader
+{
+public:
+	CompositeShader();
+	~CompositeShader();
+
+	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
+	bool SetActive(ID3D11DeviceContext* dc);
+
+	void Update(ID3D11DeviceContext* dc);
+
+	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+
+	void SetFramebufferTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetDoFCoCTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetDoFFarFieldTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+};
+#pragma endregion CompositeShader
 
 #pragma region ShaderHandler
 enum ShaderType
@@ -914,8 +971,12 @@ public:
 	SkinnedShadowShader* mSkinnedShadowShader;
 	SkyDeferredShader* mSkyDeferredShader;
 	SSAOShader* mSSAOShader;
-	BlurShader* mBlurHorizontalShader;
-	BlurShader* mBlurVerticalShader;
+	BlurShader* mSSAOBlurHorizontalShader;
+	BlurShader* mSSAOBlurVerticalShader;
+	DepthOfFieldCoCShader* mDepthOfFieldCoCShader;
+	BlurShader* mDepthOfFieldBlurHorizontalShader;
+	BlurShader* mDepthOfFieldBlurVerticalShader;
+	CompositeShader* mCompositeShader;
 
 private:
 

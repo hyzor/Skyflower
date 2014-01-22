@@ -102,8 +102,15 @@ private:
 	DeferredBuffers* mDeferredBuffers;
 	OrthoWindow* mOrthoWindow;
 
+	Texture2DImpl *mIntermediateTexture;
+
 	Texture2DImpl *mSSAOTexture;
 	Texture2DImpl *mSSAOBlurTexture;
+
+	Texture2DImpl *mDoFCoCTexture;
+	Texture2DImpl *mDoFFarFieldTexture;
+	Texture2DImpl *mDoFNearFieldTexture;
+	Texture2DImpl *mDoFBlurTexture;
 };
 
 #endif

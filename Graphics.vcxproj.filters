@@ -268,10 +268,22 @@
     <FxCompile Include="src\graphics\Shaders\AmbientOcclusionPS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="src\graphics\Shaders\BlurHorizontalPS.hlsl">
+    <FxCompile Include="src\graphics\Shaders\DepthOfFieldCoCPS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="src\graphics\Shaders\BlurVerticalPS.hlsl">
+    <FxCompile Include="src\graphics\Shaders\DepthOfFieldBlurHorizontalPS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\DepthOfFieldBlurVerticalPS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SSAOBlurVerticalPS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SSAOBlurHorizontalPS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\CompositePS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>
