@@ -1907,7 +1907,7 @@ bool BlurShader::SetActive(ID3D11DeviceContext* dc)
 	dc->VSSetShader(mVertexShader, nullptr, 0);
 	dc->PSSetShader(mPixelShader, nullptr, 0);
 
-	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
+	dc->PSSetSamplers(0, 1, &RenderStates::mLinearClampedSS);
 
 	dc->PSSetConstantBuffers(0, 1, &ps_cPerFrameBuffer);
 

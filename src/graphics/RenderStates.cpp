@@ -6,6 +6,7 @@ ID3D11RasterizerState* RenderStates::mNoCullRS = 0;
 ID3D11RasterizerState* RenderStates::mDepthBiasRS = 0;
 
 ID3D11SamplerState* RenderStates::mLinearSS = 0;
+ID3D11SamplerState* RenderStates::mLinearClampedSS = 0;
 ID3D11SamplerState* RenderStates::mSSAODepthSS = 0;
 ID3D11SamplerState* RenderStates::mAnisotropicSS = 0;
 ID3D11SamplerState* RenderStates::mComparisonSS = 0;
@@ -88,6 +89,25 @@ void RenderStates::InitAll(ID3D11Device* device)
 	linearSSdesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	device->CreateSamplerState(&linearSSdesc, &mLinearSS);
+
+	// Linear clamped sampler state
+	D3D11_SAMPLER_DESC linearClampedSSdesc;
+	ZeroMemory(&linearClampedSSdesc, sizeof(D3D11_SAMPLER_DESC));
+	linearClampedSSdesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	linearClampedSSdesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	linearClampedSSdesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	linearClampedSSdesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	linearClampedSSdesc.MipLODBias = 0.0f;
+	linearClampedSSdesc.MaxAnisotropy = 1;
+	linearClampedSSdesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	linearClampedSSdesc.BorderColor[0] = 0;
+	linearClampedSSdesc.BorderColor[1] = 0;
+	linearClampedSSdesc.BorderColor[2] = 0;
+	linearClampedSSdesc.BorderColor[3] = 0;
+	linearClampedSSdesc.MinLOD = 0;
+	linearClampedSSdesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	device->CreateSamplerState(&linearClampedSSdesc, &mLinearClampedSS);
 
 	// Linear SSAO Depth sampler state
 	D3D11_SAMPLER_DESC SSAODepthSSdesc;
@@ -218,6 +238,7 @@ void RenderStates::DestroyAll()
 	ReleaseCOM(mDepthBiasRS);
 
 	ReleaseCOM(mLinearSS);
+	ReleaseCOM(mLinearClampedSS);
 	ReleaseCOM(mSSAODepthSS);
 	ReleaseCOM(mAnisotropicSS);
 	ReleaseCOM(mComparisonSS);
