@@ -720,6 +720,8 @@ public:
 	void SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetShadowTransform(XMMATRIX& shadowTransform);
 
+	void SetFogProperties(int enableFogging, float fogRange, float fogStart, XMFLOAT4 fogColor);
+
 	void UpdatePerObj(ID3D11DeviceContext* dc);
 	void UpdatePerFrame(ID3D11DeviceContext* dc);
 
@@ -757,6 +759,11 @@ private:
 		// Forms into a 4D vector
 		XMFLOAT3 gEyePosW;
 		float padding;
+
+		int enableFogging;
+		float fogRange, fogStart;
+		int fogPadding;
+		XMFLOAT4 fogColor;
 
 		XMMATRIX shadowTransform;
 		XMMATRIX cameraViewMatrix;
