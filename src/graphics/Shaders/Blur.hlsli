@@ -3,7 +3,7 @@
 #elif defined VERTICAL
 	#define DIRECTION_SWIZZLE yx
 #else
-	"wat";
+	#error wat
 #endif
 
 struct VertexOut
@@ -22,11 +22,11 @@ cbuffer cPerFramebuffer : register(b0)
 Texture2D framebufferTexture : register(t0);
 Texture2D depthTexture : register(t1);
 
-SamplerState linearSampler : register(s0);
+SamplerState linearClampedSampler : register(s0);
 
 float linear_depth(float2 uv)
 {
-	float depth = depthTexture.Sample(linearSampler, uv).x;
+	float depth = inputTexture.Sample(linearClampedSampler, uv).x;
 
 	// http://www.humus.name/temp/Linearize%20depth.txt
 	float c1 = z_far / z_near;
@@ -44,7 +44,7 @@ float main(VertexOut input) : SV_Target
 	float2 pixel_size = float2(1.0, 1.0) / framebufferSize;
 	float depth = linear_depth(input.uv);
 
-	float result = framebufferTexture.Sample(linearSampler, input.uv).x;
+	float result = framebufferTexture.Sample(linearClampedSampler, input.uv).x;
 	float weight_sum = 1.0;
 
 	for(float i = 1.0; i <= kernel_radius; i += 1.0) {
@@ -53,12 +53,12 @@ float main(VertexOut input) : SV_Target
 		// Weight calculation from http://dice.se/wp-content/uploads/GDC12_Stable_SSAO_In_BF3_With_STF.pdf
 		float delta_depth = depth - linear_depth(input.uv + offset);
 		float weight = exp2(-i * i * blur_falloff - delta_depth * delta_depth);
-		result += framebufferTexture.Sample(linearSampler, input.uv + offset).x * weight;
+		result += framebufferTexture.Sample(linearClampedSampler, input.uv + offset).x * weight;
 		weight_sum += weight;
 
 		delta_depth = depth - linear_depth(input.uv - offset);
 		weight = exp2(-i * i * blur_falloff - delta_depth * delta_depth);
-		result += framebufferTexture.Sample(linearSampler, input.uv - offset).x * weight;
+		result += framebufferTexture.Sample(linearClampedSampler, input.uv - offset).x * weight;
 		weight_sum += weight;
 	}
 
