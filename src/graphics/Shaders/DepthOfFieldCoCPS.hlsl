@@ -48,10 +48,13 @@ float main(VertexOut input) : SV_Target
 		radius = (min(depth, far_blurry_plane) - far_sharp_plane) * far_scale;
 	}
 
-	// Don't blur the skybox
+	// The skybox should always be in the focus field.
 	if (depth > 1500.0) {
 		radius = 0.0;
 	}
 
-	return radius * scale + bias;
+	float result = radius * scale + bias;
+	result = (result + 1.0) * 0.5;
+
+	return result;
 }

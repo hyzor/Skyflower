@@ -1967,7 +1967,7 @@ void DepthOfFieldCoCShader::SetFocusPlanes(float near_blurry_plane, float near_s
 	ps_cPerFrameBufferVariables.far_sharp_plane = far_sharp_plane;
 	ps_cPerFrameBufferVariables.far_blurry_plane = far_blurry_plane;
 
-	ps_cPerFrameBufferVariables.near_scale = 1.0f / -(near_sharp_plane - near_blurry_plane);
+	ps_cPerFrameBufferVariables.near_scale = 1.0f / -(near_blurry_plane - near_sharp_plane);
 	ps_cPerFrameBufferVariables.far_scale = 1.0f / (far_blurry_plane - far_sharp_plane);
 }
 

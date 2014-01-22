@@ -86,7 +86,8 @@ float4 main(VertexOut input) : SV_Target
 	kernel[0] = 1.00;//0.13425804976814;
 
 	float2 pixel_size = float2(1.0, 1.0) / framebufferSize;
-	float circleOfConfusion = inputTexture.Sample(linearClampedSampler, input.uv).x;
+	float circle_of_confusion = inputTexture.Sample(linearClampedSampler, input.uv).x;
+	circle_of_confusion = circle_of_confusion * 2.0 - 1.0;
 
 	float3 blur_result = float3(0.0, 0.0, 0.0);
 	float weight_sum = 0.0;
@@ -101,25 +102,15 @@ float4 main(VertexOut input) : SV_Target
 		float3 samppleColor = framebufferTexture.Sample(linearClampedSampler, input.uv + offset * 0.5).xyz;
 #endif
 
-		float samppleCoC = inputTexture.Sample(linearClampedSampler, input.uv + offset).x;
+		float sampleCoC = inputTexture.Sample(linearClampedSampler, input.uv + offset).x;
+		sampleCoC = sampleCoC * 2.0 - 1.0;
 
-        // if (samppleCoC <= circleOfConfusion)
-
-		float sampleRadius = sign(samppleCoC) * 3.0 + samppleCoC * max(0.0, float(maxCoCRadiusPixels) - 3.0);
-
-
-
-
+		float sampleRadius = sign(sampleCoC) * 3.0 + sampleCoC * max(0.0, float(maxCoCRadiusPixels) - 3.0);
 
 		// Stretch the kernel extent to the radius at pixel B.  This implicitly 
-        // performs the test of whether B's radius includes A.
-        float weight = kernel[clamp(int(float(abs(i) * (kernel_taps - 1)) / (0.001 + abs(sampleRadius * 0.8))), 0, kernel_taps)];
+		// performs the test of whether B's radius includes A.
+		float weight = kernel[clamp(int(float(abs(i) * (kernel_taps - 1)) / (0.001 + abs(sampleRadius * 0.8))), 0, kernel_taps)];
         
-        // An alternative to the branch above...this reduces some glowing, but
-        // makes objects blurred against the sky disappear entirely, which creates
-        // more artifacts during compositing
-        // weight *= saturate(n_A - n_B + abs(n_B) * 0.2 + 0.15);
-
 		blur_result += samppleColor * weight;
 		weight_sum  += weight;
 	}

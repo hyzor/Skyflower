@@ -98,8 +98,9 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mSSAOTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), (UINT)(width * mSSAOScale), (UINT)(height * mSSAOScale), DXGI_FORMAT_R8_UNORM, true);
 	mSSAOBlurTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), (UINT)(width * mSSAOScale), (UINT)(height * mSSAOScale), DXGI_FORMAT_R8_UNORM, true);
 
+	// Also change Blur.hlsi if you change mDoFScale!
 	mDoFScale = 0.5f;
-	mDoFCoCTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale), DXGI_FORMAT_R8_SNORM /*DXGI_FORMAT_R16_FLOAT*/, true);
+	mDoFCoCTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale), DXGI_FORMAT_R8_UNORM, true);
 	mDoFFarFieldTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale), DXGI_FORMAT_R8G8B8A8_UNORM, true);
 	mDoFNearFieldTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale), DXGI_FORMAT_R8G8B8A8_UNORM, true);
 	mDoFBlurTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale), DXGI_FORMAT_R8G8B8A8_UNORM, true);
