@@ -63,9 +63,6 @@ Entity::Entity(const Modules *modules, EntityId id, string type, float xPos, flo
 
 			std::string keyPath = "../../content/" + model + ".key";
 
-			FILE* file;
-			file = std::fopen(keyPath.c_str(), "r");
-
 			// Open corresponding keyframes file
 			ifstream keyFramesFile;
 			keyFramesFile.open(keyPath.c_str(), ios::in);
@@ -95,16 +92,6 @@ Entity::Entity(const Modules *modules, EntityId id, string type, float xPos, flo
 
 				keyFramesFile.close();
 			}
-
-			// Cache animation keyframes
-			/*
-			this->AnimInst->CreateAnimation(0, 51, 51);
-			this->AnimInst->CreateAnimation(1, 1, 24 - 1);
-			this->AnimInst->CreateAnimation(2, 1, 24 - 1);
-			this->AnimInst->CreateAnimation(3, 30, 49 - 1);
-			this->AnimInst->CreateAnimation(4, 51, 75 - 1);
-			this->AnimInst->CreateAnimation(5, 81, 105 - 1);
-			*/
 
 			this->AnimInst->SetAnimation(0);
 		}
