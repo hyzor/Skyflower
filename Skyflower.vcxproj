@@ -43,7 +43,6 @@
     <ClCompile Include="src\skyflower\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Pushable.h" />
     <ClInclude Include="src\skyflower\Application.h" />
     <ClInclude Include="src\skyflower\Cistron.h" />
     <ClInclude Include="src\skyflower\Component.h" />

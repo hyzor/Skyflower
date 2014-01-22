@@ -158,9 +158,6 @@
     <ClInclude Include="src\skyflower\Components\Push.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Pushable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\skyflower\Components\Pushable.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
