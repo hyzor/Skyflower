@@ -82,7 +82,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 
 	// Camera
 	mCamera = new Camera();
-	mCamera->SetLens(0.25f*MathHelper::pi, static_cast<float>(width) / height, zNear, zFar);
+	mCamera->SetLens(fovY, static_cast<float>(width) / height, zNear, zFar);
 	mCamera->UpdateOrthoMatrix(static_cast<float>(width), static_cast<float>(height), zNear, zFar);
 	mCamera->SetPosition(XMFLOAT3(0.0f, 0.0f, -400.0f));
 	mCamera->UpdateBaseViewMatrix();
@@ -787,6 +787,7 @@ void GraphicsEngineImpl::OnResize(UINT width, UINT height)
 {
 	mD3D->OnResize(width, height);
 	mDeferredBuffers->OnResize(mD3D->GetDevice(), width, height);
+	mCamera->SetLens(fovY, (float)width / height, zNear, zFar);
 	mCamera->UpdateOrthoMatrix(static_cast<float>(width), static_cast<float>(height), zNear, zFar);
 	mOrthoWindow->OnResize(mD3D->GetDevice(), width, height);
 
