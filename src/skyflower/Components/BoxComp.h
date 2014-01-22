@@ -26,7 +26,7 @@ class BoxComp : public Component
 
 		void addedToEntity()
 		{
-			getComponents<GravityComponent>("Gravity");
+			//getComponents<GravityComponent>("Gravity");
 		}
 
 		void removeFromEntity()

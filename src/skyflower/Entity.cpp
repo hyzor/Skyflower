@@ -154,6 +154,7 @@ Entity::~Entity() {
 
 void Entity::update(float deltaTime)
 {
+
 	list<Component *> components = getComponents();
 
 	for (auto iter = components.begin(); iter != components.end(); iter++)

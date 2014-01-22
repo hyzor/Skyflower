@@ -11,7 +11,7 @@
 		<Box />
 		<Gravity />
 	</Platform>
-	<Platform entityName="WoodBlock" id="3" isVisible="1" isCollidible="0" Type="object" isAnimated="0" 
+	<Platform entityName="WoodBlock" id="7" isVisible="1" isCollidible="0" Type="object" isAnimated="0" 
 		xPos="36.0960396599" yPos="20.0" zPos="39.4741144045" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="1.0" yScale="1.0" zScale="1.0" 
@@ -24,12 +24,12 @@
 		
 		<!--<AI />-->
 	</Platform>
-	<Platform entityName="ButtonBase" id="4" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
+	<Platform entityName="ButtonBase" id="8" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
 		xPos="0.0" yPos="0.0" zPos="15.0" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="4.0" yScale="4.0" zScale="4.0" 
 		model="Models\\Worlds\\Subworld\\ButtonBase" />
-	<Platform entityName="Button" id="4" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
+	<Platform entityName="Button" id="64" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
 		xPos="0.0" yPos="0.0" zPos="15.0" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="4.0" yScale="4.0" zScale="4.0" 
@@ -40,12 +40,12 @@
 		<Movement />
 	</Platform>
 	
-	<Platform entityName="ButtonBase2" id="4" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
+	<Platform entityName="ButtonBase2" id="22" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
 		xPos="30.0" yPos="0.0" zPos="-30.0"  
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="2.0" yScale="2.0" zScale="2.0" 
 		model="Models\\Worlds\\Subworld\\ButtonBase" />
-	<Platform entityName="Button2" id="4" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
+	<Platform entityName="Button2" id="23" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
 		xPos="30.0" yPos="0.0" zPos="-30.0" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="2.0" yScale="2.0" zScale="2.0" 
@@ -57,19 +57,19 @@
 	</Platform>
 	
 	
-	<Spawnpoint entityName="WoodBlock" id="3" isVisible="0" isCollidible="0" Type="object" isAnimated="0" 
+	<Spawnpoint entityName="WoodBlock" id="9" isVisible="0" isCollidible="0" Type="object" isAnimated="0" 
 		xPos="-36.0960396599" yPos="0.0" zPos="39.4741144045" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="0.0" yScale="0.0" zScale="0.0" 
 		model="">
 	</Spawnpoint>
 	
-	<Platform entityName="ButtonBase2" id="4" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
+	<Platform entityName="ButtonBase2" id="54" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
 		xPos="10.0" yPos="0.0" zPos="-30.0"  
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="2.0" yScale="2.0" zScale="2.0" 
 		model="Models\\Worlds\\Subworld\\ButtonBase" />
-	<Platform entityName="Button2" id="4" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
+	<Platform entityName="Button2" id="55" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
 		xPos="10.0" yPos="0.0" zPos="-30.0" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="2.0" yScale="2.0" zScale="2.0" 
@@ -80,7 +80,7 @@
 		<Movement />
 	</Platform>
 	
-	<Platform entityName="AI" id="3" isVisible="1" isCollidible="0" Type="object" isAnimated="0" 
+	<Platform entityName="AI" id="36" isVisible="1" isCollidible="0" Type="object" isAnimated="0" 
 		xPos="-3600.0960396599" yPos="0.0" zPos="3900.4741144045" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="1.0" yScale="1.0" zScale="1.0" 
@@ -94,7 +94,7 @@
 		<AI />
 	</Platform>
 	
-	<Platform entityName="AI" id="3" isVisible="1" isCollidible="0" Type="object" isAnimated="0" 
+	<Platform entityName="AI" id="37" isVisible="1" isCollidible="0" Type="object" isAnimated="0" 
 		xPos="-3600.0960396599" yPos="0.0" zPos="3900.4741144045" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="1.0" yScale="1.0" zScale="1.0" 
@@ -142,5 +142,5 @@
 		<Messenger />
 	</Platform>
 	
-    <placeHolderPlattform entityName="placeHolderPlattform2" id="2" isVisible="1" isCollidible="1" Type="object" isAnimated="0" xPos="0.0" yPos="0.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" model="Models\\Worlds\\Subworld\\placeHolderPlattform"/>
+    <placeHolderPlattform entityName="placeHolderPlattform2" id="99" isVisible="1" isCollidible="1" Type="object" isAnimated="0" xPos="0.0" yPos="0.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" model="Models\\Worlds\\Subworld\\placeHolderPlattform"/>
 </root>

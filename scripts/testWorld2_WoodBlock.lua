@@ -1,7 +1,7 @@
 
 function activated(id)
 	--PlaySound(id, "player/jump1.wav")
-	Jump(1) --woodblock
+	Jump(3) --woodblock
 end
 
 function deactivated(id)

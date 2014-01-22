@@ -36,7 +36,7 @@ class EntityManager {
 		void update(float deltaTime);
 
 		// create a new Entity
-		EntityId createEntity(string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
+		EntityId createEntity(string type, int id, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
 			float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated);
 
 		// add a new component to an Entity
@@ -91,20 +91,60 @@ class EntityManager {
 		void sendGlobalMessage(RequestId reqId, Message const & msg);
 
 		// send local messages to another Entity
-		inline void sendMessageToEntity(string msg, Component *component, EntityId id, Payload payload) {
-			fEntitys[id]->sendMessage(getMessageRequestId(REQ_MESSAGE, msg), Message(MESSAGE, component, payload));
+		inline void sendMessageToEntity(string msg, Component *component, EntityId id, Payload payload) 
+		{
+			for (int i = 0; i < fEntitys.size(); i++)
+			{
+				if (fEntitys[i]->getEntityId() == id)
+				{
+					fEntitys[i]->sendMessage(getMessageRequestId(REQ_MESSAGE, msg), Message(MESSAGE, component, payload));
+					return;
+				}
+			}
 		}
-		inline void sendMessageToEntity(RequestId reqId, Component *component, EntityId id) {
-			fEntitys[id]->sendMessage(reqId, Message(MESSAGE, component));
+		inline void sendMessageToEntity(RequestId reqId, Component *component, EntityId id) 
+		{
+			for (int i = 0; i < fEntitys.size(); i++)
+			{
+				if (fEntitys[i]->getEntityId() == id)
+				{
+					fEntitys[i]->sendMessage(reqId, Message(MESSAGE, component));
+					return;
+				}
+			}
 		}
-		inline void sendMessageToEntity(RequestId reqId, Component *component, EntityId id, Payload payload) {
-			fEntitys[id]->sendMessage(reqId, Message(MESSAGE, component, payload));
+		inline void sendMessageToEntity(RequestId reqId, Component *component, EntityId id, Payload payload) 
+		{
+			for (int i = 0; i < fEntitys.size(); i++)
+			{
+				if (fEntitys[i]->getEntityId() == id)
+				{
+					fEntitys[i]->sendMessage(reqId, Message(MESSAGE, component, payload));
+					return;
+				}
+			}
 		}
-		inline void sendMessageToEntity(string name, Message const & msg, EntityId id) {
-			fEntitys[id]->sendMessage(getMessageRequestId(REQ_MESSAGE, name), msg);
+		inline void sendMessageToEntity(string name, Message const & msg, EntityId id) 
+		{
+			for (int i = 0; i < fEntitys.size(); i++)
+			{
+				if (fEntitys[i]->getEntityId() == id)
+				{
+					fEntitys[i]->sendMessage(getMessageRequestId(REQ_MESSAGE, name), msg);
+					return;
+				}
+			}
 		}
-		inline void sendMessageToEntity(RequestId reqId, Message const & msg, EntityId id) {
-			fEntitys[id]->sendMessage(reqId, msg);
+		inline void sendMessageToEntity(RequestId reqId, Message const & msg, EntityId id) 
+		{
+			for (int i = 0; i < fEntitys.size(); i++)
+			{
+				if (fEntitys[i]->getEntityId() == id)
+				{
+					fEntitys[i]->sendMessage(reqId, msg);
+					return;
+				}
+			}
 		}
 
 		// ask for a request id
@@ -140,6 +180,7 @@ class EntityManager {
 		Component* getComponent(string EntityName, string Componenet);
 		Entity *getEntity(EntityId id);
 		EntityId getNrOfEntities();
+		EntityId getEntityId(int index);
 
 		void updateEntityPos(Vec3 pos, EntityId id);
 		void updateEntityRot(Vec3 rot, EntityId id);

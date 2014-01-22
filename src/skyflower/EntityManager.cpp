@@ -89,7 +89,7 @@ RequestId EntityManager::getExistingRequestId(ComponentRequestType type, string 
 
 
 // create a new Entity
-EntityId EntityManager::createEntity(string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
+EntityId EntityManager::createEntity(string type, int id, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
 	float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated) {
 
 	vector<Entity*> temp;
@@ -102,13 +102,13 @@ EntityId EntityManager::createEntity(string type, float xPos, float yPos, float 
 	}
 	fEntitys = temp;
 	// create a new Entity
-	Entity *obj = new Entity(modules, fIdCounter, type, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, isAnimated);
+	Entity *obj = new Entity(modules, id, type, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, isAnimated);
 	//cout << "Created Entity " << fIdCounter << endl;
-	++fIdCounter;
+	//++fIdCounter;
 
 	// add it to the list
 	fEntitys.push_back(obj);
-	return fIdCounter-1;
+	return id; //fIdCounter-1;
 }
 
 
@@ -184,69 +184,82 @@ void EntityManager::releaseLock(RequestId reqId) {
 void EntityManager::addComponent(EntityId id, Component *component) {
 
 	// make sure the Entity exists
-	if (id < 0 || id >= (int)fEntitys.size() || fEntitys[id] == 0) {
+	int index = -1;
+	for (int i = 0; i < fEntitys.size(); i++)
+	{
+		if (fEntitys[i]->getEntityId() == id)
+		{
+			index = i;
+			break;
+		}
+	}
+	if (index==-1) 
+	{
 		stringstream ss;
 		ss << "Failed to add component " << component->toString() << " to Entity " << id << ": it does not exist!";
 		error(ss);
 	}
+	else
+	{
 
-	// can only add once
-	if (component->fEntityManager != 0) {
-		stringstream ss;
-		ss << "Component is already part of an EntityManager. You cannot add a component twice.";
-		error(ss);
-	}
-
-	// we get the appropriate Entity
-	Entity *obj = fEntitys[id];
-
-	// set the Entity manager
-	component->fEntityManager = this;
-
-	// set the owner of the component
-	component->setOwnerId(id);
-	component->setOwner(obj);
-
-	// we add the component
-	if (!obj->addComponent(component)) {
-		stringstream ss;
-		ss << "Failed to add component " << component->toString() << " to Entity " << id;
-		error(ss);
-	}
-
-	// put in log
-	//if (fStream.is_open()) fStream << "CREATE  " << *component << endl;
-	//cout << "CREATE " << *component << endl;
-
-	// let the component know
-	component->addedToEntity();
-
-	// get request id for this component
-	RequestId reqId = getExistingRequestId(REQ_COMPONENT, component->getName());
-
-	// if there's no such request yet, we skip
-	if (reqId == 0) return;
-
-	// CREATE event
-	Message msg(CREATE);
-	msg.sender = component;
-
-	// lock this request id
-	activateLock(reqId);
-
-	// look for requests and forward them
-	for (list<RegisteredComponent>::iterator it = fGlobalRequests[reqId].begin(); it != fGlobalRequests[reqId].end(); ++it) {
-		if (it->component->getId() != component->getId()) {
-			if ((*it).trackMe) cout << it->component << " received component " << *component << " of type " << fIdToRequest[REQ_COMPONENT][reqId] << endl; 
-			(*it).callback(msg);
+		// can only add once
+		if (component->fEntityManager != 0) {
+			stringstream ss;
+			ss << "Component is already part of an EntityManager. You cannot add a component twice.";
+			error(ss);
 		}
+
+		// we get the appropriate Entity
+		Entity *obj = fEntitys[index];
+
+		// set the Entity manager
+		component->fEntityManager = this;
+
+		// set the owner of the component
+		component->setOwnerId(id);
+		component->setOwner(obj);
+
+		// we add the component
+		if (!obj->addComponent(component)) {
+			stringstream ss;
+			ss << "Failed to add component " << component->toString() << " to Entity " << id;
+			error(ss);
+		}
+
+		// put in log
+		//if (fStream.is_open()) fStream << "CREATE  " << *component << endl;
+		//cout << "CREATE " << *component << endl;
+
+		// let the component know
+		component->addedToEntity();
+
+		// get request id for this component
+		RequestId reqId = getExistingRequestId(REQ_COMPONENT, component->getName());
+
+		// if there's no such request yet, we skip
+		if (reqId == 0) return;
+
+		// CREATE event
+		Message msg(CREATE);
+		msg.sender = component;
+
+		// lock this request id
+		activateLock(reqId);
+
+		// look for requests and forward them
+		for (list<RegisteredComponent>::iterator it = fGlobalRequests[reqId].begin(); it != fGlobalRequests[reqId].end(); ++it) {
+			if (it->component->getId() != component->getId()) {
+				if ((*it).trackMe) cout << it->component << " received component " << *component << " of type " << fIdToRequest[REQ_COMPONENT][reqId] << endl;
+				(*it).callback(msg);
+			}
+		}
+
+		// forward to the Entity itself, so local requests are processed also
+		obj->sendMessage(reqId, msg);
+
+		// release the lock
+		releaseLock(reqId);
 	}
-
-	// forward to the Entity itself, so local requests are processed also
-	obj->sendMessage(reqId, msg);
-
-	// release the lock
-	releaseLock(reqId);
 }
 
 
@@ -321,7 +334,7 @@ void EntityManager::registerGlobalRequest(ComponentRequest req, RegisteredCompon
 	//cout << "Registered global request of " << (*reg.component) << " for " << req.name << endl;
 		// we also add it locally if it is a message
 		if (req.type == REQ_MESSAGE) {
-			fEntitys[reg.component->getOwnerId()]->registerRequest(reqId, reg);
+			getEntity(reg.component->getOwnerId())->registerRequest(reqId, reg);
 		}
 
 		// we add it to the associative map (used at destruction of the component to look up all its requests)
@@ -329,9 +342,18 @@ void EntityManager::registerGlobalRequest(ComponentRequest req, RegisteredCompon
 
 		// if the request is required and the Entity isn't finalized yet, we add it to a special list
 		EntityId objId = reg.component->getOwnerId();
-		if (reg.required && !fEntitys[objId]->isFinalized()) {
-			fRequiredComponents[objId].push_back(req.name);
+		for (int i = 0; i < fEntitys.size(); i++)
+		{
+			if (fEntitys[i]->getEntityId() == objId)
+			{
+				if (reg.required && !fEntitys[i]->isFinalized()) {
+					fRequiredComponents[i].push_back(req.name);
+				}
+				break;
+			}
 		}
+
+		
 	}
 
 	// if we want the previously created components as well, we process them
@@ -400,24 +422,39 @@ void EntityManager::destroyEntity(EntityId id) {
 		return;
 	}
 
+	int index = -1;
+	for (int i = 0; i < fEntitys.size(); i++)
+	{
+		if (fEntitys[i]->getEntityId() == id)
+		{
+			index = i;
+			break;
+		}
+	}
+
 	// Entity doesn't exist
-	if (id < 0 || id >= (int)fEntitys.size() || fEntitys[id] == 0) {
+	if (index == -1) 
+	{
 		stringstream ss;
 		ss << "Failed to destroy Entity " << id << ": it does not exist!";
 		error(ss);
 	}
+	else
+	{
+		// destroy every component in the Entity
+		list<Component*> comps = fEntitys[index]->getComponents();
+		for (list<Component*>::iterator it = comps.begin(); it != comps.end(); ++it) {
+			destroyComponent(*it);
+		}
 
-	// destroy every component in the Entity
-	list<Component*> comps = fEntitys[id]->getComponents();
-	for (list<Component*>::iterator it = comps.begin(); it != comps.end(); ++it) {
-		destroyComponent(*it);
+		// delete the actual Entity
+		//cout << "Destroyed Entity " << id << endl;
+		delete fEntitys[index];
+		fEntitys.erase(fEntitys.begin() + index);
+		//fIdCounter--;
 	}
 
-	// delete the actual Entity
-	//cout << "Destroyed Entity " << id << endl;
-	delete fEntitys[id];
-	fEntitys[id] = 0;
-	fIdCounter--;
+	
 }
 
 
@@ -464,7 +501,7 @@ void EntityManager::destroyComponent(Component *comp) {
 
 	comp->removeFromEntity();
 	// remove its own local requests - only if the Entity itself wasn't removed yet
-	fEntitys[comp->getOwnerId()]->removeComponent(comp);
+	getEntity(comp->getOwnerId())->removeComponent(comp);
 
 	// CREATE event
 	Message msg(DESTROY);
@@ -485,7 +522,7 @@ void EntityManager::destroyComponent(Component *comp) {
 		}
 
 		// forward to the Entity itself, so local requests are processed also
-		fEntitys[comp->getOwnerId()]->sendMessage(reqId, msg);
+		getEntity(comp->getOwnerId())->sendMessage(reqId, msg);
 
 		// release the lock
 		releaseLock(reqId);
@@ -499,34 +536,47 @@ void EntityManager::destroyComponent(Component *comp) {
 // finalize an Entity
 void EntityManager::finalizeEntity(EntityId id) {
 
+	int index = -1;
+	for (int i = 0; i < fEntitys.size(); i++)
+	{
+		if (fEntitys[i]->getEntityId() == id)
+		{
+			index = i;
+			break;
+		}
+	}
+
 	// Entity doesn't exist
-	if (id < 0 || id >= (int)fEntitys.size() || fEntitys[id] == 0) {
+	if (index == -1)
+	{
 		stringstream ss;
 		ss << "Failed to destroy Entity " << id << ": it does not exist!";
 		error(ss);
 	}
+	else
+	{
+		// finalize the Entity itself
+		fEntitys[index]->finalize();
 
-	// finalize the Entity itself
-	fEntitys[id]->finalize();
+		// see if there are any requirements
+		if (fRequiredComponents.find(id) == fRequiredComponents.end()) return;
 
-	// see if there are any requirements
-	if (fRequiredComponents.find(id) == fRequiredComponents.end()) return;
+		// there are, do the checklist
+		list<string> requiredComponents = fRequiredComponents[index];
+		bool destroyEntity = false;
+		for (list<string>::iterator it = requiredComponents.begin(); it != requiredComponents.end(); ++it) {
 
-	// there are, do the checklist
-	list<string> requiredComponents = fRequiredComponents[id];
-	bool destroyEntity = false;
-	for (list<string>::iterator it = requiredComponents.begin(); it != requiredComponents.end(); ++it) {
+			// get the components of this type
+			list<Component*> comps = fEntitys[index]->getComponents(*it);
 
-		// get the components of this type
-		list<Component*> comps = fEntitys[id]->getComponents(*it);
-
-		// if there are none, we want this Entity dead!
-		if (comps.size() == 0) destroyEntity = true;
+			// if there are none, we want this Entity dead!
+			if (comps.size() == 0) destroyEntity = true;
+		}
+		/*if (!destroyEntity) cout << "Finalized Entity " << id << " succesfully!" << endl;
+		else cout << "Finalize on Entity " << id << " failed, destroying..." << endl;*/
+		// we destroy the Entity if we didn't find what we needed
+		if (destroyEntity) this->destroyEntity(id);
 	}
-/*if (!destroyEntity) cout << "Finalized Entity " << id << " succesfully!" << endl;
-else cout << "Finalize on Entity " << id << " failed, destroying..." << endl;*/
-	// we destroy the Entity if we didn't find what we needed
-	if (destroyEntity) this->destroyEntity(id);
 }
 
 
@@ -575,21 +625,21 @@ void EntityManager::trackRequest(RequestId reqId, bool local, Component *compone
 		}
 
 		// also pass to local for extra check (MESSAGE messages are always local AND global)
-		fEntitys[component->getOwnerId()]->trackRequest(reqId, component);
+		getEntity(component->getOwnerId())->trackRequest(reqId, component);
 
 
 	}
 
 	// if local, forward to Entity
 	else {
-		fEntitys[component->getOwnerId()]->trackRequest(reqId, component);
+		getEntity(component->getOwnerId())->trackRequest(reqId, component);
 	}
 }
 
 
 void EntityManager::sendMessageToAllEntities(string message)
 {
-	for (int i = 0; i < this->fIdCounter; i++)
+	for (int i = 0; i < fEntitys.size(); i++)
 	{
 		this->fEntitys[i]->sendAMessageToAll(message);
 	}
@@ -597,7 +647,7 @@ void EntityManager::sendMessageToAllEntities(string message)
 
 void EntityManager::sendMessageToEntity(string message, string entity)
 {
-	for (int i = 0; i < this->fIdCounter; i++)
+	for (int i = 0; i < fEntitys.size(); i++)
 	{
 		if (this->fEntitys[i]->getType() == entity)
 		{
@@ -638,6 +688,7 @@ bool EntityManager::loadXML(string xmlFile)
 		string elemName = elem->Value();
 		const char* attr;
 
+		int id;
 		float xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale;
 		xPos = yPos = zPos = xRot = yRot = zRot = xScale = yScale = zScale = 0.0f;
 		string model = "";
@@ -655,6 +706,16 @@ bool EntityManager::loadXML(string xmlFile)
 		else
 		{
 			cout << "failed loading attribute for entityName in file " << xmlFile << endl;
+		}
+
+		attr = elem->Attribute("id");
+		if (attr != NULL)
+		{
+			id = elem->IntAttribute("id");
+		}
+		else
+		{
+			cout << "failed loading attribute for id for entity " << entityName << " in file " << xmlFile << endl;
 		}
 
 		attr = elem->Attribute("xPos");
@@ -787,8 +848,26 @@ bool EntityManager::loadXML(string xmlFile)
 			cout << "failed loading attribute for isAnimated for entity " << entityName << " in file " << xmlFile << endl;
 		}
 
+
+		if (id == 0)
+		{
+			cout << "Error id can not be 0 for entity " << entityName << " in file " << xmlFile << endl;
+			continue;
+		}
+		else
+		{
+			for (int i = 0; i < fEntitys.size(); i++)
+			{
+				if (fEntitys[i]->getEntityId() == id)
+				{
+					cout << "Error shared id for entity " << entityName << " in file " << xmlFile << endl;
+					continue;
+				}
+			}
+		}
+
 		//Creating the entity and adding it to the entitymanager
-		EntityId entity = this->createEntity(entityName, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, isAnimated);
+		EntityId entity = this->createEntity(entityName, id, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, isAnimated);
 
 		//Looping through all the components for the entity.
 		for (XMLElement* e = elem->FirstChildElement(); e != NULL; e = e->NextSiblingElement())
@@ -1042,7 +1121,7 @@ bool EntityManager::loadXML(string xmlFile)
 
 Vec3 EntityManager::getEntityPos(EntityId ownerId)
 {
-	for (int i = 0; i < this->fIdCounter; i++)
+	for (int i = 0; i < this->fEntitys.size(); i++)
 	{
 		if (this->fEntitys[i]->getEntityId() == ownerId)
 		{
@@ -1055,7 +1134,7 @@ Vec3 EntityManager::getEntityPos(EntityId ownerId)
 
 Vec3 EntityManager::getEntityPos(string type)
 {
-	for (int i = 0; i < this->fIdCounter; i++)
+	for (int i = 0; i < this->fEntitys.size(); i++)
 	{
 		if (this->fEntitys[i]->getType() == type)
 		{
@@ -1068,7 +1147,7 @@ Vec3 EntityManager::getEntityPos(string type)
 
 Vec3 EntityManager::getEntityRot(EntityId ownerId)
 {
-	for (int i = 0; i < this->fIdCounter; i++)
+	for (int i = 0; i < this->fEntitys.size(); i++)
 	{
 		if (this->fEntitys[i]->getEntityId() == ownerId)
 		{
@@ -1080,7 +1159,7 @@ Vec3 EntityManager::getEntityRot(EntityId ownerId)
 }
 Vec3 EntityManager::getEntityScale(EntityId ownerId)
 {
-	for (int i = 0; i < this->fIdCounter; i++)
+	for (int i = 0; i < this->fEntitys.size(); i++)
 	{
 		if (this->fEntitys[i]->getEntityId() == ownerId)
 		{
@@ -1092,7 +1171,7 @@ Vec3 EntityManager::getEntityScale(EntityId ownerId)
 }
 bool EntityManager::getEntityVisibility(EntityId ownerId)
 {
-	for (int i = 0; i < this->fIdCounter; i++)
+	for (int i = 0; i < this->fEntitys.size(); i++)
 	{
 		if (this->fEntitys[i]->getEntityId() == ownerId)
 		{
@@ -1105,7 +1184,7 @@ bool EntityManager::getEntityVisibility(EntityId ownerId)
 
 CollisionInstance* EntityManager::getEntityCollision(EntityId ownerId)
 {
-	for (int i = 0; i < this->fIdCounter; i++)
+	for (int i = 0; i < this->fEntitys.size(); i++)
 	{
 		if (this->fEntitys[i]->getEntityId() == ownerId)
 		{
@@ -1118,7 +1197,7 @@ CollisionInstance* EntityManager::getEntityCollision(EntityId ownerId)
 
 void EntityManager::updateEntityPos(Vec3 pos, EntityId ownerId)
 {
-	for (int i = 0; i < this->fIdCounter; i++)
+	for (int i = 0; i < this->fEntitys.size(); i++)
 	{
 		if (this->fEntitys[i]->getEntityId() == ownerId)
 		{
@@ -1129,7 +1208,7 @@ void EntityManager::updateEntityPos(Vec3 pos, EntityId ownerId)
 
 void EntityManager::updateEntityRot(Vec3 rot, EntityId ownerId)
 {
-	for (int i = 0; i < this->fIdCounter; i++)
+	for (int i = 0; i < this->fEntitys.size(); i++)
 	{
 		if (this->fEntitys[i]->getEntityId() == ownerId)
 		{
@@ -1139,7 +1218,7 @@ void EntityManager::updateEntityRot(Vec3 rot, EntityId ownerId)
 }
 void EntityManager::updateEntityScale(Vec3 scale, EntityId ownerId)
 {
-	for (int i = 0; i < this->fIdCounter; i++)
+	for (int i = 0; i < this->fEntitys.size(); i++)
 	{
 		if (this->fEntitys[i]->getEntityId() == ownerId)
 		{
@@ -1149,7 +1228,7 @@ void EntityManager::updateEntityScale(Vec3 scale, EntityId ownerId)
 }
 void EntityManager::updateEntityVisibility(bool isVisible, EntityId ownerId)
 {
-	for (int i = 0; i < this->fIdCounter; i++)
+	for (int i = 0; i < this->fEntitys.size(); i++)
 	{
 		if (this->fEntitys[i]->getEntityId() == ownerId)
 		{
@@ -1172,24 +1251,33 @@ Component* EntityManager::getComponent(string EntityName, string Component)
 
 Entity *EntityManager::getEntity(EntityId id)
 {
-	// make sure the Entity exists
-	if (id < 0 || id >= (int)fEntitys.size() || fEntitys[id] == 0) {
-		stringstream ss;
-		ss << "Failed to get Entity " << id << ": it does not exist!";
-		error(ss);
+	for (size_t i = 0; i < fEntitys.size(); i++)
+	{
+		if (fEntitys.at(i)->getEntityId() == id)
+		{
+			return fEntitys.at(i);
+		}
 	}
 
-	return fEntitys[id];
+	stringstream ss;
+	ss << "Failed to get Entity " << id << ": it does not exist!";
+	error(ss);
+	return nullptr;
 }
 
 EntityId EntityManager::getNrOfEntities()
 {
-	return this->fIdCounter;
+	return fEntitys.size();
+}
+
+EntityId EntityManager::getEntityId(int index)
+{
+	return fEntitys[index]->getEntityId();
 }
 
 void EntityManager::handleCollision()
 {
-	for (int i = 0; i < this->fIdCounter; i++)
+	for (int i = 0; i < fEntitys.size(); i++)
 	{		
 		fEntitys[i]->ground = nullptr;
 		fEntitys[i]->wall = nullptr;
@@ -1305,7 +1393,7 @@ void EntityManager::handleCollision()
 
 
 			//collision and pushing between two entities
-			for (int j = i + 1; j < this->fIdCounter; j++)
+			for (int j = i + 1; j < fEntitys.size(); j++)
 			{
 				if (this->fEntitys[i]->sphere != NULL && this->fEntitys[j]->sphere != NULL)
 				{
@@ -1367,7 +1455,7 @@ float EntityManager::testMove(Ray r, Entity* e, Entity* &out)
 
 	//test collision for other collidible entitis
 	float col = 0;
-	for (int j = 0; j < this->fIdCounter; j++)
+	for (int j = 0; j < fEntitys.size(); j++)
 	{
 		if (fEntitys[j]->collInst && fEntitys[j] != e)
 		{
@@ -1402,7 +1490,7 @@ float EntityManager::testMove(Ray r, Entity* e, Entity* &out)
 //used for push-collisions
 void EntityManager::createSphereOnEntities()
 {
-	for (int i = 0; i < this->fIdCounter; i++)
+	for (int i = 0; i < fEntitys.size(); i++)
 	{
 		if (this->fEntitys[i]->getType() == "player")
 		{
