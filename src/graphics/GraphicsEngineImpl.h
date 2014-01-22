@@ -69,6 +69,8 @@ public:
 
 	void Clear();
 
+	void SetDepthOfFieldFocusPlanes(float nearBlurryPlane, float nearSharpPlane, float farSharpPlane, float farBlurryPlane);
+
 private:
 	Direct3D* mD3D;
 
@@ -112,9 +114,9 @@ private:
 
 	float mDoFScale;
 	Texture2DImpl *mDoFCoCTexture;
-	Texture2DImpl *mDoFFarFieldTexture;
-	Texture2DImpl *mDoFNearFieldTexture;
-	Texture2DImpl *mDoFBlurTexture;
+	Texture2DImpl *mDoFBlurTexture1;
+	Texture2DImpl *mDoFBlurTexture2;
+	float mNearBlurryPlane, mNearSharpPlane, mFarSharpPlane, mFarBlurryPlane;
 };
 
 #endif

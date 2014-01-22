@@ -17,26 +17,26 @@ float4 main(VertexOut input) : SV_Target
 	float circle_of_confusion = DoFCoCTexture.Sample(linearClampedSampler, input.uv).x;
 	circle_of_confusion = circle_of_confusion * 2.0 - 1.0;
 
-
+	// For visualization of the near, focus and far fields.
+#if 0
+	if (abs(circle_of_confusion) < 1.0 / 255.0) {
+		// Focus field
+		return float4(1.0, 0.0, 0.0, 1.0);
+	}
+	else if (circle_of_confusion < 0.0) {
+		// Near field
+		return float4(0.0, 1.0, 0.0, 1.0);
+	}
+	else {
+		// Far field
+		return float4(0.0, 0.0, 1.0, 1.0);
+	}
+#endif
 
 	// Decrease sharp image's contribution rapidly in the near field.
 	if (circle_of_confusion < 0.1) {
 		circle_of_confusion = min(circle_of_confusion * 1.5, 1.0);
 	}
-
-
-
-	/*
-	if (abs(circle_of_confusion) < 1.0 / 255.0) {
-		return float4(1.0, 0.0, 0.0, 1.0);
-	}
-	if (circle_of_confusion < 0.0) {
-		return float4(0.0, 1.0, 0.0, 1.0);
-	}
-	if (circle_of_confusion > 0.0) {
-		return float4(0.0, 0.0, 1.0, 1.0);
-	}
-	*/
 
 	return float4(lerp(sharp , blurred, abs(circle_of_confusion)), 1.0);
 }

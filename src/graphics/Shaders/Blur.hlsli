@@ -86,8 +86,9 @@ float4 main(VertexOut input) : SV_Target
 	kernel[0] = 1.00;//0.13425804976814;
 
 	float2 pixel_size = float2(1.0, 1.0) / framebufferSize;
-	float circle_of_confusion = inputTexture.Sample(linearClampedSampler, input.uv).x;
-	circle_of_confusion = circle_of_confusion * 2.0 - 1.0;
+
+	//float circle_of_confusion = inputTexture.Sample(linearClampedSampler, input.uv).x;
+	//circle_of_confusion = circle_of_confusion * 2.0 - 1.0;
 
 	float3 blur_result = float3(0.0, 0.0, 0.0);
 	float weight_sum = 0.0;

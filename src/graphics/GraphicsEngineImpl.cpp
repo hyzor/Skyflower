@@ -59,9 +59,8 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 	delete mSSAOBlurTexture;
 
 	delete mDoFCoCTexture;
-	delete mDoFFarFieldTexture;
-	delete mDoFNearFieldTexture;
-	delete mDoFBlurTexture;
+	delete mDoFBlurTexture1;
+	delete mDoFBlurTexture2;
 
 	delete mD3D;
 }
@@ -101,9 +100,12 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	// Also change Blur.hlsi if you change mDoFScale!
 	mDoFScale = 0.5f;
 	mDoFCoCTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale), DXGI_FORMAT_R8_UNORM, true);
-	mDoFFarFieldTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale), DXGI_FORMAT_R8G8B8A8_UNORM, true);
-	mDoFNearFieldTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale), DXGI_FORMAT_R8G8B8A8_UNORM, true);
-	mDoFBlurTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale), DXGI_FORMAT_R8G8B8A8_UNORM, true);
+	mDoFBlurTexture1 = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale), DXGI_FORMAT_R8G8B8A8_UNORM, true);
+	mDoFBlurTexture2 = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale), DXGI_FORMAT_R8G8B8A8_UNORM, true);
+	mNearBlurryPlane = 10.0f;
+	mNearSharpPlane = 75.0f;
+	mFarSharpPlane = 200.0f;
+	mFarBlurryPlane = 250.0f;
 
 	//--------------------------------------------------------
 	// Lights
@@ -517,7 +519,7 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mDepthOfFieldCoCShader->SetDepthTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
 
 	mShaderHandler->mDepthOfFieldCoCShader->SetZNearFar(zNear, zFar);
-	mShaderHandler->mDepthOfFieldCoCShader->SetFocusPlanes(10.0f, 50.0f, 100.0f, 150.0f);
+	mShaderHandler->mDepthOfFieldCoCShader->SetFocusPlanes(mNearBlurryPlane, mNearSharpPlane, mFarSharpPlane, mFarBlurryPlane);
 	mShaderHandler->mDepthOfFieldCoCShader->Update(mD3D->GetImmediateContext());
 
 	mShaderHandler->mDepthOfFieldCoCShader->SetActive(mD3D->GetImmediateContext());
@@ -527,8 +529,8 @@ void GraphicsEngineImpl::DrawScene()
 
 	mShaderHandler->mDepthOfFieldCoCShader->SetDepthTexture(mD3D->GetImmediateContext(), NULL);
 
-	// Horizontal blur of far field
-	renderTarget = mDoFBlurTexture->GetRenderTargetView();
+	// Horizontal blur
+	renderTarget = mDoFBlurTexture1->GetRenderTargetView();
 	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
 
 	mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mIntermediateTexture->GetShaderResourceView());
@@ -546,11 +548,11 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetInputTexture(mD3D->GetImmediateContext(), NULL);
 
-	// Vertical blur of far field
-	renderTarget = mDoFFarFieldTexture->GetRenderTargetView();
+	// Vertical blur
+	renderTarget = mDoFBlurTexture2->GetRenderTargetView();
 	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
 
-	mShaderHandler->mDepthOfFieldBlurVerticalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mDoFBlurTexture->GetShaderResourceView());
+	mShaderHandler->mDepthOfFieldBlurVerticalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mDoFBlurTexture1->GetShaderResourceView());
 	mShaderHandler->mDepthOfFieldBlurVerticalShader->SetInputTexture(mD3D->GetImmediateContext(), mDoFCoCTexture->GetShaderResourceView());
 
 	mShaderHandler->mDepthOfFieldBlurVerticalShader->SetFramebufferSize(XMFLOAT2((float)mDoFCoCTexture->GetWidth(), (float)mDoFCoCTexture->GetHeight()));
@@ -576,7 +578,7 @@ void GraphicsEngineImpl::DrawScene()
 	// Composite the result of the light pass with the depth of field.
 	mShaderHandler->mCompositeShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mIntermediateTexture->GetShaderResourceView());
 	mShaderHandler->mCompositeShader->SetDoFCoCTexture(mD3D->GetImmediateContext(), mDoFCoCTexture->GetShaderResourceView());
-	mShaderHandler->mCompositeShader->SetDoFFarFieldTexture(mD3D->GetImmediateContext(), mDoFFarFieldTexture->GetShaderResourceView());
+	mShaderHandler->mCompositeShader->SetDoFFarFieldTexture(mD3D->GetImmediateContext(), mDoFBlurTexture2->GetShaderResourceView());
 
 	mShaderHandler->mCompositeShader->Update(mD3D->GetImmediateContext());
 	mShaderHandler->mCompositeShader->SetActive(mD3D->GetImmediateContext());
@@ -795,9 +797,8 @@ void GraphicsEngineImpl::OnResize(UINT width, UINT height)
 	mSSAOBlurTexture->Resize(mD3D->GetDevice(), (UINT)(width * mSSAOScale), (UINT)(height * mSSAOScale));
 
 	mDoFCoCTexture->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
-	mDoFFarFieldTexture->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
-	mDoFNearFieldTexture->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
-	mDoFBlurTexture->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
+	mDoFBlurTexture1->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
+	mDoFBlurTexture2->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
 }
 
 void GraphicsEngineImpl::RenderSceneToTexture()
@@ -976,4 +977,12 @@ void GraphicsEngineImpl::Clear()
 
 	mD3D->GetImmediateContext()->ClearDepthStencilView(mD3D->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
+}
+
+void GraphicsEngineImpl::SetDepthOfFieldFocusPlanes(float nearBlurryPlane, float nearSharpPlane, float farSharpPlane, float farBlurryPlane)
+{
+	mNearBlurryPlane = nearBlurryPlane;
+	mNearSharpPlane = nearSharpPlane;
+	mFarSharpPlane = farSharpPlane;
+	mFarBlurryPlane = farBlurryPlane;
 }
