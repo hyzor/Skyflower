@@ -46,9 +46,23 @@ void Application::Start()
 	m_soundEngine = CreateSoundEngine("../../content/sounds/");
 	assert(m_soundEngine);
 
-	// Play some background music.
-	//float soundPosition[3] = {0.0f, 0.0f, 0.0f};
-	//m_soundEngine->PlaySound("creepy.opus", soundPosition, 0.05f, true);
+	m_backgroundMusicMenu.push_back("music/ants.opus");
+
+	m_backgroundMusicGame.push_back("music/creepy.opus");
+	m_backgroundMusicGame.push_back("music/wat.opus");
+
+	m_backgroundMusic = m_soundEngine->CreateSource();
+	m_backgroundMusic->SetRelativeToListener(true);
+	m_backgroundMusic->SetPlaybackFinishedHandler([this]() {
+		m_backgroundMusicIndex = (m_backgroundMusicIndex + 1) % m_backgroundMusicList->size();
+
+		m_backgroundMusic->SetResource(m_backgroundMusicList->at(m_backgroundMusicIndex));
+		m_backgroundMusic->Play();
+	});
+
+	// Start playing some background music for the menu.
+	m_backgroundMusic->SetVolume(0.05f);
+	setBackgroundMusicList(m_backgroundMusicMenu);
 
 	Modules modules;
 	modules.input = m_inputHandler;
@@ -307,6 +321,20 @@ void Application::updateLoading(float dt)
 
 void Application::changeGameState(GameState newState)
 {
+	switch (newState)
+	{
+	case GameState::game:
+		m_backgroundMusic->SetVolume(0.01f);
+		setBackgroundMusicList(m_backgroundMusicGame);
+		break;
+	case GameState::menu:
+		m_backgroundMusic->SetVolume(0.05f);
+		setBackgroundMusicList(m_backgroundMusicMenu);
+		break;
+	default:
+		break;
+	}
+
 	if (m_window->IsActive())
 	{
 		if (newState == GameState::menu)
@@ -322,4 +350,13 @@ void Application::changeGameState(GameState newState)
 	}
 
 	gameState = newState;
+}
+
+void Application::setBackgroundMusicList(const std::vector<std::string> &musicList)
+{
+	m_backgroundMusicIndex = 0;
+	m_backgroundMusicList = &musicList;
+
+	m_backgroundMusic->SetResource(musicList[0]);
+	m_backgroundMusic->Play();
 }

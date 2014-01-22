@@ -5,7 +5,7 @@
 #define SOUNDENGINE_CULLING_FREQUENCY      1
 #define SOUNDENGINE_CULLING_DISTANCE       100.0f
 
-#define SOUNDENGINE_SOURCE_POOL_SIZE       128
+#define SOUNDENGINE_SOURCE_POOL_SIZE       32
 // Twice as many since streaming sources will use double buffering.
 #define SOUNDENGINE_BUFFER_POOL_SIZE       (SOUNDENGINE_SOURCE_POOL_SIZE * 2)
 
