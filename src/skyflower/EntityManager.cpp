@@ -1021,6 +1021,11 @@ bool EntityManager::loadXML(string xmlFile)
 				Pushable * p = new Pushable();
 				this->addComponent(entity, p);
 			}
+			else if (componentName == "Goal")
+			{
+				Goal *g = new Goal();
+				this->addComponent(entity, g);
+			}
 			else
 			{
 				cout << "Unknown component with name " << componentName << " in entity " << entityName << " in file " << xmlFile << endl;
@@ -1225,9 +1230,10 @@ void EntityManager::handleCollision()
 			testMove(Ray(Vec3(-3 * 0.71f, 13, 3 * 0.71f), Vec3(6 * 0.71f, 0, -6 * 0.71f)), fEntitys[i], fEntitys[i]->wall); // extra test
 
 
-			//activate event for wall
+			//activate event for ground
 			if (fEntitys[i]->ground)
 				fEntitys[i]->ground->sendMessageToEntity("Ground", fEntitys[i]->ground->fId);
+			//activate event for wall
 			if (fEntitys[i]->wall)
 			{
 				fEntitys[i]->wall->sendMessageToEntity("Wall", fEntitys[i]->wall->fId);

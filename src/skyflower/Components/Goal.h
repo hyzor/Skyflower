@@ -1,5 +1,5 @@
-#ifndef BUTTON_H
-#define BUTTON_H
+#ifndef GOAL_H
+#define GOAL_H
 
 #include "Cistron.h"
 #include <string>
@@ -13,25 +13,20 @@
 using namespace std;
 using namespace Cistron;
 
-class Button : public Component {
+class Goal : public Component {
 
 public:
 
 	// constructor - age is fixed at creation time
-	Button() : Component("Button")
+	Goal() : Component("Goal")
 	{
-		activated = 0;
-		act = false;
 	};
-	virtual ~Button() {};
+	virtual ~Goal() {};
 
 	// we are added to an Entity, and thus to the component system
 	void addedToEntity()
 	{
-		requestMessage("Ground", &Button::Activate);
-		moveTo = getEntityPos();
-		startPos = moveTo;
-		downPos = Vec3(0, -getEntityScale().Y, 0);
+		requestMessage("Ground", &Goal::Finished);
 	}
 
 	void sendAMessage(string message)
@@ -39,22 +34,12 @@ public:
 		sendMessage(message);
 	}
 
-	void update(float dt);
 private:
 
-	void Activate(Message const& msg);
-
-	void Deactivate();
-
-	float activated;
-	bool act;
-
-	Vec3 moveTo;
-	Vec3 startPos;
-	Vec3 downPos;
-
-
-
+	void Finished(Message const& msg)
+	{
+		sendMessageToEntity(this->getOwnerId(), "Goal");
+	}
 };
 
 #endif
