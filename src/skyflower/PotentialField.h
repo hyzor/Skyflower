@@ -17,11 +17,10 @@ class PotentialField
 		~PotentialField();
 
 		Field* CreateField(float weight, float size, Vec3 pos);
-		Field* CreateField(std::string file, Vec3 pos);
+		Field* CreateField(std::string file, Vec3 pos, Vec3 scale);
 		void DeleteField(Field* f);
 
-		Vec3 GetDir(Vec3 pos, CollisionInstance* standon, Field* ignore);
-		float GetWeight(Vec3 pos, Field* ignore);
+		Vec3 GetDir(Vec3 pos);
 		float GetWeight(Vec3 pos);
 	private:
 

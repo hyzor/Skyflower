@@ -21,9 +21,20 @@ public:
 	Event(std::string file) : Component("Event")
 	{
 		this->file = file;
+		startUpdate = false;
+		firstUpdate = true;
 
-		sh = new ScriptHandler();
+		//sh = new ScriptHandler();
 
+		
+
+		//sh->Run(file);
+
+	};
+	virtual ~Event() {};
+
+	static void Register(ScriptHandler* sh)
+	{
 		lua_register(sh->L, "PlaySound", Event::PlaySound);
 		lua_register(sh->L, "Jump", Event::Jump);
 		lua_register(sh->L, "ChangeLevel", Event::ChangeLevel);
@@ -31,52 +42,35 @@ public:
 		lua_register(sh->L, "Save", Event::Save);
 		lua_register(sh->L, "Load", Event::Load);
 		lua_register(sh->L, "Spawn", Event::Spawn);
-
-		sh->Run(file);
-
-	};
-	virtual ~Event() {};
+		lua_register(sh->L, "StopUpdate", Event::StopUpdate);
+		lua_register(sh->L, "StartUpdate", Event::StartUpdate);
+	}
 
 	// we are added to an Entity, and thus to the component system
-	void addedToEntity() {
-		//cout << "A Event was added to the system." << endl;
-
-		requestMessage("Activated", &Event::Activated);
-		requestMessage("Deactivated", &Event::Deactivated);
-		requestMessage("Goal", &Event::Goal);
-	}
+	void addedToEntity();
 
 	void sendAMessage(string message)
 	{
 		//cout << "hej det är jag som ropar på denna funktionen: " << this->fName << endl;
 		sendMessage(message);
-	}	
+	}
+
+	void update(float deltaTime);
 
 	static EntityManager* entityManager;
+	static Event* self;
 
 private:
 
 	std::string file;
 
-	ScriptHandler *sh;
 
-	void Activated(Message const& msg)
-	{
-		lua_getglobal(sh->L, "activated");
-		lua_pushinteger(sh->L, this->getOwnerId());
+	bool startUpdate;
+	bool firstUpdate;
 
-		entityManager = getEntityManager();
-		lua_pcall(sh->L, 1, 0, 0);
-	}
+	void Activated(Message const& msg);
 
-	void Deactivated(Message const& msg)
-	{
-		lua_getglobal(sh->L, "deactivated");
-		lua_pushinteger(sh->L, this->getOwnerId());
-
-		entityManager = getEntityManager();
-		lua_pcall(sh->L, 1, 0, 0);
-	}
+	void Deactivated(Message const& msg);
 
 	void Goal(Message const& msg)
 	{
@@ -91,6 +85,8 @@ private:
 	static int Save(lua_State* L);
 	static int Load(lua_State* L);
 	static int Spawn(lua_State* L);
+	static int StartUpdate(lua_State* L);
+	static int StopUpdate(lua_State* L);
 };
 
 #endif

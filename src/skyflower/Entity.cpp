@@ -102,7 +102,7 @@ Entity::Entity(const Modules *modules, EntityId id, string type, float xPos, flo
 		collInst = Collision::GetInstance()->CreateCollisionInstance(model, pos);
 		collInst->SetScale(scale);
 		collInst->SetRotation(rot);
-		field = this->modules->potentialField->CreateField(model, pos);
+		field = this->modules->potentialField->CreateField(model, pos, scale);
 	}
 	else
 	{

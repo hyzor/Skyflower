@@ -25,7 +25,12 @@ public:
 		nextattack = 10;
 		curDir = Vec3();
 	};
-	virtual ~AI() {};
+	virtual ~AI() 
+	{
+		//if (getEntityManager())
+			//for (int i = 0; i < unsafe.size(); i++)
+				//getEntityManager()->modules->potentialField->DeleteField(unsafe[i]);
+	};
 
 	void addedToEntity();
 
@@ -40,6 +45,8 @@ private:
 	float attacktime;
 	float nextattack;
 	bool canMove;
+
+	std::vector<Field*> unsafe;
 
 	void Attack(Message const& msg)
 	{

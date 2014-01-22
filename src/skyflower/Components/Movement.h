@@ -239,7 +239,7 @@ private:
 
 	void Jump(Message const& msg)
 	{
-		if (isInAir)
+		if (!getOwner()->ground)
 			return;
 
 		Vec3 pos = getEntityPos();

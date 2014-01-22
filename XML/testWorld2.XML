@@ -1,6 +1,7 @@
 <root>
 	
 	
+	
     <Platform entityName="WoodBlock" id="3" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
 		xPos="-36.0960396599" yPos="20.0" zPos="-39.4741144045" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
@@ -20,22 +21,22 @@
 		<Movement />
 		<Gravity />
 		<Checkpoint />
-		<Event script="testWorld2_Save.lua" />
+		<Event script="Save" />
 		
 		<!--<AI />-->
 	</Platform>
-	<Platform entityName="ButtonBase" id="8" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
+	<Platform entityName="ButtonBase" id="8" relativeid="99" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
 		xPos="0.0" yPos="0.0" zPos="15.0" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="4.0" yScale="4.0" zScale="4.0" 
 		model="Models\\Worlds\\Subworld\\ButtonBase" />
-	<Platform entityName="Button" id="64" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
+	<Platform entityName="Button" id="64" relativeid="99" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
 		xPos="0.0" yPos="0.0" zPos="15.0" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="4.0" yScale="4.0" zScale="4.0" 
 		model="Models\\Worlds\\Subworld\\Button">
 		<Messenger />
-		<Event script="testWorld2_WoodBlock.lua" />
+		<Event script="btnBig" />
 		<Button />
 		<Movement />
 	</Platform>
@@ -51,7 +52,7 @@
 		xScale="2.0" yScale="2.0" zScale="2.0" 
 		model="Models\\Worlds\\Subworld\\Button">
 		<Messenger />
-		<Event script="testWorld2_LevelCompleted.lua" />
+		<Event script="btnLevelCompleted" />
 		<Button />
 		<Movement />
 		<Goal />
@@ -76,7 +77,7 @@
 		xScale="2.0" yScale="2.0" zScale="2.0" 
 		model="Models\\Worlds\\Subworld\\Button">
 		<Messenger />
-		<Event script="testWorld2_Trap.lua" />
+		<Event script="btnTrap" />
 		<Button />
 		<Movement />
 	</Platform>
@@ -107,7 +108,7 @@
 		<Pushable />
 		<Push />
 		<AI />
-		<Event script="testWorld2_Push.lua" />
+		<Event script="aiPush.lua" />
 	</Platform>
 	
 	<!-- SCENERY -->

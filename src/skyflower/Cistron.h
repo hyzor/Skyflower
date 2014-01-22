@@ -6,6 +6,7 @@
 #include "InputHandler.h"
 #include "Sound/SoundEngine.h"
 #include "PotentialField.h"
+#include "ScriptHandler.h"
 
 // IMPORTANT!
 // decide below which version you want - a version using boost::any or a version using a simple void pointer
@@ -29,6 +30,7 @@ struct Modules
 	GraphicsEngine *graphics;
 	SoundEngine *sound;
 	PotentialField* potentialField;
+	ScriptHandler* script;
 };
 
 };

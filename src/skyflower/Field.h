@@ -15,6 +15,8 @@ class Field
 		float GetWeight(Vec3 pos);
 
 		Box GetSafe();
+
+		bool Active;
 	private:
 		float Weight;
 		float Size;

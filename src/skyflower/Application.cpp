@@ -69,6 +69,10 @@ void Application::Start()
 
 	entityManager->sendMessageToEntity("ActivateListener", "player");
 
+	modules.script = new ScriptHandler();
+	modules.script->Run("testWorld2.lua");
+	Event::Register(modules.script);
+
 	// Make the charts hold 60 seconds worth of values at 60fps.
 	size_t chartCapacity = 60 * 60;
 	LineChart frameTimeChart(chartCapacity);

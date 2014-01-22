@@ -2,6 +2,76 @@
 #include "EntityManager.h"
 
 Cistron::EntityManager* Event::entityManager = nullptr;
+Event* Event::self = nullptr;
+
+
+
+// we are added to an Entity, and thus to the component system
+void Event::addedToEntity() {
+	//cout << "A Event was added to the system." << endl;
+
+	requestMessage("Activated", &Event::Activated);
+	requestMessage("Deactivated", &Event::Deactivated);
+	requestMessage("Goal", &Event::Goal);
+
+	
+}
+
+
+void Event::update(float deltaTime)
+{
+	if (firstUpdate)
+	{
+		entityManager = getEntityManager();
+
+		std::string func = "load_" + file;
+		lua_getglobal(entityManager->modules->script->L, func.c_str());
+		lua_pushinteger(entityManager->modules->script->L, this->getOwnerId());
+
+		self = this;
+		lua_pcall(entityManager->modules->script->L, 1, 0, 0);
+
+
+		firstUpdate = false;
+	}
+	if (startUpdate)
+	{
+		entityManager = getEntityManager();
+
+		std::string func = "update_" + file;
+		lua_getglobal(entityManager->modules->script->L, func.c_str());
+		lua_pushinteger(entityManager->modules->script->L, this->getOwnerId());
+		lua_pushnumber(entityManager->modules->script->L, deltaTime);
+
+		self = this;
+		lua_pcall(entityManager->modules->script->L, 2, 0, 0);
+	}
+}
+
+void Event::Activated(Message const& msg)
+{
+	entityManager = getEntityManager();
+
+	std::string func = "activated_" + file;
+	lua_getglobal(entityManager->modules->script->L, func.c_str());
+	lua_pushinteger(entityManager->modules->script->L, this->getOwnerId());
+
+	self = this;
+	lua_pcall(entityManager->modules->script->L, 1, 0, 0);
+}
+
+void Event::Deactivated(Message const& msg)
+{
+	entityManager = getEntityManager();
+
+	std::string func = "activated_" + file;
+	lua_getglobal(entityManager->modules->script->L, func.c_str());
+	lua_pushinteger(entityManager->modules->script->L, this->getOwnerId());
+
+	self = this;
+	lua_pcall(entityManager->modules->script->L, 1, 0, 0);
+}
+
 
 int Event::PlaySound(lua_State* L)
 {
@@ -97,5 +167,17 @@ int Event::Spawn(lua_State* L)
 	}
 
 
+	return 0;
+}
+
+int Event::StartUpdate(lua_State* L)
+{
+	self->startUpdate = true;
+	return 0;
+}
+
+int Event::StopUpdate(lua_State* L)
+{
+	self->startUpdate = false;
 	return 0;
 }

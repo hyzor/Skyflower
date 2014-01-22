@@ -34,18 +34,48 @@ void AI::update(float dt)
 	Field* target = getEntityManager()->modules->potentialField->CreateField(-1000, 1000, p->returnPos());
 	Field* targetcenter = getEntityManager()->modules->potentialField->CreateField(1000, centerradius, p->returnPos());
 
-	Vec3 dir;
+	//set fields to deactivate
 	if (getOwner()->ground)
-		dir = getEntityManager()->modules->potentialField->GetDir(pos, getOwner()->ground->collInst, getOwner()->ground->field); //FIX
-	else
-		dir = getEntityManager()->modules->potentialField->GetDir(pos, nullptr, nullptr);
+		if (getOwner()->ground->field)
+			getOwner()->ground->field->Active = false;
+	if (p->ground)
+		if(p->ground->field)
+			p->ground->field->Active = false;
+
+	//find direction to target
+	Vec3 dir = getEntityManager()->modules->potentialField->GetDir(pos);
+
+
+	//re activate after use
+	if (getOwner()->ground)
+		if (getOwner()->ground->field)
+			getOwner()->ground->field->Active = true;
+	if (p->ground)
+		if (p->ground->field)
+			p->ground->field->Active = true;
+
+
+	//check if direction is safe
+	bool safe = false;
+	for (int i = 0; i < Collision::GetInstance()->GetCollisionInstances().size(); i++)
+	{
+		Vec3 p = pos + dir * getOwner()->getComponent<Movement*>("Movement")->GetSpeed()*dt*1.5f;
+		if (Collision::GetInstance()->GetCollisionInstances()[i]->Test(Ray(p + Vec3(0, 15, 0), Vec3(0, -30, 0))) > 0.0f)
+		{
+			safe = true;
+			break;
+		}
+	}
+	if(!safe)
+		unsafe.push_back(getEntityManager()->modules->potentialField->CreateField(5, 5, pos + dir * getOwner()->getComponent<Movement*>("Movement")->GetSpeed()*dt*1.5f));
+
 
 
 	Vec3 dif = dir - curDir;
 	curDir += dif / 10;
 
 	getOwner()->getComponent<Movement*>("Movement")->setCamera(curDir, Vec3(), Vec3());
-	if(dif.Length() < 0.5f)
+	if(dif.Length() < 0.5f && safe)
 		getEntityManager()->sendMessageToEntity("StartMoveForward", getOwnerId());
 	else
 		getEntityManager()->sendMessageToEntity("StopMoveForward", getOwnerId());

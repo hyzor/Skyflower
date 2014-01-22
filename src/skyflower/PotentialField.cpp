@@ -18,7 +18,7 @@ Field* PotentialField::CreateField(float weight, float size, Vec3 pos)
 	return f;
 }
 
-Field* PotentialField::CreateField(std::string file, Vec3 pos)
+Field* PotentialField::CreateField(std::string file, Vec3 pos, Vec3 scale)
 {
 	//load obj
 	std::stringstream ss;
@@ -36,7 +36,7 @@ Field* PotentialField::CreateField(std::string file, Vec3 pos)
 		{
 			if (elements.at(0) == "v")
 			{
-				Vec3 v = Vec3((float)atof(elements.at(1).c_str()), (float)atof(elements.at(2).c_str()), (float)atof(elements.at(3).c_str()));
+				Vec3 v = Vec3((float)atof(elements.at(1).c_str()), (float)atof(elements.at(2).c_str()), (float)atof(elements.at(3).c_str()))*scale;
 				center += v;
 				count++;
 				positions.push_back(v);
@@ -48,12 +48,12 @@ Field* PotentialField::CreateField(std::string file, Vec3 pos)
 	Vec3 vMin = Vec3::Max();
 	Vec3 vMax = Vec3::Min();
 	center /= count;
-	float radius = 9999999999.0f;
+	float radius = 0;
 	for (unsigned int i = 0; i < positions.size(); i++)
 	{
 		//calculate sphere
 		float len = (positions[i] - center).Length();
-		if (len < radius)
+		if (len > radius)
 			radius = len;
 
 		//calculate bounds
@@ -61,13 +61,18 @@ Field* PotentialField::CreateField(std::string file, Vec3 pos)
 		vMax = Vec3::Max(vMax, positions[i]);
 	}
 
-	//get safe move area
-	vMin.Y = vMax.Y - 1;
-	vMax.Y += 5;
 	Box bounds = Box(vMin, vMax - vMin);
 
-	Field* f = new Field(radius, radius*1.5f, pos + center, bounds);
+
+	float size = radius*1.5f;
+	if (bounds.Size.Y <= 2)
+		size = 0;
+
+	Field* f = new Field(size, radius*1.5f, pos + center, bounds);
 	fields.push_back(f);
+
+
+
 	return f;
 }
 
@@ -84,23 +89,18 @@ void PotentialField::DeleteField(Field* f)
 	delete f;
 }
 
-float PotentialField::GetWeight(Vec3 pos)
-{
-	return GetWeight(pos, nullptr);
-}
 
-float PotentialField::GetWeight(Vec3 pos, Field* ignore)
+float PotentialField::GetWeight(Vec3 pos)
 {
 	float weight = 0;
 	for (unsigned int i = 0; i < fields.size(); i++)
 	{
-		if (fields[i] != ignore)
-			weight += fields[i]->GetWeight(pos);
+		weight += fields[i]->GetWeight(pos);
 	}
 	return weight;
 }
 
-Vec3 PotentialField::GetDir(Vec3 pos, CollisionInstance* standon, Field* ignore)
+Vec3 PotentialField::GetDir(Vec3 pos)
 {
 	Vec3 dir;
 	float minWeight = 9999999;
@@ -108,21 +108,28 @@ Vec3 PotentialField::GetDir(Vec3 pos, CollisionInstance* standon, Field* ignore)
 	{
 		Vec3 ranDir = Vec3((rand() % 200) / 100.0f - 1, 0.0f, (rand() % 200) / 100.0f - 1).Normalize();
 		
-		float weight = GetWeight(pos + ranDir, ignore);
+		float weight = GetWeight(pos + ranDir);
 
 		if (weight < minWeight)
 		{
 			//check if safe to walk
-			if (!standon)
-			{
+			//if (!standon)
+			//{
 				minWeight = weight;
 				dir = ranDir;
-			}
-			else if (standon->Test(Ray(pos + ranDir*3 + Vec3(0, 15, 0), Vec3(0, -30, 0))))
+			//}
+			/*else//( standon->Test())
 			{
-				minWeight = weight;
-				dir = ranDir;
-			}
+				for (int i = 0; i < Collision::GetInstance()->GetCollisionInstances().size(); i++)
+				{
+					if (Collision::GetInstance()->GetCollisionInstances()[i]->Test(Ray(pos + ranDir * 3 + Vec3(0, 15, 0), Vec3(0, -30, 0))) > 0.0f)
+					{
+						minWeight = weight;
+						dir = ranDir;
+						break;
+					}
+				}
+			}*/
 		}
 	}
 
