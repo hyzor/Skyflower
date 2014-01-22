@@ -1,6 +1,7 @@
 #ifndef SOUND_SOUNDSOURCE_H
 #define SOUND_SOUNDSOURCE_H
 
+#include <functional>
 #include <string>
 
 class SoundSource
@@ -20,7 +21,7 @@ public:
 	virtual bool IsLooping() const = 0;
 	virtual bool IsRelativeToListener() const = 0;
 
-	// FIXME: SetReachedEndHandler/SetPlaybackFinishedHandler?
+	virtual void SetPlaybackFinishedHandler(const std::function<void()> &handler) = 0;
 
 	virtual void SetVolume(float volume) = 0;
 	virtual void SetLooping(bool looping) = 0;

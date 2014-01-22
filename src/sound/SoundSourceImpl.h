@@ -35,6 +35,8 @@ public:
 	virtual bool IsLooping() const;
 	virtual bool IsRelativeToListener() const;
 
+	virtual void SetPlaybackFinishedHandler(const std::function<void()> &handler);
+
 	virtual void SetVolume(float volume);
 	virtual void SetLooping(bool looping);
 	virtual void SetPitch(float pitch);
@@ -45,6 +47,8 @@ public:
 
 	virtual void GetPosition(float output[3]) const;
 
+	void OnPlaybackFinished() const;
+
 private:
 	ResourceCache *m_resourceCache;
 	uint32_t m_resourceHash;
@@ -53,6 +57,8 @@ private:
 	unsigned int m_nextBufferIndex;
 	int64_t m_pendingSeekSample;
 	float m_pendingSeekTime;
+
+	std::function<void()> m_playbackFinishedHandler;
 };
 
 #endif
