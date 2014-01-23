@@ -49,7 +49,7 @@ void Application::Start()
 	m_backgroundMusicMenu.push_back("music/ants.opus");
 
 	m_backgroundMusicGame.push_back("music/creepy.opus");
-	m_backgroundMusicGame.push_back("music/wat.opus");
+	//m_backgroundMusicGame.push_back("music/wat.opus");
 
 	m_backgroundMusic = m_soundEngine->CreateSource();
 	m_backgroundMusic->SetRelativeToListener(true);
@@ -358,6 +358,9 @@ void Application::changeGameState(GameState newState)
 
 void Application::setBackgroundMusicList(const std::vector<std::string> &musicList)
 {
+	if (m_backgroundMusicList == &musicList)
+		return;
+
 	m_backgroundMusicIndex = 0;
 	m_backgroundMusicList = &musicList;
 
