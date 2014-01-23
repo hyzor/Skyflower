@@ -143,13 +143,16 @@ Entity::~Entity() {
 
 void Entity::update(float deltaTime)
 {
+	std::list<Component *> *componentList;
 
-	list<Component *> components = getComponents();
-
-	for (auto iter = components.begin(); iter != components.end(); iter++)
+	for (auto nameIter = fComponents.begin(); nameIter != fComponents.end(); nameIter++)
 	{
-		if ((*iter) != NULL)
-			(*iter)->update(deltaTime);
+		componentList = &nameIter->second;
+
+		for (auto componentIter = componentList->begin(); componentIter != componentList->end(); componentIter++)
+		{
+			(*componentIter)->update(deltaTime);
+		}
 	}
 }
 
@@ -206,22 +209,8 @@ list<Component*> Entity::getComponents(string name) {
 
 bool Entity::hasComponents(string name) {
 
-	// make sure there's no such component yet
-	//if (fComponents.find(name) == fComponents.end()) 
-		//return false;
-
-
-	list<Component*> comps = getComponents();
-	for (std::list<Component*>::iterator it = comps.begin(); it != comps.end(); it++)
-	{
-		if ((*it)->getName() == name)
-			return true;
-	}
-
-	// return normally
-	return false;
+	return fComponents.count(name) > 0;
 }
-
 
 // get all components
 list<Component*> Entity::getComponents() {
