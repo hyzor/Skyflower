@@ -89,7 +89,7 @@ public:
 			{
 				health->setHealth(0);
 				
-				if (getOwnerId() == 0)
+				if (getOwnerId() == 1)
 				{
 					float soundPosition[3] = { 0.0f, 0.0f, 0.0f };
 					getOwner()->getModules()->sound->PlaySound("player/wilhelm_scream.wav", soundPosition, 0.25f, true);
