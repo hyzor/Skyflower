@@ -65,7 +65,7 @@ private:
 
 	void stopMoving(Message const& msg)
 	{
-		cout << "STOP MOVING" << endl;
+		//cout << "STOP MOVING" << endl;
 		this->canMove = false;
 	}
 

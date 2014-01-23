@@ -65,7 +65,7 @@ private:
 	{
 		if (!this->isPushed)
 		{
-			cout << "BEING PUSHED" << endl;
+			//cout << "BEING PUSHED" << endl;
 			this->isPushed = true;
 			this->startPos = getEntityPos();
 			this->p->setIsBeingPushed(true);

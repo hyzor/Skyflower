@@ -82,7 +82,7 @@ private:
 	void Goal(Message const& msg)
 	{
 		//TO DO
-		cout << "GOAL" << endl;
+		//cout << "GOAL" << endl;
 	}
 
 	static int PlaySound(lua_State* L);
