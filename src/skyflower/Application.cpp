@@ -41,7 +41,7 @@ void Application::Start()
 	camera = m_graphicsEngine->CreateCameraController();
 
 	// FIXME: Tweaka dessa när vi har en riktig bana i spelet.
-	m_graphicsEngine->SetDepthOfFieldFocusPlanes(10.0f, 75.0f, 175.0f, 225.0f);
+	m_graphicsEngine->SetDepthOfFieldFocusPlanes(20.0f, 75.0f, 300.0f, 400.0f);
 
 	m_soundEngine = CreateSoundEngine("../../content/sounds/");
 	assert(m_soundEngine);
