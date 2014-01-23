@@ -86,6 +86,16 @@ Vec3 CameraControllImpl::GetUp()
 	return up;
 }
 
+float CameraControllImpl::GetYaw()
+{
+	return yaw;
+}
+
+float CameraControllImpl::GetPitch()
+{
+	return pitch;
+}
+
 void CameraControllImpl::Follow(Vec3 target)
 {
 	this->target = target;

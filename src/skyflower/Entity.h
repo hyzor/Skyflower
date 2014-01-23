@@ -64,10 +64,14 @@ class Entity {
 
 		void updatePos(Vec3 pos);
 
-		void changeRelative(Entity* ground);
 
+		void changeRelative(Entity* ground);
 		void updateRelativePos(Vec3 pos);
 		Vec3 getRelativePos();
+
+
+		void updateRot(Vec3 rot);
+
 	private:
 
 		EntityId fId;
@@ -153,7 +157,6 @@ class Entity {
 		bool returnVisible();
 		bool getIsActive();
 		CollisionInstance* returnCollision();
-		void updateRot(Vec3 rot);
 		void updateScale(Vec3 scale);
 		void updateVisible(bool isVisible);
 		void setIsActive(bool status);

@@ -21,6 +21,8 @@ public:
 	virtual Vec3 GetLook() = 0; // Look vector
 	virtual Vec3 GetRight() = 0; // Right vector
 	virtual Vec3 GetUp() = 0; // Up vector
+	virtual float GetYaw() = 0;
+	virtual float GetPitch() = 0;
 	virtual void RotateCamera(float mouseX, float mouseY) = 0;
 	virtual void Zoom(float, float speed) = 0; // Lowers/Increases the offset to the player
 };

@@ -6,6 +6,7 @@
 #include <iostream>
 #include <sstream>
 #include "shared/Vec3.h"
+#include "shared/util.h"
 #include "physics/Physics.h"
 #include "physics/Collision.h"
 #include "Entity.h"
@@ -104,40 +105,49 @@ public:
 			}
 		}
 
+		float walkAngle = 0.0f;
+
 		if (canMove)
 		{
 			if (this->isMovingForward) {
 				if (this->isMovingLeft) {
-					p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, 0.0f - 45.0f);
+					walkAngle = -45.0f;
 				}
 				else if (this->isMovingRight) {
-					p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, 0.0f + 45.0f);
+					walkAngle = 45.0f;
 				}
 				else {
-					p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, 0.0f);
+					walkAngle = 0.0f;
 				}
 			}
 			else if (this->isMovingBackward) {
 				if (this->isMovingLeft) {
-					p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, -90.0f + -45.0f);
+					walkAngle = -90.0f - 45.0f;
 				}
 				else if (this->isMovingRight) {
-					p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, 180.0f - 45.0f);
+					walkAngle = 180.0f - 45.0f;
 				}
 				else {
-					p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, 179.0f);
+					walkAngle = 180.0f;
 				}
 			}
 			else if (this->isMovingLeft) {
-				p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, -90.0f);
+				walkAngle = -90.0f;
 			}
 			else if (this->isMovingRight) {
-				p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, 90.0f);
+				walkAngle = 90.0f;
 			}
 
 			if (isMovingBackward || isMovingForward || isMovingLeft || isMovingRight)
 			{
 				p->setIsMoving(true);
+				p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, walkAngle);
+
+				// If the player is moving, rotate it to match the camera's direction.
+				if (getOwnerId() == 1)
+				{
+					rot = Vec3(0.0f, -this->yaw + DegreesToRadians(90.0f + walkAngle), 0.0f);
+				}
 			}
 			else
 			{
@@ -162,6 +172,11 @@ public:
 		}
 	}
 
+	void setYaw(float yaw)
+	{
+		this->yaw = yaw;
+	}
+
 	void moveforward()
 	{
 		this->isMovingForward = true;
@@ -183,6 +198,7 @@ private:
 	float speed;
 	bool canMove;
 	float timeUntilGravityEnable;
+	float yaw;
 
 	void startMoveForward(Message const& msg)
 	{

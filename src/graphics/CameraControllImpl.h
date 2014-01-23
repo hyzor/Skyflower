@@ -25,6 +25,9 @@ public:
 	 Vec3 GetLook(); // Look vector
 	 Vec3 GetRight(); // Right vector
 	 Vec3 GetUp(); // Up vector
+	 float GetYaw();
+	 float GetPitch();
+
 private:
 	Camera* camera;
 	Vec3 o; // Vector used for rotation calculations
