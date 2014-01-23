@@ -695,359 +695,17 @@ bool EntityManager::loadXML(string xmlFile)
 		string elemName = elem->Value();
 		const char* attr;
 
-		int id, relativeid;
-		float xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale;
-		xPos = yPos = zPos = xRot = yRot = zRot = xScale = yScale = zScale = 0.0f;
-		string model = "";
-		string entityName = "";
-		bool isVisible = false;
-		bool isCollidible = false;
-		bool isAnimated = false;
+		// Make the element name lower case.
+		std::transform(elemName.begin(), elemName.end(), elemName.begin(), ::tolower);
 
-		//get all the attributes for the entity
-		attr = elem->Attribute("entityName");
-		if (attr != NULL)
+		if (elemName == "light")
 		{
-			entityName = elem->Attribute("entityName");
-		}
-		else
-		{
-			cout << "failed loading attribute for entityName in file " << xmlFile << endl;
-		}
+			// The element is a light.
 
-		attr = elem->Attribute("id");
-		if (attr != NULL)
-		{
-			id = elem->IntAttribute("id");
-		}
-		else
-		{
-			cout << "failed loading attribute for id for entity " << entityName << " in file " << xmlFile << endl;
-		}
-
-		attr = elem->Attribute("relativeid");
-		if (attr != NULL)
-		{
-			relativeid = elem->IntAttribute("relativeid");
-		}
-		else
-			relativeid = 0;
-
-		attr = elem->Attribute("xPos");
-		if (attr != NULL)
-		{
-			xPos = elem->FloatAttribute("xPos");
-		}
-		else
-		{
-			cout << "failed loading attribute for xPos for entity " << entityName << " in file " << xmlFile << endl;
-		}
-
-		attr = elem->Attribute("yPos");
-		if (attr != NULL)
-		{
-			yPos = elem->FloatAttribute("yPos");
-		}
-		else
-		{
-			cout << "failed loading attribute for yPos for entity " << entityName << " in file " << xmlFile << endl;
-		}
-
-		attr = elem->Attribute("zPos");
-		if (attr != NULL)
-		{
-			zPos = elem->FloatAttribute("zPos");
-		}
-		else
-		{
-			cout << "failed loading attribute for zPos for entity " << entityName << " in file " << xmlFile << endl;
-		}
-
-		attr = elem->Attribute("xRot");
-		if (attr != NULL)
-		{
-			xRot = elem->FloatAttribute("xRot");
-		}
-		else
-		{
-			cout << "failed loading attribute for xRot for entity " << entityName << " in file " << xmlFile << endl;
-		}
-
-		attr = elem->Attribute("yRot");
-		if (attr != NULL)
-		{
-			yRot = elem->FloatAttribute("yRot");
-		}
-		else
-		{
-			cout << "failed loading attribute for yRot for entity " << entityName << " in file " << xmlFile << endl;
-		}
-
-		attr = elem->Attribute("zRot");
-		if (attr != NULL)
-		{
-			zRot = elem->FloatAttribute("zRot");
-		}
-		else
-		{
-			cout << "failed loading attribute for zRot for entity " << entityName << " in file " << xmlFile << endl;
-		}
-
-		attr = elem->Attribute("xScale");
-		if (attr != NULL)
-		{
-			xScale = elem->FloatAttribute("xScale");
-		}
-		else
-		{
-			cout << "failed loading attribute for xScale for entity " << entityName << " in file " << xmlFile << endl;
-		}
-
-		attr = elem->Attribute("yScale");
-		if (attr != NULL)
-		{
-			yScale = elem->FloatAttribute("yScale");
-		}
-		else
-		{
-			cout << "failed loading attribute for yScale for entity " << entityName << " in file " << xmlFile << endl;
-		}
-
-		attr = elem->Attribute("zScale");
-		if (attr != NULL)
-		{
-			zScale = elem->FloatAttribute("zScale");
-		}
-		else
-		{
-			cout << "failed loading attribute for zScale for entity " << entityName << " in file " << xmlFile << endl;
-		}
-
-		attr = elem->Attribute("model");
-		if (attr != NULL)
-		{
-			model = elem->Attribute("model");
-		}
-		else
-		{
-			cout << "failed loading attribute for model for entity " << entityName << " in file " << xmlFile << endl;
-		}
-
-		attr = elem->Attribute("isVisible");
-		if (attr != NULL)
-		{
-			isVisible = elem->BoolAttribute("isVisible");
-		}
-		else
-		{
-			cout << "failed loading attribute for isVisible for entity " << entityName << " in file " << xmlFile << endl;
-		}
-
-		attr = elem->Attribute("isCollidible");
-		if (attr != NULL)
-		{
-			isCollidible = elem->BoolAttribute("isCollidible");
-		}
-		else
-		{
-			cout << "failed loading attribute for isCollidible for entity " << entityName << " in file " << xmlFile << endl;
-		}
-		
-		attr = elem->Attribute("isAnimated");
-		if (attr != NULL)
-		{
-			isAnimated = elem->BoolAttribute("isAnimated");
-		}
-		else
-		{
-			cout << "failed loading attribute for isAnimated for entity " << entityName << " in file " << xmlFile << endl;
-		}
-
-
-		if (id == 0)
-		{
-			cout << "Error id can not be 0 for entity " << entityName << " in file " << xmlFile << endl;
-			continue;
-		}
-		else
-		{
-			for (size_t i = 0; i < fEntitys.size(); i++)
+			for (XMLElement* e = elem->FirstChildElement(); e != NULL; e = e->NextSiblingElement())
 			{
-				if (fEntitys[i]->getEntityId() == id)
-				{
-					cout << "Error shared id for entity " << entityName << " in file " << xmlFile << endl;
-					continue;
-				}
-			}
-		}
+				string componentName = e->Value();
 
-		//Creating the entity and adding it to the entitymanager
-		EntityId entity = this->createEntity(entityName, id, relativeid, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, isAnimated);
-
-		//Looping through all the components for the entity.
-		for (XMLElement* e = elem->FirstChildElement(); e != NULL; e = e->NextSiblingElement())
-		{
-			string componentName = e->Value();
-
-			if (componentName == "OscillatePosition")
-			{
-				bool enabled = true;
-				float xDir = 0.0f;
-				float yDir = 0.0f;
-				float zDir = 0.0f;
-				float speed = 0.0f;
-				float travelDistance = 0.0f;
-
-				attr = e->Attribute("enabled");
-				if (attr != NULL)
-					enabled = e->BoolAttribute("enabled");
-				else
-					cout << "failed loading attribute for enabled for entity " << entityName << " in file " << xmlFile << endl;
-
-				attr = e->Attribute("xDir");
-				if (attr != NULL)
-					xDir = e->FloatAttribute("xDir");
-				else
-					cout << "failed loading attribute for xDir for entity " << entityName << " in file " << xmlFile << endl;
-
-				attr = e->Attribute("yDir");
-				if (attr != NULL)
-					yDir = e->FloatAttribute("yDir");
-				else
-					cout << "failed loading attribute for yDir for entity " << entityName << " in file " << xmlFile << endl;
-
-				attr = e->Attribute("zDir");
-				if (attr != NULL)
-					zDir = e->FloatAttribute("zDir");
-				else
-					cout << "failed loading attribute for zDir for entity " << entityName << " in file " << xmlFile << endl;
-
-				attr = e->Attribute("speed");
-				if (attr != NULL)
-					speed = e->FloatAttribute("speed");
-				else
-					cout << "failed loading attribute for speed for entity " << entityName << " in file " << xmlFile << endl;
-
-				attr = e->Attribute("travelDistance");
-				if (attr != NULL)
-					travelDistance = e->FloatAttribute("travelDistance");
-				else
-					cout << "failed loading attribute for speed for entity " << entityName << " in file " << xmlFile << endl;
-
-				OscillatePositionComponent *component = new OscillatePositionComponent(enabled, Vec3(xDir, yDir, zDir), speed, travelDistance);
-				this->addComponent(entity, component);
-			}
-			else if (componentName == "Rotating")
-			{
-				float yawSpeed = 0.0f;
-				float pitchSpeed = 0.0f;
-				float rollSpeed = 0.0f;
-
-				attr = e->Attribute("yawSpeed");
-				if (attr != NULL)
-					yawSpeed = e->FloatAttribute("yawSpeed");
-				else
-					cout << "failed loading attribute for yawSpeed for entity " << entityName << " in file " << xmlFile << endl;
-
-				attr = e->Attribute("pitchSpeed");
-				if (attr != NULL)
-					pitchSpeed = e->FloatAttribute("pitchSpeed");
-				else
-					cout << "failed loading attribute for pitchSpeed for entity " << entityName << " in file " << xmlFile << endl;
-
-				attr = e->Attribute("rollSpeed");
-				if (attr != NULL)
-					rollSpeed = e->FloatAttribute("rollSpeed");
-				else
-					cout << "failed loading attribute for rollSpeed for entity " << entityName << " in file " << xmlFile << endl;
-
-				RotatingComponent *component = new RotatingComponent(yawSpeed, pitchSpeed, rollSpeed);
-				this->addComponent(entity, component);
-			}
-			else if (componentName == "Movement")
-			{
-				float speed = 50;
-				attr = e->Attribute("speed");
-				if (attr)
-					speed = e->FloatAttribute("speed");
-				Movement* m = new Movement(speed);
-				this->addComponent(entity, m);
-			}
-			else if (componentName == "Gravity")
-			{
-				GravityComponent* m = new GravityComponent();
-				this->addComponent(entity, m);
-			}
-			else if (componentName == "AI")
-			{
-				AI* m = new AI();
-				this->addComponent(entity, m);
-			}
-			else if (componentName == "Listener")
-			{
-				ListenerComponent* m = new ListenerComponent();
-				this->addComponent(entity, m);
-			}
-			else if (componentName == "Footsteps")
-			{
-				FootstepsComponent* m = new FootstepsComponent();
-				this->addComponent(entity, m);
-			}
-			else if (componentName == "Messenger")
-			{
-				Messenger *m = new Messenger();
-				this->addComponent(entity, m);
-			}
-			else if (componentName == "Input")
-			{
-				Input* i = new Input();
-				this->addComponent(entity, i);
-			}
-			else if (componentName == "Health")
-			{
-				attr = e->Attribute("maxHP");
-				int maxHP = 0;
-
-				if (attr != NULL)
-				{
-					maxHP = e->IntAttribute("maxHP");
-				}
-				Health* hp = new Health(maxHP);
-				this->addComponent(entity, hp);
-			}
-			else if (componentName == "Event")
-			{
-				attr = e->Attribute("script");
-				if (attr != nullptr)
-				{
-					Event* ev = new Event(attr);
-					this->addComponent(entity, ev);
-				}
-			}
-			else if (componentName == "Button")
-			{
-				Button* btn = new Button();
-				this->addComponent(entity, btn);
-			}
-			else if (componentName == "Checkpoint")
-			{
-				Vec3 spawnpoint = Vec3(xPos, yPos, zPos);
-
-				attr = e->Attribute("xPos");
-				if (attr != nullptr)
-					spawnpoint.X = e->FloatAttribute("xPos");
-				attr = e->Attribute("yPos");
-				if (attr != nullptr)
-					spawnpoint.Y = e->FloatAttribute("yPos");
-				attr = e->Attribute("zPos");
-				if (attr != nullptr)
-					spawnpoint.Z = e->FloatAttribute("zPos");
-
-				Checkpoint* cp = new Checkpoint(spawnpoint);
-				this->addComponent(entity, cp);
-			}
-			else if (componentName.find("Light") != string::npos)
-			{
 				float intensity, r, g, b, dirx, diry, dirz, xPos, yPos, zPos, coneAngle;
 				intensity = r = g = b = dirx = diry = dirz = xPos = yPos = zPos = coneAngle = 0;
 
@@ -1105,6 +763,7 @@ bool EntityManager::loadXML(string xmlFile)
 				{
 					zPos = e->FloatAttribute("zPos");
 				}
+
 				if (componentName == "spotLight")
 					modules->graphics->addSpotLight(Vec3(r, g, b), Vec3(dirx, diry, dirz), Vec3(xPos, yPos, zPos), coneAngle);
 				else if (componentName == "dirLight")
@@ -1112,33 +771,390 @@ bool EntityManager::loadXML(string xmlFile)
 				else if (componentName == "pointLight")
 					modules->graphics->addPointLight(Vec3(r, g, b), Vec3(xPos, yPos, zPos), intensity);
 			}
-			else if (componentName == "Push")
+		}
+		else
+		{
+			// The element is an entity.
+
+			int id, relativeid;
+			float xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale;
+			xPos = yPos = zPos = xRot = yRot = zRot = xScale = yScale = zScale = 0.0f;
+			string model = "";
+			string entityName = "";
+			bool isVisible = false;
+			bool isCollidible = false;
+			bool isAnimated = false;
+
+			//get all the attributes for the entity
+			attr = elem->Attribute("entityName");
+			if (attr != NULL)
 			{
-				Push * p = new Push();
-				this->addComponent(entity, p);
-			}
-			else if (componentName == "Pushable")
-			{
-				Pushable * p = new Pushable();
-				this->addComponent(entity, p);
-			}
-			else if (componentName == "Box")
-			{
-				float speed = 10;
-				attr = e->Attribute("speed");
-				if (attr)
-					speed = e->FloatAttribute("speed");
-				BoxComp* p = new BoxComp(speed);
-				this->addComponent(entity, p);
-			}
-			else if (componentName == "Goal")
-			{
-				Goal *g = new Goal();
-				this->addComponent(entity, g);
+				entityName = elem->Attribute("entityName");
 			}
 			else
 			{
-				cout << "Unknown component with name " << componentName << " in entity " << entityName << " in file " << xmlFile << endl;
+				cout << "failed loading attribute for entityName in file " << xmlFile << endl;
+			}
+
+			attr = elem->Attribute("id");
+			if (attr != NULL)
+			{
+				id = elem->IntAttribute("id");
+			}
+			else
+			{
+				cout << "failed loading attribute for id for entity " << entityName << " in file " << xmlFile << endl;
+			}
+
+			attr = elem->Attribute("relativeid");
+			if (attr != NULL)
+			{
+				relativeid = elem->IntAttribute("relativeid");
+			}
+			else
+				relativeid = 0;
+
+			attr = elem->Attribute("xPos");
+			if (attr != NULL)
+			{
+				xPos = elem->FloatAttribute("xPos");
+			}
+			else
+			{
+				cout << "failed loading attribute for xPos for entity " << entityName << " in file " << xmlFile << endl;
+			}
+
+			attr = elem->Attribute("yPos");
+			if (attr != NULL)
+			{
+				yPos = elem->FloatAttribute("yPos");
+			}
+			else
+			{
+				cout << "failed loading attribute for yPos for entity " << entityName << " in file " << xmlFile << endl;
+			}
+
+			attr = elem->Attribute("zPos");
+			if (attr != NULL)
+			{
+				zPos = elem->FloatAttribute("zPos");
+			}
+			else
+			{
+				cout << "failed loading attribute for zPos for entity " << entityName << " in file " << xmlFile << endl;
+			}
+
+			attr = elem->Attribute("xRot");
+			if (attr != NULL)
+			{
+				xRot = elem->FloatAttribute("xRot");
+			}
+			else
+			{
+				cout << "failed loading attribute for xRot for entity " << entityName << " in file " << xmlFile << endl;
+			}
+
+			attr = elem->Attribute("yRot");
+			if (attr != NULL)
+			{
+				yRot = elem->FloatAttribute("yRot");
+			}
+			else
+			{
+				cout << "failed loading attribute for yRot for entity " << entityName << " in file " << xmlFile << endl;
+			}
+
+			attr = elem->Attribute("zRot");
+			if (attr != NULL)
+			{
+				zRot = elem->FloatAttribute("zRot");
+			}
+			else
+			{
+				cout << "failed loading attribute for zRot for entity " << entityName << " in file " << xmlFile << endl;
+			}
+
+			attr = elem->Attribute("xScale");
+			if (attr != NULL)
+			{
+				xScale = elem->FloatAttribute("xScale");
+			}
+			else
+			{
+				cout << "failed loading attribute for xScale for entity " << entityName << " in file " << xmlFile << endl;
+			}
+
+			attr = elem->Attribute("yScale");
+			if (attr != NULL)
+			{
+				yScale = elem->FloatAttribute("yScale");
+			}
+			else
+			{
+				cout << "failed loading attribute for yScale for entity " << entityName << " in file " << xmlFile << endl;
+			}
+
+			attr = elem->Attribute("zScale");
+			if (attr != NULL)
+			{
+				zScale = elem->FloatAttribute("zScale");
+			}
+			else
+			{
+				cout << "failed loading attribute for zScale for entity " << entityName << " in file " << xmlFile << endl;
+			}
+
+			attr = elem->Attribute("model");
+			if (attr != NULL)
+			{
+				model = elem->Attribute("model");
+			}
+			else
+			{
+				cout << "failed loading attribute for model for entity " << entityName << " in file " << xmlFile << endl;
+			}
+
+			attr = elem->Attribute("isVisible");
+			if (attr != NULL)
+			{
+				isVisible = elem->BoolAttribute("isVisible");
+			}
+			else
+			{
+				cout << "failed loading attribute for isVisible for entity " << entityName << " in file " << xmlFile << endl;
+			}
+
+			attr = elem->Attribute("isCollidible");
+			if (attr != NULL)
+			{
+				isCollidible = elem->BoolAttribute("isCollidible");
+			}
+			else
+			{
+				cout << "failed loading attribute for isCollidible for entity " << entityName << " in file " << xmlFile << endl;
+			}
+		
+			attr = elem->Attribute("isAnimated");
+			if (attr != NULL)
+			{
+				isAnimated = elem->BoolAttribute("isAnimated");
+			}
+			else
+			{
+				cout << "failed loading attribute for isAnimated for entity " << entityName << " in file " << xmlFile << endl;
+			}
+
+
+			if (id == 0)
+			{
+				cout << "Error id can not be 0 for entity " << entityName << " in file " << xmlFile << endl;
+				continue;
+			}
+			else
+			{
+				for (size_t i = 0; i < fEntitys.size(); i++)
+				{
+					if (fEntitys[i]->getEntityId() == id)
+					{
+						cout << "Error shared id for entity " << entityName << " in file " << xmlFile << endl;
+						continue;
+					}
+				}
+			}
+
+			//Creating the entity and adding it to the entitymanager
+			EntityId entity = this->createEntity(entityName, id, relativeid, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, isAnimated);
+
+			//Looping through all the components for the entity.
+			for (XMLElement* e = elem->FirstChildElement(); e != NULL; e = e->NextSiblingElement())
+			{
+				string componentName = e->Value();
+
+				if (componentName == "OscillatePosition")
+				{
+					bool enabled = true;
+					float xDir = 0.0f;
+					float yDir = 0.0f;
+					float zDir = 0.0f;
+					float speed = 0.0f;
+					float travelDistance = 0.0f;
+
+					attr = e->Attribute("enabled");
+					if (attr != NULL)
+						enabled = e->BoolAttribute("enabled");
+					else
+						cout << "failed loading attribute for enabled for entity " << entityName << " in file " << xmlFile << endl;
+
+					attr = e->Attribute("xDir");
+					if (attr != NULL)
+						xDir = e->FloatAttribute("xDir");
+					else
+						cout << "failed loading attribute for xDir for entity " << entityName << " in file " << xmlFile << endl;
+
+					attr = e->Attribute("yDir");
+					if (attr != NULL)
+						yDir = e->FloatAttribute("yDir");
+					else
+						cout << "failed loading attribute for yDir for entity " << entityName << " in file " << xmlFile << endl;
+
+					attr = e->Attribute("zDir");
+					if (attr != NULL)
+						zDir = e->FloatAttribute("zDir");
+					else
+						cout << "failed loading attribute for zDir for entity " << entityName << " in file " << xmlFile << endl;
+
+					attr = e->Attribute("speed");
+					if (attr != NULL)
+						speed = e->FloatAttribute("speed");
+					else
+						cout << "failed loading attribute for speed for entity " << entityName << " in file " << xmlFile << endl;
+
+					attr = e->Attribute("travelDistance");
+					if (attr != NULL)
+						travelDistance = e->FloatAttribute("travelDistance");
+					else
+						cout << "failed loading attribute for speed for entity " << entityName << " in file " << xmlFile << endl;
+
+					OscillatePositionComponent *component = new OscillatePositionComponent(enabled, Vec3(xDir, yDir, zDir), speed, travelDistance);
+					this->addComponent(entity, component);
+				}
+				else if (componentName == "Rotating")
+				{
+					float yawSpeed = 0.0f;
+					float pitchSpeed = 0.0f;
+					float rollSpeed = 0.0f;
+
+					attr = e->Attribute("yawSpeed");
+					if (attr != NULL)
+						yawSpeed = e->FloatAttribute("yawSpeed");
+					else
+						cout << "failed loading attribute for yawSpeed for entity " << entityName << " in file " << xmlFile << endl;
+
+					attr = e->Attribute("pitchSpeed");
+					if (attr != NULL)
+						pitchSpeed = e->FloatAttribute("pitchSpeed");
+					else
+						cout << "failed loading attribute for pitchSpeed for entity " << entityName << " in file " << xmlFile << endl;
+
+					attr = e->Attribute("rollSpeed");
+					if (attr != NULL)
+						rollSpeed = e->FloatAttribute("rollSpeed");
+					else
+						cout << "failed loading attribute for rollSpeed for entity " << entityName << " in file " << xmlFile << endl;
+
+					RotatingComponent *component = new RotatingComponent(yawSpeed, pitchSpeed, rollSpeed);
+					this->addComponent(entity, component);
+				}
+				else if (componentName == "Movement")
+				{
+					float speed = 50;
+					attr = e->Attribute("speed");
+					if (attr)
+						speed = e->FloatAttribute("speed");
+					Movement* m = new Movement(speed);
+					this->addComponent(entity, m);
+				}
+				else if (componentName == "Gravity")
+				{
+					GravityComponent* m = new GravityComponent();
+					this->addComponent(entity, m);
+				}
+				else if (componentName == "AI")
+				{
+					AI* m = new AI();
+					this->addComponent(entity, m);
+				}
+				else if (componentName == "Listener")
+				{
+					ListenerComponent* m = new ListenerComponent();
+					this->addComponent(entity, m);
+				}
+				else if (componentName == "Footsteps")
+				{
+					FootstepsComponent* m = new FootstepsComponent();
+					this->addComponent(entity, m);
+				}
+				else if (componentName == "Messenger")
+				{
+					Messenger *m = new Messenger();
+					this->addComponent(entity, m);
+				}
+				else if (componentName == "Input")
+				{
+					Input* i = new Input();
+					this->addComponent(entity, i);
+				}
+				else if (componentName == "Health")
+				{
+					attr = e->Attribute("maxHP");
+					int maxHP = 0;
+
+					if (attr != NULL)
+					{
+						maxHP = e->IntAttribute("maxHP");
+					}
+					Health* hp = new Health(maxHP);
+					this->addComponent(entity, hp);
+				}
+				else if (componentName == "Event")
+				{
+					attr = e->Attribute("script");
+					if (attr != nullptr)
+					{
+						Event* ev = new Event(attr);
+						this->addComponent(entity, ev);
+					}
+				}
+				else if (componentName == "Button")
+				{
+					Button* btn = new Button();
+					this->addComponent(entity, btn);
+				}
+				else if (componentName == "Checkpoint")
+				{
+					Vec3 spawnpoint = Vec3(xPos, yPos, zPos);
+
+					attr = e->Attribute("xPos");
+					if (attr != nullptr)
+						spawnpoint.X = e->FloatAttribute("xPos");
+					attr = e->Attribute("yPos");
+					if (attr != nullptr)
+						spawnpoint.Y = e->FloatAttribute("yPos");
+					attr = e->Attribute("zPos");
+					if (attr != nullptr)
+						spawnpoint.Z = e->FloatAttribute("zPos");
+
+					Checkpoint* cp = new Checkpoint(spawnpoint);
+					this->addComponent(entity, cp);
+				}
+				else if (componentName == "Push")
+				{
+					Push * p = new Push();
+					this->addComponent(entity, p);
+				}
+				else if (componentName == "Pushable")
+				{
+					Pushable * p = new Pushable();
+					this->addComponent(entity, p);
+				}
+				else if (componentName == "Box")
+				{
+					float speed = 10;
+					attr = e->Attribute("speed");
+					if (attr)
+						speed = e->FloatAttribute("speed");
+					BoxComp* p = new BoxComp(speed);
+					this->addComponent(entity, p);
+				}
+				else if (componentName == "Goal")
+				{
+					Goal *g = new Goal();
+					this->addComponent(entity, g);
+				}
+				else
+				{
+					cout << "Unknown component with name " << componentName << " in entity " << entityName << " in file " << xmlFile << endl;
+				}
 			}
 		}
 	}

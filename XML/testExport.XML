@@ -19,19 +19,19 @@
 		<Health/>
 		<Box />
     </Entity>
-    <Entity entityName="pointLight1" id="7" isVisible="0" isCollidible="0" Type="pointLight ">
+    <Light entityName="pointLight1" id="7" isVisible="0" isCollidible="0" Type="pointLight ">
         <pointLight  xPos="9.07378598527" yPos="47.5905159247" zPos="0.0" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
-    </Entity>
-    <Entity entityName="spotLight1" id="8" isVisible="0" isCollidible="0" Type="pointLight ">
+    </Light>
+    <Light entityName="spotLight1" id="8" isVisible="0" isCollidible="0" Type="pointLight ">
         <pointLight  xPos="193.772864901" yPos="74.277249828" zPos="8.07811313585" r="1.0" g="0.0" b="0.0" intensity="1.0"/>
-    </Entity>
-    <Entity entityName="directionalLight1" id="9" isVisible="0" isCollidible="0" Type="dirLight ">
+    </Light>
+    <Light entityName="directionalLight1" id="9" isVisible="0" isCollidible="0" Type="dirLight ">
         <dirLight  dirx="0.0" diry="-0.371493309736" dirz="-0.928435623646" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
-    </Entity>
-    <Entity entityName="directionalLight2" id="10" isVisible="0" isCollidible="0" Type="dirLight ">
+    </Light>
+    <Light entityName="directionalLight2" id="10" isVisible="0" isCollidible="0" Type="dirLight ">
         <dirLight  dirx="0.939302444458" diry="-0.339113771915" dirz="0.052084300667" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
-    </Entity>
-    <Entity entityName="directionalLight3" id="11" isVisible="0" isCollidible="0" Type="dirLight ">
+    </Light>
+    <Light entityName="directionalLight3" id="11" isVisible="0" isCollidible="0" Type="dirLight ">
         <dirLight  dirx="-0.783050239086" diry="0.0" dirz="-0.621958494186" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
-    </Entity>
+    </Light>
 </root>

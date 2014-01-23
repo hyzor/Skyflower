@@ -1,14 +1,14 @@
 <root>
-    <spotLight1 entityName="spotLight1" id="1" isVisible="0" isCollidible="0" Type="spotLight ">
+    <Light entityName="spotLight1" id="1" isVisible="0" isCollidible="0" Type="spotLight ">
         <spotLight  dirx="0.00391255225986" diry="-0.779331326485" dirz="-0.626599907875" xPos="0.0" yPos="20.81630866636" zPos="10.1094112525" r="0.0" g="0.0" b="2.0" intensity="1.0" coneAngle="4.6.017837833"/>
-    </spotLight1>
-    <directionalLight1 entityName="directionalLight1" id="3" isVisible="0" isCollidible="0" Type="dirLight ">
+    </Light>
+    <Light entityName="directionalLight1" id="3" isVisible="0" isCollidible="0" Type="dirLight ">
         <dirLight  dirx="0.0" diry="-0.905285954475" dirz="0.424802750349" r="0.7" g="0.7" b="0.7" intensity="1.0"/>
-    </directionalLight1>
-    <pointLight1 entityName="pointLight1" id="2" isVisible="0" isCollidible="0" Type="pointLight ">
+    </Light>
+    <Light entityName="pointLight1" id="2" isVisible="0" isCollidible="0" Type="pointLight ">
         <pointLight  xPos="0.0" yPos="5.85678867095" zPos="-5.60386914681" r="0.0" g="0.25792193412780762" b="0.98039215803146362" intensity="1.0"/>
-    </pointLight1>
-	<spotLight1 entityName="spotLight1" id="4" isVisible="0" isCollidible="0" Type="spotLight ">
+    </Light>
+	<Light entityName="spotLight1" id="4" isVisible="0" isCollidible="0" Type="spotLight ">
         <spotLight  dirx="0.00391255225986" diry="-0.779331326485" dirz="-0.626599907875" xPos="20.0" yPos="20.81630866636" zPos="-10.1094112525" r="2.0" g="0.0" b="0.0" intensity="1.0" coneAngle="4.6.017837833"/>
-    </spotLight1>
+    </Light>
 </root>
