@@ -66,6 +66,8 @@ MorphModel::MorphModel(ID3D11Device* device, TextureManager* textureMgr, const s
 
 		// First check for irregularity, all the models must have matching number of
 		// vertices & meshes
+
+		int baseModel = 0;
 		UINT baseMeshNrOfMeshes = mTargetModels[0].nrOfMeshes;
 
 		for (UINT i = 0; i < mTargetModels.size(); ++i)
@@ -86,28 +88,27 @@ MorphModel::MorphModel(ID3D11Device* device, TextureManager* textureMgr, const s
 
 		// Then set the indices to the indices in base model
 
-		int curTargetModel = 0;
-
 		// Push indices from first model
-		for (UINT i = 0; i < mTargetModels[curTargetModel].nrOfMeshes; ++i)
+		for (UINT i = 0; i < mTargetModels[baseModel].nrOfMeshes; ++i)
 		{
-			for (UINT k = 0; k < mTargetModels[curTargetModel].meshes[i].indices.size(); ++k)
+			for (UINT k = 0; k < mTargetModels[baseModel].meshes[i].indices.size(); ++k)
 			{
-				mIndices.push_back(mTargetModels[curTargetModel].meshes[i].indices[k]);
+				mIndices.push_back(mTargetModels[baseModel].meshes[i].indices[k]);
 			}
 		}
 
 		if (mTargetModels.size() == 1)
 		{
-			for (UINT i = 0; i < mTargetModels[curTargetModel].nrOfMeshes; ++i)
+			for (UINT i = 0; i < mTargetModels[baseModel].nrOfMeshes; ++i)
 			{
-				for (UINT j = 0; j < mTargetModels[curTargetModel].meshes[i].VertexCount; ++j)
+				for (UINT j = 0; j < mTargetModels[baseModel].meshes[i].VertexCount; ++j)
 				{
 					Vertex::PosNormalTexTargets4 vTargets;
 
-					curTargetModel = 0;
-					vTargets.positionBase = mTargetModels[curTargetModel].meshes[i].vertices[j].position;
-					vTargets.normalBase = mTargetModels[curTargetModel].meshes[i].vertices[j].normal;
+					//curTargetModel = 0;
+					vTargets.positionBase = mTargetModels[0].meshes[i].vertices[j].position;
+					vTargets.normalBase = mTargetModels[0].meshes[i].vertices[j].normal;
+					vTargets.texCoordBase = mTargetModels[0].meshes[i].vertices[j].texCoord;
 
 					mVertices.push_back(vTargets);
 				}
@@ -115,19 +116,21 @@ MorphModel::MorphModel(ID3D11Device* device, TextureManager* textureMgr, const s
 		}
 		else if (mTargetModels.size() == 2)
 		{
-			for (UINT i = 0; i < mTargetModels[curTargetModel].nrOfMeshes; ++i)
+			for (UINT i = 0; i < mTargetModels[baseModel].nrOfMeshes; ++i)
 			{
-				for (UINT j = 0; j < mTargetModels[curTargetModel].meshes[i].VertexCount; ++j)
+				for (UINT j = 0; j < mTargetModels[baseModel].meshes[i].VertexCount; ++j)
 				{
 					Vertex::PosNormalTexTargets4 vTargets;
 
-					curTargetModel = 0;
-					vTargets.positionBase = mTargetModels[curTargetModel].meshes[i].vertices[j].position;
-					vTargets.normalBase = mTargetModels[curTargetModel].meshes[i].vertices[j].normal;
+					//curTargetModel = 0;
+					vTargets.positionBase = mTargetModels[0].meshes[i].vertices[j].position;
+					vTargets.normalBase = mTargetModels[0].meshes[i].vertices[j].normal;
+					vTargets.texCoordBase = mTargetModels[0].meshes[i].vertices[j].texCoord;
 
-					curTargetModel = 1;
-					vTargets.positionTarget1 = mTargetModels[curTargetModel].meshes[i].vertices[j].position;
-					vTargets.normalTarget1 = mTargetModels[curTargetModel].meshes[i].vertices[j].normal;
+					//curTargetModel = 1;
+					vTargets.positionTarget1 = mTargetModels[1].meshes[i].vertices[j].position;
+					vTargets.normalTarget1 = mTargetModels[1].meshes[i].vertices[j].normal;
+					vTargets.texCoordTarget1 = mTargetModels[1].meshes[i].vertices[j].texCoord;
 
 					mVertices.push_back(vTargets);
 				}
@@ -136,23 +139,26 @@ MorphModel::MorphModel(ID3D11Device* device, TextureManager* textureMgr, const s
 
 		else if (mTargetModels.size() == 3)
 		{
-			for (UINT i = 0; i < mTargetModels[curTargetModel].nrOfMeshes; ++i)
+			for (UINT i = 0; i < mTargetModels[baseModel].nrOfMeshes; ++i)
 			{
-				for (UINT j = 0; j < mTargetModels[curTargetModel].meshes[i].VertexCount; ++j)
+				for (UINT j = 0; j < mTargetModels[baseModel].meshes[i].VertexCount; ++j)
 				{
 					Vertex::PosNormalTexTargets4 vTargets;
 
-					curTargetModel = 0;
-					vTargets.positionBase = mTargetModels[curTargetModel].meshes[i].vertices[j].position;
-					vTargets.normalBase = mTargetModels[curTargetModel].meshes[i].vertices[j].normal;
+					//curTargetModel = 0;
+					vTargets.positionBase = mTargetModels[0].meshes[i].vertices[j].position;
+					vTargets.normalBase = mTargetModels[0].meshes[i].vertices[j].normal;
+					vTargets.texCoordBase = mTargetModels[0].meshes[i].vertices[j].texCoord;
 
-					curTargetModel = 1;
-					vTargets.positionTarget1 = mTargetModels[curTargetModel].meshes[i].vertices[j].position;
-					vTargets.normalTarget1 = mTargetModels[curTargetModel].meshes[i].vertices[j].normal;
+					//curTargetModel = 1;
+					vTargets.positionTarget1 = mTargetModels[1].meshes[i].vertices[j].position;
+					vTargets.normalTarget1 = mTargetModels[1].meshes[i].vertices[j].normal;
+					vTargets.texCoordTarget1 = mTargetModels[1].meshes[i].vertices[j].texCoord;
 
-					curTargetModel = 2;
-					vTargets.positionTarget2 = mTargetModels[curTargetModel].meshes[i].vertices[j].position;
-					vTargets.normalTarget2 = mTargetModels[curTargetModel].meshes[i].vertices[j].normal;
+					//curTargetModel = 2;
+					vTargets.positionTarget2 = mTargetModels[2].meshes[i].vertices[j].position;
+					vTargets.normalTarget2 = mTargetModels[2].meshes[i].vertices[j].normal;
+					vTargets.texCoordTarget2 = mTargetModels[2].meshes[i].vertices[j].texCoord;
 
 					mVertices.push_back(vTargets);
 				}
@@ -161,27 +167,31 @@ MorphModel::MorphModel(ID3D11Device* device, TextureManager* textureMgr, const s
 
 		else if (mTargetModels.size() == 4)
 		{
-			for (UINT i = 0; i < mTargetModels[curTargetModel].nrOfMeshes; ++i)
+			for (UINT i = 0; i < mTargetModels[baseModel].nrOfMeshes; ++i)
 			{
-				for (UINT j = 0; j < mTargetModels[curTargetModel].meshes[i].VertexCount; ++j)
+				for (UINT j = 0; j < mTargetModels[baseModel].meshes[i].VertexCount; ++j)
 				{
 					Vertex::PosNormalTexTargets4 vTargets;
 
-					curTargetModel = 0;
-					vTargets.positionBase = mTargetModels[curTargetModel].meshes[i].vertices[j].position;
-					vTargets.normalBase = mTargetModels[curTargetModel].meshes[i].vertices[j].normal;
+					//curTargetModel = 0;
+					vTargets.positionBase = mTargetModels[0].meshes[i].vertices[j].position;
+					vTargets.normalBase = mTargetModels[0].meshes[i].vertices[j].normal;
+					vTargets.texCoordBase = mTargetModels[0].meshes[i].vertices[j].texCoord;
 
-					curTargetModel = 1;
-					vTargets.positionTarget2 = mTargetModels[curTargetModel].meshes[i].vertices[j].position;
-					vTargets.normalTarget2 = mTargetModels[curTargetModel].meshes[i].vertices[j].normal;
+					//curTargetModel = 1;
+					vTargets.positionTarget2 = mTargetModels[1].meshes[i].vertices[j].position;
+					vTargets.normalTarget2 = mTargetModels[1].meshes[i].vertices[j].normal;
+					vTargets.texCoordTarget2 = mTargetModels[1].meshes[i].vertices[j].texCoord;
 
-					curTargetModel = 2;
-					vTargets.positionTarget3 = mTargetModels[curTargetModel].meshes[i].vertices[j].position;
-					vTargets.normalTarget3 = mTargetModels[curTargetModel].meshes[i].vertices[j].normal;
+					//curTargetModel = 2;
+					vTargets.positionTarget3 = mTargetModels[2].meshes[i].vertices[j].position;
+					vTargets.normalTarget3 = mTargetModels[2].meshes[i].vertices[j].normal;
+					vTargets.texCoordTarget3 = mTargetModels[2].meshes[i].vertices[j].texCoord;
 
-					curTargetModel = 3;
-					vTargets.positionTarget4 = mTargetModels[curTargetModel].meshes[i].vertices[j].position;
-					vTargets.normalTarget4 = mTargetModels[curTargetModel].meshes[i].vertices[j].normal;
+					//curTargetModel = 3;
+					vTargets.positionTarget4 = mTargetModels[3].meshes[i].vertices[j].position;
+					vTargets.normalTarget4 = mTargetModels[3].meshes[i].vertices[j].normal;
+					vTargets.texCoordTarget4 = mTargetModels[3].meshes[i].vertices[j].texCoord;
 
 					mVertices.push_back(vTargets);
 				}
@@ -190,31 +200,36 @@ MorphModel::MorphModel(ID3D11Device* device, TextureManager* textureMgr, const s
 
 		else if (mTargetModels.size() == 5)
 		{
-			for (UINT i = 0; i < mTargetModels[curTargetModel].nrOfMeshes; ++i)
+			for (UINT i = 0; i < mTargetModels[baseModel].nrOfMeshes; ++i)
 			{
-				for (UINT j = 0; j < mTargetModels[curTargetModel].meshes[i].VertexCount; ++j)
+				for (UINT j = 0; j < mTargetModels[baseModel].meshes[i].VertexCount; ++j)
 				{
 					Vertex::PosNormalTexTargets4 vTargets;
 
-					curTargetModel = 0;
-					vTargets.positionBase = mTargetModels[curTargetModel].meshes[i].vertices[j].position;
-					vTargets.normalBase = mTargetModels[curTargetModel].meshes[i].vertices[j].normal;
+					//curTargetModel = 0;
+					vTargets.positionBase = mTargetModels[0].meshes[i].vertices[j].position;
+					vTargets.normalBase = mTargetModels[0].meshes[i].vertices[j].normal;
+					vTargets.texCoordBase = mTargetModels[0].meshes[i].vertices[j].texCoord;
 
-					curTargetModel = 1;
-					vTargets.positionTarget1 = mTargetModels[curTargetModel].meshes[i].vertices[j].position;
-					vTargets.normalTarget1 = mTargetModels[curTargetModel].meshes[i].vertices[j].normal;
+					//curTargetModel = 1;
+					vTargets.positionTarget1 = mTargetModels[1].meshes[i].vertices[j].position;
+					vTargets.normalTarget1 = mTargetModels[1].meshes[i].vertices[j].normal;
+					vTargets.texCoordTarget1 = mTargetModels[1].meshes[i].vertices[j].texCoord;
 
-					curTargetModel = 2;
-					vTargets.positionTarget2 = mTargetModels[curTargetModel].meshes[i].vertices[j].position;
-					vTargets.normalTarget2 = mTargetModels[curTargetModel].meshes[i].vertices[j].normal;
+					//curTargetModel = 2;
+					vTargets.positionTarget2 = mTargetModels[2].meshes[i].vertices[j].position;
+					vTargets.normalTarget2 = mTargetModels[2].meshes[i].vertices[j].normal;
+					vTargets.texCoordTarget2 = mTargetModels[2].meshes[i].vertices[j].texCoord;
 
-					curTargetModel = 3;
-					vTargets.positionTarget3 = mTargetModels[curTargetModel].meshes[i].vertices[j].position;
-					vTargets.normalTarget3 = mTargetModels[curTargetModel].meshes[i].vertices[j].normal;
+					//curTargetModel = 3;
+					vTargets.positionTarget3 = mTargetModels[3].meshes[i].vertices[j].position;
+					vTargets.normalTarget3 = mTargetModels[3].meshes[i].vertices[j].normal;
+					vTargets.texCoordTarget3 = mTargetModels[3].meshes[i].vertices[j].texCoord;
 
-					curTargetModel = 4;
-					vTargets.positionTarget4 = mTargetModels[curTargetModel].meshes[i].vertices[j].position;
-					vTargets.normalTarget4 = mTargetModels[curTargetModel].meshes[i].vertices[j].normal;
+					//curTargetModel = 4;
+					vTargets.positionTarget4 = mTargetModels[4].meshes[i].vertices[j].position;
+					vTargets.normalTarget4 = mTargetModels[4].meshes[i].vertices[j].normal;
+					vTargets.texCoordTarget4 = mTargetModels[4].meshes[i].vertices[j].texCoord;
 
 					mVertices.push_back(vTargets);
 				}
@@ -317,7 +332,6 @@ void MorphModel::Draw(ID3D11DeviceContext* dc)
 	dc->IASetVertexBuffers(0, 1, &mVertexBuffer, &mVertexStride, &offset);
 	dc->IASetIndexBuffer(mIndexBuffer, mIndexBufferFormat, 0);
 
-	// The Vertex Shader expects application provided input data (which is to say data other than hardware auto-generated values such as VertexID or InstanceID). Therefore an Input Assembler object is expected, but none is bound. [ EXECUTION ERROR #349: DEVICE_DRAW_INPUTLAYOUT_NOT_SET]
 	dc->DrawIndexed(
 		(UINT)mIndices.size(),
 		0,

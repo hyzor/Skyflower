@@ -111,6 +111,9 @@ private:
 
 	Texture2DImpl *mSSAOTexture;
 	Texture2DImpl *mSSAOBlurTexture;
+
+	float morphTimeTest;
+	bool morphIncrease;
 };
 
 #endif

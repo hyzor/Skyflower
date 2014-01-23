@@ -263,6 +263,93 @@ void ShadowMap::DrawSceneToShadowMap(
 	deviceContext->RSSetState(0);
 }
 
+void ShadowMap::DrawSceneToShadowMap(const std::vector<ModelInstanceImpl*>& modelInstances,
+	const std::vector<AnimatedInstanceImpl*>& mAnimatedInstances,
+	const std::vector<MorphModelInstance*>& mMorphInstances,
+	ID3D11DeviceContext* deviceContext,
+	ShadowShader* shadowShader,
+	SkinnedShadowShader* skinnedShadowShader,
+	ShadowMorphShader* shadowMorphShader)
+{
+	XMMATRIX view = XMLoadFloat4x4(&mLightView);
+	XMMATRIX proj = XMLoadFloat4x4(&mLightProj);
+	XMMATRIX viewProj = XMMatrixMultiply(view, proj);
+
+	XMMATRIX world;
+	XMMATRIX worldInvTranspose;
+	XMMATRIX worldViewProj;
+
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	shadowShader->SetActive(deviceContext);
+
+	for (UINT i = 0; i < modelInstances.size(); ++i)
+	{
+		if (modelInstances[i]->IsVisible())
+		{
+			world = modelInstances[i]->GetWorld();
+			worldInvTranspose = MathHelper::InverseTranspose(world);
+
+			worldViewProj = world*viewProj;
+			shadowShader->setLightWVP(deviceContext, worldViewProj);
+			shadowShader->updatePerObj(deviceContext);
+
+
+			for (UINT j = 0; j < modelInstances[i]->model->meshCount; ++j)
+			{
+				modelInstances[i]->model->meshes[j].Draw(deviceContext);
+			}
+		}
+	}
+
+
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	skinnedShadowShader->SetActive(deviceContext);
+
+	for (UINT i = 0; i < mAnimatedInstances.size(); ++i)
+	{
+		if (mAnimatedInstances[i]->IsVisible())
+		{
+			world = mAnimatedInstances[i]->GetWorld();
+			worldViewProj = world * viewProj;
+
+			skinnedShadowShader->SetLightWVP(deviceContext, worldViewProj);
+			skinnedShadowShader->SetBoneTransforms(deviceContext,
+				mAnimatedInstances[i]->model->mInstance.FinalTransforms.data(),
+				mAnimatedInstances[i]->model->mInstance.FinalTransforms.size());
+
+			for (UINT j = 0; j < mAnimatedInstances[i]->model->mInstance.model->numMeshes; ++j)
+			{
+				skinnedShadowShader->UpdatePerObj(deviceContext);
+				mAnimatedInstances[i]->model->mInstance.model->meshes[j].draw(deviceContext);
+			}
+		}
+	}
+
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	shadowMorphShader->SetActive(deviceContext);
+
+	for (UINT i = 0; i < mMorphInstances.size(); ++i)
+	{
+		if (mMorphInstances[i]->isVisible)
+		{
+			world = XMLoadFloat4x4(&mMorphInstances[i]->world);
+			worldViewProj = world * viewProj;
+
+			shadowMorphShader->SetLightWVP(deviceContext, worldViewProj);
+			shadowMorphShader->SetWeights(mMorphInstances[i]->weights);
+
+			for (UINT j = 0; j < mMorphInstances[i]->model->mTargetModels.begin()->nrOfMeshes; ++j)
+			{
+				shadowMorphShader->UpdatePerObj(deviceContext);
+				mMorphInstances[i]->model->Draw(deviceContext);
+			}
+		}
+	}
+
+	deviceContext->RSSetState(0);
+}
+
 XMMATRIX ShadowMap::GetShadowTransform() const
 {
 	return XMLoadFloat4x4(&mShadowTransform);

@@ -35,6 +35,10 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 	}
 	mSkinnedModels.clear();
 
+// 	for (UINT i = 0; i < mMorphModels.size(); ++i)
+// 	{
+// 	}
+
 	delete mSky;
 	delete mShadowMap;
 	delete mCamera;
@@ -75,14 +79,17 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mTextureMgr->Init(mD3D->GetDevice(), mD3D->GetImmediateContext());
 
 
-	mMorphModels.push_back(new MorphModel(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Models/Morphtest/", "skyflower.morph"));
+	mMorphModels.push_back(new MorphModel(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Models/Morphtest/Block/", "WoodBlock.morph"));
 	
 	mMorphInstances.push_back(new MorphModelInstance());
 	XMMATRIX scaling = XMMatrixScaling(1.0f, 1.0f, 1.0f);
 	XMMATRIX rotation = XMMatrixRotationY(0.0f);
-	XMMATRIX offset = XMMatrixTranslation(0.0f, 50.0f, 0.0f);
+	XMMATRIX offset = XMMatrixTranslation(20.0f, 0.0f, 0.0f);
 	XMStoreFloat4x4(&mMorphInstances[0]->world, scaling*rotation*offset);
 	mMorphInstances[0]->model = mMorphModels[0];
+	mMorphInstances[0]->weights = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+	morphTimeTest = 0.0f;
+	morphIncrease = true;
 
 
 	// Camera
@@ -210,10 +217,14 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\SkyPS.cso", "SkyPS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\NormalMapSkinnedVS.cso", "NormalMapSkinnedVS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\NormalMapSkinnedPS.cso", "NormalMapSkinnedPS", mD3D->GetDevice());
+
+	// Shadow mapping
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\ShadowBuildVS.cso", "ShadowBuildVS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\ShadowBuildPS.cso", "ShadowBuildPS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\SkinnedShadowBuildVS.cso", "SkinnedShadowBuildVS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\SkinnedShadowBuildPS.cso", "SkinnedShadowBuildPS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\ShadowBuildMorphVS.cso", "ShadowBuildMorphVS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\ShadowBuildMorphPS.cso", "ShadowBuildMorphPS", mD3D->GetDevice());
 
 	// Deferred shaders
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\BasicDeferredVS.cso", "BasicDeferredVS", mD3D->GetDevice());
@@ -246,19 +257,12 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mBasicDeferredShader->BindShaders(
 		mShaderHandler->GetVertexShader("BasicDeferredVS"),
 		mShaderHandler->GetPixelShader("BasicDeferredPS"));
-	mShaderHandler->mSkinnedShadowShader->BindShaders(mShaderHandler->GetVertexShader("SkinnedShadowBuildVS"),
-		mShaderHandler->GetPixelShader("SkinnedShadowBuildPS"));
 	mShaderHandler->mBasicDeferredSkinnedShader->BindShaders(
 		mShaderHandler->GetVertexShader("BasicDeferredSkinnedVS"),
 		mShaderHandler->GetPixelShader("BasicDeferredSkinnedPS"));
 	mShaderHandler->mLightDeferredShader->BindShaders(
 		mShaderHandler->GetVertexShader("LightDeferredVS"),
 		mShaderHandler->GetPixelShader("LightDeferredPS"));
-	//mShaderHandler->mShadowShader->BindShaders(mShaderHandler->GetVertexShader("ShadowBuildVS"), mShaderHandler->GetPixelShader(""));
-	//mShaderHandler->mShadowShader->BindVertexShader(mShaderHandler->GetVertexShader("ShadowBuildVS"));
-	mShaderHandler->mShadowShader->BindShaders(
-		mShaderHandler->GetVertexShader("ShadowBuildVS"),
-		mShaderHandler->GetPixelShader("ShadowBuildPS"));
 	mShaderHandler->mSkyDeferredShader->BindShaders(
 		mShaderHandler->GetVertexShader("SkyDeferredVS"),
 		mShaderHandler->GetPixelShader("SkyDeferredPS"));
@@ -274,6 +278,17 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mDeferredMorphShader->BindShaders(
 		mShaderHandler->GetVertexShader("BasicDeferredMorphVS"),
 		mShaderHandler->GetPixelShader("BasicDeferredMorphPS"));
+
+	// Shadow mapping
+	mShaderHandler->mShadowShader->BindShaders(
+		mShaderHandler->GetVertexShader("ShadowBuildVS"),
+		mShaderHandler->GetPixelShader("ShadowBuildPS"));
+	mShaderHandler->mSkinnedShadowShader->BindShaders(
+		mShaderHandler->GetVertexShader("SkinnedShadowBuildVS"),
+		mShaderHandler->GetPixelShader("SkinnedShadowBuildPS"));
+	mShaderHandler->mShadowMorphShader->BindShaders(
+		mShaderHandler->GetVertexShader("ShadowBuildMorphVS"),
+		mShaderHandler->GetPixelShader("ShadowBuildMorphPS"));
 
 	// Now create all the input layouts
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("BasicVS"), InputLayoutDesc::PosNormalTex, COUNT_OF(InputLayoutDesc::PosNormalTex), &mInputLayouts->PosNormalTex);
@@ -300,6 +315,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mBlurHorizontalShader->Init(mD3D->GetDevice(), NULL);
 	mShaderHandler->mBlurVerticalShader->Init(mD3D->GetDevice(), NULL);
 	mShaderHandler->mDeferredMorphShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTargets4);
+	mShaderHandler->mShadowMorphShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTargets4);
 
 	std::string fontPath = mResourceDir + "myfile.spritefont";
 	std::wstring fontPathW(fontPath.begin(), fontPath.end());
@@ -337,7 +353,8 @@ void GraphicsEngineImpl::DrawScene()
 	mD3D->GetImmediateContext()->RSSetState(RenderStates::mDepthBiasRS); // This rasterizer state fixes shadow acne
 	mShadowMap->BindDsvAndSetNullRenderTarget(mD3D->GetImmediateContext());
 	mShadowMap->BuildShadowTransform(mDirLights.at(0), mSceneBounds);
-	mShadowMap->DrawSceneToShadowMap(mInstances, mAnimatedInstances, mD3D->GetImmediateContext(), mShaderHandler->mShadowShader, mShaderHandler->mSkinnedShadowShader);
+	//mShadowMap->DrawSceneToShadowMap(mInstances, mAnimatedInstances, mD3D->GetImmediateContext(), mShaderHandler->mShadowShader, mShaderHandler->mSkinnedShadowShader);
+	mShadowMap->DrawSceneToShadowMap(mInstances, mAnimatedInstances, mMorphInstances, mD3D->GetImmediateContext(), mShaderHandler->mShadowShader, mShaderHandler->mSkinnedShadowShader, mShaderHandler->mShadowMorphShader);
 
 	mD3D->GetImmediateContext()->RSSetState(0);
 	// Restore back and depth buffer and viewport to the OM stage
@@ -525,6 +542,18 @@ void GraphicsEngineImpl::UpdateScene(float dt)
 		mAnimatedInstances[i]->model->SetKeyFrameInterval(mAnimatedInstances[i]->model->mAnimations[mAnimatedInstances[i]->model->mCurAnim].FrameStart, mAnimatedInstances[i]->model->mAnimations[mAnimatedInstances[i]->model->mCurAnim].FrameEnd);
 		mAnimatedInstances[i]->model->Update(dt);
 	}
+
+	// Morph testing
+	if (mMorphInstances[0]->weights.x >= 1.0f)
+		morphIncrease = false;
+
+	if (mMorphInstances[0]->weights.x <= 0.0f)
+		morphIncrease = true;
+
+	if (morphIncrease)
+		mMorphInstances[0]->weights.x += 0.25f * dt;
+	else
+		mMorphInstances[0]->weights.x -= 0.25f * dt;
 
 	mCamera->Update();
 }
@@ -775,15 +804,24 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 		if (mMorphInstances[i]->isVisible)
 		{
 			mShaderHandler->mDeferredMorphShader->SetShadowTransform(
-				XMMatrixMultiply(mAnimatedInstances[i]->GetWorld(), mShadowMap->GetShadowTransform()));
+				XMMatrixMultiply(XMLoadFloat4x4(&mMorphInstances[i]->world), mShadowMap->GetShadowTransform()));
 
 			mShaderHandler->mDeferredMorphShader->SetWorldViewProjTex(XMLoadFloat4x4(&mMorphInstances[i]->world),
 				mCamera->GetViewProjMatrix(),
 				toTexSpace);
 
-			mShaderHandler->mDeferredMorphShader->UpdatePerObj(mD3D->GetImmediateContext());
+			mShaderHandler->mDeferredMorphShader->SetWeights(mMorphInstances[i]->weights);
 			mD3D->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			mMorphInstances[i]->model->Draw(mD3D->GetImmediateContext());
+
+			for (UINT j = 0; j < mMorphInstances[i]->model->mTargetModels.begin()->nrOfMeshes; ++j)
+			{
+				UINT matIndex = mMorphInstances[i]->model->mTargetModels.begin()->meshes[j].MaterialIndex;
+				mShaderHandler->mDeferredMorphShader->SetMaterial(mMorphInstances[i]->model->mat[matIndex]);
+				mShaderHandler->mDeferredMorphShader->SetDiffuseMap(mD3D->GetImmediateContext(), mMorphInstances[i]->model->diffuseMapSRV[matIndex]);
+				mShaderHandler->mDeferredMorphShader->UpdatePerObj(mD3D->GetImmediateContext());
+
+				mMorphInstances[i]->model->Draw(mD3D->GetImmediateContext());
+			}
 		}
 	}
 

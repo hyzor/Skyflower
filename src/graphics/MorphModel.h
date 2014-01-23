@@ -70,6 +70,7 @@ void MorphModel::SetVertices(ID3D11Device* device, const VertexType* vertices, U
 	vbd.StructureByteStride = 0;
 
 	D3D11_SUBRESOURCE_DATA vInitData;
+	ZeroMemory(&vInitData, sizeof(D3D11_SUBRESOURCE_DATA));
 	vInitData.pSysMem = vertices;
 
 	//HR(device->CreateBuffer(&vbd, &vInitData, &mVertexBuffer));
@@ -81,6 +82,7 @@ struct MorphModelInstance
 	MorphModel* model;
 	XMFLOAT4X4 world;
 	bool isVisible;
+	XMFLOAT4 weights;
 };
 
 #endif

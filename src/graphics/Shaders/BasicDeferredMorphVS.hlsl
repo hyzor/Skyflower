@@ -14,9 +14,9 @@ cbuffer cbPerObject : register(b0)
 
 struct VertexIn
 {
-	float3 basePosL : POSITION;
-	float3 baseNormalL : NORMAL;
-	float2 baseTex : TEXCOORD;
+	float3 basePosL : POSITION0;
+	float3 baseNormalL : NORMAL0;
+	float2 baseTex : TEXCOORD0;
 
 	float3 target1PosL : POSITION1;
 	float3 target1NormalL : NORMAL1;
@@ -53,24 +53,27 @@ VertexOut main(VertexIn vIn)
 	float3 normalL = float3(0.0f, 0.0f, 0.0f);
 	float3 tangentL = float3(0.0f, 0.0f, 0.0f);
 
+	posL = vIn.basePosL;
+	normalL = vIn.baseNormalL;
+
 	// First target
-	posL += gWeights[0] * (vIn.target1PosL - vIn.basePosL.xyz);
-	normalL += gWeights[0] * (vIn.target1NormalL - vIn.baseNormalL.xyz);
+	posL += gWeights.x * (vIn.target1PosL - vIn.basePosL);
+	normalL += gWeights.x * (vIn.target1NormalL - vIn.baseNormalL);
 	//tangentL += gWeights[0] * (vIn.target1Tex - vIn.baseTex);
 
 	// Second target
-	posL += gWeights[1] * (vIn.target2PosL - vIn.basePosL.xyz);
-	normalL += gWeights[1] * (vIn.target2NormalL - vIn.baseNormalL.xyz);
+	posL += gWeights.y * (vIn.target2PosL - vIn.basePosL);
+	normalL += gWeights.y * (vIn.target2NormalL - vIn.baseNormalL);
 	//tangentL += gWeights[1] * (vIn.target2Tex - vIn.baseTex);
 
 	// Third target
-	posL += gWeights[2] * (vIn.target3PosL - vIn.basePosL.xyz);
-	normalL += gWeights[2] * (vIn.target3NormalL - vIn.baseNormalL.xyz);
+	posL += gWeights.z * (vIn.target3PosL - vIn.basePosL);
+	normalL += gWeights.z * (vIn.target3NormalL - vIn.baseNormalL);
 	//tangentL += gWeights[2] * (vIn.target3Tex - vIn.baseTex);
 
 	// Fourth target
-	posL += gWeights[3] * (vIn.target4PosL - vIn.basePosL.xyz);
-	normalL += gWeights[3] * (vIn.target4NormalL - vIn.baseNormalL.xyz);
+	posL += gWeights.w * (vIn.target4PosL - vIn.basePosL);
+	normalL += gWeights.w * (vIn.target4NormalL - vIn.baseNormalL);
 	//tangentL += gWeights[3] * (vIn.target4Tex - vIn.baseTex);
 
 	// Now transform them to world space space

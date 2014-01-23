@@ -504,6 +504,63 @@ private:
 	VS_CSKINNEDBUFFER vs_cSkinnedBufferVariables;
 };
 #pragma endregion SkinnedShadowShaderEnd
+
+#pragma region ShadowMorphShader
+class ShadowMorphShader : public IShader
+{
+public:
+	ShadowMorphShader();
+	~ShadowMorphShader();
+
+	// Overload new and delete, because this class contains XMMATRIX (16 byte alignment)
+	void* operator new (size_t size)
+	{
+		void* p = _aligned_malloc(size, 16);
+
+		if (!p)
+			throw std::bad_alloc();
+
+		return p;
+	}
+
+	void operator delete (void* p)
+	{
+		ShadowMorphShader* ptr = static_cast<ShadowMorphShader*>(p);
+		_aligned_free(p);
+	}
+
+	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
+	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+	bool SetActive(ID3D11DeviceContext* dc);
+
+	void SetLightWVP(ID3D11DeviceContext* dc, XMMATRIX& lwvp);
+
+	void SetWeights(XMFLOAT4 weights);
+
+	void UpdatePerObj(ID3D11DeviceContext* dc);
+
+private:
+	void Update(ID3D11DeviceContext* dc) { ; }
+
+	struct VS_CPEROBJBUFFER
+	{
+		XMMATRIX lightWVP;
+		XMFLOAT4 weights;
+	};
+
+	struct BUFFERCACHE
+	{
+		VS_CPEROBJBUFFER vsBuffer;
+	};
+
+	struct BUFFERCACHE mBufferCache;
+
+	// VS
+	ID3D11Buffer* vs_cBuffer;
+	VS_CPEROBJBUFFER vs_cBufferVariables;
+};
+#pragma endregion ShadowMorphShaderEnd
+
 #pragma region BasicDeferredShader
 class BasicDeferredShader : public IShader
 {
@@ -1004,6 +1061,7 @@ public:
 	BlurShader* mBlurHorizontalShader;
 	BlurShader* mBlurVerticalShader;
 	BasicDeferredMorphShader* mDeferredMorphShader;
+	ShadowMorphShader* mShadowMorphShader;
 
 private:
 
