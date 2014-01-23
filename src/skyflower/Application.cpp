@@ -77,7 +77,7 @@ void Application::Start()
 	levelHandler->init(entityManager);
 
 	// Load Hub Level
-	levelHandler->queue(1);
+	levelHandler->queue(2);
 	levelHandler->LoadQueued();
 	entityManager->createSphereOnEntities();
 	camera = m_graphicsEngine->CreateCameraController();
