@@ -13,7 +13,7 @@ function load_aiPush(id)
 end
 
 function update_aiPush(id, dt)
-	
+		
 	if not trapButtonDown then
 		SetTarget(id, 55) --start button
 		if IsTouching(id, 55) then
@@ -77,6 +77,22 @@ end
 
 function deactivated_btnPlatformMove(id)
 	ToggleOscillatePosition(99)
+end
+
+
+
+
+
+function activated_btnLevelCompleted(id)
+	
+end
+
+function deactivated_btnLevelCompleted(id)
+	if Level() ~= 0 then
+		ChangeLevel(0) --hubb värld
+	else
+		ChangeLevel(1)
+	end
 end
 
 

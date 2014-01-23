@@ -32,7 +32,8 @@ float CollisionInstance::Test(Ray r)
 		d.Z = r.Dir.Dot(rot3Inv);
 		r.Dir = d;
 
-
+		r.Pos *= Vec3(1, 1, -1);
+		r.Dir *= Vec3(1, 1, -1);
 
 		r.Pos *= scaleInv;
 		r.Dir *= scaleInv;

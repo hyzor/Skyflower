@@ -42,6 +42,8 @@ public:
 
 	void update(float dt);
 
+	void setTarget(Entity* e);
+
 private:
 	Vec3 curDir;
 	float centerradius;
@@ -51,6 +53,8 @@ private:
 
 	int unsafeIndex;
 	Field* unsafe[5];
+	
+	Entity* target;
 
 	void Attack(Message const& msg)
 	{

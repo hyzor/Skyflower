@@ -11,11 +11,18 @@ void AI::addedToEntity()
 
 	if (!getOwner()->field)
 		getOwner()->field = getEntityManager()->modules->potentialField->CreateField(8, 8, getEntityPos());
+
+	target = nullptr;
+}
+
+void AI::setTarget(Entity* e)
+{
+	this->target = e;
 }
 
 void AI::update(float dt)
 {
-	attacktime -= dt;
+	/*attacktime -= dt;
 	if (attacktime < 0)
 		centerradius = 20;
 
@@ -27,12 +34,12 @@ void AI::update(float dt)
 	Vec3 pos = getOwner()->returnPos();
 	Ray r = Ray(pos + Vec3(0, 15, 0), Vec3(0, -30, 0));
 
-	//find target
-	Entity* p = getEntityManager()->getEntity(1); //player id = 0
+	////find target
+	//Entity* p = getEntityManager()->getEntity(1); //player id = 0
 
-
-	Field* target = getEntityManager()->modules->potentialField->CreateField(-1000, 1000, p->returnPos());
-	Field* targetcenter = getEntityManager()->modules->potentialField->CreateField(1000, centerradius, p->returnPos());
+	if(this->target)
+		Field* target = getEntityManager()->modules->potentialField->CreateField(-1000, 1000, this->target->returnPos());
+	//Field* targetcenter = getEntityManager()->modules->potentialField->CreateField(1000, centerradius, this->target->returnPos());
 
 	//set fields to deactivate
 	if (getOwner()->ground)
@@ -87,13 +94,13 @@ void AI::update(float dt)
 	else
 		getEntityManager()->sendMessageToEntity("StopMoveForward", getOwnerId());
 
-
-	getEntityManager()->modules->potentialField->DeleteField(target);
-	getEntityManager()->modules->potentialField->DeleteField(targetcenter);
+	if (this->target)
+		getEntityManager()->modules->potentialField->DeleteField(target);
+	//getEntityManager()->modules->potentialField->DeleteField(targetcenter);
 
 	if ((p->returnPos() - pos).Length() < 3)
 	{
 		getEntityManager()->sendMessageToEntity("Push", getOwnerId());
 		getEntityManager()->sendMessageToEntity("Activated", getOwnerId()); //for scripting
-	}
+	}*/
 }

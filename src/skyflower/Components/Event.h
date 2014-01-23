@@ -46,6 +46,11 @@ public:
 		lua_register(sh->L, "StartUpdate", Event::StartUpdate);
 		lua_register(sh->L, "ToggleOscillatePosition", Event::ToggleOscillatePosition);
 
+		//AI
+		lua_register(sh->L, "SetTarget", Event::SetTarget);
+		//lua_register(sh->L, "IsTouching", Event::IsTouching);
+		//lua_register(sh->L, "CanPush", Event::CanPush);
+		//lua_register(sh->L, "Push", Event::Push);
 	};
 
 	// we are added to an Entity, and thus to the component system
@@ -90,6 +95,11 @@ private:
 	static int StartUpdate(lua_State* L);
 	static int StopUpdate(lua_State* L);
 	static int ToggleOscillatePosition(lua_State* L);
+
+	static int SetTarget(lua_State* L);
+	//static int IsTouching(lua_State* L);
+	//static int CanPush(lua_State* L);
+	//static int Push(lua_State* L);
 };
 
 #endif

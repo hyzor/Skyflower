@@ -108,7 +108,7 @@
 		<Pushable />
 		<Push />
 		<AI />
-		<Event script="aiPush.lua" />
+		<Event script="aiPush" />
 	</Platform>
 	
 	<Platform entityName="ButtonBase3" id="72" relativeid="99" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 

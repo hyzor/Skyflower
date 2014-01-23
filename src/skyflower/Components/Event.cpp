@@ -201,3 +201,22 @@ int Event::ToggleOscillatePosition(lua_State* L)
 
 	return 0;
 }
+
+int Event::SetTarget(lua_State* L)
+{
+	int n = lua_gettop(L);
+
+	if (n >= 2)
+	{
+		EntityId aiId = lua_tointeger(L, 1);
+		EntityId targetId = lua_tointeger(L, 2);
+
+		Entity* entityAi = entityManager->getEntity(aiId);
+		Entity* entityTarget = entityManager->getEntity(targetId);
+
+		entityAi->getComponent<AI*>("AI")->setTarget(entityTarget);
+	}
+
+
+	return 0;
+}
