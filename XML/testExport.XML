@@ -1,0 +1,37 @@
+<root>
+    <Entity entityName="platformplayerstartson" id="100" isVisible="1" isCollidible="1" isAnimated="0" xPos="0.0" yPos="0.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="3.0" yScale="3.0" zScale="3.0" model="Models\\placeHolder Subworld\\platformplayerstartson"/>
+    <Entity entityName="ballonplatform" id="2" isVisible="1" isCollidible="1" isAnimated="0" xPos="85.0" yPos="-0.109730904296" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="3.0" yScale="3.0" zScale="3.0" model="Models\\placeHolder Subworld\\ballonplatform">
+        <OscillatePosition enabled="true" xDir="1" yDir="0.12" zDir="0" speed="10" travelDistance="56"/>
+    </Entity>
+    <Entity entityName="platformbeforegoalplatform" id="3" isVisible="1" isCollidible="1" isAnimated="0" xPos="183.701509066" yPos="13.7851530761" zPos="14.4970496328" xRot="0.0" yRot="0.0" zRot="0.0" xScale="3.0" yScale="3.0" zScale="3.0" model="Models\\placeHolder Subworld\\platformbeforegoalplatform"/>
+    <Entity entityName="platformwithgoal" id="4" isVisible="1" isCollidible="1" isAnimated="0" xPos="208.076226933" yPos="13.7496654365" zPos="111.957887996" xRot="0.0" yRot="3.14" zRot="0.0" xScale="3.0" yScale="3.0" zScale="3.0" model="Models\\placeHolder Subworld\\platformwithgoal"/>
+    <Entity entityName="Puncha" id="5" isVisible="1" isCollidible="1" isAnimated="0" xPos="193.219141521" yPos="51.5455548835" zPos="119.173285339" xRot="0.0" yRot="0.0" zRot="0.0" xScale="3.0" yScale="3.0" zScale="3.0" model="Models\\placeHolder Subworld\\Puncha">
+        <Messenger />
+		<AI/>
+        <Movement speed="20"/>
+        <Gravity/>
+        <Health/>
+        <Push/>
+    </Entity>
+    <Entity entityName="WoodBlock" id="6" isVisible="1" isCollidible="1" isAnimated="0" xPos="195.19025365" yPos="41.6365098193" zPos="+4.7244829286" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" model="Models\\placeHolder Subworld\\WoodBlock">
+        <Gravity/>
+        <Movement speed="10"/>
+		<Health/>
+		<Box />
+    </Entity>
+    <Light entityName="pointLight1" id="7" isVisible="0" isCollidible="0" Type="pointLight ">
+        <pointLight  xPos="9.07378598527" yPos="47.5905159247" zPos="0.0" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
+    </Light>
+    <Light entityName="spotLight1" id="8" isVisible="0" isCollidible="0" Type="pointLight ">
+        <pointLight  xPos="193.772864901" yPos="74.277249828" zPos="8.07811313585" r="1.0" g="0.0" b="0.0" intensity="1.0"/>
+    </Light>
+    <Light entityName="directionalLight1" id="9" isVisible="0" isCollidible="0" Type="dirLight ">
+        <dirLight  dirx="0.0" diry="-0.371493309736" dirz="-0.928435623646" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
+    </Light>
+    <Light entityName="directionalLight2" id="10" isVisible="0" isCollidible="0" Type="dirLight ">
+        <dirLight  dirx="0.939302444458" diry="-0.339113771915" dirz="0.052084300667" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
+    </Light>
+    <Light entityName="directionalLight3" id="11" isVisible="0" isCollidible="0" Type="dirLight ">
+        <dirLight  dirx="-0.783050239086" diry="0.0" dirz="-0.621958494186" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
+    </Light>
+</root>

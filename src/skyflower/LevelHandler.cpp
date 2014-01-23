@@ -3,10 +3,11 @@
 
 char* levels[] = {
 	"testWorld.xml",
-	"testWorld2.xml"
+	"testWorld2.xml",
+	"testExport.xml"
 };
 
-#define LEVEL_COUNT 2
+#define LEVEL_COUNT 3
 
 LevelHandler *LevelHandler::instance = nullptr;
 
