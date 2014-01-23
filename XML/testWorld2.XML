@@ -41,12 +41,12 @@
 		<Movement />
 	</Platform>
 	
-	<Platform entityName="ButtonBase2" id="22" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
+	<Platform entityName="ButtonBase2" id="22" relativeid="8" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
 		xPos="30.0" yPos="0.0" zPos="-30.0"  
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="2.0" yScale="2.0" zScale="2.0" 
 		model="Models\\Worlds\\Subworld\\ButtonBase" />
-	<Platform entityName="Button2" id="23" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
+	<Platform entityName="Button2" id="23" relativeid="99" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
 		xPos="30.0" yPos="0.0" zPos="-30.0" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="2.0" yScale="2.0" zScale="2.0" 
@@ -59,19 +59,19 @@
 	</Platform>
 	
 	
-	<Spawnpoint entityName="WoodBlock" id="9" isVisible="0" isCollidible="0" Type="object" isAnimated="0" 
+	<Spawnpoint entityName="WoodBlock" id="9" relativeid="99" isVisible="0" isCollidible="0" Type="object" isAnimated="0" 
 		xPos="-36.0960396599" yPos="0.0" zPos="39.4741144045" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="0.0" yScale="0.0" zScale="0.0" 
 		model="">
 	</Spawnpoint>
 	
-	<Platform entityName="ButtonBase2" id="54" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
+	<Platform entityName="ButtonBase2" id="54" relativeid="99" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
 		xPos="10.0" yPos="0.0" zPos="-30.0"  
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="2.0" yScale="2.0" zScale="2.0" 
 		model="Models\\Worlds\\Subworld\\ButtonBase" />
-	<Platform entityName="Button2" id="55" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
+	<Platform entityName="Button2" id="55" relativeid="99" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
 		xPos="10.0" yPos="0.0" zPos="-30.0" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="2.0" yScale="2.0" zScale="2.0" 
@@ -111,12 +111,12 @@
 		<Event script="aiPush.lua" />
 	</Platform>
 	
-	<Platform entityName="ButtonBase3" id="72" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
+	<Platform entityName="ButtonBase3" id="72" relativeid="99" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
 		xPos="-20.0" yPos="0.0" zPos="-20.0"  
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="2.0" yScale="2.0" zScale="2.0" 
 		model="Models\\Worlds\\Subworld\\ButtonBase" />
-	<Platform entityName="Button2" id="73" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
+	<Platform entityName="Button2" id="73" relativeid="99" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
 		xPos="-20.0" yPos="0.0" zPos="-20.0" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="2.0" yScale="2.0" zScale="2.0" 
@@ -161,6 +161,6 @@
 	</Platform>
 	
     <placeHolderPlattform entityName="placeHolderPlattform2" id="99" isVisible="1" isCollidible="1" Type="object" isAnimated="0" xPos="0.0" yPos="0.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" model="Models\\Worlds\\Subworld\\placeHolderPlattform">
-		<OscillatePosition enabled="false" xDir="0.0" yDir="0.0" zDir="1.0" speed="10.0" travelDistance="15.0" />
+		<OscillatePosition enabled="true" xDir="0.0" yDir="0.75" zDir="0.75" speed="10.0" travelDistance="15.0" />
 	</placeHolderPlattform>
 </root>

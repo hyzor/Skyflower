@@ -24,6 +24,9 @@ public:
 		attacktime = 0;
 		nextattack = 10;
 		curDir = Vec3();
+		unsafeIndex = 0;
+		for (int i = 0; i < 5; i++)
+			unsafe[i] = nullptr;
 	};
 	virtual ~AI() 
 	{
@@ -46,7 +49,8 @@ private:
 	float nextattack;
 	bool canMove;
 
-	std::vector<Field*> unsafe;
+	int unsafeIndex;
+	Field* unsafe[5];
 
 	void Attack(Message const& msg)
 	{

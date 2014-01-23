@@ -66,8 +66,15 @@ void AI::update(float dt)
 			break;
 		}
 	}
-	if(!safe)
-		unsafe.push_back(getEntityManager()->modules->potentialField->CreateField(5, 5, pos + dir * getOwner()->getComponent<Movement*>("Movement")->GetSpeed()*dt*1.5f));
+	if (!safe)
+	{
+		if (unsafe[unsafeIndex] != nullptr)
+			getEntityManager()->modules->potentialField->DeleteField(unsafe[unsafeIndex]);
+
+		unsafe[unsafeIndex] = getEntityManager()->modules->potentialField->CreateField(5, 5, pos + dir * getOwner()->getComponent<Movement*>("Movement")->GetSpeed()*dt*1.5f);
+		unsafeIndex++;
+		unsafeIndex %= 5;
+	}
 
 
 

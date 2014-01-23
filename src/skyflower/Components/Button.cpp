@@ -12,7 +12,7 @@ void Button::update(float dt)
 	}
 
 	//activate button when button is down
-	if (((startPos + downPos) - getEntityPos()).Length() < getEntityScale().Y / 4)
+	if (((startPos + downPos) - getOwner()->getRelativePos()).Length() < getEntityScale().Y / 4)
 	{
 		if (!act)
 		{
@@ -27,7 +27,7 @@ void Button::update(float dt)
 	}
 
 	//move button animation
-	updateEntityPos(getEntityPos() + (moveTo - getEntityPos()) / 20);
+	getOwner()->updateRelativePos(getOwner()->getRelativePos() + (moveTo - getOwner()->getRelativePos()) / (1000*dt));
 }
 
 void Button::Activate(Message const& msg)

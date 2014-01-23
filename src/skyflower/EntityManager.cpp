@@ -49,6 +49,13 @@ void EntityManager::update(float deltaTime)
 			entity->update(deltaTime);
 	}
 	handleCollision();
+
+	for (auto iter = this->fEntitys.begin(); iter != this->fEntitys.end(); iter++)
+	{
+		Entity *entity = (*iter);
+		if (entity != NULL && entity->getIsActive())
+			entity->updatePos(entity->returnPos());
+	}
 }
 
 // generate a unique request id or return one if it already exists
@@ -89,7 +96,7 @@ RequestId EntityManager::getExistingRequestId(ComponentRequestType type, string 
 
 
 // create a new Entity
-EntityId EntityManager::createEntity(string type, int id, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
+EntityId EntityManager::createEntity(string type, int id, int relativeid, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
 	float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated) {
 
 	vector<Entity*> temp;
@@ -102,7 +109,7 @@ EntityId EntityManager::createEntity(string type, int id, float xPos, float yPos
 	}
 	fEntitys = temp;
 	// create a new Entity
-	Entity *obj = new Entity(modules, id, type, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, isAnimated);
+	Entity *obj = new Entity(modules, id, relativeid, type, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, isAnimated);
 	//cout << "Created Entity " << fIdCounter << endl;
 	//++fIdCounter;
 
@@ -688,7 +695,7 @@ bool EntityManager::loadXML(string xmlFile)
 		string elemName = elem->Value();
 		const char* attr;
 
-		int id;
+		int id, relativeid;
 		float xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale;
 		xPos = yPos = zPos = xRot = yRot = zRot = xScale = yScale = zScale = 0.0f;
 		string model = "";
@@ -717,6 +724,14 @@ bool EntityManager::loadXML(string xmlFile)
 		{
 			cout << "failed loading attribute for id for entity " << entityName << " in file " << xmlFile << endl;
 		}
+
+		attr = elem->Attribute("relativeid");
+		if (attr != NULL)
+		{
+			relativeid = elem->IntAttribute("relativeid");
+		}
+		else
+			relativeid = 0;
 
 		attr = elem->Attribute("xPos");
 		if (attr != NULL)
@@ -867,7 +882,7 @@ bool EntityManager::loadXML(string xmlFile)
 		}
 
 		//Creating the entity and adding it to the entitymanager
-		EntityId entity = this->createEntity(entityName, id, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, isAnimated);
+		EntityId entity = this->createEntity(entityName, id, relativeid, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, isAnimated);
 
 		//Looping through all the components for the entity.
 		for (XMLElement* e = elem->FirstChildElement(); e != NULL; e = e->NextSiblingElement())
@@ -1128,6 +1143,16 @@ bool EntityManager::loadXML(string xmlFile)
 		}
 	}
 
+
+	for (int i = 0; i < fEntitys.size(); i++)
+	{
+		if (fEntitys[i]->relativeid != 0)
+		{
+			fEntitys[i]->changeRelative(getEntity(fEntitys[i]->relativeid));// = getEntity(fEntitys[i]->relativeid);
+		}
+	}
+
+
 	return true;
 }
 
@@ -1291,7 +1316,6 @@ void EntityManager::handleCollision()
 {
 	for (int i = 0; i < fEntitys.size(); i++)
 	{		
-		fEntitys[i]->ground = nullptr;
 		fEntitys[i]->wall = nullptr;
 		if (fEntitys[i]->hasComponents("Gravity"))
 		{
@@ -1365,9 +1389,10 @@ void EntityManager::handleCollision()
 				wallRays.push_back(Ray(Vec3(-3 * 0.71f, 13, 3 * 0.71f), Vec3(6 * 0.71f, 0, -6 * 0.71f))); // extra test
 			}
 
+			Entity *ground = nullptr;
 			for (int k = 0; k < groundRays.size(); k++)
 			{
-				float t = testMove(groundRays[k], fEntitys[i], fEntitys[i]->ground); //test feet and head
+				float t = testMove(groundRays[k], fEntitys[i], ground); //test feet and head
 				//reset jump
 				if (t == -1)
 				{
@@ -1389,9 +1414,11 @@ void EntityManager::handleCollision()
 				if (t == 1)
 				{
 					fEntitys[i]->physics->setVelocity(Vec3());
-					fEntitys[i]->ground = nullptr;
+					ground = nullptr;
 				}
 			}
+			fEntitys[i]->changeRelative(ground);
+
 
 			for (int k = 0; k < wallRays.size(); k++)
 				testMove(wallRays[k], fEntitys[i], fEntitys[i]->wall);

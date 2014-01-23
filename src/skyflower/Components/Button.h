@@ -29,7 +29,7 @@ public:
 	void addedToEntity()
 	{
 		requestMessage("Ground", &Button::Activate);
-		moveTo = getEntityPos();
+		moveTo = getOwner()->getRelativePos();
 		startPos = moveTo;
 		downPos = Vec3(0, -getEntityScale().Y, 0);
 	}

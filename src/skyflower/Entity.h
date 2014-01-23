@@ -30,7 +30,7 @@ class Entity {
 	public:
 
 		// constructor/destructor
-		Entity(const Modules *modules, EntityId id, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
+		Entity(const Modules *modules, EntityId id, EntityId relativeid, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
 			 float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated);
 		virtual ~Entity();
 		void sendPosToComponent();
@@ -60,7 +60,14 @@ class Entity {
 		//a pointer to the wall the entity is colliding with, if it is colliding with a wall
 		Entity* wall;
 
+		EntityId relativeid;
+
 		void updatePos(Vec3 pos);
+
+		void changeRelative(Entity* ground);
+
+		void updateRelativePos(Vec3 pos);
+		Vec3 getRelativePos();
 	private:
 
 		EntityId fId;

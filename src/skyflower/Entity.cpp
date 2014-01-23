@@ -12,9 +12,11 @@ using namespace Cistron;
 
 
 // constructor/destructor
-Entity::Entity(const Modules *modules, EntityId id, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
+Entity::Entity(const Modules *modules, EntityId id, EntityId relativeid, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
 	float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated) : fId(id), type(type), fFinalized(false)
 {
+
+	this->relativeid = relativeid;
 
 	this->isActive = true;
 	this->isCollidible = isCollidible;
@@ -169,6 +171,8 @@ bool Entity::isFinalized() {
 
 // finalize the Entity
 void Entity::finalize() {
+
+	
 
 	// we're done
 	fFinalized = true;
@@ -338,7 +342,10 @@ EntityId Entity::getEntityId()
 
 Vec3 Entity::returnPos()
 {
-	return this->pos;
+	if (ground == nullptr)
+		return this->pos;
+	else
+		return ground->returnPos() + this->pos;
 }
 
 Vec3 Entity::returnRot()
@@ -369,18 +376,36 @@ CollisionInstance* Entity::returnCollision()
 void Entity::updatePos(Vec3 pos)
 {
 	this->pos = pos;
+
+	if (!ground)
+		this->pos = pos;
+	else
+		this->pos = pos - ground->returnPos();
+
 	if(this->modelInst)
-		this->modelInst->SetPosition(pos);
+		this->modelInst->SetPosition(returnPos());
 	if (this->AnimInst)
-		this->AnimInst->SetPosition(pos);
+		this->AnimInst->SetPosition(returnPos());
 	if (this->collInst)
-		this->collInst->Position = pos;
+		this->collInst->Position = returnPos();
 	if (this->field)
-		this->field->Move(pos);
+		this->field->Move(returnPos());
 
 	if (this->sphere != NULL)
 	{
-		this->sphere->Position = pos;
+		this->sphere->Position = returnPos();
+	}
+}
+
+void Entity::changeRelative(Entity* ground)
+{
+	if (ground != this->ground)
+	{
+		if (ground)
+			this->pos = returnPos() - ground->returnPos();
+		else
+			this->pos = returnPos();
+		this->ground = ground;
 	}
 }
 
@@ -437,3 +462,11 @@ void Entity::setIsActive(bool status)
 	}
 }
 
+void Entity::updateRelativePos(Vec3 pos)
+{
+	this->pos = pos;
+}
+Vec3 Entity::getRelativePos()
+{
+	return this->pos;
+}

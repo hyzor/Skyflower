@@ -36,7 +36,7 @@ class EntityManager {
 		void update(float deltaTime);
 
 		// create a new Entity
-		EntityId createEntity(string type, int id, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
+		EntityId createEntity(string type, int id, int relativeid, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
 			float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated);
 
 		// add a new component to an Entity
