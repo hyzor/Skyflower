@@ -93,7 +93,7 @@ class EntityManager {
 		// send local messages to another Entity
 		inline void sendMessageToEntity(string msg, Component *component, EntityId id, Payload payload) 
 		{
-			for (int i = 0; i < fEntitys.size(); i++)
+			for (size_t i = 0; i < fEntitys.size(); i++)
 			{
 				if (fEntitys[i]->getEntityId() == id)
 				{
@@ -104,7 +104,7 @@ class EntityManager {
 		}
 		inline void sendMessageToEntity(RequestId reqId, Component *component, EntityId id) 
 		{
-			for (int i = 0; i < fEntitys.size(); i++)
+			for (size_t i = 0; i < fEntitys.size(); i++)
 			{
 				if (fEntitys[i]->getEntityId() == id)
 				{
@@ -115,7 +115,7 @@ class EntityManager {
 		}
 		inline void sendMessageToEntity(RequestId reqId, Component *component, EntityId id, Payload payload) 
 		{
-			for (int i = 0; i < fEntitys.size(); i++)
+			for (size_t i = 0; i < fEntitys.size(); i++)
 			{
 				if (fEntitys[i]->getEntityId() == id)
 				{
@@ -126,7 +126,7 @@ class EntityManager {
 		}
 		inline void sendMessageToEntity(string name, Message const & msg, EntityId id) 
 		{
-			for (int i = 0; i < fEntitys.size(); i++)
+			for (size_t i = 0; i < fEntitys.size(); i++)
 			{
 				if (fEntitys[i]->getEntityId() == id)
 				{
@@ -137,7 +137,7 @@ class EntityManager {
 		}
 		inline void sendMessageToEntity(RequestId reqId, Message const & msg, EntityId id) 
 		{
-			for (int i = 0; i < fEntitys.size(); i++)
+			for (size_t i = 0; i < fEntitys.size(); i++)
 			{
 				if (fEntitys[i]->getEntityId() == id)
 				{

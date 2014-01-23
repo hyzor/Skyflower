@@ -192,7 +192,7 @@ void EntityManager::addComponent(EntityId id, Component *component) {
 
 	// make sure the Entity exists
 	int index = -1;
-	for (int i = 0; i < fEntitys.size(); i++)
+	for (int i = 0; i < (int)fEntitys.size(); i++)
 	{
 		if (fEntitys[i]->getEntityId() == id)
 		{
@@ -349,7 +349,7 @@ void EntityManager::registerGlobalRequest(ComponentRequest req, RegisteredCompon
 
 		// if the request is required and the Entity isn't finalized yet, we add it to a special list
 		EntityId objId = reg.component->getOwnerId();
-		for (int i = 0; i < fEntitys.size(); i++)
+		for (size_t i = 0; i < fEntitys.size(); i++)
 		{
 			if (fEntitys[i]->getEntityId() == objId)
 			{
@@ -430,7 +430,7 @@ void EntityManager::destroyEntity(EntityId id) {
 	}
 
 	int index = -1;
-	for (int i = 0; i < fEntitys.size(); i++)
+	for (int i = 0; i < (int)fEntitys.size(); i++)
 	{
 		if (fEntitys[i]->getEntityId() == id)
 		{
@@ -544,7 +544,7 @@ void EntityManager::destroyComponent(Component *comp) {
 void EntityManager::finalizeEntity(EntityId id) {
 
 	int index = -1;
-	for (int i = 0; i < fEntitys.size(); i++)
+	for (int i = 0; i < (int)fEntitys.size(); i++)
 	{
 		if (fEntitys[i]->getEntityId() == id)
 		{
@@ -646,7 +646,7 @@ void EntityManager::trackRequest(RequestId reqId, bool local, Component *compone
 
 void EntityManager::sendMessageToAllEntities(string message)
 {
-	for (int i = 0; i < fEntitys.size(); i++)
+	for (size_t i = 0; i < fEntitys.size(); i++)
 	{
 		this->fEntitys[i]->sendAMessageToAll(message);
 	}
@@ -654,7 +654,7 @@ void EntityManager::sendMessageToAllEntities(string message)
 
 void EntityManager::sendMessageToEntity(string message, string entity)
 {
-	for (int i = 0; i < fEntitys.size(); i++)
+	for (size_t i = 0; i < fEntitys.size(); i++)
 	{
 		if (this->fEntitys[i]->getType() == entity)
 		{
@@ -871,7 +871,7 @@ bool EntityManager::loadXML(string xmlFile)
 		}
 		else
 		{
-			for (int i = 0; i < fEntitys.size(); i++)
+			for (size_t i = 0; i < fEntitys.size(); i++)
 			{
 				if (fEntitys[i]->getEntityId() == id)
 				{
@@ -1144,7 +1144,7 @@ bool EntityManager::loadXML(string xmlFile)
 	}
 
 
-	for (int i = 0; i < fEntitys.size(); i++)
+	for (size_t i = 0; i < fEntitys.size(); i++)
 	{
 		if (fEntitys[i]->relativeid != 0)
 		{
@@ -1158,7 +1158,7 @@ bool EntityManager::loadXML(string xmlFile)
 
 Vec3 EntityManager::getEntityPos(EntityId ownerId)
 {
-	for (int i = 0; i < this->fEntitys.size(); i++)
+	for (size_t i = 0; i < this->fEntitys.size(); i++)
 	{
 		if (this->fEntitys[i]->getEntityId() == ownerId)
 		{
@@ -1171,7 +1171,7 @@ Vec3 EntityManager::getEntityPos(EntityId ownerId)
 
 Vec3 EntityManager::getEntityPos(string type)
 {
-	for (int i = 0; i < this->fEntitys.size(); i++)
+	for (size_t i = 0; i < this->fEntitys.size(); i++)
 	{
 		if (this->fEntitys[i]->getType() == type)
 		{
@@ -1184,7 +1184,7 @@ Vec3 EntityManager::getEntityPos(string type)
 
 Vec3 EntityManager::getEntityRot(EntityId ownerId)
 {
-	for (int i = 0; i < this->fEntitys.size(); i++)
+	for (size_t i = 0; i < this->fEntitys.size(); i++)
 	{
 		if (this->fEntitys[i]->getEntityId() == ownerId)
 		{
@@ -1196,7 +1196,7 @@ Vec3 EntityManager::getEntityRot(EntityId ownerId)
 }
 Vec3 EntityManager::getEntityScale(EntityId ownerId)
 {
-	for (int i = 0; i < this->fEntitys.size(); i++)
+	for (size_t i = 0; i < this->fEntitys.size(); i++)
 	{
 		if (this->fEntitys[i]->getEntityId() == ownerId)
 		{
@@ -1208,7 +1208,7 @@ Vec3 EntityManager::getEntityScale(EntityId ownerId)
 }
 bool EntityManager::getEntityVisibility(EntityId ownerId)
 {
-	for (int i = 0; i < this->fEntitys.size(); i++)
+	for (size_t i = 0; i < this->fEntitys.size(); i++)
 	{
 		if (this->fEntitys[i]->getEntityId() == ownerId)
 		{
@@ -1221,7 +1221,7 @@ bool EntityManager::getEntityVisibility(EntityId ownerId)
 
 CollisionInstance* EntityManager::getEntityCollision(EntityId ownerId)
 {
-	for (int i = 0; i < this->fEntitys.size(); i++)
+	for (size_t i = 0; i < this->fEntitys.size(); i++)
 	{
 		if (this->fEntitys[i]->getEntityId() == ownerId)
 		{
@@ -1234,7 +1234,7 @@ CollisionInstance* EntityManager::getEntityCollision(EntityId ownerId)
 
 void EntityManager::updateEntityPos(Vec3 pos, EntityId ownerId)
 {
-	for (int i = 0; i < this->fEntitys.size(); i++)
+	for (size_t i = 0; i < this->fEntitys.size(); i++)
 	{
 		if (this->fEntitys[i]->getEntityId() == ownerId)
 		{
@@ -1245,7 +1245,7 @@ void EntityManager::updateEntityPos(Vec3 pos, EntityId ownerId)
 
 void EntityManager::updateEntityRot(Vec3 rot, EntityId ownerId)
 {
-	for (int i = 0; i < this->fEntitys.size(); i++)
+	for (size_t i = 0; i < this->fEntitys.size(); i++)
 	{
 		if (this->fEntitys[i]->getEntityId() == ownerId)
 		{
@@ -1255,7 +1255,7 @@ void EntityManager::updateEntityRot(Vec3 rot, EntityId ownerId)
 }
 void EntityManager::updateEntityScale(Vec3 scale, EntityId ownerId)
 {
-	for (int i = 0; i < this->fEntitys.size(); i++)
+	for (size_t i = 0; i < this->fEntitys.size(); i++)
 	{
 		if (this->fEntitys[i]->getEntityId() == ownerId)
 		{
@@ -1265,7 +1265,7 @@ void EntityManager::updateEntityScale(Vec3 scale, EntityId ownerId)
 }
 void EntityManager::updateEntityVisibility(bool isVisible, EntityId ownerId)
 {
-	for (int i = 0; i < this->fEntitys.size(); i++)
+	for (size_t i = 0; i < this->fEntitys.size(); i++)
 	{
 		if (this->fEntitys[i]->getEntityId() == ownerId)
 		{
@@ -1314,7 +1314,7 @@ EntityId EntityManager::getEntityId(int index)
 
 void EntityManager::handleCollision()
 {
-	for (int i = 0; i < fEntitys.size(); i++)
+	for (int i = 0; i < (int)fEntitys.size(); i++)
 	{		
 		fEntitys[i]->wall = nullptr;
 		if (fEntitys[i]->hasComponents("Gravity"))
@@ -1331,10 +1331,10 @@ void EntityManager::handleCollision()
 				small.Size -= Vec3(2, 2, 2) * 2;
 
 				//ground rays
-				int amountX = small.Size.X / 1.5f;
+				int amountX = (int)(small.Size.X / 1.5f);
 				for (int kx = 1; kx <= amountX; kx++)
 				{
-					int amountZ = small.Size.Z / 1.5f;
+					int amountZ = (int)(small.Size.Z / 1.5f);
 					for (int kz = 1; kz <= amountZ; kz++)
 					{
 						Vec3 p = small.Position;
@@ -1347,12 +1347,12 @@ void EntityManager::handleCollision()
 				}
 
 				//wall rays
-				int amountY = small.Size.Y / 2;
+				int amountY = (int)(small.Size.Y / 2);
 				for (int ky = 1; ky <= amountY; ky++)
 				{
 					float pY = small.Position.Y + (small.Size.Y / (amountY + 1))*ky;
 
-					int amountX = small.Size.X / 2;
+					int amountX = (int)(small.Size.X / 2);
 					for (int kx = 1; kx <= amountX; kx++)
 					{
 						float pX = -small.Size.X / 2 + (small.Size.X / (amountX + 1))*kx;
@@ -1361,7 +1361,7 @@ void EntityManager::handleCollision()
 						wallRays.push_back(Ray(Vec3(pX, pY, pZ), Vec3(0, 0, bounds.Size.Z)));
 					}
 
-					int amountZ = small.Size.Z / 2;
+					int amountZ = (int)(small.Size.Z / 2);
 					for (int kz = 1; kz <= amountZ; kz++)
 					{
 						float pZ = -small.Size.Z / 2 + (small.Size.Z / (amountZ + 1))*kz;
@@ -1390,7 +1390,7 @@ void EntityManager::handleCollision()
 			}
 
 			Entity *ground = nullptr;
-			for (int k = 0; k < groundRays.size(); k++)
+			for (int k = 0; k < (int)groundRays.size(); k++)
 			{
 				float t = testMove(groundRays[k], fEntitys[i], ground); //test feet and head
 				//reset jump
@@ -1420,7 +1420,7 @@ void EntityManager::handleCollision()
 			fEntitys[i]->changeRelative(ground);
 
 
-			for (int k = 0; k < wallRays.size(); k++)
+			for (size_t k = 0; k < wallRays.size(); k++)
 				testMove(wallRays[k], fEntitys[i], fEntitys[i]->wall);
 			
 
@@ -1445,7 +1445,7 @@ void EntityManager::handleCollision()
 
 
 			//collision and pushing between two entities
-			for (int j = i + 1; j < fEntitys.size(); j++)
+			for (int j = i + 1; j < (int)fEntitys.size(); j++)
 			{
 				if (this->fEntitys[i]->sphere != NULL && this->fEntitys[j]->sphere != NULL)
 				{
@@ -1507,7 +1507,7 @@ float EntityManager::testMove(Ray r, Entity* e, Entity* &out)
 
 	//test collision for other collidible entitis
 	float col = 0;
-	for (int j = 0; j < fEntitys.size(); j++)
+	for (size_t j = 0; j < fEntitys.size(); j++)
 	{
 		if (fEntitys[j]->collInst && fEntitys[j] != e)
 		{
@@ -1542,7 +1542,7 @@ float EntityManager::testMove(Ray r, Entity* e, Entity* &out)
 //used for push-collisions
 void EntityManager::createSphereOnEntities()
 {
-	for (int i = 0; i < fEntitys.size(); i++)
+	for (size_t i = 0; i < fEntitys.size(); i++)
 	{
 		if (this->fEntitys[i]->getType() == "player")
 		{
