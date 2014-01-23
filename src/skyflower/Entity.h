@@ -61,6 +61,8 @@ class Entity {
 		Entity* wall;
 
 		void updatePos(Vec3 pos);
+		void updateRot(Vec3 rot);
+
 	private:
 
 		EntityId fId;
@@ -146,7 +148,6 @@ class Entity {
 		bool returnVisible();
 		bool getIsActive();
 		CollisionInstance* returnCollision();
-		void updateRot(Vec3 rot);
 		void updateScale(Vec3 scale);
 		void updateVisible(bool isVisible);
 		void setIsActive(bool status);

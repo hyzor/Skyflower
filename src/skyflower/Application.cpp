@@ -300,6 +300,7 @@ void Application::updateGame(float dt, Movement* playerMove)
 {
 	camera->Follow(entityManager->getEntityPos("player"));
 	playerMove->setCamera(camera->GetLook(), camera->GetRight(), camera->GetUp());
+	playerMove->setYaw(camera->GetYaw());
 	camera->Update(dt);
 	this->entityManager->update(dt);
 	m_graphicsEngine->UpdateScene(dt);

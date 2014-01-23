@@ -34,22 +34,32 @@ public:
 
 	void update(float deltaTime)
 	{
-		if (getOwner()->wall != nullptr)
+		Entity *pusher = getOwner();
+		Entity *pushedObject = pusher->wall;
+
+		if (pushedObject != nullptr)
 		{
-			if (getOwner()->wall->hasComponents("Box"))
+			if (pushedObject->hasComponents("Box"))
 			{
-				Vec3 dir = getOwner()->returnPos()-getOwner()->wall->returnPos();
+				Vec3 pushedObjectPos = pushedObject->returnPos();
+				Vec3 dir = pushedObjectPos - pusher->returnPos();
+				Vec3 rotation = Vec3(0.0f, 0.0f, 0.0f);
 
-				Vec3 n1 = dir*Vec3(1, 0, 0);
-				Vec3 n3 = dir*Vec3(0, 0, 1);
-
-				if (n1.Length() > n3.Length())
-					dir = n1.Normalize();
+				if (abs(dir.X) > abs(dir.Z))
+				{
+					float sign = copysign(1.0f, dir.X);
+					dir = Vec3(sign, 0.0f, 0.0f);
+					rotation.Y = DegreesToRadians(-90.0f * sign);
+				}
 				else
-					dir = n3.Normalize();
-
-
-				getOwner()->wall->updatePos(getOwner()->wall->returnPos() - dir*deltaTime*getOwner()->wall->getComponent<Movement*>("Movement")->GetSpeed());
+				{
+					float sign = copysign(1.0f, dir.Z);
+					dir = Vec3(0.0f, 0.0f, sign);
+					rotation.Y = DegreesToRadians(90.0f + 90.0f * sign);
+				}
+				
+				pushedObject->updatePos(pushedObjectPos + dir * deltaTime * pushedObject->getComponent<Movement*>("Movement")->GetSpeed());
+				pusher->updateRot(rotation);
 			}
 		}
 	}
