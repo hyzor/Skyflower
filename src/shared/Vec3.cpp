@@ -92,7 +92,7 @@ Vec3::Vec3(float X, int Y)
 	this->Z = (float)0;
 }
 
-float Vec3::Length()
+float Vec3::Length() const
 {
 	return (float)sqrt(this->X*this->X + this->Y*this->Y + this->Z*this->Z);
 }
@@ -102,21 +102,21 @@ Vec3 Vec3::Normalize()
 	return *this;
 }
 
-float Vec3::Dot(Vec3 &v)
+float Vec3::Dot(const Vec3 &v) const
 {
 	return Dot(*this, v);
 }
-Vec3 Vec3::Cross(Vec3 &v)
+Vec3 Vec3::Cross(const Vec3 &v) const
 {
 	return Cross(*this, v);
 }
 
-float Vec3::Dot(Vec3 &v1, Vec3 &v2)
+float Vec3::Dot(const Vec3 &v1, const Vec3 &v2)
 {
 	return v1.X*v2.X + v1.Y*v2.Y + v1.Z*v2.Z;
 }
 
-Vec3 Vec3::Cross(Vec3 &v1, Vec3 &v2)
+Vec3 Vec3::Cross(const Vec3 &v1, const Vec3 &v2)
 {
 	Vec3 res;
 	res.X = v1.Y*v2.Z - v1.Z*v2.Y;

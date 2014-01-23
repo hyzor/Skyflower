@@ -28,13 +28,13 @@ class DLL_API Vec3
 		Vec3(float X, int Y);
 		Vec3(int X, float Y);
 
-		float Length();
+		float Length() const;
 		Vec3 Normalize();
 
-		float Dot(Vec3 &v);
-		Vec3 Cross(Vec3 &v); 
-		static float Dot(Vec3 &v1, Vec3 &v2);
-		static Vec3 Cross(Vec3 &v1, Vec3 &v2);
+		float Dot(const Vec3 &v) const;
+		Vec3 Cross(const Vec3 &v) const; 
+		static float Dot(const Vec3 &v1, const Vec3 &v2);
+		static Vec3 Cross(const Vec3 &v1, const Vec3 &v2);
 
 		Vec3 operator+(Vec3 &v);
 		Vec3 operator-(Vec3 &v);
