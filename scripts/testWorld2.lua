@@ -12,17 +12,25 @@ function load_aiPush(id)
 	StartUpdate()
 end
 
+buttontime = 0
 function update_aiPush(id, dt)
-		
+	
+
 	if not trapButtonDown then
-		SetTarget(id, 55) --start button
-		if IsTouching(id, 55) then
+		SetTarget(id, 64) --start button
+		if IsTouching(id, 64) then
 			Jump(id)
 		end
 	else
 		SetTarget(id, 1) --hunt player
 		if CanPush(id, 1) then
 			Push(id, 1)
+		end
+		
+		buttontime = buttontime + dt
+		if buttontime > 5 then
+			buttontime = 0
+			trapButtonDown = false
 		end
 	end
 end
@@ -40,14 +48,12 @@ end
 
 --btnTrap script--
 ------------------
-
 function activated_btnTrap(id)
 
 	--trap!
 	--Spawn(36, 9) --spawn enemy(10) on spawnpoint(7)
 	Spawn(37, 9) --spawn enemy(11) on spawnpoint(7)
 	
-	trapButtonDown = true
 end
 
 function deactivated_btnTrap(id)
@@ -62,6 +68,7 @@ end
 function activated_btnBig(id)
 	--PlaySound(id, "player/jump1.wav")
 	Jump(3) --woodblock
+	trapButtonDown = true
 end
 
 
@@ -93,6 +100,16 @@ function deactivated_btnLevelCompleted(id)
 	else
 		ChangeLevel(1)
 	end
+end
+
+
+
+function activated_save(id)
+	Print("Saved")
+end
+
+function deactivated_save(id)
+	
 end
 
 

@@ -188,8 +188,6 @@ class EntityManager {
 		void updateEntityVisibility(bool isVisible, EntityId id);
 
 		void handleCollision();
-		void pushEntity(int entityIndex, Vec3 direction);
-		void stopPushEntity(int entityIndex);
 		void createSphereOnEntities();
 		void updateSpheres();
 

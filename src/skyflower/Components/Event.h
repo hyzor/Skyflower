@@ -8,6 +8,7 @@
 #include "shared/Vec3.h"
 #include "Entity.h"
 #include "ScriptHandler.h"
+#include "Components/Push.h"
 #include "LevelHandler.h"
 
 using namespace std;
@@ -23,12 +24,6 @@ public:
 		this->file = file;
 		startUpdate = false;
 		firstUpdate = true;
-
-		//sh = new ScriptHandler();
-
-		
-
-		//sh->Run(file);
 
 	};
 	virtual ~Event() {};
@@ -48,9 +43,10 @@ public:
 
 		//AI
 		lua_register(sh->L, "SetTarget", Event::SetTarget);
-		//lua_register(sh->L, "IsTouching", Event::IsTouching);
-		//lua_register(sh->L, "CanPush", Event::CanPush);
-		//lua_register(sh->L, "Push", Event::Push);
+		lua_register(sh->L, "IsTouching", Event::IsTouching);
+		lua_register(sh->L, "CanPush", Event::CanPush);
+		lua_register(sh->L, "Push", Event::push);
+		lua_register(sh->L, "PushAll", Event::pushAll);
 	};
 
 	// we are added to an Entity, and thus to the component system
@@ -97,9 +93,10 @@ private:
 	static int ToggleOscillatePosition(lua_State* L);
 
 	static int SetTarget(lua_State* L);
-	//static int IsTouching(lua_State* L);
-	//static int CanPush(lua_State* L);
-	//static int Push(lua_State* L);
+	static int IsTouching(lua_State* L);
+	static int CanPush(lua_State* L);
+	static int push(lua_State* L);
+	static int pushAll(lua_State* L);
 };
 
 #endif

@@ -38,6 +38,7 @@
     <ClCompile Include="src\skyflower\main.cpp" />
     <ClCompile Include="src\skyflower\Menu.cpp" />
     <ClCompile Include="src\skyflower\PotentialField.cpp" />
+    <ClCompile Include="src\skyflower\Push.cpp" />
     <ClCompile Include="src\skyflower\ScriptHandler.cpp" />
     <ClCompile Include="src\skyflower\tinyxml2.cpp" />
     <ClCompile Include="src\skyflower\Window.cpp" />

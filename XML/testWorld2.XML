@@ -21,7 +21,7 @@
 		<Movement />
 		<Gravity />
 		<Checkpoint />
-		<Event script="Save" />
+		<Event script="save" />
 		
 		<!--<AI />-->
 	</Platform>

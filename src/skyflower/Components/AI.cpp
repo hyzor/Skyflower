@@ -22,7 +22,7 @@ void AI::setTarget(Entity* e)
 
 void AI::update(float dt)
 {
-	/*attacktime -= dt;
+	attacktime -= dt;
 	if (attacktime < 0)
 		centerradius = 20;
 
@@ -37,17 +37,29 @@ void AI::update(float dt)
 	////find target
 	//Entity* p = getEntityManager()->getEntity(1); //player id = 0
 
-	if(this->target)
-		Field* target = getEntityManager()->modules->potentialField->CreateField(-1000, 1000, this->target->returnPos());
-	//Field* targetcenter = getEntityManager()->modules->potentialField->CreateField(1000, centerradius, this->target->returnPos());
+		
+	
 
 	//set fields to deactivate
 	if (getOwner()->ground)
+	{
 		if (getOwner()->ground->field)
 			getOwner()->ground->field->Active = false;
-	if (p->ground)
-		if(p->ground->field)
-			p->ground->field->Active = false;
+	}
+
+	Field* targetField = nullptr;
+	if (target)
+	{
+		targetField = getEntityManager()->modules->potentialField->CreateField(-1000, 1000, target->returnPos()); // set target
+		//Field* targetcenter = getEntityManager()->modules->potentialField->CreateField(1000, centerradius, this->target->returnPos());
+
+		if (target->field)
+			target->field->Active = false;
+
+		if (target->ground)
+			if (target->ground->field)
+				target->ground->field->Active = false;
+	}
 
 	//find direction to target
 	Vec3 dir = getEntityManager()->modules->potentialField->GetDir(pos);
@@ -55,11 +67,22 @@ void AI::update(float dt)
 
 	//re activate after use
 	if (getOwner()->ground)
+	{
 		if (getOwner()->ground->field)
 			getOwner()->ground->field->Active = true;
-	if (p->ground)
-		if (p->ground->field)
-			p->ground->field->Active = true;
+	}
+	if (target)
+	{
+		getEntityManager()->modules->potentialField->DeleteField(targetField);
+		//getEntityManager()->modules->potentialField->DeleteField(targetcenter);
+
+		if (target->field)
+			target->field->Active = true;
+
+		if (target->ground)
+			if (target->ground->field)
+				target->ground->field->Active = true;
+	}
 
 
 	//check if direction is safe
@@ -94,13 +117,11 @@ void AI::update(float dt)
 	else
 		getEntityManager()->sendMessageToEntity("StopMoveForward", getOwnerId());
 
-	if (this->target)
-		getEntityManager()->modules->potentialField->DeleteField(target);
-	//getEntityManager()->modules->potentialField->DeleteField(targetcenter);
-
-	if ((p->returnPos() - pos).Length() < 3)
+	if (target)
 	{
-		getEntityManager()->sendMessageToEntity("Push", getOwnerId());
-		getEntityManager()->sendMessageToEntity("Activated", getOwnerId()); //for scripting
-	}*/
+		if ((target->returnPos() - pos).Length() < 3)
+		{
+			getEntityManager()->sendMessageToEntity("Activated", getOwnerId()); //for scripting
+		}
+	}
 }

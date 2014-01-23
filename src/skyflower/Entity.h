@@ -59,6 +59,7 @@ class Entity {
 		Entity* ground; 
 		//a pointer to the wall the entity is colliding with, if it is colliding with a wall
 		Entity* wall;
+		Sphere *sphere;
 
 		EntityId relativeid;
 
@@ -72,9 +73,10 @@ class Entity {
 
 		void updateRot(Vec3 rot);
 
+		EntityId fId;
+
 	private:
 
-		EntityId fId;
 		string type;
 		Vec3 pos;
 		Vec3 rot;
@@ -85,7 +87,6 @@ class Entity {
 		ModelInstance* modelInst;
 		AnimatedInstance* AnimInst;
 		Physics* physics;
-		Sphere *sphere;
 		bool isAnimated;
 		bool isCollidible;
 

@@ -81,6 +81,9 @@
     <ClCompile Include="src\skyflower\GUIElement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\skyflower\Push.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\skyflower\Application.h">

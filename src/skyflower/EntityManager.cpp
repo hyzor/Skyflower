@@ -1396,20 +1396,12 @@ void EntityManager::handleCollision()
 				//reset jump
 				if (t == -1)
 				{
-					fEntitys[i]->physics->setVelocity(Vec3());
+					Vec3 vel = fEntitys[i]->physics->getVelocity();
+					if (vel.Y < 0)
+						vel.Y = 0;
+					fEntitys[i]->physics->setVelocity(vel);
 					fEntitys[i]->physics->setJumping(false);
-					fEntitys[i]->sendMessageToEntity("notInAir", this->fEntitys[i]->getEntityId());
 
-				}
-				else
-				{
-					//if the entity is being pushed out in the "air" it is able to move again 
-					if (fEntitys[i]->hasComponents("Pushable") && fEntitys[i]->physics->getIsBeingPushed())
-					{
-						fEntitys[i]->fComponents["Messenger"].front()->sendMessageToEntity(fEntitys[i]->getEntityId(), "stopBeingPushed");
-					}
-					//so that you can't jump while falling from something
-					fEntitys[i]->sendMessageToEntity("inAir", this->fEntitys[i]->getEntityId());
 				}
 				if (t == 1)
 				{
@@ -1427,69 +1419,28 @@ void EntityManager::handleCollision()
 
 			//activate event for ground
 			if (fEntitys[i]->ground)
+			{
 				fEntitys[i]->ground->sendMessageToEntity("Ground", fEntitys[i]->ground->fId);
+				//so that you can't jump while falling from something
+				fEntitys[i]->sendMessageToEntity("notInAir", this->fEntitys[i]->getEntityId());
+			}
+			else
+			{
+				fEntitys[i]->sendMessageToEntity("inAir", this->fEntitys[i]->getEntityId());
+			}
+
 			//activate event for wall
 			if (fEntitys[i]->wall)
-			{
 				fEntitys[i]->wall->sendMessageToEntity("Wall", fEntitys[i]->wall->fId);
 
-				if (this->fEntitys[i]->physics->getIsBeingPushed())
-				{
-					stopPushEntity(i);
-				}
-			}
 
 
 
 
 
-
-			//collision and pushing between two entities
-			for (int j = i + 1; j < fEntitys.size(); j++)
-			{
-				if (this->fEntitys[i]->sphere != NULL && this->fEntitys[j]->sphere != NULL)
-				{
-					bool collide;
-					collide = this->fEntitys[i]->sphere->Test(this->fEntitys[i]->sphere, this->fEntitys[j]->sphere);
-
-					//are two entities colliding?
-					if (collide)
-					{
-						Vec3 dir;
-						dir.X = this->fEntitys[j]->pos.X - this->fEntitys[i]->pos.X;
-						dir.Y = this->fEntitys[j]->pos.Y - this->fEntitys[i]->pos.Y;
-						dir.Z = this->fEntitys[j]->pos.Z - this->fEntitys[i]->pos.Z;
-
-						if (this->fEntitys[i]->getType() == "player" || this->fEntitys[j]->getType() == "player")
-						{
-							//if "i" is moving and can push, and that "j" is pushable
-							if (this->fEntitys[i]->physics->getIsMoving() && this->fEntitys[i]->hasComponents("Push") && this->fEntitys[j]->hasComponents("Pushable"))
-							{
-								pushEntity(j, dir);
-							}
-							//if "j" is moving and can push, and that "i" is pushable
-							if (this->fEntitys[j]->physics->getIsMoving() && this->fEntitys[i]->hasComponents("Push") && this->fEntitys[i]->hasComponents("Pushable"))
-							{
-								dir = dir*-1;
-								pushEntity(i, dir);
-							}
-						}
-					}
-				}
-			}
+			
 		}
 	}
-}
-
-void EntityManager::pushEntity(int entityIndex, Vec3 direction)
-{
-	this->fEntitys[entityIndex]->physics->setPushDirection(direction);
-	this->fEntitys[entityIndex]->fComponents["Messenger"].front()->sendMessageToEntity(this->fEntitys[entityIndex]->getEntityId(), "beingPushed");
-}
-
-void EntityManager::stopPushEntity(int entityIndex)
-{
-	this->fEntitys[entityIndex]->fComponents["Messenger"].front()->sendMessageToEntity(this->fEntitys[entityIndex]->getEntityId(), "stopBeingPushed");
 }
 
 
