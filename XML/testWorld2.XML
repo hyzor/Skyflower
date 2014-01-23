@@ -122,7 +122,7 @@
 		xScale="2.0" yScale="2.0" zScale="2.0" 
 		model="Models\\Worlds\\Subworld\\Button">
 		<Messenger />
-		<Event script="testWorld2_MovePlatform.lua" />
+		<Event script="btnPlatformMove" />
 		<Button />
 		<Movement />
 	</Platform>

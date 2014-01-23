@@ -70,9 +70,14 @@ end
 
 
 
+function activated_btnPlatformMove(id)
+	ToggleOscillatePosition(99)
+end
 
 
-
+function deactivated_btnPlatformMove(id)
+	ToggleOscillatePosition(99)
+end
 
 
 
