@@ -11,18 +11,6 @@
 using namespace std;
 using namespace Cistron;
 
-static void cubic_bezier_curve(float t, const float p0[2], const float p1[2], const float p2[2], const float p3[2], float output[2])
-{
-	assert(t >= 0.0f);
-	assert(t <= 1.0f);
-	
-	float a = 1.0f - t;
-
-	output[0] = 0.0f;
-	//output[0] = a * a * a * p0[0] + 3.0f * a * a * t * p1[0] + 3.0f * a * t * t * p2[0] + t * t * t * p3[0];
-	output[1] = a * a * a * p0[1] + 3.0f * a * a * t * p1[1] + 3.0f * a * t * t * p2[1] + t * t * t * p3[1];
-}
-
 enum MoveTargetState
 {
 	MoveTargetStateIdle = 0,
@@ -61,34 +49,27 @@ public:
 		if (m_state == MoveTargetStateIdle)
 			return;
 
-		if (m_progress >= 1.0f)
-		{
-			m_state = MoveTargetStateIdle;
-		}
+		m_progress += deltaTime / m_duration;
+
+		float easingPower = 4.0f;
+		float positionalProgress;
+
+		if (m_progress < 0.5f)
+			positionalProgress = powf(m_progress * 2.0f, easingPower) * 0.5f;
 		else
-		{
-			// Bezier curve control points.
-			// Use http://blogs.sitepointstatic.com/examples/tech/canvas-curves/bezier-curve.html to visualize the curve.
-			static float p0[2] = {0.0f, 0.0f};
-			static float p1[2] = {1.0f, 0.0f};
-			static float p2[2] = {0.0f, 1.0f};
-			static float p3[2] = {1.0f, 1.0f};
+			positionalProgress = (1.0f - powf(1.0f - (m_progress - 0.5f) * 2.0f, easingPower)) * 0.5f + 0.5f;
 
-			m_progress += deltaTime / m_duration;
+		printf("progress=%.4f, positionalProgress=%.4f\n", m_progress, positionalProgress);
 
-			float bezier_output[2];
-			float t = 1.0f - std::min(1.0f, std::max(0.0f, m_progress));
+		Vec3 targetPosition = (m_state == MoveTargetStateMovingToEnd? m_endPosition : m_startPosition);
+		Vec3 direction = (targetPosition - getEntityPos()).Normalize();
+		//Vec3 position = targetPosition - direction * m_travelDistance * positionalProgress;
+		Vec3 position = targetPosition - direction * m_travelDistance * (1.0f - positionalProgress);
 
-			cubic_bezier_curve(t, p0, p1, p2, p3, bezier_output);
+		updateEntityPos(position);
 
-			//printf("progress=%.4f, bezier_output[1]=%.4f\n", m_progress, bezier_output[1]);
-
-			Vec3 targetPosition = (m_state == MoveTargetStateMovingToEnd? m_endPosition : m_startPosition);
-			Vec3 direction = (targetPosition - getEntityPos()).Normalize();
-			Vec3 position = targetPosition - direction * m_travelDistance * bezier_output[1];
-
-			updateEntityPos(position);
-		}
+		if (m_progress >= 1.0f)
+			m_state = MoveTargetStateIdle;
 	}
 
 	void moveToStart()
