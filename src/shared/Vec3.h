@@ -40,15 +40,15 @@ class DLL_API Vec3
 		static float Dot(const Vec3 &v1, const Vec3 &v2);
 		static Vec3 Cross(const Vec3 &v1, const Vec3 &v2);
 
-		Vec3 operator+(Vec3 &v);
-		Vec3 operator-(Vec3 &v);
-		Vec3 operator*(Vec3 &v);
-		Vec3 operator/(Vec3 &v);
+		Vec3 operator+(const Vec3 &v);
+		Vec3 operator-(const Vec3 &v);
+		Vec3 operator*(const Vec3 &v);
+		Vec3 operator/(const Vec3 &v);
 
-		Vec3 operator+=(Vec3 &v);
-		Vec3 operator-=(Vec3 &v);
-		Vec3 operator*=(Vec3 &v);
-		Vec3 operator/=(Vec3 &v);
+		Vec3 operator+=(const Vec3 &v);
+		Vec3 operator-=(const Vec3 &v);
+		Vec3 operator*=(const Vec3 &v);
+		Vec3 operator/=(const Vec3 &v);
 
 		Vec3 operator*(float v);
 		Vec3 operator/(float v);
@@ -59,8 +59,8 @@ class DLL_API Vec3
 		Vec3 operator*=(int v);
 		Vec3 operator/=(int v);
 
-		bool operator==(Vec3 &v);
-		bool operator!=(Vec3 &v);
+		bool operator==(const Vec3 &v);
+		bool operator!=(const Vec3 &v);
 		bool operator==(float v);
 		bool operator!=(float v);
 		bool operator==(int v);
@@ -70,8 +70,8 @@ class DLL_API Vec3
 		static Vec3 Min();
 		static Vec3 Zero();
 
-		static Vec3 Max(Vec3 v1, Vec3 v2);
-		static Vec3 Min(Vec3 v1, Vec3 v2);
+		static Vec3 Max(const Vec3 &v1, const Vec3 &v2);
+		static Vec3 Min(const Vec3 &v1, const Vec3 &v2);
 
 	private:
 };
