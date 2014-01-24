@@ -92,6 +92,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 
 	mMorphModels.push_back(new MorphModel(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Models/Morphtest/Block/", "WoodBlock.morph"));
 	
+	/*
 	mMorphInstances.push_back(new MorphModelInstance());
 	XMMATRIX scaling = XMMatrixScaling(1.0f, 1.0f, 1.0f);
 	XMMATRIX rotation = XMMatrixRotationY(0.0f);
@@ -101,6 +102,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mMorphInstances[0]->weights = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 	morphTimeTest = 0.0f;
 	morphIncrease = true;
+	*/
 
 	// Camera
 	mCamera = new Camera();
@@ -544,6 +546,7 @@ void GraphicsEngineImpl::UpdateScene(float dt)
 	}
 
 	// Morph testing
+	/*
 	if (mMorphInstances.size() >= 1)
 	{
 		if (mMorphInstances.front()->weights.x >= 1.0f)
@@ -557,6 +560,7 @@ void GraphicsEngineImpl::UpdateScene(float dt)
 		else
 			mMorphInstances.front()->weights.x -= 2.0f * dt;
 	}
+	*/
 
 	mCamera->Update();
 }
