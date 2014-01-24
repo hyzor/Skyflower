@@ -15,18 +15,22 @@ class DLL_API Vec3
 		Vec3();
 		Vec3(float X, float Y);
 		Vec3(float X, float Y, float Z);
-		Vec3(int X, int Y);
-		Vec3(int X, int Y, int Z);
 
-		Vec3(float X, float Y, int Z);
-		Vec3(float X, int Y, float Z);
-		Vec3(float X, int Y, int Z);
-		Vec3(int X, float Y, float Z);
-		Vec3(int X, float Y, int Z);
-		Vec3(int X, int Y, float Z);
+		template<typename T1, typename T2>
+		Vec3(T1 X, T2 Y)
+		{
+			this->X = (float)X;
+			this->Y = (float)Y;
+			this->Z = 0.0f;
+		}
 
-		Vec3(float X, int Y);
-		Vec3(int X, float Y);
+		template<typename T1, typename T2, typename T3>
+		Vec3(T1 X, T2 Y, T3 Z)
+		{
+			this->X = (float)X;
+			this->Y = (float)Y;
+			this->Z = (float)Z;
+		}
 
 		float Length() const;
 		Vec3 Normalize();
