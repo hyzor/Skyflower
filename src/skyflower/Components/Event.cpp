@@ -262,7 +262,7 @@ int Event::SetTarget(lua_State* L)
 		if (n == 2)
 			entityAi->getComponent<AI*>("AI")->setTarget(entityTarget, 0);
 		else
-			entityAi->getComponent<AI*>("AI")->setTarget(entityTarget, lua_tonumber(L, 3));
+			entityAi->getComponent<AI*>("AI")->setTarget(entityTarget, lua_tointeger(L, 3));
 	}
 
 

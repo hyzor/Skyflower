@@ -9,7 +9,7 @@
 		model="Models\\Worlds\\Subworld\\WoodBlock">
 		<Messenger />
 		<Movement speed="20"/>
-		<Box />
+		<Box speed="10" />
 		<Gravity />
 	</Platform>
 	<Platform entityName="WoodBlock" id="7" isVisible="1" isCollidible="0" Type="object" isAnimated="0" 
@@ -18,7 +18,7 @@
 		xScale="1.0" yScale="1.0" zScale="1.0" 
 		model="Models\\Worlds\\Subworld\\WoodBlock">
 		<Messenger />
-		<Movement />
+		<Movement speed="20" />
 		<Gravity />
 		<Checkpoint />
 		<Event script="save" />
@@ -38,7 +38,7 @@
 		<Messenger />
 		<Event script="btnBig" />
 		<Button />
-		<Movement />
+		<Movement speed="20" />
 	</Platform>
 	
 	<Platform entityName="ButtonBase2" id="22" relativeid="8" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
@@ -54,7 +54,7 @@
 		<Messenger />
 		<Event script="btnLevelCompleted" />
 		<Button />
-		<Movement />
+		<Movement speed="20" />
 		<Goal />
 	</Platform>
 	
@@ -79,7 +79,7 @@
 		<Messenger />
 		<Event script="btnTrap" />
 		<Button />
-		<Movement />
+		<Movement speed="20" />
 	</Platform>
 	
 	<Platform entityName="AI" id="36" isVisible="1" isCollidible="0" Type="object" isAnimated="0" 
@@ -125,7 +125,7 @@
 		<Messenger />
 		<Event script="btnPlatformMove" />
 		<Button />
-		<Movement />
+		<Movement speed="20" />
 	</Platform>
 	
 	<!-- SCENERY -->
