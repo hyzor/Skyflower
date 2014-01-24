@@ -987,29 +987,34 @@ void GraphicsEngineImpl::UpdateSceneData()
 					for (UINT k = 0; k < mInstances[i]->model->meshes.at(j).vertices.size(); ++k)
 					{
 						XMFLOAT3 vPos = mInstances[i]->model->meshes.at(j).vertices.at(k).position;
+						vPos.x += mInstances[i]->GetPosition().X;
+						vPos.y += mInstances[i]->GetPosition().Y;
+						vPos.z += mInstances[i]->GetPosition().Z;
+
 						minPt.x = MathHelper::getMin(minPt.x, vPos.x);
-						minPt.y = MathHelper::getMin(minPt.x, vPos.x);
-						minPt.z = MathHelper::getMin(minPt.x, vPos.x);
+						minPt.y = MathHelper::getMin(minPt.y, vPos.y);
+						minPt.z = MathHelper::getMin(minPt.z, vPos.z);
 
 						maxPt.x = MathHelper::getMax(maxPt.x, vPos.x);
-						maxPt.y = MathHelper::getMax(maxPt.x, vPos.x);
-						maxPt.z = MathHelper::getMax(maxPt.x, vPos.x);
+						maxPt.y = MathHelper::getMax(maxPt.y, vPos.y);
+						maxPt.z = MathHelper::getMax(maxPt.z, vPos.z);
 					}
 	            }
 	    }
 	 
 	    // Sphere center is at half of these new dimensions
-	    mSceneBounds.Center = XMFLOAT3(        0.5f*(minPt.x + maxPt.x),
+	    mSceneBounds.Center = XMFLOAT3(
+				0.5f*(minPt.x + maxPt.x),
 	            0.5f*(minPt.y + maxPt.y),
 	            0.5f*(minPt.z + maxPt.z));
 	 
 	    // Calculate the sphere radius
-	    XMFLOAT3 extent(0.5f*(maxPt.x - minPt.x),
+	    XMFLOAT3 extent(
+				0.5f*(maxPt.x - minPt.x),
 	            0.5f*(maxPt.y - minPt.y),
 	            0.5f*(maxPt.z - minPt.z));
 	 
 	    mSceneBounds.Radius = sqrtf(extent.x*extent.x + extent.y*extent.y + extent.z*extent.z);
-		mSceneBounds.Radius = 500.0f;
 }
 
 void GraphicsEngineImpl::addDirLight(Vec3 color, Vec3 direction, float intensity)
