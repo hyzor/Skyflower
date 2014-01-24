@@ -105,6 +105,9 @@
     <ClCompile Include="src\graphics\SkinnedData.cpp">
       <Filter>Models</Filter>
     </ClCompile>
+    <ClCompile Include="src\graphics\ParticleSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\graphics\AnimatedEntity.h">
@@ -199,6 +202,9 @@
     </ClInclude>
     <ClInclude Include="src\graphics\SkinnedData.h">
       <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\ParticleSystem.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -305,6 +311,12 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="src\graphics\Shaders\ShadowBuildMorphVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\ParticleSystemVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\ParticleSystemPS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

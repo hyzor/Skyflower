@@ -21,6 +21,7 @@ ShaderHandler::ShaderHandler()
 	mCompositeShader = new CompositeShader();
 	mDeferredMorphShader = new BasicDeferredMorphShader();
 	mShadowMorphShader = new ShadowMorphShader();
+	mParticleSystemShader = new ParticleSystemShader();
 }
 
 ShaderHandler::~ShaderHandler()
@@ -63,6 +64,7 @@ ShaderHandler::~ShaderHandler()
 	delete mCompositeShader;
 	delete mDeferredMorphShader;
 	delete mShadowMorphShader;
+	delete mParticleSystemShader;
 }
 
 void ShaderHandler::LoadCompiledVertexShader(LPCWSTR fileName, char* name, ID3D11Device* device)

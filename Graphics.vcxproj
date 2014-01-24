@@ -39,6 +39,7 @@
     <ClCompile Include="src\graphics\MathHelper.cpp" />
     <ClCompile Include="src\graphics\MorphModel.cpp" />
     <ClCompile Include="src\graphics\OrthoWindow.cpp" />
+    <ClCompile Include="src\graphics\ParticleSystem.cpp" />
     <ClCompile Include="src\graphics\RenderStates.cpp" />
     <ClCompile Include="src\graphics\ShaderHandler.cpp" />
     <ClCompile Include="src\graphics\Shadowmap.cpp" />
@@ -71,6 +72,7 @@
     <ClInclude Include="src\graphics\MathHelper.h" />
     <ClInclude Include="src\graphics\MorphModel.h" />
     <ClInclude Include="src\graphics\OrthoWindow.h" />
+    <ClInclude Include="src\graphics\ParticleSystem.h" />
     <ClInclude Include="src\graphics\RenderStates.h" />
     <ClInclude Include="src\graphics\ShaderHandler.h" />
     <ClInclude Include="src\graphics\Shadowmap.h" />
@@ -200,6 +202,18 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\ParticleSystemPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\ParticleSystemVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
     <FxCompile Include="src\graphics\Shaders\ShadowBuildMorphPS.hlsl">

@@ -1053,6 +1053,86 @@ private:
 };
 #pragma endregion BasicDeferredMorphShader
 
+#pragma region ParticleSystemShader
+class ParticleSystemShader : public IShader
+{
+public:
+	ParticleSystemShader();
+	~ParticleSystemShader();
+
+	// Overload new and delete, because this class contains XMMATRIX (16 byte alignment)
+	void* operator new (size_t size)
+	{
+		void* p = _aligned_malloc(size, 16);
+
+		if (!p)
+			throw std::bad_alloc();
+
+		return p;
+	}
+
+	void operator delete (void* p)
+	{
+		ParticleSystemShader* ptr = static_cast<ParticleSystemShader*>(p);
+		_aligned_free(p);
+	}
+
+	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
+	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+	bool SetActive(ID3D11DeviceContext* dc);
+
+	void SetWorldViewProjTex(XMMATRIX& world,
+		XMMATRIX& viewProj,
+		XMMATRIX& tex);
+
+	void SetMaterial(const Material& mat);
+	void SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+
+	void UpdatePerObj(ID3D11DeviceContext* dc);
+
+	void SetWeights(XMFLOAT4 weights);
+
+	void SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetShadowTransform(XMMATRIX& shadowTransform);
+
+private:
+	void Update(ID3D11DeviceContext* dc) { ; }
+
+	struct VS_CPEROBJBUFFER
+	{
+		XMMATRIX world;
+		XMMATRIX worldInvTranspose;
+		XMMATRIX worldViewProj;
+		//XMMATRIX worldViewProjTex;
+		XMMATRIX texTransform;
+		XMMATRIX shadowTransform;
+
+		XMFLOAT4 weights;
+	};
+
+	struct PS_CPEROBJBUFFER
+	{
+		Material mat;
+	};
+
+	struct BUFFERCACHE
+	{
+		VS_CPEROBJBUFFER vsPerObjBuffer;
+		PS_CPEROBJBUFFER psPerObjBuffer;
+	};
+
+	struct BUFFERCACHE mBufferCache;
+
+	// VS - per object
+	ID3D11Buffer* vs_cPerObjBuffer;
+	VS_CPEROBJBUFFER vs_cPerObjBufferVariables;
+
+	// PS - per obj
+	ID3D11Buffer* ps_cPerObjBuffer;
+	PS_CPEROBJBUFFER ps_cPerObjBufferVariables;
+};
+#pragma endregion BasicDeferredMorphShader
+
 #pragma region CompositeShader
 class CompositeShader : public IShader
 {
@@ -1122,6 +1202,7 @@ public:
 	CompositeShader* mCompositeShader;
 	BasicDeferredMorphShader* mDeferredMorphShader;
 	ShadowMorphShader* mShadowMorphShader;
+	ParticleSystemShader* mParticleSystemShader;
 
 private:
 
