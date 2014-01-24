@@ -38,10 +38,8 @@ cbuffer cLightBuffer : register(b0)
 Texture2D gDiffuseTexture : register(t0);
 Texture2D gNormalTexture : register(t1);
 Texture2D gSpecularTexture : register(t2);
-//Texture2D gPositionTexture : register(t3);
 Texture2D gSSAOTexture : register(t4);
 Texture2D gDepthTexture : register(t5);
-//Texture2D gShadowMap : register(t6);
 
 SamplerState samLinear : register(s0);
 SamplerState samAnisotropic : register(s1);
@@ -59,7 +57,6 @@ float4 main(VertexOut pIn) : SV_TARGET
 	diffuse = gDiffuseTexture.Sample(samLinear, pIn.Tex);
 	normal = gNormalTexture.Sample(samLinear, pIn.Tex).xyz;
 	specular = gSpecularTexture.Sample(samLinear, pIn.Tex);
-	//positionW = gPositionTexture.Sample(samLinear, pIn.Tex).xyz;
 	shadowFactor = gDiffuseTexture.Sample(samLinear, pIn.Tex).w;
 
 	// Pretty ugly, normal texture w component contains a "diffuse multiplier"
@@ -82,7 +79,6 @@ float4 main(VertexOut pIn) : SV_TARGET
 
 	// Direction of eye to pixel world position
 	float3 eyeDir = positionW - gEyePosW;
-	//eyeDir /= length(eyeDir);
 
 	// Cache the distance to the eye from this surface point.
 	float distToEye = length(toEye);
@@ -93,7 +89,6 @@ float4 main(VertexOut pIn) : SV_TARGET
 	float4 litColor = diffuse;
 
 	float4 ambient_Lights = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	//float4 diffuse_Lights = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 diffuse_Lights = float4(diffuse.x*diffuseMultiplier, diffuse.y*diffuseMultiplier, diffuse.z*diffuseMultiplier, 0.0f);
 	float4 specular_Lights = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -104,7 +99,6 @@ float4 main(VertexOut pIn) : SV_TARGET
 	// Begin calculating lights
 	for (int i = 0; i < gDirLightCount; ++i)
 	{
-		//ComputeDirectionalLight_Deferred(specular, gDirLights[i], normal, toEye, D, S);
 		ComputeDirectionalLight_Deferred_Ambient(specular, gDirLights[i], normal, toEye, A, D, S);
 		ambient_Lights += A * ambient_occlusion * shadowFactor;
 		diffuse_Lights += D * shadowFactor;
@@ -113,7 +107,6 @@ float4 main(VertexOut pIn) : SV_TARGET
 
 	for (int j = 0; j < gPointLightCount; ++j)
 	{
-		//ComputePointLight_Deferred(specular, gPointLights[j], positionW, normal, toEye, D, S);
 		ComputePointLight_Deferred_Ambient(specular, gPointLights[j], positionW, normal, toEye, A, D, S);
 		ambient_Lights += A * ambient_occlusion;
 		diffuse_Lights += D;
@@ -139,10 +132,6 @@ float4 main(VertexOut pIn) : SV_TARGET
 	// http://msdn.microsoft.com/en-us/library/bb173401%28v=vs.85%29.aspx
 	if (gEnableFogging)
 	{
-		//float heightFalloff = 0.0075f; // Fog fade speed
-		//float globalDensity = 0.005f;
-		//float fogOffset = -100.0f; // Offset fog height
-
 		float3 eyeDirOffset = eyeDir;
 		eyeDirOffset.y -= gFogHeightOffset;
 

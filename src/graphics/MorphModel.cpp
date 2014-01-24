@@ -38,7 +38,6 @@ MorphModel::MorphModel(ID3D11Device* device, TextureManager* textureMgr, const s
 		{
 			std::string morphModelPath = folderPath + morphModel;
 			TargetMesh targetModel;
-			//this->AnimInst->CreateAnimation(index, start, end, playForwards != 0);
 			objectLoader.LoadMorphObject(morphModelPath, mats, targetModel.meshes);
 			targetModel.nrOfMeshes = targetModel.meshes.size();
 			mTargetModels.push_back(targetModel);
@@ -46,10 +45,6 @@ MorphModel::MorphModel(ID3D11Device* device, TextureManager* textureMgr, const s
 
 		morphFile.close();
 	}
-
-	//objectLoader.loadObject(fileName, mats, meshes);
-
-	//meshCount = (UINT)meshes.size();
 
 	// Models actually got loaded
 	if (!failed)
@@ -105,7 +100,6 @@ MorphModel::MorphModel(ID3D11Device* device, TextureManager* textureMgr, const s
 				{
 					Vertex::PosNormalTexTargets4 vTargets;
 
-					//curTargetModel = 0;
 					vTargets.positionBase = mTargetModels[0].meshes[i].vertices[j].position;
 					vTargets.normalBase = mTargetModels[0].meshes[i].vertices[j].normal;
 					vTargets.texCoordBase = mTargetModels[0].meshes[i].vertices[j].texCoord;
@@ -122,12 +116,10 @@ MorphModel::MorphModel(ID3D11Device* device, TextureManager* textureMgr, const s
 				{
 					Vertex::PosNormalTexTargets4 vTargets;
 
-					//curTargetModel = 0;
 					vTargets.positionBase = mTargetModels[0].meshes[i].vertices[j].position;
 					vTargets.normalBase = mTargetModels[0].meshes[i].vertices[j].normal;
 					vTargets.texCoordBase = mTargetModels[0].meshes[i].vertices[j].texCoord;
 
-					//curTargetModel = 1;
 					vTargets.positionTarget1 = mTargetModels[1].meshes[i].vertices[j].position;
 					vTargets.normalTarget1 = mTargetModels[1].meshes[i].vertices[j].normal;
 					vTargets.texCoordTarget1 = mTargetModels[1].meshes[i].vertices[j].texCoord;
@@ -145,17 +137,14 @@ MorphModel::MorphModel(ID3D11Device* device, TextureManager* textureMgr, const s
 				{
 					Vertex::PosNormalTexTargets4 vTargets;
 
-					//curTargetModel = 0;
 					vTargets.positionBase = mTargetModels[0].meshes[i].vertices[j].position;
 					vTargets.normalBase = mTargetModels[0].meshes[i].vertices[j].normal;
 					vTargets.texCoordBase = mTargetModels[0].meshes[i].vertices[j].texCoord;
 
-					//curTargetModel = 1;
 					vTargets.positionTarget1 = mTargetModels[1].meshes[i].vertices[j].position;
 					vTargets.normalTarget1 = mTargetModels[1].meshes[i].vertices[j].normal;
 					vTargets.texCoordTarget1 = mTargetModels[1].meshes[i].vertices[j].texCoord;
 
-					//curTargetModel = 2;
 					vTargets.positionTarget2 = mTargetModels[2].meshes[i].vertices[j].position;
 					vTargets.normalTarget2 = mTargetModels[2].meshes[i].vertices[j].normal;
 					vTargets.texCoordTarget2 = mTargetModels[2].meshes[i].vertices[j].texCoord;
@@ -173,22 +162,18 @@ MorphModel::MorphModel(ID3D11Device* device, TextureManager* textureMgr, const s
 				{
 					Vertex::PosNormalTexTargets4 vTargets;
 
-					//curTargetModel = 0;
 					vTargets.positionBase = mTargetModels[0].meshes[i].vertices[j].position;
 					vTargets.normalBase = mTargetModels[0].meshes[i].vertices[j].normal;
 					vTargets.texCoordBase = mTargetModels[0].meshes[i].vertices[j].texCoord;
 
-					//curTargetModel = 1;
 					vTargets.positionTarget2 = mTargetModels[1].meshes[i].vertices[j].position;
 					vTargets.normalTarget2 = mTargetModels[1].meshes[i].vertices[j].normal;
 					vTargets.texCoordTarget2 = mTargetModels[1].meshes[i].vertices[j].texCoord;
 
-					//curTargetModel = 2;
 					vTargets.positionTarget3 = mTargetModels[2].meshes[i].vertices[j].position;
 					vTargets.normalTarget3 = mTargetModels[2].meshes[i].vertices[j].normal;
 					vTargets.texCoordTarget3 = mTargetModels[2].meshes[i].vertices[j].texCoord;
 
-					//curTargetModel = 3;
 					vTargets.positionTarget4 = mTargetModels[3].meshes[i].vertices[j].position;
 					vTargets.normalTarget4 = mTargetModels[3].meshes[i].vertices[j].normal;
 					vTargets.texCoordTarget4 = mTargetModels[3].meshes[i].vertices[j].texCoord;
@@ -206,27 +191,22 @@ MorphModel::MorphModel(ID3D11Device* device, TextureManager* textureMgr, const s
 				{
 					Vertex::PosNormalTexTargets4 vTargets;
 
-					//curTargetModel = 0;
 					vTargets.positionBase = mTargetModels[0].meshes[i].vertices[j].position;
 					vTargets.normalBase = mTargetModels[0].meshes[i].vertices[j].normal;
 					vTargets.texCoordBase = mTargetModels[0].meshes[i].vertices[j].texCoord;
 
-					//curTargetModel = 1;
 					vTargets.positionTarget1 = mTargetModels[1].meshes[i].vertices[j].position;
 					vTargets.normalTarget1 = mTargetModels[1].meshes[i].vertices[j].normal;
 					vTargets.texCoordTarget1 = mTargetModels[1].meshes[i].vertices[j].texCoord;
 
-					//curTargetModel = 2;
 					vTargets.positionTarget2 = mTargetModels[2].meshes[i].vertices[j].position;
 					vTargets.normalTarget2 = mTargetModels[2].meshes[i].vertices[j].normal;
 					vTargets.texCoordTarget2 = mTargetModels[2].meshes[i].vertices[j].texCoord;
 
-					//curTargetModel = 3;
 					vTargets.positionTarget3 = mTargetModels[3].meshes[i].vertices[j].position;
 					vTargets.normalTarget3 = mTargetModels[3].meshes[i].vertices[j].normal;
 					vTargets.texCoordTarget3 = mTargetModels[3].meshes[i].vertices[j].texCoord;
 
-					//curTargetModel = 4;
 					vTargets.positionTarget4 = mTargetModels[4].meshes[i].vertices[j].position;
 					vTargets.normalTarget4 = mTargetModels[4].meshes[i].vertices[j].normal;
 					vTargets.texCoordTarget4 = mTargetModels[4].meshes[i].vertices[j].texCoord;
@@ -239,28 +219,6 @@ MorphModel::MorphModel(ID3D11Device* device, TextureManager* textureMgr, const s
 		{
 			// Too many target models
 		}
-
-		// 	for (UINT j = 0; j < mTargetModels.size(); ++j)
-		// 	{
-		// 		for (UINT k = 0; k < mTargetModels[j].nrOfMeshes; ++k)
-		// 		{
-		// 			for (UINT l = 0; l < mTargetModels[j].meshes[k].VertexCount; ++l)
-		// 			{
-		// 				Vertex::PosNormalTexTargets4 vTargets;
-		// 				vTargets.positionBase = mTargetModels[j].meshes[k].vertices[l].position;
-		// 				*(XMFLOAT3*)(&(vTargets.positionTarget1) + k * 12) = mTargetModels[j].meshes[k].vertices[l].position;
-		// 			}
-		// 		}
-		// 	}
-
-		/*
-		// Set vertices and indices for each mesh
-		for (UINT i = 0; i < meshCount; ++i)
-		{
-		meshes[i].SetIndices(device, &meshes[i].indices[0], (UINT)meshes[i].indices.size());
-		meshes[i].SetVertices(device, &meshes[i].vertices[0], (UINT)meshes[i].vertices.size());
-		}
-		*/
 
 		SetVertices(device, &mVertices[0], (UINT)mVertices.size());
 		SetIndices(device, &mIndices[0], (UINT)mIndices.size());

@@ -90,7 +90,6 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mTextureMgr = new TextureManager();
 	mTextureMgr->Init(mD3D->GetDevice(), mD3D->GetImmediateContext());
 
-
 	mMorphModels.push_back(new MorphModel(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Models/Morphtest/Block/", "WoodBlock.morph"));
 	
 	mMorphInstances.push_back(new MorphModelInstance());
@@ -129,101 +128,6 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mNearSharpPlane = 75.0f;
 	mFarSharpPlane = 200.0f;
 	mFarBlurryPlane = 250.0f;
-
-	//--------------------------------------------------------
-	// Lights
-	//--------------------------------------------------------
-	//Directional lights
-//    	DirectionalLight dirLight;
-//   	ZeroMemory(&dirLight, sizeof(DirectionalLight));
-
-	/*
-	dirLight.Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-	dirLight.Diffuse = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
-	dirLight.Specular = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
-	dirLight.Direction = XMFLOAT3(-0.57735f, -0.57735f, 0.57735f);
-
-	mDirLights.push_back(dirLight);*/
-
-// 	dirLight.Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-// 	dirLight.Diffuse = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
-// 	dirLight.Specular = XMFLOAT4(0.4f, 0.4f, 0.5f, 1.0f);
-// 	dirLight.Direction = XMFLOAT3(0.1f, -1.0f, 0.1f);
-// 
-// 	mDirLights.push_back(dirLight);
-
-/* 	dirLight.Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
- 	dirLight.Diffuse = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
- 	dirLight.Specular = XMFLOAT4(0.4f, 0.4f, 0.5f, 1.0f);
- 	dirLight.Direction = XMFLOAT3(0.57735f, 0.57735f, 0.0f);
- 	mDirLights.push_back(dirLight);
- 
- 	dirLight.Ambient = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
- 	dirLight.Diffuse = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
- 	dirLight.Specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
- 	dirLight.Direction = XMFLOAT3(0.0f, 0.0f, -0.57735f);
- 	mDirLights.push_back(dirLight); */
-
-	// Point lights
-	PointLight pointLight;
-	ZeroMemory(&pointLight, sizeof(PointLight));
-
-	/*
-	pointLight.Position = XMFLOAT3(0.0f, 30.0f, 0.0f);
-	pointLight.Ambient = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
-	pointLight.Specular = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
-	pointLight.Diffuse = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
-	pointLight.Attenuation = XMFLOAT3(0.0001f, 0.0001f, 0.0001f);
-	pointLight.Range = 200.0f;
-	mPointLights.push_back(pointLight); 
-	*/
-
-	pointLight.Position = XMFLOAT3(75.0f, 30.0f, 0.0f);
-	pointLight.Ambient = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-	pointLight.Specular = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-	pointLight.Diffuse = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-	pointLight.Attenuation = XMFLOAT3(0.0001f, 0.0001f, 0.0001f);
-	pointLight.Range = 200.0f;
-	//mPointLights.push_back(pointLight);
-
-	pointLight.Position = XMFLOAT3(-40.0f, 50.0f, 30.0f);
-	pointLight.Ambient = XMFLOAT4(0.0f, 0.5f, 1.0f, 1.0f);
-	pointLight.Specular = XMFLOAT4(0.0f, 0.5f, 1.0f, 1.0f);
-	pointLight.Diffuse = XMFLOAT4(0.0f, 0.5f, 1.0f, 1.0f);
-	pointLight.Attenuation = XMFLOAT3(0.0001f, 0.0001f, 0.0001f);
-	pointLight.Range = 200.0f;
-	//mPointLights.push_back(pointLight);
-
-// 	pointLight.Position = XMFLOAT3(35.0f, 35.0f, 10.0f);
-// 	pointLight.Ambient = XMFLOAT4(0.25f, 0.25f, 0.25f, 0.25f);
-// 	pointLight.Specular = XMFLOAT4(0.25f, 0.25f, 0.25f, 0.25f);
-// 	pointLight.Diffuse = XMFLOAT4(0.25f, 0.25f, 0.25f, 0.25f);
-// 	pointLight.Attenuation = XMFLOAT3(0.25f, 0.25f, 0.25f);
-// 	pointLight.Range = 75.0f;
-// 	mPointLights.push_back(pointLight);
-// 
-// 	pointLight.Position = XMFLOAT3(-10.0f, 10.0f, -20.0f);
-// 	pointLight.Ambient = XMFLOAT4(0.25f, 0.25f, 0.25f, 0.25f);
-// 	pointLight.Specular = XMFLOAT4(0.25f, 0.25f, 0.25f, 0.25f);
-// 	pointLight.Diffuse = XMFLOAT4(0.25f, 0.25f, 0.25f, 0.25f);
-// 	pointLight.Attenuation = XMFLOAT3(0.25f, 0.25, 0.25f);
-// 	pointLight.Range = 75.0f;
-// 	mPointLights.push_back(pointLight);
-
-	// Spot lights
-	/*SpotLight spotLight;
-	ZeroMemory(&spotLight, sizeof(SpotLight));
-
-	spotLight.Ambient = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-	spotLight.Diffuse = XMFLOAT4(0.65f, 0.65f, 0.65f, 1.0f);
-	spotLight.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	spotLight.Attenuation = XMFLOAT3(1.0f, 0.0f, 0.0f);
-	spotLight.Spot = 45.0f;
-	spotLight.Range = 1000.0f;
-	spotLight.Position = XMFLOAT3(0.0f, 200.0f, 0.0f);
-	spotLight.Direction = XMFLOAT3(0.1f, -1.0f, 0.1f);
-	//mSpotLights.push_back(spotLight);
-	mSpotLights.push_back(spotLight); */
 
 	mSky = new Sky(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Textures\\SkyBox_Space.dds", 2000.0f);
 	mShadowMap = new ShadowMap(mD3D->GetDevice(), 2048, 2048);
@@ -409,9 +313,6 @@ void GraphicsEngineImpl::DrawScene()
 	mD3D->GetImmediateContext()->ClearDepthStencilView(mD3D->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
 
-	// Draw sky
-	//mSky->Draw(mD3D->GetImmediateContext(), *mCamera, mShaderHandler->mSkyShader);
-
 	//------------------------------------------------------------------------------
 	// Deferred shading
 	//------------------------------------------------------------------------------
@@ -506,10 +407,6 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mLightDeferredShader->SetPointLights(mD3D->GetImmediateContext(), (UINT)mPointLights.size(), mPointLights.data());
 	mShaderHandler->mLightDeferredShader->SetDirLights(mD3D->GetImmediateContext(), (UINT)mDirLights.size(), mDirLights.data());
 	mShaderHandler->mLightDeferredShader->SetSpotLights(mD3D->GetImmediateContext(), (UINT)mSpotLights.size(), mSpotLights.data());
-	//mShaderHandler->mLightDeferredShader->SetShadowMapTexture(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
-
-	//XMMATRIX cameraViewProj = mCamera->GetViewMatrix()*mCamera->GetProjMatrix();
-	//mShaderHandler->mLightDeferredShader->SetShadowTransform(cameraViewProj);
 	mShaderHandler->mLightDeferredShader->SetShadowTransform(mShadowMap->GetShadowTransform());
 	mShaderHandler->mLightDeferredShader->SetCameraViewProjMatrix(mCamera->GetViewMatrix(), mCamera->GetProjMatrix());
 	mShaderHandler->mLightDeferredShader->SetLightWorldViewProj(mShadowMap->GetLightWorld(), mShadowMap->GetLightView(), mShadowMap->GetLightProj());
@@ -521,7 +418,6 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mLightDeferredShader->SetDiffuseTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Diffuse));
 	mShaderHandler->mLightDeferredShader->SetNormalTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Normal));
 	mShaderHandler->mLightDeferredShader->SetSpecularTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Specular));
-	//mShaderHandler->mLightDeferredShader->SetPositionTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Position));
 	mShaderHandler->mLightDeferredShader->SetSSAOTexture(mD3D->GetImmediateContext(), mSSAOTexture->GetShaderResourceView());
 	mShaderHandler->mLightDeferredShader->SetDepthTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
 
@@ -538,8 +434,6 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mLightDeferredShader->SetPositionTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mLightDeferredShader->SetSSAOTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mLightDeferredShader->SetDepthTexture(mD3D->GetImmediateContext(), NULL);
-
-
 
 	// Depth of field
 	D3D11_VIEWPORT DoFViewport;
@@ -607,8 +501,6 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mDepthOfFieldBlurVerticalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mDepthOfFieldBlurVerticalShader->SetInputTexture(mD3D->GetImmediateContext(), NULL);
 
-
-
 	// Reset the render target to the back buffer.
 	renderTarget = mD3D->GetRenderTargetView();
 	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
@@ -632,26 +524,6 @@ void GraphicsEngineImpl::DrawScene()
 
 	// Turn z-buffer back on
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDefaultDSS, 1);
-
-	/*
-	mSpriteBatch->Begin();
-	mSpriteBatch->Draw(mDeferredBuffers->GetSRV(DeferredBuffersIndex::Diffuse), XMFLOAT2(0.0f, 0.0f), NULL, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), 0.2f);
-	mSpriteBatch->Draw(mDeferredBuffers->GetSRV(DeferredBuffersIndex::Normal), XMFLOAT2(0.0f, 150.0f), NULL, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), 0.2f);
-	mSpriteBatch->Draw(mDeferredBuffers->GetSRV(DeferredBuffersIndex::Specular), XMFLOAT2(0.0f, 300.0f), NULL, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), 0.2f);
-	mSpriteBatch->Draw(mDeferredBuffers->GetSRV(DeferredBuffersIndex::Position), XMFLOAT2(0.0f, 450.0f), NULL, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), 0.2f);
-	//mSpriteFont->DrawString(mSpriteBatch, L"Test", XMFLOAT2(100.0f, 100.0f), D3dColors::Green, 0.0f, XMFLOAT2(100.0f, 100.0f), XMFLOAT2(1.0f, 1.0f));
-	mSpriteBatch->End();
-	*/
-
-// 	mSpriteBatch->Begin();
-// 	mSpriteBatch->Draw(mD3D->GetDepthStencilSRView(), XMFLOAT2(0.0f, 0.0f), NULL, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), 0.2f);
-// 	mSpriteBatch->End();
-
-	/*
-	mSpriteBatch->Begin(SpriteSortMode_Deferred, nullptr, nullptr, nullptr, nullptr);
-	mSpriteBatch->Draw(mShadowMap->getDepthMapSRV(), XMFLOAT2(0.0f, 600.0f), NULL, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), 0.1f);
-	mSpriteBatch->End();
-	*/
 
 	ID3D11ShaderResourceView* nullSRV[16] = { 0 };
 	mD3D->GetImmediateContext()->PSSetShaderResources(0, 16, nullSRV);
