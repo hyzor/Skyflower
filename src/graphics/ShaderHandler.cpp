@@ -19,6 +19,8 @@ ShaderHandler::ShaderHandler()
 	mDepthOfFieldBlurHorizontalShader = new BlurShader();
 	mDepthOfFieldBlurVerticalShader = new BlurShader();
 	mCompositeShader = new CompositeShader();
+	mDeferredMorphShader = new BasicDeferredMorphShader();
+	mShadowMorphShader = new ShadowMorphShader();
 }
 
 ShaderHandler::~ShaderHandler()
@@ -59,6 +61,8 @@ ShaderHandler::~ShaderHandler()
 	delete mDepthOfFieldBlurHorizontalShader;
 	delete mDepthOfFieldBlurVerticalShader;
 	delete mCompositeShader;
+	delete mDeferredMorphShader;
+	delete mShadowMorphShader;
 }
 
 void ShaderHandler::LoadCompiledVertexShader(LPCWSTR fileName, char* name, ID3D11Device* device)
@@ -1176,7 +1180,7 @@ void BasicDeferredShader::SetWorldViewProjTex(XMMATRIX& world, XMMATRIX& viewPro
 {
 	mBufferCache.vsPerObjBuffer.world = XMMatrixTranspose(world);
 	mBufferCache.vsPerObjBuffer.worldViewProj = XMMatrixTranspose(XMMatrixMultiply(world, viewProj));
-	mBufferCache.vsPerObjBuffer.worldInvTranspose = MathHelper::InverseTranspose(world);
+	mBufferCache.vsPerObjBuffer.worldInvTranspose = XMMatrixTranspose(MathHelper::InverseTranspose(world));
 	mBufferCache.vsPerObjBuffer.texTransform = XMMatrixScaling(1.0f, 1.0f, 1.0f);
 }
 
@@ -1347,7 +1351,7 @@ void BasicDeferredSkinnedShader::SetWorldViewProjTex(XMMATRIX& world, XMMATRIX& 
 {
 	mBufferCache.vsPerObjBuffer.world = XMMatrixTranspose(world);
 	mBufferCache.vsPerObjBuffer.worldViewProj = XMMatrixTranspose(XMMatrixMultiply(world, viewProj));
-	mBufferCache.vsPerObjBuffer.worldInvTranspose = MathHelper::InverseTranspose(world);
+	mBufferCache.vsPerObjBuffer.worldInvTranspose = XMMatrixTranspose(MathHelper::InverseTranspose(world));
 	mBufferCache.vsPerObjBuffer.texTransform = XMMatrixScaling(1.0f, 1.0f, 1.0f);
 }
 
@@ -1702,11 +1706,12 @@ void LightDeferredShader::SetDepthTexture(ID3D11DeviceContext* dc, ID3D11ShaderR
 	dc->PSSetShaderResources(5, 1, &tex);
 }
 
-void LightDeferredShader::SetFogProperties(int enableFogging, float fogRange, float fogStart, XMFLOAT4 fogColor)
+void LightDeferredShader::SetFogProperties(int enableFogging, float heightFalloff, float heightOffset, float globalDensity, XMFLOAT4 fogColor)
 {
 	mBufferCache.psPerFrameBuffer.enableFogging = enableFogging;
-	mBufferCache.psPerFrameBuffer.fogRange = fogRange;
-	mBufferCache.psPerFrameBuffer.fogStart = fogStart;
+	mBufferCache.psPerFrameBuffer.fogHeightFalloff = heightFalloff;
+	mBufferCache.psPerFrameBuffer.fogHeightOffset = heightOffset;
+	mBufferCache.psPerFrameBuffer.fogGlobalDensity = globalDensity;
 	mBufferCache.psPerFrameBuffer.fogColor = fogColor;
 }
 
@@ -2057,6 +2062,245 @@ void BlurShader::SetZNearFar(float z_near, float z_far)
 
 #pragma endregion BlurShader
 
+BasicDeferredMorphShader::BasicDeferredMorphShader()
+{
+
+}
+
+BasicDeferredMorphShader::~BasicDeferredMorphShader()
+{
+	if (vs_cPerObjBuffer)
+		vs_cPerObjBuffer->Release();
+	if (ps_cPerObjBuffer)
+		ps_cPerObjBuffer->Release();
+}
+
+bool BasicDeferredMorphShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
+{
+	//------------------------
+	// Vertex shader buffers
+	//------------------------
+	// PER OBJECT BUFFER
+	ZeroMemory(&vs_cPerObjBufferVariables, sizeof(VS_CPEROBJBUFFER));
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC cbDesc;
+	cbDesc.ByteWidth = sizeof(VS_CPEROBJBUFFER);
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA InitData;
+	InitData.pSysMem = &vs_cPerObjBufferVariables;
+	InitData.SysMemPitch = 0;
+	InitData.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	device->CreateBuffer(&cbDesc, &InitData, &vs_cPerObjBuffer);
+
+	//------------------------
+	// Pixel shader buffers
+	//------------------------
+	// PER OBJECT BUFFER
+	ZeroMemory(&ps_cPerObjBufferVariables, sizeof(PS_CPEROBJBUFFER));
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC cbDesc2;
+	cbDesc2.ByteWidth = sizeof(PS_CPEROBJBUFFER);
+	cbDesc2.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc2.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc2.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc2.MiscFlags = 0;
+	cbDesc2.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA InitData2;
+	InitData2.pSysMem = &ps_cPerObjBufferVariables;
+	InitData2.SysMemPitch = 0;
+	InitData2.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	device->CreateBuffer(&cbDesc2, &InitData2, &ps_cPerObjBuffer);
+
+	mInputLayout = inputLayout;
+
+	return true;
+}
+
+bool BasicDeferredMorphShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
+{
+	mVertexShader = vShader;
+	mPixelShader = pShader;
+
+	return true;
+}
+
+bool BasicDeferredMorphShader::SetActive(ID3D11DeviceContext* dc)
+{
+	// Set vertex layout and primitive topology
+	dc->IASetInputLayout(mInputLayout);
+
+	// Set active shaders
+	dc->VSSetShader(mVertexShader, nullptr, 0);
+	dc->PSSetShader(mPixelShader, nullptr, 0);
+
+	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
+	dc->PSSetSamplers(1, 1, &RenderStates::mAnisotropicSS);
+	dc->PSSetSamplers(2, 1, &RenderStates::mComparisonSS);
+
+	return true;
+}
+
+void BasicDeferredMorphShader::SetWorldViewProjTex(XMMATRIX& world, XMMATRIX& viewProj, XMMATRIX& tex)
+{
+	mBufferCache.vsPerObjBuffer.world = XMMatrixTranspose(world);
+	mBufferCache.vsPerObjBuffer.worldViewProj = XMMatrixTranspose(XMMatrixMultiply(world, viewProj));
+	mBufferCache.vsPerObjBuffer.worldInvTranspose = XMMatrixTranspose(MathHelper::InverseTranspose(world));
+	mBufferCache.vsPerObjBuffer.texTransform = XMMatrixScaling(1.0f, 1.0f, 1.0f);
+}
+
+void BasicDeferredMorphShader::SetMaterial(const Material& mat)
+{
+	mBufferCache.psPerObjBuffer.mat = mat;
+}
+
+void BasicDeferredMorphShader::SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(0, 1, &tex);
+}
+
+void BasicDeferredMorphShader::UpdatePerObj(ID3D11DeviceContext* dc)
+{
+	// Update constant shader buffers using our cache
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	// Vertex shader per obj buffer
+	dc->Map(vs_cPerObjBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	VS_CPEROBJBUFFER* dataPtr = (VS_CPEROBJBUFFER*)mappedResource.pData;
+	*dataPtr = mBufferCache.vsPerObjBuffer;
+
+	dc->Unmap(vs_cPerObjBuffer, 0);
+
+	dc->VSSetConstantBuffers(0, 1, &vs_cPerObjBuffer);
+
+	// Pixel shader per obj buffer
+	dc->Map(ps_cPerObjBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	PS_CPEROBJBUFFER* dataPtr2 = (PS_CPEROBJBUFFER*)mappedResource.pData;
+
+	*dataPtr2 = mBufferCache.psPerObjBuffer;
+
+	dc->Unmap(ps_cPerObjBuffer, 0);
+
+	dc->PSSetConstantBuffers(0, 1, &ps_cPerObjBuffer);
+}
+
+void BasicDeferredMorphShader::SetWeights(XMFLOAT4 weights)
+{
+	mBufferCache.vsPerObjBuffer.weights = weights;
+}
+
+void BasicDeferredMorphShader::SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(1, 1, &tex);
+}
+
+void BasicDeferredMorphShader::SetShadowTransform(XMMATRIX& shadowTransform)
+{
+	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
+}
+
+ShadowMorphShader::ShadowMorphShader()
+{
+
+}
+
+ShadowMorphShader::~ShadowMorphShader()
+{
+	if (vs_cBuffer)
+		vs_cBuffer->Release();
+}
+
+bool ShadowMorphShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
+{
+	//------------------------
+	// Vertex shader buffers
+	//------------------------
+	// PER OBJECT BUFFER
+	ZeroMemory(&vs_cBufferVariables, sizeof(VS_CPEROBJBUFFER));
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC cbDesc;
+	cbDesc.ByteWidth = sizeof(VS_CPEROBJBUFFER);
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA InitData;
+	InitData.pSysMem = &vs_cBufferVariables;
+	InitData.SysMemPitch = 0;
+	InitData.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	device->CreateBuffer(&cbDesc, &InitData, &vs_cBuffer);
+
+	mInputLayout = inputLayout;
+
+	return true;
+}
+
+bool ShadowMorphShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
+{
+	mVertexShader = vShader;
+	mPixelShader = pShader;
+
+	return true;
+}
+
+bool ShadowMorphShader::SetActive(ID3D11DeviceContext* dc)
+{
+	// Set vertex layout and primitive topology
+	dc->IASetInputLayout(mInputLayout);
+
+	// Set active shaders
+	dc->VSSetShader(mVertexShader, nullptr, 0);
+	dc->PSSetShader(mPixelShader, nullptr, 0);
+
+	return true;
+}
+
+void ShadowMorphShader::SetLightWVP(ID3D11DeviceContext* dc, XMMATRIX& lwvp)
+{
+	mBufferCache.vsBuffer.lightWVP = XMMatrixTranspose(lwvp);
+}
+
+void ShadowMorphShader::SetWeights(XMFLOAT4 weights)
+{
+	mBufferCache.vsBuffer.weights = weights;
+}
+
+void ShadowMorphShader::UpdatePerObj(ID3D11DeviceContext* dc)
+{
+	// Update constant shader buffers using our cache
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	// Vertex shader per obj buffer
+	dc->Map(vs_cBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	VS_CPEROBJBUFFER* dataPtr = (VS_CPEROBJBUFFER*)mappedResource.pData;
+	*dataPtr = mBufferCache.vsBuffer;
+
+	dc->Unmap(vs_cBuffer, 0);
+
+	dc->VSSetConstantBuffers(0, 1, &vs_cBuffer);
+}
 #pragma region CompositeShader
 
 CompositeShader::CompositeShader()

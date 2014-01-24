@@ -15,18 +15,22 @@ class DLL_API Vec3
 		Vec3();
 		Vec3(float X, float Y);
 		Vec3(float X, float Y, float Z);
-		Vec3(int X, int Y);
-		Vec3(int X, int Y, int Z);
 
-		Vec3(float X, float Y, int Z);
-		Vec3(float X, int Y, float Z);
-		Vec3(float X, int Y, int Z);
-		Vec3(int X, float Y, float Z);
-		Vec3(int X, float Y, int Z);
-		Vec3(int X, int Y, float Z);
+		template<typename T1, typename T2>
+		Vec3(T1 X, T2 Y)
+		{
+			this->X = (float)X;
+			this->Y = (float)Y;
+			this->Z = 0.0f;
+		}
 
-		Vec3(float X, int Y);
-		Vec3(int X, float Y);
+		template<typename T1, typename T2, typename T3>
+		Vec3(T1 X, T2 Y, T3 Z)
+		{
+			this->X = (float)X;
+			this->Y = (float)Y;
+			this->Z = (float)Z;
+		}
 
 		float Length() const;
 		Vec3 Normalize();
@@ -36,15 +40,15 @@ class DLL_API Vec3
 		static float Dot(const Vec3 &v1, const Vec3 &v2);
 		static Vec3 Cross(const Vec3 &v1, const Vec3 &v2);
 
-		Vec3 operator+(Vec3 &v);
-		Vec3 operator-(Vec3 &v);
-		Vec3 operator*(Vec3 &v);
-		Vec3 operator/(Vec3 &v);
+		Vec3 operator+(const Vec3 &v);
+		Vec3 operator-(const Vec3 &v);
+		Vec3 operator*(const Vec3 &v);
+		Vec3 operator/(const Vec3 &v);
 
-		Vec3 operator+=(Vec3 &v);
-		Vec3 operator-=(Vec3 &v);
-		Vec3 operator*=(Vec3 &v);
-		Vec3 operator/=(Vec3 &v);
+		Vec3 operator+=(const Vec3 &v);
+		Vec3 operator-=(const Vec3 &v);
+		Vec3 operator*=(const Vec3 &v);
+		Vec3 operator/=(const Vec3 &v);
 
 		Vec3 operator*(float v);
 		Vec3 operator/(float v);
@@ -55,8 +59,8 @@ class DLL_API Vec3
 		Vec3 operator*=(int v);
 		Vec3 operator/=(int v);
 
-		bool operator==(Vec3 &v);
-		bool operator!=(Vec3 &v);
+		bool operator==(const Vec3 &v);
+		bool operator!=(const Vec3 &v);
 		bool operator==(float v);
 		bool operator!=(float v);
 		bool operator==(int v);
@@ -66,8 +70,8 @@ class DLL_API Vec3
 		static Vec3 Min();
 		static Vec3 Zero();
 
-		static Vec3 Max(Vec3 v1, Vec3 v2);
-		static Vec3 Min(Vec3 v1, Vec3 v2);
+		static Vec3 Max(const Vec3 &v1, const Vec3 &v2);
+		static Vec3 Min(const Vec3 &v1, const Vec3 &v2);
 
 	private:
 };

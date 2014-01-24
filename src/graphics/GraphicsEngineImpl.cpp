@@ -35,6 +35,16 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 	}
 	mSkinnedModels.clear();
 
+	for (UINT i = 0; i < mMorphModels.size(); ++i)
+	{
+		delete mMorphModels[i];
+	}
+
+	for (UINT i = 0; i < mMorphInstances.size(); ++i)
+	{
+		delete mMorphInstances[i];
+	}
+
 	delete mSky;
 	delete mShadowMap;
 	delete mCamera;
@@ -80,6 +90,18 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mTextureMgr = new TextureManager();
 	mTextureMgr->Init(mD3D->GetDevice(), mD3D->GetImmediateContext());
 
+	mMorphModels.push_back(new MorphModel(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Models/Morphtest/Block/", "WoodBlock.morph"));
+	
+	mMorphInstances.push_back(new MorphModelInstance());
+	XMMATRIX scaling = XMMatrixScaling(1.0f, 1.0f, 1.0f);
+	XMMATRIX rotation = XMMatrixRotationY(0.0f);
+	XMMATRIX offset = XMMatrixTranslation(20.0f, 20.0f, 0.0f);
+	XMStoreFloat4x4(&mMorphInstances[0]->world, scaling*rotation*offset);
+	mMorphInstances[0]->model = mMorphModels[0];
+	mMorphInstances[0]->weights = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+	morphTimeTest = 0.0f;
+	morphIncrease = true;
+
 	// Camera
 	mCamera = new Camera();
 	mCamera->SetLens(fovY, static_cast<float>(width) / height, zNear, zFar);
@@ -107,101 +129,6 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mFarSharpPlane = 200.0f;
 	mFarBlurryPlane = 250.0f;
 
-	//--------------------------------------------------------
-	// Lights
-	//--------------------------------------------------------
-	//Directional lights
-//    	DirectionalLight dirLight;
-//   	ZeroMemory(&dirLight, sizeof(DirectionalLight));
-
-	/*
-	dirLight.Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-	dirLight.Diffuse = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
-	dirLight.Specular = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
-	dirLight.Direction = XMFLOAT3(-0.57735f, -0.57735f, 0.57735f);
-
-	mDirLights.push_back(dirLight);*/
-
-// 	dirLight.Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-// 	dirLight.Diffuse = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
-// 	dirLight.Specular = XMFLOAT4(0.4f, 0.4f, 0.5f, 1.0f);
-// 	dirLight.Direction = XMFLOAT3(0.1f, -1.0f, 0.1f);
-// 
-// 	mDirLights.push_back(dirLight);
-
-/* 	dirLight.Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
- 	dirLight.Diffuse = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
- 	dirLight.Specular = XMFLOAT4(0.4f, 0.4f, 0.5f, 1.0f);
- 	dirLight.Direction = XMFLOAT3(0.57735f, 0.57735f, 0.0f);
- 	mDirLights.push_back(dirLight);
- 
- 	dirLight.Ambient = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
- 	dirLight.Diffuse = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
- 	dirLight.Specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
- 	dirLight.Direction = XMFLOAT3(0.0f, 0.0f, -0.57735f);
- 	mDirLights.push_back(dirLight); */
-
-	// Point lights
-	PointLight pointLight;
-	ZeroMemory(&pointLight, sizeof(PointLight));
-
-	/*
-	pointLight.Position = XMFLOAT3(0.0f, 30.0f, 0.0f);
-	pointLight.Ambient = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
-	pointLight.Specular = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
-	pointLight.Diffuse = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
-	pointLight.Attenuation = XMFLOAT3(0.0001f, 0.0001f, 0.0001f);
-	pointLight.Range = 200.0f;
-	mPointLights.push_back(pointLight); 
-	*/
-
-	pointLight.Position = XMFLOAT3(75.0f, 30.0f, 0.0f);
-	pointLight.Ambient = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-	pointLight.Specular = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-	pointLight.Diffuse = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-	pointLight.Attenuation = XMFLOAT3(0.0001f, 0.0001f, 0.0001f);
-	pointLight.Range = 200.0f;
-	//mPointLights.push_back(pointLight);
-
-	pointLight.Position = XMFLOAT3(-40.0f, 50.0f, 30.0f);
-	pointLight.Ambient = XMFLOAT4(0.0f, 0.5f, 1.0f, 1.0f);
-	pointLight.Specular = XMFLOAT4(0.0f, 0.5f, 1.0f, 1.0f);
-	pointLight.Diffuse = XMFLOAT4(0.0f, 0.5f, 1.0f, 1.0f);
-	pointLight.Attenuation = XMFLOAT3(0.0001f, 0.0001f, 0.0001f);
-	pointLight.Range = 200.0f;
-	//mPointLights.push_back(pointLight);
-
-// 	pointLight.Position = XMFLOAT3(35.0f, 35.0f, 10.0f);
-// 	pointLight.Ambient = XMFLOAT4(0.25f, 0.25f, 0.25f, 0.25f);
-// 	pointLight.Specular = XMFLOAT4(0.25f, 0.25f, 0.25f, 0.25f);
-// 	pointLight.Diffuse = XMFLOAT4(0.25f, 0.25f, 0.25f, 0.25f);
-// 	pointLight.Attenuation = XMFLOAT3(0.25f, 0.25f, 0.25f);
-// 	pointLight.Range = 75.0f;
-// 	mPointLights.push_back(pointLight);
-// 
-// 	pointLight.Position = XMFLOAT3(-10.0f, 10.0f, -20.0f);
-// 	pointLight.Ambient = XMFLOAT4(0.25f, 0.25f, 0.25f, 0.25f);
-// 	pointLight.Specular = XMFLOAT4(0.25f, 0.25f, 0.25f, 0.25f);
-// 	pointLight.Diffuse = XMFLOAT4(0.25f, 0.25f, 0.25f, 0.25f);
-// 	pointLight.Attenuation = XMFLOAT3(0.25f, 0.25, 0.25f);
-// 	pointLight.Range = 75.0f;
-// 	mPointLights.push_back(pointLight);
-
-	// Spot lights
-	/*SpotLight spotLight;
-	ZeroMemory(&spotLight, sizeof(SpotLight));
-
-	spotLight.Ambient = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-	spotLight.Diffuse = XMFLOAT4(0.65f, 0.65f, 0.65f, 1.0f);
-	spotLight.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	spotLight.Attenuation = XMFLOAT3(1.0f, 0.0f, 0.0f);
-	spotLight.Spot = 45.0f;
-	spotLight.Range = 1000.0f;
-	spotLight.Position = XMFLOAT3(0.0f, 200.0f, 0.0f);
-	spotLight.Direction = XMFLOAT3(0.1f, -1.0f, 0.1f);
-	//mSpotLights.push_back(spotLight);
-	mSpotLights.push_back(spotLight); */
-
 	mSky = new Sky(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Textures\\SkyBox_Space.dds", 2000.0f);
 	mShadowMap = new ShadowMap(mD3D->GetDevice(), 2048, 2048);
 
@@ -218,10 +145,14 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\SkyPS.cso", "SkyPS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\NormalMapSkinnedVS.cso", "NormalMapSkinnedVS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\NormalMapSkinnedPS.cso", "NormalMapSkinnedPS", mD3D->GetDevice());
+
+	// Shadow mapping
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\ShadowBuildVS.cso", "ShadowBuildVS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\ShadowBuildPS.cso", "ShadowBuildPS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\SkinnedShadowBuildVS.cso", "SkinnedShadowBuildVS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\SkinnedShadowBuildPS.cso", "SkinnedShadowBuildPS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\ShadowBuildMorphVS.cso", "ShadowBuildMorphVS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\ShadowBuildMorphPS.cso", "ShadowBuildMorphPS", mD3D->GetDevice());
 
 	// Deferred shaders
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\BasicDeferredVS.cso", "BasicDeferredVS", mD3D->GetDevice());
@@ -232,6 +163,8 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\BasicDeferredSkinnedPS.cso", "BasicDeferredSkinnedPS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\SkyDeferredVS.cso", "SkyDeferredVS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\SkyDeferredPS.cso", "SkyDeferredPS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\BasicDeferredMorphVS.cso", "BasicDeferredMorphVS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\BasicDeferredMorphPS.cso", "BasicDeferredMorphPS", mD3D->GetDevice());
 
 	// Post-processing shaders
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\FullscreenQuadVS.cso", "FullscreenQuadVS", mD3D->GetDevice());
@@ -256,19 +189,12 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mBasicDeferredShader->BindShaders(
 		mShaderHandler->GetVertexShader("BasicDeferredVS"),
 		mShaderHandler->GetPixelShader("BasicDeferredPS"));
-	mShaderHandler->mSkinnedShadowShader->BindShaders(mShaderHandler->GetVertexShader("SkinnedShadowBuildVS"),
-		mShaderHandler->GetPixelShader("SkinnedShadowBuildPS"));
 	mShaderHandler->mBasicDeferredSkinnedShader->BindShaders(
 		mShaderHandler->GetVertexShader("BasicDeferredSkinnedVS"),
 		mShaderHandler->GetPixelShader("BasicDeferredSkinnedPS"));
 	mShaderHandler->mLightDeferredShader->BindShaders(
 		mShaderHandler->GetVertexShader("LightDeferredVS"),
 		mShaderHandler->GetPixelShader("LightDeferredPS"));
-	//mShaderHandler->mShadowShader->BindShaders(mShaderHandler->GetVertexShader("ShadowBuildVS"), mShaderHandler->GetPixelShader(""));
-	//mShaderHandler->mShadowShader->BindVertexShader(mShaderHandler->GetVertexShader("ShadowBuildVS"));
-	mShaderHandler->mShadowShader->BindShaders(
-		mShaderHandler->GetVertexShader("ShadowBuildVS"),
-		mShaderHandler->GetPixelShader("ShadowBuildPS"));
 	mShaderHandler->mSkyDeferredShader->BindShaders(
 		mShaderHandler->GetVertexShader("SkyDeferredVS"),
 		mShaderHandler->GetPixelShader("SkyDeferredPS"));
@@ -293,6 +219,20 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mCompositeShader->BindShaders(
 		mShaderHandler->GetVertexShader("FullscreenQuadVS"),
 		mShaderHandler->GetPixelShader("CompositePS"));
+	mShaderHandler->mDeferredMorphShader->BindShaders(
+		mShaderHandler->GetVertexShader("BasicDeferredMorphVS"),
+		mShaderHandler->GetPixelShader("BasicDeferredMorphPS"));
+
+	// Shadow mapping
+	mShaderHandler->mShadowShader->BindShaders(
+		mShaderHandler->GetVertexShader("ShadowBuildVS"),
+		mShaderHandler->GetPixelShader("ShadowBuildPS"));
+	mShaderHandler->mSkinnedShadowShader->BindShaders(
+		mShaderHandler->GetVertexShader("SkinnedShadowBuildVS"),
+		mShaderHandler->GetPixelShader("SkinnedShadowBuildPS"));
+	mShaderHandler->mShadowMorphShader->BindShaders(
+		mShaderHandler->GetVertexShader("ShadowBuildMorphVS"),
+		mShaderHandler->GetPixelShader("ShadowBuildMorphPS"));
 
 	// Now create all the input layouts
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("BasicVS"), InputLayoutDesc::PosNormalTex, COUNT_OF(InputLayoutDesc::PosNormalTex), &mInputLayouts->PosNormalTex);
@@ -303,6 +243,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 		COUNT_OF(InputLayoutDesc::PosNormalTexTanSkinned),
 		&mInputLayouts->PosNormalTexTanSkinned);
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("LightDeferredVS"), InputLayoutDesc::PosTex, COUNT_OF(InputLayoutDesc::PosTex), &mInputLayouts->PosTex);
+	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("BasicDeferredMorphVS"), InputLayoutDesc::PosNormalTexTargets4, COUNT_OF(InputLayoutDesc::PosNormalTexTargets4), &mInputLayouts->PosNormalTexTargets4);
 
 	// Init all the shader objects
 	mShaderHandler->mBasicShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTex);
@@ -321,6 +262,8 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mDepthOfFieldBlurHorizontalShader->Init(mD3D->GetDevice(), NULL);
 	mShaderHandler->mDepthOfFieldBlurVerticalShader->Init(mD3D->GetDevice(), NULL);
 	mShaderHandler->mCompositeShader->Init(mD3D->GetDevice(), NULL);
+	mShaderHandler->mDeferredMorphShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTargets4);
+	mShaderHandler->mShadowMorphShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTargets4);
 
 	std::string fontPath = mResourceDir + "myfile.spritefont";
 	std::wstring fontPathW(fontPath.begin(), fontPath.end());
@@ -358,7 +301,8 @@ void GraphicsEngineImpl::DrawScene()
 	mD3D->GetImmediateContext()->RSSetState(RenderStates::mDepthBiasRS); // This rasterizer state fixes shadow acne
 	mShadowMap->BindDsvAndSetNullRenderTarget(mD3D->GetImmediateContext());
 	mShadowMap->BuildShadowTransform(mDirLights.at(0), mSceneBounds);
-	mShadowMap->DrawSceneToShadowMap(mInstances, mAnimatedInstances, mD3D->GetImmediateContext(), mShaderHandler->mShadowShader, mShaderHandler->mSkinnedShadowShader);
+	//mShadowMap->DrawSceneToShadowMap(mInstances, mAnimatedInstances, mD3D->GetImmediateContext(), mShaderHandler->mShadowShader, mShaderHandler->mSkinnedShadowShader);
+	mShadowMap->DrawSceneToShadowMap(mInstances, mAnimatedInstances, mMorphInstances, mD3D->GetImmediateContext(), mShaderHandler->mShadowShader, mShaderHandler->mSkinnedShadowShader, mShaderHandler->mShadowMorphShader);
 
 	mD3D->GetImmediateContext()->RSSetState(0);
 	// Restore back and depth buffer and viewport to the OM stage
@@ -368,9 +312,6 @@ void GraphicsEngineImpl::DrawScene()
 
 	mD3D->GetImmediateContext()->ClearDepthStencilView(mD3D->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
-
-	// Draw sky
-	//mSky->Draw(mD3D->GetImmediateContext(), *mCamera, mShaderHandler->mSkyShader);
 
 	//------------------------------------------------------------------------------
 	// Deferred shading
@@ -466,22 +407,17 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mLightDeferredShader->SetPointLights(mD3D->GetImmediateContext(), (UINT)mPointLights.size(), mPointLights.data());
 	mShaderHandler->mLightDeferredShader->SetDirLights(mD3D->GetImmediateContext(), (UINT)mDirLights.size(), mDirLights.data());
 	mShaderHandler->mLightDeferredShader->SetSpotLights(mD3D->GetImmediateContext(), (UINT)mSpotLights.size(), mSpotLights.data());
-	//mShaderHandler->mLightDeferredShader->SetShadowMapTexture(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
-
-	//XMMATRIX cameraViewProj = mCamera->GetViewMatrix()*mCamera->GetProjMatrix();
-	//mShaderHandler->mLightDeferredShader->SetShadowTransform(cameraViewProj);
 	mShaderHandler->mLightDeferredShader->SetShadowTransform(mShadowMap->GetShadowTransform());
 	mShaderHandler->mLightDeferredShader->SetCameraViewProjMatrix(mCamera->GetViewMatrix(), mCamera->GetProjMatrix());
 	mShaderHandler->mLightDeferredShader->SetLightWorldViewProj(mShadowMap->GetLightWorld(), mShadowMap->GetLightView(), mShadowMap->GetLightProj());
 	
-	mShaderHandler->mLightDeferredShader->SetFogProperties(0, 250.0f, 200.0f, XMFLOAT4(0.85f, 0.85f, 0.85f, 1.0f));
+	mShaderHandler->mLightDeferredShader->SetFogProperties(1, 0.0075f, -150.0f, 0.005f, XMFLOAT4(0.85f, 0.85f, 0.85f, 1.0f));
 
 	mShaderHandler->mLightDeferredShader->UpdatePerFrame(mD3D->GetImmediateContext());
 
 	mShaderHandler->mLightDeferredShader->SetDiffuseTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Diffuse));
 	mShaderHandler->mLightDeferredShader->SetNormalTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Normal));
 	mShaderHandler->mLightDeferredShader->SetSpecularTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Specular));
-	//mShaderHandler->mLightDeferredShader->SetPositionTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Position));
 	mShaderHandler->mLightDeferredShader->SetSSAOTexture(mD3D->GetImmediateContext(), mSSAOTexture->GetShaderResourceView());
 	mShaderHandler->mLightDeferredShader->SetDepthTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
 
@@ -498,8 +434,6 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mLightDeferredShader->SetPositionTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mLightDeferredShader->SetSSAOTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mLightDeferredShader->SetDepthTexture(mD3D->GetImmediateContext(), NULL);
-
-
 
 	// Depth of field
 	D3D11_VIEWPORT DoFViewport;
@@ -567,8 +501,6 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mDepthOfFieldBlurVerticalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mDepthOfFieldBlurVerticalShader->SetInputTexture(mD3D->GetImmediateContext(), NULL);
 
-
-
 	// Reset the render target to the back buffer.
 	renderTarget = mD3D->GetRenderTargetView();
 	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
@@ -593,26 +525,6 @@ void GraphicsEngineImpl::DrawScene()
 	// Turn z-buffer back on
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDefaultDSS, 1);
 
-	/*
-	mSpriteBatch->Begin();
-	mSpriteBatch->Draw(mDeferredBuffers->GetSRV(DeferredBuffersIndex::Diffuse), XMFLOAT2(0.0f, 0.0f), NULL, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), 0.2f);
-	mSpriteBatch->Draw(mDeferredBuffers->GetSRV(DeferredBuffersIndex::Normal), XMFLOAT2(0.0f, 150.0f), NULL, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), 0.2f);
-	mSpriteBatch->Draw(mDeferredBuffers->GetSRV(DeferredBuffersIndex::Specular), XMFLOAT2(0.0f, 300.0f), NULL, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), 0.2f);
-	mSpriteBatch->Draw(mDeferredBuffers->GetSRV(DeferredBuffersIndex::Position), XMFLOAT2(0.0f, 450.0f), NULL, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), 0.2f);
-	//mSpriteFont->DrawString(mSpriteBatch, L"Test", XMFLOAT2(100.0f, 100.0f), D3dColors::Green, 0.0f, XMFLOAT2(100.0f, 100.0f), XMFLOAT2(1.0f, 1.0f));
-	mSpriteBatch->End();
-	*/
-
-// 	mSpriteBatch->Begin();
-// 	mSpriteBatch->Draw(mD3D->GetDepthStencilSRView(), XMFLOAT2(0.0f, 0.0f), NULL, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), 0.2f);
-// 	mSpriteBatch->End();
-
-	/*
-	mSpriteBatch->Begin(SpriteSortMode_Deferred, nullptr, nullptr, nullptr, nullptr);
-	mSpriteBatch->Draw(mShadowMap->getDepthMapSRV(), XMFLOAT2(0.0f, 600.0f), NULL, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), 0.1f);
-	mSpriteBatch->End();
-	*/
-
 	ID3D11ShaderResourceView* nullSRV[16] = { 0 };
 	mD3D->GetImmediateContext()->PSSetShaderResources(0, 16, nullSRV);
 	mD3D->GetImmediateContext()->VSSetShaderResources(0, 16, nullSRV);
@@ -629,6 +541,21 @@ void GraphicsEngineImpl::UpdateScene(float dt)
 	{
 		mAnimatedInstances[i]->model->SetKeyFrameInterval(mAnimatedInstances[i]->model->mAnimations[mAnimatedInstances[i]->model->mCurAnim].FrameStart, mAnimatedInstances[i]->model->mAnimations[mAnimatedInstances[i]->model->mCurAnim].FrameEnd);
 		mAnimatedInstances[i]->model->Update(dt);
+	}
+
+	// Morph testing
+	if (mMorphInstances.size() >= 1)
+	{
+		if (mMorphInstances.front()->weights.x >= 1.0f)
+			morphIncrease = false;
+
+		if (mMorphInstances.front()->weights.x <= 0.0f)
+			morphIncrease = true;
+
+		if (morphIncrease)
+			mMorphInstances.front()->weights.x += 2.0f * dt;
+		else
+			mMorphInstances.front()->weights.x -= 2.0f * dt;
 	}
 
 	mCamera->Update();
@@ -817,6 +744,9 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(0, 0);
 	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
 
+	//---------------------------------------------------------------------------------------
+	// Static opaque objects
+	//---------------------------------------------------------------------------------------
 	mShaderHandler->mBasicDeferredShader->SetActive(mD3D->GetImmediateContext());
 
 	// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
@@ -855,6 +785,9 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 		}
 	}
 
+	//---------------------------------------------------------------------------------------
+	// Skinned
+	//---------------------------------------------------------------------------------------
 	mShaderHandler->mBasicDeferredSkinnedShader->SetActive(mD3D->GetImmediateContext());
 
 	mShaderHandler->mBasicDeferredSkinnedShader->SetShadowMapTexture(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
@@ -867,6 +800,38 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 		if (mAnimatedInstances[i]->IsVisible())
 		{
 			mAnimatedInstances[i]->model->Draw(mD3D->GetImmediateContext(), mCamera, mShaderHandler->mBasicDeferredSkinnedShader, mAnimatedInstances[i]->GetWorld());
+		}
+	}
+
+	//---------------------------------------------------------------------------------------
+	// Morphed objects
+	//---------------------------------------------------------------------------------------
+	mShaderHandler->mDeferredMorphShader->SetActive(mD3D->GetImmediateContext());
+	mShaderHandler->mDeferredMorphShader->SetShadowMapTexture(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
+
+	for (UINT i = 0; i < mMorphInstances.size(); ++i)
+	{
+		if (mMorphInstances[i]->isVisible)
+		{
+			mShaderHandler->mDeferredMorphShader->SetShadowTransform(
+				XMMatrixMultiply(XMLoadFloat4x4(&mMorphInstances[i]->world), mShadowMap->GetShadowTransform()));
+
+			mShaderHandler->mDeferredMorphShader->SetWorldViewProjTex(XMLoadFloat4x4(&mMorphInstances[i]->world),
+				mCamera->GetViewProjMatrix(),
+				toTexSpace);
+
+			mShaderHandler->mDeferredMorphShader->SetWeights(mMorphInstances[i]->weights);
+			mD3D->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+			for (UINT j = 0; j < mMorphInstances[i]->model->mTargetModels.begin()->nrOfMeshes; ++j)
+			{
+				UINT matIndex = mMorphInstances[i]->model->mTargetModels.begin()->meshes[j].MaterialIndex;
+				mShaderHandler->mDeferredMorphShader->SetMaterial(mMorphInstances[i]->model->mat[matIndex]);
+				mShaderHandler->mDeferredMorphShader->SetDiffuseMap(mD3D->GetImmediateContext(), mMorphInstances[i]->model->diffuseMapSRV[matIndex]);
+				mShaderHandler->mDeferredMorphShader->UpdatePerObj(mD3D->GetImmediateContext());
+
+				mMorphInstances[i]->model->Draw(mD3D->GetImmediateContext());
+			}
 		}
 	}
 
@@ -894,29 +859,34 @@ void GraphicsEngineImpl::UpdateSceneData()
 					for (UINT k = 0; k < mInstances[i]->model->meshes.at(j).vertices.size(); ++k)
 					{
 						XMFLOAT3 vPos = mInstances[i]->model->meshes.at(j).vertices.at(k).position;
+						vPos.x += mInstances[i]->GetPosition().X;
+						vPos.y += mInstances[i]->GetPosition().Y;
+						vPos.z += mInstances[i]->GetPosition().Z;
+
 						minPt.x = MathHelper::getMin(minPt.x, vPos.x);
-						minPt.y = MathHelper::getMin(minPt.x, vPos.x);
-						minPt.z = MathHelper::getMin(minPt.x, vPos.x);
+						minPt.y = MathHelper::getMin(minPt.y, vPos.y);
+						minPt.z = MathHelper::getMin(minPt.z, vPos.z);
 
 						maxPt.x = MathHelper::getMax(maxPt.x, vPos.x);
-						maxPt.y = MathHelper::getMax(maxPt.x, vPos.x);
-						maxPt.z = MathHelper::getMax(maxPt.x, vPos.x);
+						maxPt.y = MathHelper::getMax(maxPt.y, vPos.y);
+						maxPt.z = MathHelper::getMax(maxPt.z, vPos.z);
 					}
 	            }
 	    }
 	 
 	    // Sphere center is at half of these new dimensions
-	    mSceneBounds.Center = XMFLOAT3(        0.5f*(minPt.x + maxPt.x),
+	    mSceneBounds.Center = XMFLOAT3(
+				0.5f*(minPt.x + maxPt.x),
 	            0.5f*(minPt.y + maxPt.y),
 	            0.5f*(minPt.z + maxPt.z));
 	 
 	    // Calculate the sphere radius
-	    XMFLOAT3 extent(0.5f*(maxPt.x - minPt.x),
+	    XMFLOAT3 extent(
+				0.5f*(maxPt.x - minPt.x),
 	            0.5f*(maxPt.y - minPt.y),
 	            0.5f*(maxPt.z - minPt.z));
 	 
 	    mSceneBounds.Radius = sqrtf(extent.x*extent.x + extent.y*extent.y + extent.z*extent.z);
-		mSceneBounds.Radius = 500.0f;
 }
 
 void GraphicsEngineImpl::addDirLight(Vec3 color, Vec3 direction, float intensity)

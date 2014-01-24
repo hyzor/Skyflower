@@ -25,6 +25,8 @@
 #include "OrthoWindow.h"
 #include "Texture2DImpl.h"
 
+#include "MorphModel.h"
+
 const float fovY = 0.785398f; // 0.25f * MathHelper::pi
 const float zNear = 1.0f;
 const float zFar = 10000.0f;
@@ -89,6 +91,9 @@ private:
 	std::vector<ModelInstanceImpl*> mInstances;
 	std::vector<AnimatedInstanceImpl*> mAnimatedInstances;
 
+	std::vector<MorphModel*> mMorphModels;
+	std::vector<MorphModelInstance*> mMorphInstances;
+
 	std::vector<PointLight> mPointLights;
 	std::vector<DirectionalLight> mDirLights;
 	std::vector<SpotLight> mSpotLights;
@@ -118,6 +123,9 @@ private:
 	Texture2DImpl *mDoFBlurTexture1;
 	Texture2DImpl *mDoFBlurTexture2;
 	float mNearBlurryPlane, mNearSharpPlane, mFarSharpPlane, mFarBlurryPlane;
+
+	float morphTimeTest;
+	bool morphIncrease;
 };
 
 #endif

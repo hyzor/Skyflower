@@ -11,6 +11,7 @@
 #include "ShaderHandler.h"
 #include "InstanceImpl.h"
 #include <vector>
+#include "MorphModel.h"
 
 class ShadowMap
 {
@@ -40,6 +41,15 @@ public:
 		ID3D11DeviceContext* deviceContext,
 		ShadowShader* shadowShader,
 		SkinnedShadowShader* skinnedShadowShader);
+
+	void DrawSceneToShadowMap(
+		const std::vector<ModelInstanceImpl*>& modelInstances,
+		const std::vector<AnimatedInstanceImpl*>& mAnimatedInstances,
+		const std::vector<MorphModelInstance*>& mMorphInstances,
+		ID3D11DeviceContext* deviceContext,
+		ShadowShader* shadowShader,
+		SkinnedShadowShader* skinnedShadowShader,
+		ShadowMorphShader* shadowMorphShader);
 
 private:
 	UINT mWidth;
