@@ -1698,11 +1698,12 @@ void LightDeferredShader::SetDepthTexture(ID3D11DeviceContext* dc, ID3D11ShaderR
 	dc->PSSetShaderResources(5, 1, &tex);
 }
 
-void LightDeferredShader::SetFogProperties(int enableFogging, float fogRange, float fogStart, XMFLOAT4 fogColor)
+void LightDeferredShader::SetFogProperties(int enableFogging, float heightFalloff, float heightOffset, float globalDensity, XMFLOAT4 fogColor)
 {
 	mBufferCache.psPerFrameBuffer.enableFogging = enableFogging;
-	mBufferCache.psPerFrameBuffer.fogRange = fogRange;
-	mBufferCache.psPerFrameBuffer.fogStart = fogStart;
+	mBufferCache.psPerFrameBuffer.fogHeightFalloff = heightFalloff;
+	mBufferCache.psPerFrameBuffer.fogHeightOffset = heightOffset;
+	mBufferCache.psPerFrameBuffer.fogGlobalDensity = globalDensity;
 	mBufferCache.psPerFrameBuffer.fogColor = fogColor;
 }
 

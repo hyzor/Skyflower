@@ -777,7 +777,7 @@ public:
 	void SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetShadowTransform(XMMATRIX& shadowTransform);
 
-	void SetFogProperties(int enableFogging, float fogRange, float fogStart, XMFLOAT4 fogColor);
+	void SetFogProperties(int enableFogging, float heightFalloff, float heightOffset, float globalDensity, XMFLOAT4 fogColor);
 
 	void UpdatePerObj(ID3D11DeviceContext* dc);
 	void UpdatePerFrame(ID3D11DeviceContext* dc);
@@ -818,8 +818,7 @@ private:
 		float padding;
 
 		int enableFogging;
-		float fogRange, fogStart;
-		int fogPadding;
+		float fogHeightFalloff, fogHeightOffset, fogGlobalDensity;
 		XMFLOAT4 fogColor;
 
 		XMMATRIX shadowTransform;

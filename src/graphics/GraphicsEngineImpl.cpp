@@ -472,7 +472,7 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mLightDeferredShader->SetCameraViewProjMatrix(mCamera->GetViewMatrix(), mCamera->GetProjMatrix());
 	mShaderHandler->mLightDeferredShader->SetLightWorldViewProj(mShadowMap->GetLightWorld(), mShadowMap->GetLightView(), mShadowMap->GetLightProj());
 	
-	mShaderHandler->mLightDeferredShader->SetFogProperties(0, 250.0f, 200.0f, XMFLOAT4(0.85f, 0.85f, 0.85f, 1.0f));
+	mShaderHandler->mLightDeferredShader->SetFogProperties(1, 0.0075f, -150.0f, 0.005f, XMFLOAT4(0.85f, 0.85f, 0.85f, 1.0f));
 
 	mShaderHandler->mLightDeferredShader->UpdatePerFrame(mD3D->GetImmediateContext());
 
@@ -544,16 +544,19 @@ void GraphicsEngineImpl::UpdateScene(float dt)
 	}
 
 	// Morph testing
-	if (mMorphInstances[0]->weights.x >= 1.0f)
-		morphIncrease = false;
+	if (mMorphInstances.size() >= 1)
+	{
+		if (mMorphInstances.front()->weights.x >= 1.0f)
+			morphIncrease = false;
 
-	if (mMorphInstances[0]->weights.x <= 0.0f)
-		morphIncrease = true;
+		if (mMorphInstances.front()->weights.x <= 0.0f)
+			morphIncrease = true;
 
-	if (morphIncrease)
-		mMorphInstances[0]->weights.x += 2.0f * dt;
-	else
-		mMorphInstances[0]->weights.x -= 2.0f * dt;
+		if (morphIncrease)
+			mMorphInstances.front()->weights.x += 2.0f * dt;
+		else
+			mMorphInstances.front()->weights.x -= 2.0f * dt;
+	}
 
 	mCamera->Update();
 }
