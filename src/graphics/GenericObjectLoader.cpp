@@ -935,6 +935,189 @@ bool GenericObjectLoader::loadObject(const std::string& fileName,
 	return true;
 }
 
+//==================================================================================
+// Object loader with meshes
+// This is a special case, as assimp should not join identical vertices, this would
+// lead to incorrect morph animations
+//==================================================================================
+bool GenericObjectLoader::LoadMorphObject(const std::string& fileName,
+	std::vector<GenericMaterial>& materials,
+	std::vector<Mesh>& meshes)
+{
+	using namespace Assimp;
+
+	// Create instance of assimp Importer class
+	Importer importer;
+
+	std::string logName = "Logs\\AssimpMeshLoader.log";
+
+	DefaultLogger::create(logName.c_str(), Logger::VERBOSE);
+
+	bool isTriangulated = true;
+
+	// Read file with post processing flags
+	const aiScene* scene = importer.ReadFile(fileName,
+		aiProcess_ConvertToLeftHanded | 			// Make compatible with Direct3D
+		//aiProcessPreset_TargetRealtime_Quality		// Combination of post processing flags
+
+		// aiProcessPreset_TargetRealtime_Quality (without aiProcess_JoinIdenticalVertices):
+		aiProcess_CalcTangentSpace |
+		aiProcess_GenSmoothNormals |
+		aiProcess_ImproveCacheLocality |
+		aiProcess_LimitBoneWeights |
+		aiProcess_RemoveRedundantMaterials |
+		aiProcess_SplitLargeMeshes |
+		aiProcess_Triangulate |
+		aiProcess_GenUVCoords |
+		aiProcess_SortByPType |
+		aiProcess_FindDegenerates |
+		aiProcess_FindInvalidData
+		);
+
+	// Failed reading file
+	if (!scene)
+	{
+		// Error logging
+		DefaultLogger::get()->info("Failed reading file!");
+		DefaultLogger::kill();
+
+		return false;
+	}
+
+	std::string path = GetPathFromFilename(fileName);
+
+	//----------------------------------------------------
+	// Read the scene
+	//----------------------------------------------------
+
+	// Check whether or not it has read at least one or more meshes
+	// Assimp splits up a mesh if more than one material was found
+	// (So it splits up an object into subsets)
+	if (scene->HasMeshes())
+	{
+		UINT totalVertexCount = 0;
+		UINT totalFaceCount = 0;
+
+		//------------------------------------------------------------
+		// Read materials
+		//------------------------------------------------------------
+		ReadMaterials(scene, materials, path);
+
+		//----------------------------------------------------------
+		// Read all scene meshes
+		//----------------------------------------------------------
+		for (UINT curMesh = 0; curMesh < scene->mNumMeshes; ++curMesh)
+		{
+			// Get mesh name
+			aiMesh* mesh = scene->mMeshes[curMesh];
+			aiString meshName = mesh->mName;
+
+			// Number of vertices and faces
+			UINT numVertices = mesh->mNumVertices;
+			UINT numFaces = mesh->mNumFaces;
+
+			//------------------------------------------------------------
+			// Create mesh
+			//------------------------------------------------------------
+			Mesh myMesh;
+			//ZeroMemory(&myMesh, sizeof(myMesh));
+
+			//------------------------------------------------------------
+			// Read vertices
+			//------------------------------------------------------------
+			for (UINT j = 0; j < numVertices; ++j)
+			{
+				Vertex::PosNormalTex vertex;
+				//ZeroMemory(&vertex, sizeof(vertex));
+
+				// Vertex position
+				vertex.position.x = mesh->mVertices[j].x;
+				vertex.position.y = mesh->mVertices[j].y;
+				vertex.position.z = mesh->mVertices[j].z;
+
+				// Vertex normal
+				vertex.normal.x = mesh->mNormals[j].x;
+				vertex.normal.y = mesh->mNormals[j].y;
+				vertex.normal.z = mesh->mNormals[j].z;
+
+				// Vertex texture coordinates (UV)
+				// 				if (mesh->HasTextureCoords(j))
+				// 				{
+				// 					vertex.texCoord.x = mesh->mTextureCoords[0][j].x;
+				// 					vertex.texCoord.y = mesh->mTextureCoords[0][j].y;
+				// 				}
+				// 				else
+				// 				{
+				// 					vertex.texCoord.x = 0.0f;
+				// 					vertex.texCoord.y = 0.0f;
+				// 				}
+
+				vertex.texCoord.x = mesh->mTextureCoords[0][j].x;
+				vertex.texCoord.y = mesh->mTextureCoords[0][j].y;
+
+				// Insert vertex to model
+				myMesh.vertices.push_back(vertex);
+			}
+
+			//------------------------------------------------------------
+			// Read indices
+			//------------------------------------------------------------
+			// Reminder: AI_SCENE_FLAGS_NON_VERBOSE_FORMAT is set by the
+			// aiProcess_JoinIdenticalVertices post processing flag, which
+			// means that each face reference a unique set of vertices.
+			// Here you could check if AI_SCENE_FLAGS_NON_VERBOSE_FORMAT is
+			// true or not, and handle it accordingly.
+
+			for (UINT j = 0; j < numFaces; ++j)
+			{
+				// If mesh is triangulated
+				if (isTriangulated)
+				{
+					// Always three indices per face
+					for (UINT k = 0; k < 3; ++k)
+					{
+						// Insert indices to model
+						myMesh.indices.push_back(mesh->mFaces[j].mIndices[k]);
+					}
+				}
+
+				// Else find out how many indices there are per face
+				else
+				{
+					for (UINT k = 0; k < mesh->mFaces[j].mNumIndices; ++k)
+					{
+						// Insert indices to model
+						myMesh.indices.push_back(mesh->mFaces[j].mIndices[k]);
+					}
+				}
+
+			}
+
+			// Update total vertex and face count
+			totalVertexCount += numVertices;
+			totalFaceCount += numFaces;
+
+			//myMesh.setIndices(device, &myMesh.indices[0], myMesh.indices.size());
+			//myMesh.setVertices(device, &myMesh.vertices[0], myMesh.vertices.size());
+
+			myMesh.MaterialIndex = mesh->mMaterialIndex;
+			myMesh.FaceCount = numFaces;
+			myMesh.VertexCount = numVertices;
+			myMesh.Name = materials[myMesh.MaterialIndex].name;
+
+			meshes.push_back(myMesh);
+
+		} // Mesh end
+
+	} // If contains mesh end
+
+
+	// Clean up after reading file
+	DefaultLogger::kill();
+
+	return true;
+}
+
 //======================================================================
 // Recursively creates a bone tree
 //======================================================================

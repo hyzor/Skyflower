@@ -45,6 +45,10 @@ public:
 		std::vector<GenericSkinnedMesh>& meshes,
 		SkinnedData& skinnedData);
 
+	bool LoadMorphObject(const std::string& fileName,
+		std::vector<GenericMaterial>& materials,
+		std::vector<Mesh>& meshes);
+
 private:
 	void InitMaterial(GenericMaterial* mat);
 	void ReadMaterials(const aiScene* scene, std::vector<GenericMaterial>& materials, const std::string &path);

@@ -19,8 +19,7 @@ cbuffer cLightBuffer : register(b0)
 	float padding;
 
 	int gEnableFogging;
-	float gFogRange, gFogStart;
-	int fogPadding;
+	float gFogHeightFalloff, gFogHeightOffset, gFogGlobalDensity;
 
 	float4 gFogColor;
 
@@ -140,27 +139,27 @@ float4 main(VertexOut pIn) : SV_TARGET
 	// http://msdn.microsoft.com/en-us/library/bb173401%28v=vs.85%29.aspx
 	if (gEnableFogging)
 	{
-		float heightFalloff = 0.0075f; // Fog fade speed
-		float globalDensity = 0.005f;
-		float fogOffset = -100.0f; // Offset fog height
+		//float heightFalloff = 0.0075f; // Fog fade speed
+		//float globalDensity = 0.005f;
+		//float fogOffset = -100.0f; // Offset fog height
 
 		float3 eyeDirOffset = eyeDir;
-		eyeDirOffset.y -= fogOffset;
+		eyeDirOffset.y -= gFogHeightOffset;
 
-		float cVolFogHeightDensityAtViewer = exp(-heightFalloff * (gEyePosW.y - fogOffset));
-		float fogInt = length(eyeDirOffset) * cVolFogHeightDensityAtViewer;
+		float cVolFogHeightDensityAtViewer = exp(-gFogHeightFalloff * (gEyePosW.y - gFogHeightOffset));
+		float fogIntensity = length(eyeDirOffset) * cVolFogHeightDensityAtViewer;
 
 		const float slopeThreshold = 0.01f;
 
-		if (abs(eyeDir.y - fogOffset) > slopeThreshold)
+		if (abs(eyeDirOffset.y - gFogHeightOffset) > slopeThreshold)
 		{
-			float t = heightFalloff * (eyeDir.y - fogOffset);
-			fogInt *= (1.0f - exp(-t)) / t;
+			float t = gFogHeightFalloff * (eyeDirOffset.y - gFogHeightOffset);
+			fogIntensity *= (1.0f - exp(-t)) / t;
 		}
 
-		float finalInt = exp(-globalDensity * fogInt);
+		float finalIntensity = exp(-gFogGlobalDensity * fogIntensity);
 
-		litColor = finalInt * litColor + (1 - finalInt) * gFogColor;
+		litColor = finalIntensity * litColor + (1 - finalIntensity) * gFogColor;
 	}
 
 	return litColor;

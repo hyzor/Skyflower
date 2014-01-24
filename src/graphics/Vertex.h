@@ -67,6 +67,29 @@ namespace Vertex
 		XMFLOAT3 weights;
 		BYTE boneIndices[4];
 	};
+
+	struct PosNormalTexTargets4
+	{
+		XMFLOAT3 positionBase;
+		XMFLOAT3 normalBase;
+		XMFLOAT2 texCoordBase;
+
+		XMFLOAT3 positionTarget1;
+		XMFLOAT3 normalTarget1;
+		XMFLOAT2 texCoordTarget1;
+
+		XMFLOAT3 positionTarget2;
+		XMFLOAT3 normalTarget2;
+		XMFLOAT2 texCoordTarget2;
+
+		XMFLOAT3 positionTarget3;
+		XMFLOAT3 normalTarget3;
+		XMFLOAT2 texCoordTarget3;
+
+		XMFLOAT3 positionTarget4;
+		XMFLOAT3 normalTarget4;
+		XMFLOAT2 texCoordTarget4;
+	};
 }
 
 class ShaderHandler;
@@ -83,6 +106,7 @@ public:
 	static const D3D11_INPUT_ELEMENT_DESC Particle[5];
 	static const D3D11_INPUT_ELEMENT_DESC PosNormalTexTan[4];
 	static const D3D11_INPUT_ELEMENT_DESC PosNormalTexTanSkinned[6];
+	static const D3D11_INPUT_ELEMENT_DESC PosNormalTexTargets4[15];
 };
 
 // Input layouts
@@ -108,6 +132,7 @@ public:
 	static ID3D11InputLayout* Particle;
 	static ID3D11InputLayout* PosNormalTexTan;
 	static ID3D11InputLayout* PosNormalTexTanSkinned;
+	static ID3D11InputLayout* PosNormalTexTargets4;
 };
 
 #endif
