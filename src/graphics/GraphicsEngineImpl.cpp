@@ -551,9 +551,9 @@ void GraphicsEngineImpl::UpdateScene(float dt)
 		morphIncrease = true;
 
 	if (morphIncrease)
-		mMorphInstances[0]->weights.x += 0.25f * dt;
+		mMorphInstances[0]->weights.x += 2.0f * dt;
 	else
-		mMorphInstances[0]->weights.x -= 0.25f * dt;
+		mMorphInstances[0]->weights.x -= 2.0f * dt;
 
 	mCamera->Update();
 }

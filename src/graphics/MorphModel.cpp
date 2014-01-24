@@ -39,7 +39,7 @@ MorphModel::MorphModel(ID3D11Device* device, TextureManager* textureMgr, const s
 			std::string morphModelPath = folderPath + morphModel;
 			TargetMesh targetModel;
 			//this->AnimInst->CreateAnimation(index, start, end, playForwards != 0);
-			objectLoader.loadObject(morphModelPath, mats, targetModel.meshes);
+			objectLoader.LoadMorphObject(morphModelPath, mats, targetModel.meshes);
 			targetModel.nrOfMeshes = targetModel.meshes.size();
 			mTargetModels.push_back(targetModel);
 		}
