@@ -42,7 +42,7 @@ public:
 
 	void update(float dt);
 
-	void setTarget(Entity* e);
+	void setTarget(Entity* e, float radius);
 
 private:
 	Vec3 curDir;
@@ -56,12 +56,12 @@ private:
 	
 	Entity* target;
 
-	void Attack(Message const& msg)
+	/*void Attack(Message const& msg)
 	{
 		centerradius = 0;
 		attacktime = 2;
 		nextattack = 5;
-	}
+	}*/
 
 	void stopMoving(Message const& msg)
 	{

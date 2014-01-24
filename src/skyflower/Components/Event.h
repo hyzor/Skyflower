@@ -24,6 +24,7 @@ public:
 		this->file = file;
 		startUpdate = false;
 		firstUpdate = true;
+		activated = false;
 
 	};
 	virtual ~Event() {};
@@ -40,6 +41,8 @@ public:
 		lua_register(sh->L, "StopUpdate", Event::StopUpdate);
 		lua_register(sh->L, "StartUpdate", Event::StartUpdate);
 		lua_register(sh->L, "ToggleOscillatePosition", Event::ToggleOscillatePosition);
+		lua_register(sh->L, "InRange", Event::InRange);
+		lua_register(sh->L, "IsActivated", Event::IsActivated);
 
 		//AI
 		lua_register(sh->L, "SetTarget", Event::SetTarget);
@@ -63,6 +66,11 @@ public:
 	static EntityManager* entityManager;
 	static Event* self;
 
+	bool isActivated()
+	{
+		return activated;
+	}
+
 private:
 
 	std::string file;
@@ -70,6 +78,8 @@ private:
 
 	bool startUpdate;
 	bool firstUpdate;
+
+	bool activated;
 
 	void Activated(Message const& msg);
 
@@ -91,6 +101,8 @@ private:
 	static int StartUpdate(lua_State* L);
 	static int StopUpdate(lua_State* L);
 	static int ToggleOscillatePosition(lua_State* L);
+	static int InRange(lua_State* L);
+	static int IsActivated(lua_State* L);
 
 	static int SetTarget(lua_State* L);
 	static int IsTouching(lua_State* L);

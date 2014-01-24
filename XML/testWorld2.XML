@@ -83,16 +83,17 @@
 	</Platform>
 	
 	<Platform entityName="AI" id="36" isVisible="1" isCollidible="0" Type="object" isAnimated="0" 
-		xPos="-3600.0960396599" yPos="0.0" zPos="3900.4741144045" 
+		xPos="-36.0960396599" yPos="0.0" zPos="39.4741144045" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="1.0" yScale="1.0" zScale="1.0" 
 		model="Models\\Worlds\\Subworld\\Puncha">
 		<Messenger />
-		<Movement speed="30.0f" />
+		<Movement speed="60.0f" />
 		<Gravity />
 		<Health />
 		<Push />
 		<Pushable />
+		<Event script="aiPush2" />
 		<AI />
 	</Platform>
 	

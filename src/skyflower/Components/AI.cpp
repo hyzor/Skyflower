@@ -5,9 +5,9 @@ void AI::addedToEntity()
 {
 	//cout << "A AI was added to the system." << endl;
 
-	requestMessage("Attack", &AI::Attack);
-			requestMessage("StopMoving", &AI::stopMoving);
-		requestMessage("StartMoving", &AI::startMoving);
+	//requestMessage("Attack", &AI::Attack);
+	requestMessage("StopMoving", &AI::stopMoving);
+	requestMessage("StartMoving", &AI::startMoving);
 
 	if (!getOwner()->field)
 		getOwner()->field = getEntityManager()->modules->potentialField->CreateField(8, 8, getEntityPos());
@@ -15,21 +15,14 @@ void AI::addedToEntity()
 	target = nullptr;
 }
 
-void AI::setTarget(Entity* e)
+void AI::setTarget(Entity* e, float radius)
 {
 	this->target = e;
+	this->centerradius = radius-1;
 }
 
 void AI::update(float dt)
 {
-	attacktime -= dt;
-	if (attacktime < 0)
-		centerradius = 20;
-
-
-	nextattack -= dt;
-	if (nextattack < 0)
-		sendMessage("Attack");
 
 	Vec3 pos = getOwner()->returnPos();
 	Ray r = Ray(pos + Vec3(0, 15, 0), Vec3(0, -30, 0));
@@ -37,7 +30,6 @@ void AI::update(float dt)
 	////find target
 	//Entity* p = getEntityManager()->getEntity(1); //player id = 0
 
-		
 	
 
 	//set fields to deactivate
@@ -48,10 +40,11 @@ void AI::update(float dt)
 	}
 
 	Field* targetField = nullptr;
+	Field* targetcenter = nullptr;
 	if (target)
 	{
 		targetField = getEntityManager()->modules->potentialField->CreateField(-1000, 1000, target->returnPos()); // set target
-		//Field* targetcenter = getEntityManager()->modules->potentialField->CreateField(1000, centerradius, this->target->returnPos());
+		targetcenter = getEntityManager()->modules->potentialField->CreateField(1000, centerradius, this->target->returnPos());
 
 		if (target->field)
 			target->field->Active = false;
@@ -74,7 +67,7 @@ void AI::update(float dt)
 	if (target)
 	{
 		getEntityManager()->modules->potentialField->DeleteField(targetField);
-		//getEntityManager()->modules->potentialField->DeleteField(targetcenter);
+		getEntityManager()->modules->potentialField->DeleteField(targetcenter);
 
 		if (target->field)
 			target->field->Active = true;

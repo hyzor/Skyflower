@@ -56,6 +56,8 @@ void Event::Activated(Message const& msg)
 	lua_getglobal(entityManager->modules->script->L, func.c_str());
 	lua_pushinteger(entityManager->modules->script->L, this->getOwnerId());
 
+	this->activated = true;
+
 	self = this;
 	lua_pcall(entityManager->modules->script->L, 1, 0, 0);
 }
@@ -64,9 +66,12 @@ void Event::Deactivated(Message const& msg)
 {
 	entityManager = getEntityManager();
 
-	std::string func = "activated_" + file;
+	std::string func = "deactivated_" + file;
 	lua_getglobal(entityManager->modules->script->L, func.c_str());
 	lua_pushinteger(entityManager->modules->script->L, this->getOwnerId());
+
+
+	this->activated = false;
 
 	self = this;
 	lua_pcall(entityManager->modules->script->L, 1, 0, 0);
@@ -202,6 +207,46 @@ int Event::ToggleOscillatePosition(lua_State* L)
 	return 0;
 }
 
+int Event::InRange(lua_State* L)
+{
+	int n = lua_gettop(L);
+
+	if (n >= 3)
+	{
+		EntityId aiId = lua_tointeger(L, 1);
+		EntityId targetId = lua_tointeger(L, 2);
+
+		Entity* entityAi = entityManager->getEntity(aiId);
+		Entity* entityTarget = entityManager->getEntity(targetId);
+
+		lua_pushboolean(L, (entityAi->returnPos()-entityTarget->returnPos()).Length() <= lua_tonumber(L,3));
+		return 1;
+	}
+
+
+	lua_pushboolean(L, false);
+	return 1;
+}
+
+int Event::IsActivated(lua_State* L)
+{
+	int n = lua_gettop(L);
+
+	if (n >= 1)
+	{
+		EntityId targetId = lua_tointeger(L, 1);
+
+		Entity* entityTarget = entityManager->getEntity(targetId);
+
+		lua_pushboolean(L, entityTarget->getComponent<Event*>("Event")->isActivated());
+		return 1;
+	}
+
+
+	lua_pushboolean(L, self->isActivated());
+	return 1;
+}
+
 int Event::SetTarget(lua_State* L)
 {
 	int n = lua_gettop(L);
@@ -214,7 +259,10 @@ int Event::SetTarget(lua_State* L)
 		Entity* entityAi = entityManager->getEntity(aiId);
 		Entity* entityTarget = entityManager->getEntity(targetId);
 
-		entityAi->getComponent<AI*>("AI")->setTarget(entityTarget);
+		if (n == 2)
+			entityAi->getComponent<AI*>("AI")->setTarget(entityTarget, 0);
+		else
+			entityAi->getComponent<AI*>("AI")->setTarget(entityTarget, lua_tonumber(L, 3));
 	}
 
 
