@@ -98,7 +98,7 @@
 	</Platform>
 	
 	<Platform entityName="AI" id="37" isVisible="1" isCollidible="0" Type="object" isAnimated="0" 
-		xPos="-36.0960396599" yPos="0.0" zPos="39.4741144045" 
+		xPos="-3600.0960396599" yPos="0.0" zPos="3900.4741144045" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="1.0" yScale="1.0" zScale="1.0" 
 		model="Models\\Worlds\\Subworld\\Puncha">
@@ -178,6 +178,27 @@
 	</Platform>
 	
     <placeHolderPlattform entityName="placeHolderPlattform2" id="99" isVisible="1" isCollidible="1" Type="object" isAnimated="0" xPos="0.0" yPos="0.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" model="Models\\Worlds\\Subworld\\placeHolderPlattform">
-		<OscillatePosition enabled="true" xDir="0.0" yDir="0.75" zDir="0.75" speed="10.0" travelDistance="15.0" />
 	</placeHolderPlattform>
+	
+	
+	
+	<Platform entityName="ButtonBase5" id="58" relativeid="99" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
+		xPos="30.0" yPos="0.0" zPos="10.0"  
+		xRot="0.0" yRot="0.0" zRot="0.0" 
+		xScale="2.0" yScale="2.0" zScale="2.0" 
+		model="Models\\Worlds\\Subworld\\ButtonBase" />
+	<Platform entityName="Button5" id="59" relativeid="99" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
+		xPos="30.0" yPos="0.0" zPos="10.0" 
+		xRot="0.0" yRot="0.0" zRot="0.0" 
+		xScale="2.0" yScale="2.0" zScale="2.0" 
+		model="Models\\Worlds\\Subworld\\Button">
+		<Messenger />
+		<Event script="btnMoveBox" />
+		<Button />
+		<Movement speed="20" />
+	</Platform>
+	
+	<Entity entityName="ballonplatform" id="113" isVisible="1" isCollidible="1" isAnimated="0" xPos="70.0" yPos="-500.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="3.0" yScale="3.0" zScale="3.0" model="Models\\placeHolder Subworld\\ballonplatform">
+        <MoveTarget endPosX="70.0" endPosY="-20.0" endPosZ="0.0" duration="2.0" />
+    </Entity>
 </root>

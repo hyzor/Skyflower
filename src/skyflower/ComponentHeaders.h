@@ -18,5 +18,6 @@
 #include "Components/Pushable.h"
 #include "Components/BoxComp.h"
 #include "Components/Goal.h"
+#include "Components/MoveTarget.h"
 
 #endif

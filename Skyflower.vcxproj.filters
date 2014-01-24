@@ -191,5 +191,8 @@
     <ClInclude Include="src\skyflower\Components\Goal.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="src\skyflower\Components\MoveTarget.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

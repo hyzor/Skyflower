@@ -62,6 +62,7 @@
     <ClInclude Include="src\skyflower\Components\LUAScript.h" />
     <ClInclude Include="src\skyflower\Components\Messenger.h" />
     <ClInclude Include="src\skyflower\Components\Movement.h" />
+    <ClInclude Include="src\skyflower\Components\MoveTarget.h" />
     <ClInclude Include="src\skyflower\Components\OscillatePosition.h" />
     <ClInclude Include="src\skyflower\Components\Push.h" />
     <ClInclude Include="src\skyflower\Components\Pushable.h" />

@@ -873,6 +873,16 @@ bool EntityManager::loadXML(string xmlFile)
 					OscillatePositionComponent *component = new OscillatePositionComponent(enabled, Vec3(xDir, yDir, zDir), speed, travelDistance);
 					this->addComponent(entity, component);
 				}
+				else if (componentName == "MoveTarget")
+				{
+					float endPosX = GetFloatAttribute(e, "endPosX", entityName, xmlFile, componentName);
+					float endPosY = GetFloatAttribute(e, "endPosY", entityName, xmlFile, componentName);
+					float endPosZ = GetFloatAttribute(e, "endPosZ", entityName, xmlFile, componentName);
+					float duration = GetFloatAttribute(e, "duration", entityName, xmlFile, componentName);
+
+					MoveTargetComponent *component = new MoveTargetComponent(Vec3(xPos, yPos, zPos), Vec3(endPosX, endPosY, endPosZ), duration);
+					this->addComponent(entity, component);
+				}
 				else if (componentName == "Rotating")
 				{
 					float yawSpeed = GetFloatAttribute(e, "yawSpeed", entityName, xmlFile, componentName);

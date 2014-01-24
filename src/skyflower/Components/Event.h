@@ -50,6 +50,10 @@ public:
 		lua_register(sh->L, "CanPush", Event::CanPush);
 		lua_register(sh->L, "Push", Event::push);
 		lua_register(sh->L, "PushAll", Event::pushAll);
+
+		// MoveTarget component
+		lua_register(sh->L, "MoveToEnd", Event::MoveToEnd);
+		lua_register(sh->L, "MoveToStart", Event::MoveToStart);
 	};
 
 	// we are added to an Entity, and thus to the component system
@@ -109,6 +113,9 @@ private:
 	static int CanPush(lua_State* L);
 	static int push(lua_State* L);
 	static int pushAll(lua_State* L);
+
+	static int MoveToEnd(lua_State* L);
+	static int MoveToStart(lua_State* L);
 };
 
 #endif

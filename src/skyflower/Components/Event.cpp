@@ -346,3 +346,42 @@ int Event::pushAll(lua_State* L)
 	return 0;
 }
 
+int Event::MoveToEnd(lua_State* L)
+{
+	int n = lua_gettop(L);
+
+	assert(n == 1);
+
+	EntityId entityID = lua_tointeger(L, 1);
+	Entity *entity = entityManager->getEntity(entityID);
+
+	if (entity)
+	{
+		MoveTargetComponent *component = entity->getComponent<MoveTargetComponent *>("MoveTarget");
+
+		if (component)
+			component->moveToEnd();
+	}
+
+	return 0;
+}
+
+int Event::MoveToStart(lua_State* L)
+{
+	int n = lua_gettop(L);
+
+	assert(n == 1);
+
+	EntityId entityID = lua_tointeger(L, 1);
+	Entity *entity = entityManager->getEntity(entityID);
+
+	if (entity)
+	{
+		MoveTargetComponent *component = entity->getComponent<MoveTargetComponent *>("MoveTarget");
+
+		if (component)
+			component->moveToStart();
+	}
+
+	return 0;
+}

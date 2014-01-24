@@ -123,6 +123,18 @@ end
 
 
 
+g_isBoxMovingToTarget = false
+
+function activated_btnMoveBox(id)
+	g_isBoxMovingToTarget = not g_isBoxMovingToTarget
+	
+	if (g_isBoxMovingToTarget) then
+		MoveToEnd(113)
+	else
+		MoveToStart(113)
+	end
+end
+
 
 
 function activated_btnLevelCompleted(id)
