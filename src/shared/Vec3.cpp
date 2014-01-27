@@ -28,7 +28,7 @@ float Vec3::Length() const
 }
 Vec3 Vec3::Normalize()
 {
-	float invLength = 1.0f / this->Length();
+	float invLength = 1.0f / (this->Length() + FLT_EPSILON);
 	*this *= invLength;
 	return *this;
 }

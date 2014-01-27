@@ -14,19 +14,22 @@ using namespace Cistron;
 enum MoveTargetState
 {
 	MoveTargetStateIdle = 0,
-	MoveTargetStateMovingToEnd,
-	MoveTargetStateMovingToStart,
+	MoveTargetStateMovingToTarget,
+	MoveTargetStateMovingToSpawn,
 };
 
 class MoveTargetComponent : public Component
 {
 public:
-	MoveTargetComponent(Vec3 startPosition, Vec3 endPosition, float duration) : Component("MoveTarget")
+	MoveTargetComponent(Vec3 spawnPosition, Vec3 targetPosition, float duration, float easingPower, bool continuous) : Component("MoveTarget")
 	{
-		m_startPosition = startPosition;
-		m_endPosition = endPosition;
+		m_spawnPosition = spawnPosition;
+		m_targetPosition = targetPosition;
 		m_duration = duration;
-		m_travelDistance = (startPosition - endPosition).Length();
+		m_easingPower = easingPower;
+		m_continuous = continuous;
+
+		m_travelDistance = (spawnPosition - targetPosition).Length();
 
 		m_state = MoveTargetStateIdle;
 		m_progress = 1.0f;
@@ -38,6 +41,8 @@ public:
 
 	void addedToEntity()
 	{
+		if (m_continuous)
+			moveToTarget();
 	}
 
 	void removeFromEntity()
@@ -50,44 +55,70 @@ public:
 			return;
 
 		m_progress += deltaTime / m_duration;
+		m_progress = std::max(0.0f, std::min(1.0f, m_progress));
 
-		float easingPower = 4.0f;
 		float positionalProgress;
 
 		if (m_progress < 0.5f)
-			positionalProgress = powf(m_progress * 2.0f, easingPower) * 0.5f;
+		{
+			// Ease in
+			positionalProgress = powf(m_progress * 2.0f, m_easingPower) * 0.5f;
+		}
 		else
-			positionalProgress = (1.0f - powf(1.0f - (m_progress - 0.5f) * 2.0f, easingPower)) * 0.5f + 0.5f;
+		{
+			// Ease out
+			positionalProgress = (1.0f - powf(1.0f - (m_progress - 0.5f) * 2.0f, m_easingPower)) * 0.5f + 0.5f;
+		}
 
-		printf("progress=%.4f, positionalProgress=%.4f\n", m_progress, positionalProgress);
-
-		Vec3 targetPosition = (m_state == MoveTargetStateMovingToEnd? m_endPosition : m_startPosition);
+		Vec3 targetPosition = (m_state == MoveTargetStateMovingToTarget? m_targetPosition : m_spawnPosition);
 		Vec3 direction = (targetPosition - getEntityPos()).Normalize();
-		//Vec3 position = targetPosition - direction * m_travelDistance * positionalProgress;
 		Vec3 position = targetPosition - direction * m_travelDistance * (1.0f - positionalProgress);
 
 		updateEntityPos(position);
 
 		if (m_progress >= 1.0f)
-			m_state = MoveTargetStateIdle;
+		{
+			if (!m_continuous)
+			{
+				m_state = MoveTargetStateIdle;
+			}
+			else
+			{
+				switch(m_state)
+				{
+				case MoveTargetStateMovingToSpawn:
+					moveToTarget();
+					break;
+				case MoveTargetStateMovingToTarget:
+					moveToSpawn();
+					break;
+				default:
+					assert(0);
+					break;
+				}
+			}
+		}
 	}
 
-	void moveToStart()
+	void moveToSpawn()
 	{
-		m_progress = 1.0f - (getEntityPos() - m_startPosition).Length() / m_travelDistance;
-		m_state = MoveTargetStateMovingToStart;
+		m_progress = 1.0f - (getEntityPos() - m_spawnPosition).Length() / m_travelDistance;
+		m_state = MoveTargetStateMovingToSpawn;
 	}
 
-	void moveToEnd()
+	void moveToTarget()
 	{
-		m_progress = 1.0f - (getEntityPos() - m_endPosition).Length() / m_travelDistance;
-		m_state = MoveTargetStateMovingToEnd;
+		m_progress = 1.0f - (getEntityPos() - m_targetPosition).Length() / m_travelDistance;
+		m_state = MoveTargetStateMovingToTarget;
 	}
 
 private:
-	Vec3 m_startPosition;
-	Vec3 m_endPosition;
+	Vec3 m_spawnPosition;
+	Vec3 m_targetPosition;
 	float m_duration;
+	float m_easingPower;
+	bool m_continuous;
+
 	float m_travelDistance;
 
 	MoveTargetState m_state;

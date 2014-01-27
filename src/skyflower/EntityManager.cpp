@@ -875,12 +875,14 @@ bool EntityManager::loadXML(string xmlFile)
 				}
 				else if (componentName == "MoveTarget")
 				{
-					float endPosX = GetFloatAttribute(e, "endPosX", entityName, xmlFile, componentName);
-					float endPosY = GetFloatAttribute(e, "endPosY", entityName, xmlFile, componentName);
-					float endPosZ = GetFloatAttribute(e, "endPosZ", entityName, xmlFile, componentName);
+					float targetPosX = GetFloatAttribute(e, "targetPosX", entityName, xmlFile, componentName);
+					float targetPosY = GetFloatAttribute(e, "targetPosY", entityName, xmlFile, componentName);
+					float targetPosZ = GetFloatAttribute(e, "targetPosZ", entityName, xmlFile, componentName);
 					float duration = GetFloatAttribute(e, "duration", entityName, xmlFile, componentName);
+					float easingPower = GetFloatAttribute(e, "easingPower", entityName, xmlFile, componentName);
+					bool continuous = GetBoolAttribute(e, "continuous", entityName, xmlFile, componentName);
 
-					MoveTargetComponent *component = new MoveTargetComponent(Vec3(xPos, yPos, zPos), Vec3(endPosX, endPosY, endPosZ), duration);
+					MoveTargetComponent *component = new MoveTargetComponent(Vec3(xPos, yPos, zPos), Vec3(targetPosX, targetPosY, targetPosZ), duration, easingPower, continuous);
 					this->addComponent(entity, component);
 				}
 				else if (componentName == "Rotating")

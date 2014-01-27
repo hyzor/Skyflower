@@ -346,7 +346,7 @@ int Event::pushAll(lua_State* L)
 	return 0;
 }
 
-int Event::MoveToEnd(lua_State* L)
+int Event::MoveToTarget(lua_State* L)
 {
 	int n = lua_gettop(L);
 
@@ -360,13 +360,13 @@ int Event::MoveToEnd(lua_State* L)
 		MoveTargetComponent *component = entity->getComponent<MoveTargetComponent *>("MoveTarget");
 
 		if (component)
-			component->moveToEnd();
+			component->moveToTarget();
 	}
 
 	return 0;
 }
 
-int Event::MoveToStart(lua_State* L)
+int Event::MoveToSpawn(lua_State* L)
 {
 	int n = lua_gettop(L);
 
@@ -380,7 +380,7 @@ int Event::MoveToStart(lua_State* L)
 		MoveTargetComponent *component = entity->getComponent<MoveTargetComponent *>("MoveTarget");
 
 		if (component)
-			component->moveToStart();
+			component->moveToSpawn();
 	}
 
 	return 0;

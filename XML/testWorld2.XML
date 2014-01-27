@@ -199,6 +199,6 @@
 	</Platform>
 	
 	<Entity entityName="ballonplatform" id="113" isVisible="1" isCollidible="1" isAnimated="0" xPos="70.0" yPos="-500.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="3.0" yScale="3.0" zScale="3.0" model="Models\\placeHolder Subworld\\ballonplatform">
-        <MoveTarget endPosX="70.0" endPosY="-20.0" endPosZ="0.0" duration="2.0" />
+        <MoveTarget targetPosX="70.0" targetPosY="-20.0" targetPosZ="0.0" duration="2.0" easingPower="3.0" continuous="true" />
     </Entity>
 </root>
