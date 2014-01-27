@@ -40,7 +40,6 @@ public:
 		lua_register(sh->L, "Spawn", Event::Spawn);
 		lua_register(sh->L, "StopUpdate", Event::StopUpdate);
 		lua_register(sh->L, "StartUpdate", Event::StartUpdate);
-		lua_register(sh->L, "ToggleOscillatePosition", Event::ToggleOscillatePosition);
 		lua_register(sh->L, "InRange", Event::InRange);
 		lua_register(sh->L, "IsActivated", Event::IsActivated);
 
@@ -104,7 +103,6 @@ private:
 	static int Spawn(lua_State* L);
 	static int StartUpdate(lua_State* L);
 	static int StopUpdate(lua_State* L);
-	static int ToggleOscillatePosition(lua_State* L);
 	static int InRange(lua_State* L);
 	static int IsActivated(lua_State* L);
 

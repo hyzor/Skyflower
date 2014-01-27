@@ -4,7 +4,6 @@
 #include "Components/Messenger.h"
 #include "Components/Movement.h"
 #include "Components/Input.h"
-#include "Components/OscillatePosition.h"
 #include "Components/Listener.h"
 #include "Components/Footsteps.h"
 #include "Components/AI.h"

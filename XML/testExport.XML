@@ -1,7 +1,7 @@
 <root>
     <Entity entityName="platformplayerstartson" id="100" isVisible="1" isCollidible="1" isAnimated="0" xPos="0.0" yPos="0.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="3.0" yScale="3.0" zScale="3.0" model="Models\\placeHolder Subworld\\platformplayerstartson"/>
-    <Entity entityName="ballonplatform" id="2" isVisible="1" isCollidible="1" isAnimated="0" xPos="85.0" yPos="-0.109730904296" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="3.0" yScale="3.0" zScale="3.0" model="Models\\placeHolder Subworld\\ballonplatform">
-        <OscillatePosition enabled="true" xDir="-1" yDir="-0.12" zDir="0" speed="10" travelDistance="56"/>
+    <Entity entityName="ballonplatform" id="2" isVisible="1" isCollidible="1" isAnimated="0" xPos="141.0" yPos="6.610269095704" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="3.0" yScale="3.0" zScale="3.0" model="Models\\placeHolder Subworld\\ballonplatform">
+		<MoveTarget targetPosX="29.0" targetPosY="-6.829730904296" targetPosZ="0.0" duration="5.0" easingPower="2.0" continuous="true" />
     </Entity>
     <Entity entityName="platformbeforegoalplatform" id="3" isVisible="1" isCollidible="1" isAnimated="0" xPos="183.701509066" yPos="13.7851530761" zPos="14.4970496328" xRot="0.0" yRot="0.0" zRot="0.0" xScale="3.0" yScale="3.0" zScale="3.0" model="Models\\placeHolder Subworld\\platformbeforegoalplatform"/>
     <Entity entityName="platformwithgoal" id="4" isVisible="1" isCollidible="1" isAnimated="0" xPos="208.076226933" yPos="13.7496654365" zPos="111.957887996" xRot="0.0" yRot="3.14" zRot="0.0" xScale="3.0" yScale="3.0" zScale="3.0" model="Models\\placeHolder Subworld\\platformwithgoal"/>

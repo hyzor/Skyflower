@@ -112,29 +112,6 @@ end
 
 
 
-function activated_btnPlatformMove(id)
-	ToggleOscillatePosition(99)
-end
-
-
-function deactivated_btnPlatformMove(id)
-	ToggleOscillatePosition(99)
-end
-
-
-
-g_isBoxMovingToTarget = false
-
-function activated_btnMoveBox(id)
-	g_isBoxMovingToTarget = not g_isBoxMovingToTarget
-	
-	if (g_isBoxMovingToTarget) then
-		MoveToTarget(113)
-	else
-		MoveToSpawn(113)
-	end
-end
-
 
 
 function activated_btnLevelCompleted(id)

@@ -859,21 +859,7 @@ bool EntityManager::loadXML(string xmlFile)
 			{
 				string componentName = e->Value();
 
-				if (componentName == "OscillatePosition")
-				{
-					bool enabled = GetBoolAttribute(e, "enabled", entityName, xmlFile, componentName);
-
-					float xDir = GetFloatAttribute(e, "xDir", entityName, xmlFile, componentName);
-					float yDir = GetFloatAttribute(e, "yDir", entityName, xmlFile, componentName);
-					float zDir = GetFloatAttribute(e, "zDir", entityName, xmlFile, componentName);
-
-					float speed = GetFloatAttribute(e, "speed", entityName, xmlFile, componentName);
-					float travelDistance = GetFloatAttribute(e, "travelDistance", entityName, xmlFile, componentName);
-
-					OscillatePositionComponent *component = new OscillatePositionComponent(enabled, Vec3(xDir, yDir, zDir), speed, travelDistance);
-					this->addComponent(entity, component);
-				}
-				else if (componentName == "MoveTarget")
+				if (componentName == "MoveTarget")
 				{
 					float targetPosX = GetFloatAttribute(e, "targetPosX", entityName, xmlFile, componentName);
 					float targetPosY = GetFloatAttribute(e, "targetPosY", entityName, xmlFile, componentName);

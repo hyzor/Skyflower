@@ -112,22 +112,6 @@
 		<Event script="aiPush" />
 	</Platform>
 	
-	<Platform entityName="ButtonBase3" id="72" relativeid="99" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
-		xPos="-20.0" yPos="0.0" zPos="-20.0"  
-		xRot="0.0" yRot="0.0" zRot="0.0" 
-		xScale="2.0" yScale="2.0" zScale="2.0" 
-		model="Models\\Worlds\\Subworld\\ButtonBase" />
-	<Platform entityName="Button2" id="73" relativeid="99" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
-		xPos="-20.0" yPos="0.0" zPos="-20.0" 
-		xRot="0.0" yRot="0.0" zRot="0.0" 
-		xScale="2.0" yScale="2.0" zScale="2.0" 
-		model="Models\\Worlds\\Subworld\\Button">
-		<Messenger />
-		<Event script="btnPlatformMove" />
-		<Button />
-		<Movement speed="20" />
-	</Platform>
-	
 	<!-- SCENERY -->
 	<Platform entityName="Mountain" id="14" isVisible="1" isCollidible="0" Type="object" isAnimated="0" 
 		xPos="36.0960396599" yPos="-700.0" zPos="39.4741144045" 
@@ -181,22 +165,6 @@
 	</placeHolderPlattform>
 	
 	
-	
-	<Platform entityName="ButtonBase5" id="58" relativeid="99" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
-		xPos="30.0" yPos="0.0" zPos="10.0"  
-		xRot="0.0" yRot="0.0" zRot="0.0" 
-		xScale="2.0" yScale="2.0" zScale="2.0" 
-		model="Models\\Worlds\\Subworld\\ButtonBase" />
-	<Platform entityName="Button5" id="59" relativeid="99" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
-		xPos="30.0" yPos="0.0" zPos="10.0" 
-		xRot="0.0" yRot="0.0" zRot="0.0" 
-		xScale="2.0" yScale="2.0" zScale="2.0" 
-		model="Models\\Worlds\\Subworld\\Button">
-		<Messenger />
-		<Event script="btnMoveBox" />
-		<Button />
-		<Movement speed="20" />
-	</Platform>
 	
 	<Entity entityName="ballonplatform" id="113" isVisible="1" isCollidible="1" isAnimated="0" xPos="70.0" yPos="-500.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="3.0" yScale="3.0" zScale="3.0" model="Models\\placeHolder Subworld\\ballonplatform">
         <MoveTarget targetPosX="70.0" targetPosY="-20.0" targetPosZ="0.0" duration="2.0" easingPower="3.0" continuous="true" />
