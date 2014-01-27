@@ -48,7 +48,7 @@ public: // InputListener
 
 
 private:
-	void updateGame(float dt, Movement* playerMove);
+	void updateGame(float dt, float gameTime, Movement* playerMove);
 	void updateMenu(float dt);
 	void updateLoading(float dt);
 	void changeGameState(GameState newState);

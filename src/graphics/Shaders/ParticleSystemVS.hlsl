@@ -17,6 +17,8 @@ float4 main(float4 pos : POSITION) : SV_POSITION
 	return pos;
 }
 
+
+/*
 void StreamOutGS(point Particle gIn[1], inout PointStream<Particle> ptStream)
 {
 	gIn[0].Age += gTimeStep;
@@ -53,3 +55,4 @@ void StreamOutGS(point Particle gIn[1], inout PointStream<Particle> ptStream)
 			ptStream.Append(gin[0]);
 	}
 }
+*/

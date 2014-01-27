@@ -1081,44 +1081,35 @@ public:
 	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
 	bool SetActive(ID3D11DeviceContext* dc);
 
-	void SetWorldViewProjTex(XMMATRIX& world,
-		XMMATRIX& viewProj,
-		XMMATRIX& tex);
+	void SetViewProj(XMMATRIX& viewProj);
+	void SetTexArray(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* texArray);
+	void SetRandomTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* randomTex);
 
-	void SetMaterial(const Material& mat);
-	void SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetEyePosW(XMFLOAT3 eyePosW);
+	void SetEmitProperties(XMFLOAT3 emitPosW, XMFLOAT3 emitDirW);
 
-	void UpdatePerObj(ID3D11DeviceContext* dc);
+	void SetTime(float gameTime, float dt);
 
-	void SetWeights(XMFLOAT4 weights);
-
-	void SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
-	void SetShadowTransform(XMMATRIX& shadowTransform);
+	void UpdatePerParticleSystem(ID3D11DeviceContext* dc);
 
 private:
 	void Update(ID3D11DeviceContext* dc) { ; }
 
 	struct VS_CPEROBJBUFFER
 	{
-		XMMATRIX world;
-		XMMATRIX worldInvTranspose;
-		XMMATRIX worldViewProj;
-		//XMMATRIX worldViewProjTex;
-		XMMATRIX texTransform;
-		XMMATRIX shadowTransform;
+		XMFLOAT3 eyePosW;
+		XMFLOAT3 emitPosW;
+		XMFLOAT3 emitDirW;
 
-		XMFLOAT4 weights;
-	};
+		float gameTime;
+		float timeStep;
 
-	struct PS_CPEROBJBUFFER
-	{
-		Material mat;
+		XMMATRIX viewProj;
 	};
 
 	struct BUFFERCACHE
 	{
 		VS_CPEROBJBUFFER vsPerObjBuffer;
-		PS_CPEROBJBUFFER psPerObjBuffer;
 	};
 
 	struct BUFFERCACHE mBufferCache;
@@ -1126,12 +1117,8 @@ private:
 	// VS - per object
 	ID3D11Buffer* vs_cPerObjBuffer;
 	VS_CPEROBJBUFFER vs_cPerObjBufferVariables;
-
-	// PS - per obj
-	ID3D11Buffer* ps_cPerObjBuffer;
-	PS_CPEROBJBUFFER ps_cPerObjBufferVariables;
 };
-#pragma endregion BasicDeferredMorphShader
+#pragma endregion ParticleSystemShader
 
 #pragma region CompositeShader
 class CompositeShader : public IShader

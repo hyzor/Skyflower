@@ -43,7 +43,7 @@ public:
 	void Run(float dt);
 
 	void DrawScene();
-	void UpdateScene(float dt);
+	void UpdateScene(float dt, float gameTime);
 	void RenderSceneToTexture();
 	void Present();
 
@@ -126,6 +126,8 @@ private:
 
 	float morphTimeTest;
 	bool morphIncrease;
+
+	float mGameTime;
 };
 
 #endif

@@ -152,7 +152,7 @@ void Application::Start()
 		switch (gameState)
 		{
 		case GameState::game:
-			updateGame((float)deltaTime, playerMove);
+			updateGame((float)deltaTime, (float)time, playerMove);
 			break;
 		case GameState::loading:
 			updateLoading((float)deltaTime);
@@ -296,14 +296,14 @@ void Application::updateMenu(float dt)
 	}
 }
 
-void Application::updateGame(float dt, Movement* playerMove)
+void Application::updateGame(float dt, float gameTime, Movement* playerMove)
 {
 	camera->Follow(entityManager->getEntityPos("player"));
 	playerMove->setCamera(camera->GetLook(), camera->GetRight(), camera->GetUp());
 	playerMove->setYaw(camera->GetYaw());
 	camera->Update(dt);
 	this->entityManager->update(dt);
-	m_graphicsEngine->UpdateScene(dt);
+	m_graphicsEngine->UpdateScene(dt, gameTime);
 	m_graphicsEngine->DrawScene();
 
 	if (m_menu->isActive())

@@ -12,27 +12,32 @@ ParticleSystem::~ParticleSystem()
 
 float ParticleSystem::GetAge() const
 {
-
+	return mAge;
 }
 
 void ParticleSystem::SetEyePos(const XMFLOAT3& eyePosW)
 {
-
+	mEyePosW = eyePosW;
 }
 
 void ParticleSystem::SetEmitPos(const XMFLOAT3& emitPosW)
 {
-
+	mEmitPosW = emitPosW;
 }
 
 void ParticleSystem::SetEmitDir(const XMFLOAT3& emitDirW)
 {
-
+	mEmitDirW = emitDirW;
 }
 
-void ParticleSystem::Init(ID3D11Device* device, IShader* shader, ID3D11ShaderResourceView* texArraySRV, ID3D11ShaderResourceView* randomTexSRV, UINT maxParticles)
+void ParticleSystem::Init(ID3D11Device* device, ParticleSystemShader* shader, ID3D11ShaderResourceView* texArraySRV, ID3D11ShaderResourceView* randomTexSRV, UINT maxParticles)
 {
+	mShader = shader;
+	mTexArraySRV = texArraySRV;
+	mRandomTexSRV = randomTexSRV;
+	mMaxParticles = maxParticles;
 
+	BuildVB(device);
 }
 
 void ParticleSystem::Reset()
@@ -40,17 +45,26 @@ void ParticleSystem::Reset()
 
 }
 
-void ParticleSystem::Update(float dt)
+void ParticleSystem::Update(float dt, float gameTime)
 {
+	mTimeStep = dt;
+	mGameTime = gameTime;
 
+	mAge += dt;
 }
 
 void ParticleSystem::Draw(ID3D11DeviceContext* dc, const Camera& cam)
 {
+	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// Set shader constants
+	mShader->SetActive(dc);
 
-	dc->IASetInputLayout(InputLayouts::Particle);
-
+	mShader->SetEmitProperties(mEmitPosW, mEmitDirW);
+	mShader->SetEyePosW(mEyePosW);
+	mShader->SetTexArray(dc, mTexArraySRV);
+	mShader->SetRandomTex(dc, mRandomTexSRV);
+	mShader->SetViewProj(cam.GetViewProjMatrix());
+	mShader->UpdatePerParticleSystem(dc);
 }
 
 void ParticleSystem::BuildVB(ID3D11Device* device)

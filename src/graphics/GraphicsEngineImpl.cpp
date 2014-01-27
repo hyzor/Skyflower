@@ -134,6 +134,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mSky = new Sky(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Textures\\SkyBox_Space.dds", 2000.0f);
 	mShadowMap = new ShadowMap(mD3D->GetDevice(), 2048, 2048);
 
+	mGameTime = 0.0f;
 
 	//-------------------------------------------------------------------------------------------------------
 	// Shaders
@@ -287,7 +288,7 @@ CameraController* GraphicsEngineImpl::CreateCameraController()
 
 void GraphicsEngineImpl::Run(float dt)
 {
-	UpdateScene(dt);
+	UpdateScene(dt, mGameTime);
 	DrawScene();
 }
 
@@ -536,8 +537,10 @@ void GraphicsEngineImpl::DrawScene()
 	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
 }
 
-void GraphicsEngineImpl::UpdateScene(float dt)
+void GraphicsEngineImpl::UpdateScene(float dt, float gameTime)
 {
+	mGameTime = gameTime;
+
 	// Update skinned instances
 	for (size_t i = 0; i < mAnimatedInstances.size(); i++)
 	{

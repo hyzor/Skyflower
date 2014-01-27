@@ -2357,3 +2357,95 @@ void CompositeShader::SetDoFFarFieldTexture(ID3D11DeviceContext* dc, ID3D11Shade
 }
 
 #pragma endregion BlurShader
+
+ParticleSystemShader::ParticleSystemShader()
+{
+
+}
+
+ParticleSystemShader::~ParticleSystemShader()
+{
+
+}
+
+bool ParticleSystemShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
+{
+	//------------------------
+	// Vertex shader buffers
+	//------------------------
+	// PER OBJECT BUFFER
+	ZeroMemory(&vs_cPerObjBufferVariables, sizeof(VS_CPEROBJBUFFER));
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC cbDesc;
+	cbDesc.ByteWidth = sizeof(VS_CPEROBJBUFFER);
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA InitData;
+	InitData.pSysMem = &vs_cPerObjBufferVariables;
+	InitData.SysMemPitch = 0;
+	InitData.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	device->CreateBuffer(&cbDesc, &InitData, &vs_cPerObjBuffer);
+
+	mInputLayout = inputLayout;
+
+	return true;
+}
+
+bool ParticleSystemShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
+{
+	mVertexShader = vShader;
+	mPixelShader = pShader;
+
+	return true;
+}
+
+bool ParticleSystemShader::SetActive(ID3D11DeviceContext* dc)
+{
+	// Set active shaders
+	dc->VSSetShader(mVertexShader, nullptr, 0);
+	dc->PSSetShader(mPixelShader, nullptr, 0);
+
+	return true;
+}
+
+void ParticleSystemShader::SetViewProj(XMMATRIX& viewProj)
+{
+	mBufferCache.vsPerObjBuffer.viewProj = XMMatrixTranspose(viewProj);
+}
+
+void ParticleSystemShader::SetTexArray(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* texArray)
+{
+}
+
+void ParticleSystemShader::SetRandomTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* randomTex)
+{
+
+}
+
+void ParticleSystemShader::SetEyePosW(XMFLOAT3 eyePosW)
+{
+
+}
+
+void ParticleSystemShader::SetEmitProperties(XMFLOAT3 emitPosW, XMFLOAT3 emitDirW)
+{
+
+}
+
+void ParticleSystemShader::SetTime(float gameTime, float dt)
+{
+
+}
+
+void ParticleSystemShader::UpdatePerParticleSystem(ID3D11DeviceContext* dc)
+{
+
+}

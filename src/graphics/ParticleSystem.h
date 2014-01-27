@@ -19,13 +19,13 @@ public:
 	void SetEmitPos(const XMFLOAT3& emitPosW);
 	void SetEmitDir(const XMFLOAT3& emitDirW);
 
-	void Init(ID3D11Device* device, IShader* shader,
+	void Init(ID3D11Device* device, ParticleSystemShader* shader,
 		ID3D11ShaderResourceView* texArraySRV,
 		ID3D11ShaderResourceView* randomTexSRV,
 		UINT maxParticles);
 
 	void Reset();
-	void Update(float dt);
+	void Update(float dt, float gameTime);
 	void Draw(ID3D11DeviceContext* dc, const Camera& cam);
 
 private:
@@ -36,13 +36,14 @@ private:
 	bool mFirstRun;
 
 	float mTimeStep;
+	float mGameTime;
 	float mAge;
 
 	XMFLOAT3 mEyePosW;
 	XMFLOAT3 mEmitPosW;
 	XMFLOAT3 mEmitDirW;
 
-	IShader* mShader;
+	ParticleSystemShader* mShader;
 
 	ID3D11Buffer* mInitVB;
 	ID3D11Buffer* mDrawVB;
