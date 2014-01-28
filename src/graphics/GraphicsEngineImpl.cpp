@@ -113,7 +113,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mCamera->Update();
 
 	mDeferredBuffers = new DeferredBuffers();
-	mDeferredBuffers->Init(mD3D->GetDevice(), width, height, zNear, zFar);
+	mDeferredBuffers->Init(mD3D->GetDevice(), width, height);
 
 	mIntermediateTexture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8G8B8A8_UNORM, true);
 
