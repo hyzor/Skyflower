@@ -83,5 +83,8 @@
     <ClInclude Include="src\physics\PhysicsEntity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\physics\PhysicsHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
