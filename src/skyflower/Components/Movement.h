@@ -260,8 +260,10 @@ private:
 
 		Vec3 pos = getEntityPos();
 
-		if (p->jump(pos))
+		if (/*p->jump(pos)*/true)
 		{
+			Vec3 target = Vec3(50.0f, 50.0f, 50.0f);
+			p->fireProjectileAt(pos, target);
 			updateEntityPos(pos);
 
 			Entity *owner = getOwner();

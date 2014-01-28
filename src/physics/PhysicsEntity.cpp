@@ -12,6 +12,7 @@ PhysicsEntity::PhysicsEntity()
 	this->jumping = false;
 	this->isMoving = false;
 	this->isBeingPushed = false;
+	this->isActiveProjectile = false;
 }
 
 PhysicsEntity::PhysicsEntity(Vec3 pos)
@@ -24,6 +25,7 @@ PhysicsEntity::PhysicsEntity(Vec3 pos)
 	this->jumping = false;
 	this->isMoving = false;
 	this->isBeingPushed = false;
+	this->isActiveProjectile = false;
 }
 
 
@@ -99,7 +101,6 @@ void PhysicsEntity::addGravityCalc(Vec3 &pos, Vec3 &velocity, bool addGravity)
 
 	velocity = previousVelocity;
 	pos = previousPos + previousVelocity * this->dt;
-	//this->orient.setPos(pos);
 
 	if (addGravity)
 	{
@@ -141,6 +142,49 @@ bool PhysicsEntity::jump(Vec3 &pos)
 	else
 	{
 		return false;
+	}
+}
+
+
+
+void PhysicsEntity::fireProjectile(Vec3 &pos, Vec3 direction)
+{
+	if (!this->isActiveProjectile)
+	{
+		this->isActiveProjectile = true;
+		this->velocity += direction;
+	}
+}
+
+void PhysicsEntity::fireProjectileAt(Vec3 &pos, Vec3 target)
+{
+	if (!this->isActiveProjectile)
+	{
+		Vec3 delta, projectileVelocity;
+		float angle, time, velocityX, velocityY, velocityZ, heightY;
+
+		delta = target - pos;
+		heightY = DEFAULT_THROW_HEIGHT + delta.Y;
+
+
+
+
+		if (delta.Y > 0.0f)
+		{
+
+		}
+		else if (delta.Y < 0.0f)
+		{
+
+		}
+		else
+		{
+
+		}
+
+		this->isActiveProjectile = true;
+		this->velocity += projectileVelocity;
+		pos += this->velocity *dt;
 	}
 }
 
@@ -260,7 +304,7 @@ void PhysicsEntity::moveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, float speed, 
 	this->walk(pos, speed);
 }
 
-//moving the entity that is peing pushed by another entity
+//moving the entity that is being pushed by another entity
 Vec3 PhysicsEntity::movePushed(Vec3 pos)
 {
 	pos += pushDirection * (dt * 5);

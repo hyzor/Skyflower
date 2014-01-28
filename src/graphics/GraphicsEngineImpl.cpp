@@ -131,7 +131,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mFarSharpPlane = 200.0f;
 	mFarBlurryPlane = 250.0f;
 
-	mSky = new Sky(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Textures\\SkyBox_Space.dds", 2000.0f);
+	mSky = new Sky(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Textures\\SkyBox.dds", 2000.0f);
 	mShadowMap = new ShadowMap(mD3D->GetDevice(), 2048, 2048);
 
 

@@ -20,6 +20,11 @@ const float PI = 3.141592653589f;
 #define DEFAULT_VELOCITY Vec3(0.0f, 0.0f, 0.0f)
 #define DEFAULT_MOVEMENTSPEED 50.0f
 #define DEFAULT_JUMP_VELOCITY 35.0f
+#define DEFAULT_THROW_TIME 2.5f
+#define DEFAULT_THROW_ANGLE_DEGREES 30.0f
+#define DEFAULT_THROW_HEIGHT 15.0f
+#define THROW_HEIGHT_HIGH 30.0f
+#define THROW_HEIGHT_LOW 5.0f
 
 //Currently sort of a helper class, to be held by each entity to make sure that the velocity and other entity-specific data are kept by and manipulated only by the right entity
 class DLL_API PhysicsEntity
@@ -36,10 +41,11 @@ private:
 	
 	float dt;
 
-	//used to keep track of an entitys state regarding jumping, in order tp prevent/enable it dynamically
+	//used to keep track of an entitys state regarding jumping and similar, in order to prevent/enable it dynamically
 	bool jumping;
 	bool isMoving;
 	bool isBeingPushed;
+	bool isActiveProjectile;
 
 	//A simple class that keeps track of and manipulates the orientation (meaning rotation, look/right and up -vectors) of the entity holding the physics instance
 	Orientation orient;
@@ -67,7 +73,8 @@ public:
 	void addGravityCalc(Vec3 &pos, bool addGravity);
 
 	//to be used for projectile calculations
-	void addProjectileCalc(Vec3 &pos, Vec3 &velocity, Vec3 &acceleration);
+	void fireProjectile(Vec3 &pos, Vec3 direction);
+	void fireProjectileAt(Vec3 &pos, Vec3 target);
 
 	//walk along the look vector kept in Orientation
 	void walk(Vec3 &pos, float speed);
@@ -82,7 +89,7 @@ public:
 
 	Vec3 movePushed(Vec3 pos);
 
-	//rotate in relation to given vector plus an offset (angle)
+	//rotate in relation to given vector plus an offset (angle) and move
 	void moveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, Vec3 &rot, float angleY);
 	void moveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, float speed,Vec3 &rot, float angleY);
 	
