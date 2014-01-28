@@ -5,8 +5,8 @@
 #include "GraphicsEngine.h"
 #include "Camera.h"
 
-#define MAX_ZOOM 50
-#define MIN_ZOOM 100
+#define MAX_ZOOM 20
+#define MIN_ZOOM 60
 
 class DLL_API CameraControllImpl : CameraController
 {
@@ -39,6 +39,7 @@ private:
 	float targetPitch; // The target pitch. Used in Lerp calculations
 	float targetYaw; // The target yaw. Used in Lerp calculations
 	float targetY; // The Y-pos of the target. Used for Lerp.
+	float targetZoom; 
 };
 
 DLL_API CameraController* CreateCameraControll(Camera *c);
