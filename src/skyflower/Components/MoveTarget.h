@@ -114,16 +114,6 @@ public:
 
 	void setContinuous(bool continuous)
 	{
-		if (!continuous)
-		{
-			// Stop moving
-			m_state = MoveTargetStateIdle;
-		}
-		else
-		{
-			moveToSpawn();
-		}
-
 		m_continuous = continuous;
 	}
 
