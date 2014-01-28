@@ -8,6 +8,12 @@
 #include "..\shared\Vec3.h"
 #include <DirectXMath.h>
 
+enum
+{
+	POST_PROCESSING_SSAO = (1 << 0),
+	POST_PROCESSING_DOF  = (1 << 1),
+};
+
 struct Draw2DInput
 {
 	void* operator new (size_t size)
@@ -75,6 +81,8 @@ public:
 
 	virtual void Clear() = 0;
 
+	virtual unsigned int GetPostProcessingEffects() = 0;
+	virtual void SetPostProcessingEffects(unsigned int effects) = 0;
 	virtual void SetDepthOfFieldFocusPlanes(float nearBlurryPlane, float nearSharpPlane, float farSharpPlane, float farBlurryPlane) = 0;
 };
 

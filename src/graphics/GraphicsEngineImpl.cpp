@@ -277,6 +277,8 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mOrthoWindow = new OrthoWindow();
 	mOrthoWindow->Initialize(mD3D->GetDevice(), width, height);
 
+	mPostProcessingEffects = POST_PROCESSING_SSAO | POST_PROCESSING_DOF;
+
 	return true;
 }
 
@@ -324,81 +326,85 @@ void GraphicsEngineImpl::DrawScene()
 	// Turn off Z-buffer to begin 2D-drawing
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDisabledDSS, 1);
 
-	// SSAO pass
-#if 0
-	float clearColor[4] = {1.0, 1.0, 1.0, 1.0};
-	mD3D->GetImmediateContext()->ClearRenderTargetView(mSSAOTexture->GetRenderTargetView(), clearColor);
-#else
-	D3D11_VIEWPORT SSAOViewport;
-	SSAOViewport.TopLeftX = 0;
-	SSAOViewport.TopLeftY = 0;
-	SSAOViewport.Width = (float)mSSAOTexture->GetWidth();
-	SSAOViewport.Height = (float)mSSAOTexture->GetHeight();
-	SSAOViewport.MinDepth = 0.0f;
-	SSAOViewport.MaxDepth = 1.0f;
+	ID3D11RenderTargetView* renderTarget;
 
-	mD3D->GetImmediateContext()->RSSetViewports(1, &SSAOViewport);
+	if (mPostProcessingEffects & POST_PROCESSING_SSAO)
+	{
+		D3D11_VIEWPORT SSAOViewport;
+		SSAOViewport.TopLeftX = 0;
+		SSAOViewport.TopLeftY = 0;
+		SSAOViewport.Width = (float)mSSAOTexture->GetWidth();
+		SSAOViewport.Height = (float)mSSAOTexture->GetHeight();
+		SSAOViewport.MinDepth = 0.0f;
+		SSAOViewport.MaxDepth = 1.0f;
 
-	// Calculate ambient occlusion
-	ID3D11RenderTargetView* renderTarget = mSSAOTexture->GetRenderTargetView();
-	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
+		mD3D->GetImmediateContext()->RSSetViewports(1, &SSAOViewport);
 
-	mShaderHandler->mSSAOShader->SetDepthTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
-	mShaderHandler->mSSAOShader->SetNormalTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Normal));
-	mShaderHandler->mSSAOShader->SetRandomTexture(mD3D->GetImmediateContext(), mTextureMgr->CreateTexture(mResourceDir + "Textures/random.png"));
+		// Calculate ambient occlusion
+		renderTarget = mSSAOTexture->GetRenderTargetView();
+		mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
 
-	mShaderHandler->mSSAOShader->SetInverseProjectionMatrix(XMMatrixInverse(nullptr, mCamera->GetProjMatrix()));
-	mShaderHandler->mSSAOShader->SetViewMatrix(mCamera->GetViewMatrix());
-	mShaderHandler->mSSAOShader->SetZFar(zFar);
-	mShaderHandler->mSSAOShader->Update(mD3D->GetImmediateContext());
+		mShaderHandler->mSSAOShader->SetDepthTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
+		mShaderHandler->mSSAOShader->SetNormalTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Normal));
+		mShaderHandler->mSSAOShader->SetRandomTexture(mD3D->GetImmediateContext(), mTextureMgr->CreateTexture(mResourceDir + "Textures/random.png"));
 
-	mShaderHandler->mSSAOShader->SetActive(mD3D->GetImmediateContext());
+		mShaderHandler->mSSAOShader->SetInverseProjectionMatrix(XMMatrixInverse(nullptr, mCamera->GetProjMatrix()));
+		mShaderHandler->mSSAOShader->SetViewMatrix(mCamera->GetViewMatrix());
+		mShaderHandler->mSSAOShader->SetZFar(zFar);
+		mShaderHandler->mSSAOShader->Update(mD3D->GetImmediateContext());
 
-	// Render a fullscreen quad without a vertex buffer using some shader magic.
-	mD3D->GetImmediateContext()->Draw(3, 0);
+		mShaderHandler->mSSAOShader->SetActive(mD3D->GetImmediateContext());
 
-	mShaderHandler->mSSAOShader->SetDepthTexture(mD3D->GetImmediateContext(), NULL);
-	mShaderHandler->mSSAOShader->SetNormalTexture(mD3D->GetImmediateContext(), NULL);
-	mShaderHandler->mSSAOShader->SetRandomTexture(mD3D->GetImmediateContext(), NULL);
+		// Render a fullscreen quad without a vertex buffer using some shader magic.
+		mD3D->GetImmediateContext()->Draw(3, 0);
+
+		mShaderHandler->mSSAOShader->SetDepthTexture(mD3D->GetImmediateContext(), NULL);
+		mShaderHandler->mSSAOShader->SetNormalTexture(mD3D->GetImmediateContext(), NULL);
+		mShaderHandler->mSSAOShader->SetRandomTexture(mD3D->GetImmediateContext(), NULL);
 	
-	// Horizontal blur
-	renderTarget = mSSAOBlurTexture->GetRenderTargetView();
-	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
+		// Horizontal blur
+		renderTarget = mSSAOBlurTexture->GetRenderTargetView();
+		mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
 
-	mShaderHandler->mSSAOBlurHorizontalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mSSAOTexture->GetShaderResourceView());
-	mShaderHandler->mSSAOBlurHorizontalShader->SetInputTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
+		mShaderHandler->mSSAOBlurHorizontalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mSSAOTexture->GetShaderResourceView());
+		mShaderHandler->mSSAOBlurHorizontalShader->SetInputTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
 
-	mShaderHandler->mSSAOBlurHorizontalShader->SetFramebufferSize(XMFLOAT2((float)mSSAOTexture->GetWidth(), (float)mSSAOTexture->GetHeight()));
-	mShaderHandler->mSSAOBlurHorizontalShader->SetZNearFar(zNear, zFar);
-	mShaderHandler->mSSAOBlurHorizontalShader->Update(mD3D->GetImmediateContext());
+		mShaderHandler->mSSAOBlurHorizontalShader->SetFramebufferSize(XMFLOAT2((float)mSSAOTexture->GetWidth(), (float)mSSAOTexture->GetHeight()));
+		mShaderHandler->mSSAOBlurHorizontalShader->SetZNearFar(zNear, zFar);
+		mShaderHandler->mSSAOBlurHorizontalShader->Update(mD3D->GetImmediateContext());
 
-	mShaderHandler->mSSAOBlurHorizontalShader->SetActive(mD3D->GetImmediateContext());
+		mShaderHandler->mSSAOBlurHorizontalShader->SetActive(mD3D->GetImmediateContext());
 
-	// Render a fullscreen quad without a vertex buffer using some shader magic.
-	mD3D->GetImmediateContext()->Draw(3, 0);
+		// Render a fullscreen quad without a vertex buffer using some shader magic.
+		mD3D->GetImmediateContext()->Draw(3, 0);
 
-	mShaderHandler->mSSAOBlurHorizontalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), NULL);
-	mShaderHandler->mSSAOBlurHorizontalShader->SetInputTexture(mD3D->GetImmediateContext(), NULL);
+		mShaderHandler->mSSAOBlurHorizontalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), NULL);
+		mShaderHandler->mSSAOBlurHorizontalShader->SetInputTexture(mD3D->GetImmediateContext(), NULL);
 
-	// Vertical blur
-	renderTarget = mSSAOTexture->GetRenderTargetView();
-	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
+		// Vertical blur
+		renderTarget = mSSAOTexture->GetRenderTargetView();
+		mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
 
-	mShaderHandler->mSSAOBlurVerticalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mSSAOBlurTexture->GetShaderResourceView());
-	mShaderHandler->mSSAOBlurVerticalShader->SetInputTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
+		mShaderHandler->mSSAOBlurVerticalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mSSAOBlurTexture->GetShaderResourceView());
+		mShaderHandler->mSSAOBlurVerticalShader->SetInputTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
 
-	mShaderHandler->mSSAOBlurVerticalShader->SetFramebufferSize(XMFLOAT2((float)mSSAOTexture->GetWidth(), (float)mSSAOTexture->GetHeight()));
-	mShaderHandler->mSSAOBlurVerticalShader->SetZNearFar(zNear, zFar);
-	mShaderHandler->mSSAOBlurVerticalShader->Update(mD3D->GetImmediateContext());
+		mShaderHandler->mSSAOBlurVerticalShader->SetFramebufferSize(XMFLOAT2((float)mSSAOTexture->GetWidth(), (float)mSSAOTexture->GetHeight()));
+		mShaderHandler->mSSAOBlurVerticalShader->SetZNearFar(zNear, zFar);
+		mShaderHandler->mSSAOBlurVerticalShader->Update(mD3D->GetImmediateContext());
 
-	mShaderHandler->mSSAOBlurVerticalShader->SetActive(mD3D->GetImmediateContext());
+		mShaderHandler->mSSAOBlurVerticalShader->SetActive(mD3D->GetImmediateContext());
 
-	// Render a fullscreen quad without a vertex buffer using some shader magic.
-	mD3D->GetImmediateContext()->Draw(3, 0);
+		// Render a fullscreen quad without a vertex buffer using some shader magic.
+		mD3D->GetImmediateContext()->Draw(3, 0);
 
-	mShaderHandler->mSSAOBlurVerticalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), NULL);
-	mShaderHandler->mSSAOBlurVerticalShader->SetInputTexture(mD3D->GetImmediateContext(), NULL);
-#endif
+		mShaderHandler->mSSAOBlurVerticalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), NULL);
+		mShaderHandler->mSSAOBlurVerticalShader->SetInputTexture(mD3D->GetImmediateContext(), NULL);
+	}
+	else
+	{
+		float clearColor[4] = {1.0, 1.0, 1.0, 1.0};
+		mD3D->GetImmediateContext()->ClearRenderTargetView(mSSAOTexture->GetRenderTargetView(), clearColor);
+	}
 
 	renderTarget = mIntermediateTexture->GetRenderTargetView();
 	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
@@ -437,92 +443,109 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mLightDeferredShader->SetSSAOTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mLightDeferredShader->SetDepthTexture(mD3D->GetImmediateContext(), NULL);
 
-	// Depth of field
-	D3D11_VIEWPORT DoFViewport;
-	DoFViewport.TopLeftX = 0;
-	DoFViewport.TopLeftY = 0;
-	DoFViewport.Width = (float)mDoFCoCTexture->GetWidth();
-	DoFViewport.Height = (float)mDoFCoCTexture->GetHeight();
-	DoFViewport.MinDepth = 0.0f;
-	DoFViewport.MaxDepth = 1.0f;
+	if (mPostProcessingEffects & POST_PROCESSING_DOF)
+	{
+		D3D11_VIEWPORT DoFViewport;
+		DoFViewport.TopLeftX = 0;
+		DoFViewport.TopLeftY = 0;
+		DoFViewport.Width = (float)mDoFCoCTexture->GetWidth();
+		DoFViewport.Height = (float)mDoFCoCTexture->GetHeight();
+		DoFViewport.MinDepth = 0.0f;
+		DoFViewport.MaxDepth = 1.0f;
 
-	mD3D->GetImmediateContext()->RSSetViewports(1, &DoFViewport);
+		mD3D->GetImmediateContext()->RSSetViewports(1, &DoFViewport);
 
-	// Calculate the circle of confusion.
-	renderTarget = mDoFCoCTexture->GetRenderTargetView();
-	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
+		// Calculate the circle of confusion.
+		renderTarget = mDoFCoCTexture->GetRenderTargetView();
+		mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
 
-	mShaderHandler->mDepthOfFieldCoCShader->SetDepthTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
+		mShaderHandler->mDepthOfFieldCoCShader->SetDepthTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
 
-	mShaderHandler->mDepthOfFieldCoCShader->SetZNearFar(zNear, zFar);
-	mShaderHandler->mDepthOfFieldCoCShader->SetFocusPlanes(mNearBlurryPlane, mNearSharpPlane, mFarSharpPlane, mFarBlurryPlane);
-	mShaderHandler->mDepthOfFieldCoCShader->Update(mD3D->GetImmediateContext());
+		mShaderHandler->mDepthOfFieldCoCShader->SetZNearFar(zNear, zFar);
+		mShaderHandler->mDepthOfFieldCoCShader->SetFocusPlanes(mNearBlurryPlane, mNearSharpPlane, mFarSharpPlane, mFarBlurryPlane);
+		mShaderHandler->mDepthOfFieldCoCShader->Update(mD3D->GetImmediateContext());
 
-	mShaderHandler->mDepthOfFieldCoCShader->SetActive(mD3D->GetImmediateContext());
+		mShaderHandler->mDepthOfFieldCoCShader->SetActive(mD3D->GetImmediateContext());
 
-	// Render a fullscreen quad without a vertex buffer using some shader magic.
-	mD3D->GetImmediateContext()->Draw(3, 0);
+		// Render a fullscreen quad without a vertex buffer using some shader magic.
+		mD3D->GetImmediateContext()->Draw(3, 0);
 
-	mShaderHandler->mDepthOfFieldCoCShader->SetDepthTexture(mD3D->GetImmediateContext(), NULL);
+		mShaderHandler->mDepthOfFieldCoCShader->SetDepthTexture(mD3D->GetImmediateContext(), NULL);
 
-	// Horizontal blur
-	renderTarget = mDoFBlurTexture1->GetRenderTargetView();
-	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
+		// Horizontal blur
+		renderTarget = mDoFBlurTexture1->GetRenderTargetView();
+		mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
 
-	mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mIntermediateTexture->GetShaderResourceView());
-	mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetInputTexture(mD3D->GetImmediateContext(), mDoFCoCTexture->GetShaderResourceView());
+		mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mIntermediateTexture->GetShaderResourceView());
+		mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetInputTexture(mD3D->GetImmediateContext(), mDoFCoCTexture->GetShaderResourceView());
 
-	mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetFramebufferSize(XMFLOAT2((float)mDoFCoCTexture->GetWidth(), (float)mDoFCoCTexture->GetHeight()));
-	mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetZNearFar(zNear, zFar);
-	mShaderHandler->mDepthOfFieldBlurHorizontalShader->Update(mD3D->GetImmediateContext());
+		mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetFramebufferSize(XMFLOAT2((float)mDoFCoCTexture->GetWidth(), (float)mDoFCoCTexture->GetHeight()));
+		mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetZNearFar(zNear, zFar);
+		mShaderHandler->mDepthOfFieldBlurHorizontalShader->Update(mD3D->GetImmediateContext());
 
-	mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetActive(mD3D->GetImmediateContext());
+		mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetActive(mD3D->GetImmediateContext());
 
-	// Render a fullscreen quad without a vertex buffer using some shader magic.
-	mD3D->GetImmediateContext()->Draw(3, 0);
+		// Render a fullscreen quad without a vertex buffer using some shader magic.
+		mD3D->GetImmediateContext()->Draw(3, 0);
 
-	mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), NULL);
-	mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetInputTexture(mD3D->GetImmediateContext(), NULL);
+		mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), NULL);
+		mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetInputTexture(mD3D->GetImmediateContext(), NULL);
 
-	// Vertical blur
-	renderTarget = mDoFBlurTexture2->GetRenderTargetView();
-	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
+		// Vertical blur
+		renderTarget = mDoFBlurTexture2->GetRenderTargetView();
+		mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
 
-	mShaderHandler->mDepthOfFieldBlurVerticalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mDoFBlurTexture1->GetShaderResourceView());
-	mShaderHandler->mDepthOfFieldBlurVerticalShader->SetInputTexture(mD3D->GetImmediateContext(), mDoFCoCTexture->GetShaderResourceView());
+		mShaderHandler->mDepthOfFieldBlurVerticalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mDoFBlurTexture1->GetShaderResourceView());
+		mShaderHandler->mDepthOfFieldBlurVerticalShader->SetInputTexture(mD3D->GetImmediateContext(), mDoFCoCTexture->GetShaderResourceView());
 
-	mShaderHandler->mDepthOfFieldBlurVerticalShader->SetFramebufferSize(XMFLOAT2((float)mDoFCoCTexture->GetWidth(), (float)mDoFCoCTexture->GetHeight()));
-	mShaderHandler->mDepthOfFieldBlurVerticalShader->SetZNearFar(zNear, zFar);
-	mShaderHandler->mDepthOfFieldBlurVerticalShader->Update(mD3D->GetImmediateContext());
+		mShaderHandler->mDepthOfFieldBlurVerticalShader->SetFramebufferSize(XMFLOAT2((float)mDoFCoCTexture->GetWidth(), (float)mDoFCoCTexture->GetHeight()));
+		mShaderHandler->mDepthOfFieldBlurVerticalShader->SetZNearFar(zNear, zFar);
+		mShaderHandler->mDepthOfFieldBlurVerticalShader->Update(mD3D->GetImmediateContext());
 
-	mShaderHandler->mDepthOfFieldBlurVerticalShader->SetActive(mD3D->GetImmediateContext());
+		mShaderHandler->mDepthOfFieldBlurVerticalShader->SetActive(mD3D->GetImmediateContext());
 
-	// Render a fullscreen quad without a vertex buffer using some shader magic.
-	mD3D->GetImmediateContext()->Draw(3, 0);
+		// Render a fullscreen quad without a vertex buffer using some shader magic.
+		mD3D->GetImmediateContext()->Draw(3, 0);
 
-	mShaderHandler->mDepthOfFieldBlurVerticalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), NULL);
-	mShaderHandler->mDepthOfFieldBlurVerticalShader->SetInputTexture(mD3D->GetImmediateContext(), NULL);
+		mShaderHandler->mDepthOfFieldBlurVerticalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), NULL);
+		mShaderHandler->mDepthOfFieldBlurVerticalShader->SetInputTexture(mD3D->GetImmediateContext(), NULL);
+
+		// Reset the render target to the back buffer.
+		renderTarget = mD3D->GetRenderTargetView();
+		mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
+		// Reset viewport
+ 		mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
+
+		// Composite the result of the light pass with the depth of field.
+		mShaderHandler->mCompositeShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mIntermediateTexture->GetShaderResourceView());
+		mShaderHandler->mCompositeShader->SetDoFCoCTexture(mD3D->GetImmediateContext(), mDoFCoCTexture->GetShaderResourceView());
+		mShaderHandler->mCompositeShader->SetDoFFarFieldTexture(mD3D->GetImmediateContext(), mDoFBlurTexture2->GetShaderResourceView());
+
+		mShaderHandler->mCompositeShader->Update(mD3D->GetImmediateContext());
+		mShaderHandler->mCompositeShader->SetActive(mD3D->GetImmediateContext());
+
+		// Render a fullscreen quad without a vertex buffer using some shader magic.
+		mD3D->GetImmediateContext()->Draw(3, 0);
+
+		mShaderHandler->mCompositeShader->SetFramebufferTexture(mD3D->GetImmediateContext(), NULL);
+		mShaderHandler->mCompositeShader->SetDoFCoCTexture(mD3D->GetImmediateContext(), NULL);
+		mShaderHandler->mCompositeShader->SetDoFFarFieldTexture(mD3D->GetImmediateContext(), NULL);
+	}
+	else
+	{
+		ID3D11Resource *source = mIntermediateTexture->GetTexture();
+		ID3D11Resource *destination;
+		mD3D->GetSwapChain()->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&destination));
+
+		// Copy the result of the light pass to the backbuffer.
+		mD3D->GetImmediateContext()->CopyResource(destination, source);
+	}
 
 	// Reset the render target to the back buffer.
 	renderTarget = mD3D->GetRenderTargetView();
 	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
 	// Reset viewport
  	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
-
-	// Composite the result of the light pass with the depth of field.
-	mShaderHandler->mCompositeShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mIntermediateTexture->GetShaderResourceView());
-	mShaderHandler->mCompositeShader->SetDoFCoCTexture(mD3D->GetImmediateContext(), mDoFCoCTexture->GetShaderResourceView());
-	mShaderHandler->mCompositeShader->SetDoFFarFieldTexture(mD3D->GetImmediateContext(), mDoFBlurTexture2->GetShaderResourceView());
-
-	mShaderHandler->mCompositeShader->Update(mD3D->GetImmediateContext());
-	mShaderHandler->mCompositeShader->SetActive(mD3D->GetImmediateContext());
-
-	// Render a fullscreen quad without a vertex buffer using some shader magic.
-	mD3D->GetImmediateContext()->Draw(3, 0);
-
-	mShaderHandler->mCompositeShader->SetFramebufferTexture(mD3D->GetImmediateContext(), NULL);
-	mShaderHandler->mCompositeShader->SetDoFCoCTexture(mD3D->GetImmediateContext(), NULL);
-	mShaderHandler->mCompositeShader->SetDoFFarFieldTexture(mD3D->GetImmediateContext(), NULL);
 
 	// Turn z-buffer back on
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDefaultDSS, 1);
@@ -953,6 +976,16 @@ void GraphicsEngineImpl::Clear()
 
 	mD3D->GetImmediateContext()->ClearDepthStencilView(mD3D->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
+}
+
+unsigned int GraphicsEngineImpl::GetPostProcessingEffects()
+{
+	return mPostProcessingEffects;
+}
+
+void GraphicsEngineImpl::SetPostProcessingEffects(unsigned int effects)
+{
+	mPostProcessingEffects = effects;
 }
 
 void GraphicsEngineImpl::SetDepthOfFieldFocusPlanes(float nearBlurryPlane, float nearSharpPlane, float farSharpPlane, float farBlurryPlane)

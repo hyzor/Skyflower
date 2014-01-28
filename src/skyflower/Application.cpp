@@ -266,6 +266,12 @@ void Application::OnKeyDown(unsigned short key)
 		}
 
 		break;
+	case 'P':
+		m_graphicsEngine->SetPostProcessingEffects(m_graphicsEngine->GetPostProcessingEffects() ^ POST_PROCESSING_SSAO);
+		break;
+	case 'O':
+		m_graphicsEngine->SetPostProcessingEffects(m_graphicsEngine->GetPostProcessingEffects() ^ POST_PROCESSING_DOF);
+		break;
 	default:
 		break;
 	}

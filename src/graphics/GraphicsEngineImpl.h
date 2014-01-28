@@ -72,6 +72,8 @@ public:
 
 	void Clear();
 
+	unsigned int GetPostProcessingEffects();
+	void SetPostProcessingEffects(unsigned int effects);
 	void SetDepthOfFieldFocusPlanes(float nearBlurryPlane, float nearSharpPlane, float farSharpPlane, float farBlurryPlane);
 
 private:
@@ -126,6 +128,8 @@ private:
 
 	float morphTimeTest;
 	bool morphIncrease;
+
+	unsigned int mPostProcessingEffects;
 };
 
 #endif
