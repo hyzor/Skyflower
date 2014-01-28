@@ -62,6 +62,7 @@ private:
 	InputHandler *m_inputHandler;
 	GraphicsEngine *m_graphicsEngine;
 	SoundEngine *m_soundEngine;
+	PhysicsEngine* m_physicsEngine;
 	EntityManager* entityManager;
 	CameraController *camera;
 	GUI *m_GUI;

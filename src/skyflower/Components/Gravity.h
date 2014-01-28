@@ -6,7 +6,7 @@
 #include <iostream>
 #include <sstream>
 #include "shared/Vec3.h"
-#include "physics/Physics.h"
+#include "physics/PhysicsEngine.h"
 #include "physics/Collision.h"
 #include "Entity.h"
 using namespace std;
@@ -53,7 +53,7 @@ public:
 	}
 
 private:
-	Physics* p;
+	PhysicsEntity* p;
 	bool enabled;
 };
 
