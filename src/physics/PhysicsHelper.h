@@ -16,22 +16,22 @@
 
 namespace PhysicsHelper
 {
-	float ToRadians(float degrees)
+	inline float ToRadians(float degrees)
 	{
 		return (degrees * PI / 180.0f);
 	}
 
-	float ToDegrees(float radians)
+	inline float ToDegrees(float radians)
 	{
 		return (radians * 180.0f / PI);
 	}
 
-	Vec3 ToRadians(Vec3 degrees)
+	inline Vec3 ToRadians(Vec3 degrees)
 	{
 		return Vec3(ToRadians(degrees.X), ToRadians(degrees.Y), ToRadians(degrees.Z));
 	}
 
-	Vec3 ToDegrees(Vec3 radians)
+	inline Vec3 ToDegrees(Vec3 radians)
 	{
 		return Vec3(ToDegrees(radians.X), ToDegrees(radians.Y), ToDegrees(radians.Z));
 	}
