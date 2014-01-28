@@ -1078,8 +1078,19 @@ public:
 	}
 
 	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
-	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
-	bool SetActive(ID3D11DeviceContext* dc);
+	//bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+
+	bool BindShaders(
+		ID3D11VertexShader* streamOutVS,
+		ID3D11GeometryShader* streamOutGS,
+		ID3D11VertexShader* drawVS,
+		ID3D11GeometryShader* drawGS,
+		ID3D11PixelShader* drawPS);
+
+	bool SetActive(ID3D11DeviceContext* dc) { return false; }
+
+	void ActivateDrawShaders(ID3D11DeviceContext* dc);
+	void ActivateStreamShaders(ID3D11DeviceContext* dc);
 
 	void SetViewProj(XMMATRIX& viewProj);
 	void SetTexArray(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* texArray);
@@ -1090,33 +1101,61 @@ public:
 
 	void SetTime(float gameTime, float dt);
 
-	void UpdatePerParticleSystem(ID3D11DeviceContext* dc);
+	//void UpdatePerParticleSystem(ID3D11DeviceContext* dc);
+
+	void UpdateDrawShaders(ID3D11DeviceContext* dc);
+	void UpdateStreamOutShaders(ID3D11DeviceContext* dc);
 
 private:
 	void Update(ID3D11DeviceContext* dc) { ; }
 
-	struct VS_CPEROBJBUFFER
+	struct DRAW_GS_PERFRAMEBUFFER
 	{
 		XMFLOAT3 eyePosW;
-		XMFLOAT3 emitPosW;
-		XMFLOAT3 emitDirW;
-
-		float gameTime;
-		float timeStep;
+		float padding;
 
 		XMMATRIX viewProj;
 	};
 
+	struct STREAMOUT_GS_PERFRAMEBUFFER
+	{
+		XMFLOAT3 eyePosW;
+		float gameTime;
+
+		XMFLOAT3 emitPosW;
+		float timeStep;
+
+		XMFLOAT3 emitDirW;
+		float padding;
+	};
+
 	struct BUFFERCACHE
 	{
-		VS_CPEROBJBUFFER vsPerObjBuffer;
+		DRAW_GS_PERFRAMEBUFFER drawGSPerFrameBuffer;
+		STREAMOUT_GS_PERFRAMEBUFFER streamOutGSPerFrameBuffer;
 	};
 
 	struct BUFFERCACHE mBufferCache;
 
-	// VS - per object
-	ID3D11Buffer* vs_cPerObjBuffer;
-	VS_CPEROBJBUFFER vs_cPerObjBufferVariables;
+	// Draw GS per frame
+	ID3D11Buffer* draw_GS_PerFrameBuffer;
+	DRAW_GS_PERFRAMEBUFFER draw_GS_PerFrameBufferVariables;
+
+	// StreamOut GS per frame
+	ID3D11Buffer* streamOut_GS_PerFrameBuffer;
+	STREAMOUT_GS_PERFRAMEBUFFER streamOut_GS_perFrameBufferVariables;
+
+	// Shaders
+	ID3D11VertexShader* mDrawParticleVS;
+	ID3D11GeometryShader* mDrawParticleGS;
+	ID3D11PixelShader* mDrawParticlePS;
+
+	ID3D11VertexShader* mStreamOutVS;
+	ID3D11GeometryShader* mStreamOutGS;
+
+	// Shared data
+	ID3D11ShaderResourceView* mTexArray;
+	ID3D11ShaderResourceView* mRandomTex;
 };
 #pragma endregion ParticleSystemShader
 
@@ -1144,7 +1183,8 @@ public:
 enum ShaderType
 {
 	VERTEXSHADER = 0,
-	PIXELSHADER
+	PIXELSHADER,
+	GEOMETRYSHADER
 };
 
 struct Shader
@@ -1163,9 +1203,12 @@ public:
 
 	void LoadCompiledVertexShader(LPCWSTR fileName, char* name, ID3D11Device* device);
 	void LoadCompiledPixelShader(LPCWSTR fileName, char* name, ID3D11Device* device);
+	void LoadCompiledGeometryShader(LPCWSTR fileName, char* name, ID3D11Device* device);
+	void LoadCompiledGeometryStreamOutShader(LPCWSTR fileName, char* name, ID3D11Device* device, D3D11_SO_DECLARATION_ENTRY pDecl[], UINT pDeclSize, UINT rasterizedStream);
 
 	ID3D11VertexShader* GetVertexShader(std::string name);
 	ID3D11PixelShader* GetPixelShader(std::string name);
+	ID3D11GeometryShader* GetGeometryShader(std::string name);
 
 	Shader* GetShader(std::string name);
 
@@ -1200,6 +1243,7 @@ private:
 
 	std::map<std::string, ID3D11VertexShader*> mVertexShaders;
 	std::map<std::string, ID3D11PixelShader*> mPixelShaders;
+	std::map<std::string, ID3D11GeometryShader*> mGeometryShaders;
 
 	std::vector<Shader*> mShaders;
 };

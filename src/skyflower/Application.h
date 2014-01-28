@@ -57,6 +57,8 @@ private:
 
 private:
 	double m_oldTime;
+	double mGameTime;
+	double mStartTime;
 
 	Window *m_window;
 	InputHandler *m_inputHandler;

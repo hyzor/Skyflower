@@ -27,6 +27,8 @@
 
 #include "MorphModel.h"
 
+#include "ParticleSystem.h"
+
 const float fovY = 0.785398f; // 0.25f * MathHelper::pi
 const float zNear = 1.0f;
 const float zFar = 10000.0f;
@@ -128,6 +130,9 @@ private:
 	bool morphIncrease;
 
 	float mGameTime;
+
+	ParticleSystem* mParticleSystem;
+	ID3D11ShaderResourceView* mRandom1DTexSRV;
 };
 
 #endif

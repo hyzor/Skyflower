@@ -46,6 +46,13 @@ ShaderHandler::~ShaderHandler()
 	}
 	mPixelShaders.clear();
 
+	for (auto& it(mGeometryShaders.begin()); it != mGeometryShaders.end(); ++it)
+	{
+		if (it->second)
+			it->second->Release();
+	}
+	mGeometryShaders.clear();
+
 	delete mBasicShader;
 	delete mSkyShader;
 	delete mNormalSkinned;
@@ -117,6 +124,68 @@ void ShaderHandler::LoadCompiledPixelShader(LPCWSTR fileName, char* name, ID3D11
 	mPixelShaders[name] = pShader;
 }
 
+void ShaderHandler::LoadCompiledGeometryShader(LPCWSTR fileName, char* name, ID3D11Device* device)
+{
+	HRESULT hr;
+
+	Shader* shader = new Shader();
+	shader->Name = name;
+	shader->Type = GEOMETRYSHADER;
+	hr = D3DReadFileToBlob(fileName, &shader->Buffer);
+
+	if (FAILED(hr))
+	{
+		std::wstringstream ErrorMsg;
+		ErrorMsg << "Failed to load geometry shader " << fileName;
+		MessageBox(0, ErrorMsg.str().c_str(), 0, 0);
+	}
+
+	mShaders.push_back(shader);
+
+	// Create the actual shader
+	ID3D11GeometryShader* gShader;
+	hr = device->CreateGeometryShader(mShaders.back()->Buffer->GetBufferPointer(),
+		mShaders.back()->Buffer->GetBufferSize(), nullptr, &gShader);
+	mGeometryShaders[name] = gShader;
+}
+
+void ShaderHandler::LoadCompiledGeometryStreamOutShader(LPCWSTR fileName, char* name, ID3D11Device* device, D3D11_SO_DECLARATION_ENTRY pDecl[], UINT pDeclSize, UINT rasterizedStream)
+{
+	HRESULT hr;
+
+	Shader* shader = new Shader();
+	shader->Name = name;
+	shader->Type = GEOMETRYSHADER;
+	hr = D3DReadFileToBlob(fileName, &shader->Buffer);
+
+	if (FAILED(hr))
+	{
+		std::wstringstream ErrorMsg;
+		ErrorMsg << "Failed to load geometry shader " << fileName;
+		MessageBox(0, ErrorMsg.str().c_str(), 0, 0);
+	}
+
+	mShaders.push_back(shader);
+
+	// Create the actual shader
+	ID3D11GeometryShader* gShader;
+// 	hr = device->CreateGeometryShader(mShaders.back()->Buffer->GetBufferPointer(),
+// 		mShaders.back()->Buffer->GetBufferSize(), nullptr, &gShader);
+// 	mGeometryShaders[name] = gShader;
+
+	hr = device->CreateGeometryShaderWithStreamOutput(
+		mShaders.back()->Buffer->GetBufferPointer(),
+		mShaders.back()->Buffer->GetBufferSize(),
+		/*Stream out declaration*/pDecl,
+		pDeclSize,
+		NULL,
+		0,
+		rasterizedStream,
+		NULL,
+		&gShader);
+	mGeometryShaders[name] = gShader;
+}
+
 BYTE* ShaderHandler::LoadByteCode(char* fileName, UINT& size)
 {
 	FILE* file = 0;
@@ -169,6 +238,20 @@ ID3D11PixelShader* ShaderHandler::GetPixelShader(std::string name)
 		return NULL;
 	}
 }
+
+ID3D11GeometryShader* ShaderHandler::GetGeometryShader(std::string name)
+{
+	if (mGeometryShaders[name])
+		return mGeometryShaders[name];
+	else
+	{
+		std::wstringstream ErrorMsg;
+		ErrorMsg << "Failed to get geometry shader " << name.c_str();
+		MessageBox(0, ErrorMsg.str().c_str(), 0, 0);
+		return NULL;
+	}
+}
+
 
 Shader* ShaderHandler::GetShader(std::string name)
 {
@@ -2365,20 +2448,24 @@ ParticleSystemShader::ParticleSystemShader()
 
 ParticleSystemShader::~ParticleSystemShader()
 {
+	if (draw_GS_PerFrameBuffer)
+		draw_GS_PerFrameBuffer->Release();
 
+	if (streamOut_GS_PerFrameBuffer)
+		streamOut_GS_PerFrameBuffer->Release();
 }
 
 bool ParticleSystemShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
 {
 	//------------------------
-	// Vertex shader buffers
+	// Geometry shader buffers
 	//------------------------
-	// PER OBJECT BUFFER
-	ZeroMemory(&vs_cPerObjBufferVariables, sizeof(VS_CPEROBJBUFFER));
+	// DRAW GS PER FRAME
+	ZeroMemory(&draw_GS_PerFrameBufferVariables, sizeof(DRAW_GS_PERFRAMEBUFFER));
 
 	// Fill in a buffer description.
 	D3D11_BUFFER_DESC cbDesc;
-	cbDesc.ByteWidth = sizeof(VS_CPEROBJBUFFER);
+	cbDesc.ByteWidth = sizeof(DRAW_GS_PERFRAMEBUFFER);
 	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
 	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
@@ -2387,18 +2474,40 @@ bool ParticleSystemShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLa
 
 	// Fill in the subresource data.
 	D3D11_SUBRESOURCE_DATA InitData;
-	InitData.pSysMem = &vs_cPerObjBufferVariables;
+	InitData.pSysMem = &draw_GS_PerFrameBufferVariables;
 	InitData.SysMemPitch = 0;
 	InitData.SysMemSlicePitch = 0;
 
 	// Now create the buffer
-	device->CreateBuffer(&cbDesc, &InitData, &vs_cPerObjBuffer);
+	device->CreateBuffer(&cbDesc, &InitData, &draw_GS_PerFrameBuffer);
+
+	// STREAMOUT GS PER FRAME
+	ZeroMemory(&streamOut_GS_perFrameBufferVariables, sizeof(STREAMOUT_GS_PERFRAMEBUFFER));
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC cbDesc_2;
+	cbDesc_2.ByteWidth = sizeof(STREAMOUT_GS_PERFRAMEBUFFER);
+	cbDesc_2.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc_2.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc_2.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc_2.MiscFlags = 0;
+	cbDesc_2.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA InitData_2;
+	InitData_2.pSysMem = &streamOut_GS_perFrameBufferVariables;
+	InitData_2.SysMemPitch = 0;
+	InitData_2.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	device->CreateBuffer(&cbDesc_2, &InitData_2, &streamOut_GS_PerFrameBuffer);
 
 	mInputLayout = inputLayout;
 
 	return true;
 }
 
+/*
 bool ParticleSystemShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
 {
 	mVertexShader = vShader;
@@ -2406,46 +2515,127 @@ bool ParticleSystemShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelS
 
 	return true;
 }
+*/
 
+bool ParticleSystemShader::BindShaders(
+	ID3D11VertexShader* streamOutVS,
+	ID3D11GeometryShader* streamOutGS,
+	ID3D11VertexShader* drawVS,
+	ID3D11GeometryShader* drawGS,
+	ID3D11PixelShader* drawPS)
+{
+	mStreamOutVS = streamOutVS;
+	mStreamOutGS = streamOutGS;
+	mDrawParticleVS = drawVS;
+	mDrawParticleGS = drawGS;
+	mDrawParticlePS = drawPS;
+
+	return true;
+}
+
+/*
 bool ParticleSystemShader::SetActive(ID3D11DeviceContext* dc)
 {
+	dc->IASetInputLayout(mInputLayout);
+
 	// Set active shaders
 	dc->VSSetShader(mVertexShader, nullptr, 0);
 	dc->PSSetShader(mPixelShader, nullptr, 0);
 
 	return true;
 }
+*/
 
 void ParticleSystemShader::SetViewProj(XMMATRIX& viewProj)
 {
-	mBufferCache.vsPerObjBuffer.viewProj = XMMatrixTranspose(viewProj);
+	mBufferCache.drawGSPerFrameBuffer.viewProj = XMMatrixTranspose(viewProj);
 }
 
 void ParticleSystemShader::SetTexArray(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* texArray)
 {
+	mTexArray = texArray;
 }
 
 void ParticleSystemShader::SetRandomTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* randomTex)
 {
-
+	mRandomTex = randomTex;
 }
 
 void ParticleSystemShader::SetEyePosW(XMFLOAT3 eyePosW)
 {
-
+	mBufferCache.drawGSPerFrameBuffer.eyePosW = eyePosW;
+	mBufferCache.streamOutGSPerFrameBuffer.eyePosW = eyePosW;
 }
 
 void ParticleSystemShader::SetEmitProperties(XMFLOAT3 emitPosW, XMFLOAT3 emitDirW)
 {
-
+	mBufferCache.streamOutGSPerFrameBuffer.emitPosW = emitPosW;
+	mBufferCache.streamOutGSPerFrameBuffer.emitDirW = emitDirW;
 }
 
 void ParticleSystemShader::SetTime(float gameTime, float dt)
 {
-
+	mBufferCache.streamOutGSPerFrameBuffer.gameTime = gameTime;
+	mBufferCache.streamOutGSPerFrameBuffer.timeStep = dt;
 }
 
-void ParticleSystemShader::UpdatePerParticleSystem(ID3D11DeviceContext* dc)
+void ParticleSystemShader::UpdateDrawShaders(ID3D11DeviceContext* dc)
 {
+	// Update constant shader buffers using our cache
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
+	// Vertex shader per obj buffer
+	dc->Map(draw_GS_PerFrameBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	DRAW_GS_PERFRAMEBUFFER* dataPtr = (DRAW_GS_PERFRAMEBUFFER*)mappedResource.pData;
+	*dataPtr = mBufferCache.drawGSPerFrameBuffer;
+
+	dc->Unmap(draw_GS_PerFrameBuffer, 0);
+
+	dc->GSSetConstantBuffers(0, 1, &draw_GS_PerFrameBuffer);
+
+	dc->PSSetShaderResources(0, 1, &mTexArray);
+}
+
+void ParticleSystemShader::UpdateStreamOutShaders(ID3D11DeviceContext* dc)
+{
+	// Update constant shader buffers using our cache
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	// Vertex shader per obj buffer
+	dc->Map(streamOut_GS_PerFrameBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	STREAMOUT_GS_PERFRAMEBUFFER* dataPtr = (STREAMOUT_GS_PERFRAMEBUFFER*)mappedResource.pData;
+	*dataPtr = mBufferCache.streamOutGSPerFrameBuffer;
+
+	dc->Unmap(streamOut_GS_PerFrameBuffer, 0);
+
+	dc->GSSetConstantBuffers(0, 1, &streamOut_GS_PerFrameBuffer);
+
+	// Set textures
+	dc->GSSetShaderResources(0, 1, &mRandomTex);
+}
+
+void ParticleSystemShader::ActivateDrawShaders(ID3D11DeviceContext* dc)
+{
+	dc->IASetInputLayout(mInputLayout);
+
+	// Set active shaders
+	dc->VSSetShader(mDrawParticleVS, nullptr, 0);
+	dc->GSSetShader(mDrawParticleGS, nullptr, 0);
+	dc->PSSetShader(mDrawParticlePS, nullptr, 0);
+
+	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
+}
+
+void ParticleSystemShader::ActivateStreamShaders(ID3D11DeviceContext* dc)
+{
+	dc->IASetInputLayout(mInputLayout);
+
+	// Set active shaders
+	dc->VSSetShader(mStreamOutVS, nullptr, 0);
+	dc->GSSetShader(mStreamOutGS, nullptr, 0);
+	dc->PSSetShader(nullptr, nullptr, 0);
+
+	dc->GSSetSamplers(0, 1, &RenderStates::mLinearSS);
 }

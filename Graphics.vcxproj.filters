@@ -19,6 +19,9 @@
     <Filter Include="Models">
       <UniqueIdentifier>{dd18e703-b7c2-4018-9386-6a8ad130ca6d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\Particle System">
+      <UniqueIdentifier>{d26e061e-40e2-45bf-b370-80554617b641}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\graphics\MathHelper.cpp">
@@ -313,11 +316,20 @@
     <FxCompile Include="src\graphics\Shaders\ShadowBuildMorphVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="src\graphics\Shaders\ParticleSystemVS.hlsl">
-      <Filter>Shaders</Filter>
+    <FxCompile Include="src\graphics\Shaders\StreamOutParticleGS.hlsl">
+      <Filter>Shaders\Particle System</Filter>
     </FxCompile>
-    <FxCompile Include="src\graphics\Shaders\ParticleSystemPS.hlsl">
-      <Filter>Shaders</Filter>
+    <FxCompile Include="src\graphics\Shaders\StreamOutParticleVS.hlsl">
+      <Filter>Shaders\Particle System</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\DrawParticlePS.hlsl">
+      <Filter>Shaders\Particle System</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\DrawParticleVS.hlsl">
+      <Filter>Shaders\Particle System</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\DrawParticleGS.hlsl">
+      <Filter>Shaders\Particle System</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -326,6 +338,9 @@
     </None>
     <None Include="src\graphics\Shaders\Blur.hlsli">
       <Filter>Shaders</Filter>
+    </None>
+    <None Include="src\graphics\Shaders\ParticleSystemShared.hlsli">
+      <Filter>Shaders\Particle System</Filter>
     </None>
   </ItemGroup>
 </Project>

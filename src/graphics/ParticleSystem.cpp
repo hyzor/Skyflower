@@ -1,13 +1,33 @@
 #include "ParticleSystem.h"
 
+D3D11_SO_DECLARATION_ENTRY SoDeclarationEntry::ParticleSoDesc[5] =
+{
+	// semantic name, semantic index, start component, component count, output slot
+	{ 0, "POSITION", 0, 0, 3, 0 },	// output the first 3 of position
+	{ 0, "VELOCITY", 0, 0, 3, 0 }, // output the first 3 of velocity
+	{ 0, "SIZE", 0, 0, 2, 0 },		// output the first 2 of size
+	{ 0, "AGE", 0, 0, 1, 0 },		// output only the first from age
+	{ 0, "TYPE", 0, 0, 1, 0 },		// output only the first from type
+};
 
 ParticleSystem::ParticleSystem()
+: mInitVB(0), mDrawVB(0), mStreamOutVB(0), mTexArraySRV(0), mRandomTexSRV(0)
 {
-}
+	mFirstRun = true;
+	mGameTime = 0.0f;
+	mTimeStep = 0.0f;
+	mAge = 0.0f;
 
+	mEyePosW = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	mEmitPosW = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	mEmitDirW = XMFLOAT3(0.0f, 1.0f, 0.0f);
+}
 
 ParticleSystem::~ParticleSystem()
 {
+	ReleaseCOM(mInitVB);
+	ReleaseCOM(mDrawVB);
+	ReleaseCOM(mStreamOutVB);
 }
 
 float ParticleSystem::GetAge() const
@@ -42,7 +62,8 @@ void ParticleSystem::Init(ID3D11Device* device, ParticleSystemShader* shader, ID
 
 void ParticleSystem::Reset()
 {
-
+	mFirstRun = true;
+	mAge = 0.0f;
 }
 
 void ParticleSystem::Update(float dt, float gameTime)
@@ -55,16 +76,62 @@ void ParticleSystem::Update(float dt, float gameTime)
 
 void ParticleSystem::Draw(ID3D11DeviceContext* dc, const Camera& cam)
 {
-	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	// Set shader constants
-	mShader->SetActive(dc);
+	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
+	// Disable depth buffer for stream-out only
+	dc->OMSetDepthStencilState(RenderStates::mDisabledDSS, 1);
+
+	// Set shader constants
+	//mShader->SetActive(dc);
 	mShader->SetEmitProperties(mEmitPosW, mEmitDirW);
 	mShader->SetEyePosW(mEyePosW);
 	mShader->SetTexArray(dc, mTexArraySRV);
 	mShader->SetRandomTex(dc, mRandomTexSRV);
+	mShader->SetTime(mGameTime, mTimeStep);
 	mShader->SetViewProj(cam.GetViewProjMatrix());
-	mShader->UpdatePerParticleSystem(dc);
+
+	mShader->ActivateStreamShaders(dc);
+	mShader->UpdateStreamOutShaders(dc);
+
+	UINT stride = sizeof(Vertex::Particle);
+	UINT offset = 0;
+
+	if (mFirstRun)
+		dc->IASetVertexBuffers(0, 1, &mInitVB, &stride, &offset);
+	else
+		dc->IASetVertexBuffers(0, 1, &mDrawVB, &stride, &offset);
+
+	// First draw current particle list using stream-out only
+	dc->SOSetTargets(1, &mStreamOutVB, &offset);
+	// Use StreamOutParticleVS and StreamOutParticleGS
+
+	if (mFirstRun)
+	{
+		dc->Draw(1, 0);
+		mFirstRun = false;
+	}
+	else
+	{
+		dc->DrawAuto();
+	}
+
+	// Streaming-out done, unbind vertex buffer
+	ID3D11Buffer* bufferArray[1] = { 0 };
+	dc->SOSetTargets(1, bufferArray, &offset);
+
+	// Swap draw vertex buffer with stream-out vertex buffer
+	std::swap(mDrawVB, mStreamOutVB);
+
+	// Restore depth buffer
+	dc->OMSetDepthStencilState(0, 0);
+
+	// Now draw the update particle system we just streamed out
+	// Use DrawParticleVS, DrawParticleGS and DrawParticlePS
+	mShader->ActivateDrawShaders(dc);
+	mShader->UpdateDrawShaders(dc);
+
+	dc->IASetVertexBuffers(0, 1, &mDrawVB, &stride, &offset);
+	dc->DrawAuto();
 }
 
 void ParticleSystem::BuildVB(ID3D11Device* device)

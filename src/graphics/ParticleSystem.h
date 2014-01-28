@@ -7,6 +7,13 @@
 
 using namespace DirectX;
 
+// Stream-out declaration entries
+class SoDeclarationEntry
+{
+public:
+	static D3D11_SO_DECLARATION_ENTRY ParticleSoDesc[5];
+};
+
 class ParticleSystem
 {
 public:

@@ -8,6 +8,7 @@ GraphicsEngineImpl::GraphicsEngineImpl()
 
 GraphicsEngineImpl::~GraphicsEngineImpl()
 {
+	ReleaseCOM(mRandom1DTexSRV);
 
 	for (auto& it(mModels.begin()); it != mModels.end(); ++it)
 	{
@@ -45,6 +46,7 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 		delete mMorphInstances[i];
 	}
 
+	delete mParticleSystem;
 	delete mSky;
 	delete mShadowMap;
 	delete mCamera;
@@ -179,6 +181,16 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\DepthOfFieldBlurVerticalPS.cso", "DepthOfFieldBlurVerticalPS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\CompositePS.cso", "CompositePS", mD3D->GetDevice());
 
+	// Particle system shaders
+	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\DrawParticleVS.cso", "DrawParticleVS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledGeometryShader(L"..\\shaders\\DrawParticleGS.cso", "DrawParticleGS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\DrawParticlePS.cso", "DrawParticlePS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\StreamOutParticleVS.cso", "StreamOutParticleVS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledGeometryStreamOutShader(L"..\\shaders\\StreamOutParticleGS.cso", "StreamOutParticleGS", mD3D->GetDevice(),
+		SoDeclarationEntry::ParticleSoDesc,
+		COUNT_OF(SoDeclarationEntry::ParticleSoDesc),
+		D3D11_SO_NO_RASTERIZED_STREAM);
+
 	// Bind loaded shaders to shader objects
 	mShaderHandler->mBasicShader->BindShaders(
 		mShaderHandler->GetVertexShader("BasicVS"),
@@ -237,9 +249,16 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 		mShaderHandler->GetVertexShader("ShadowBuildMorphVS"),
 		mShaderHandler->GetPixelShader("ShadowBuildMorphPS"));
 
+	// Particle system
+	mShaderHandler->mParticleSystemShader->BindShaders(
+		mShaderHandler->GetVertexShader("StreamOutParticleVS"),
+		mShaderHandler->GetGeometryShader("StreamOutParticleGS"),
+		mShaderHandler->GetVertexShader("DrawParticleVS"),
+		mShaderHandler->GetGeometryShader("DrawParticleGS"),
+		mShaderHandler->GetPixelShader("DrawParticlePS"));
+
 	// Now create all the input layouts
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("BasicVS"), InputLayoutDesc::PosNormalTex, COUNT_OF(InputLayoutDesc::PosNormalTex), &mInputLayouts->PosNormalTex);
-	//mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("ShadowBuildVS"), InputLayoutDesc::Position, COUNT_OF(InputLayoutDesc::Position), &mInputLayouts->Position);
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("SkyVS"), InputLayoutDesc::Position, COUNT_OF(InputLayoutDesc::Position), &mInputLayouts->Position);
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("NormalMapSkinnedVS"),
 		InputLayoutDesc::PosNormalTexTanSkinned,
@@ -247,6 +266,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 		&mInputLayouts->PosNormalTexTanSkinned);
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("LightDeferredVS"), InputLayoutDesc::PosTex, COUNT_OF(InputLayoutDesc::PosTex), &mInputLayouts->PosTex);
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("BasicDeferredMorphVS"), InputLayoutDesc::PosNormalTexTargets4, COUNT_OF(InputLayoutDesc::PosNormalTexTargets4), &mInputLayouts->PosNormalTexTargets4);
+	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("StreamOutParticleVS"), InputLayoutDesc::Particle, COUNT_OF(InputLayoutDesc::Particle), &mInputLayouts->Particle);
 
 	// Init all the shader objects
 	mShaderHandler->mBasicShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTex);
@@ -267,6 +287,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mCompositeShader->Init(mD3D->GetDevice(), NULL);
 	mShaderHandler->mDeferredMorphShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTargets4);
 	mShaderHandler->mShadowMorphShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTargets4);
+	mShaderHandler->mParticleSystemShader->Init(mD3D->GetDevice(), mInputLayouts->Particle);
 
 	std::string fontPath = mResourceDir + "myfile.spritefont";
 	std::wstring fontPathW(fontPath.begin(), fontPath.end());
@@ -277,6 +298,19 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	// Create orthogonal window
 	mOrthoWindow = new OrthoWindow();
 	mOrthoWindow->Initialize(mD3D->GetDevice(), width, height);
+
+	mRandom1DTexSRV = d3dHelper::CreateRandomTexture1DSRV(mD3D->GetDevice());
+
+	// Particle system
+	mParticleSystem = new ParticleSystem();
+	mParticleSystem->Init(
+		mD3D->GetDevice(),
+		mShaderHandler->mParticleSystemShader,
+		// TODO: Support 2D SRV arrays
+		/*texArraySRV*/mTextureMgr->CreateTexture(mResourceDir + "Textures/Particles/flare0.dds"),
+		/*randomTexSRV*//*mTextureMgr->CreateTexture(mResourceDir + "Textures/random.png")*/mRandom1DTexSRV,
+		1000);
+	mParticleSystem->SetEmitPos(XMFLOAT3(0.0f, 25.0f, 0.0f));
 
 	return true;
 }
@@ -565,6 +599,8 @@ void GraphicsEngineImpl::UpdateScene(float dt, float gameTime)
 	}
 	*/
 
+	mParticleSystem->Update(dt, gameTime);
+
 	mCamera->Update();
 }
 
@@ -841,6 +877,17 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 			}
 		}
 	}
+
+	//---------------------------------------------------------------------------------------
+	// Particles
+	//---------------------------------------------------------------------------------------
+	//mD3D->GetImmediateContext()->RSSetState(0);
+	mParticleSystem->SetEyePos(mCamera->GetPosition());
+	mParticleSystem->Draw(mD3D->GetImmediateContext(), *mCamera);
+	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff); // restore default
+
+	// Restore to not using a geometry shader
+	mD3D->GetImmediateContext()->GSSetShader(nullptr, nullptr, 0);
 
 	// Reset the render target back to the original back buffer and not the render buffers
 	ID3D11RenderTargetView* renderTargets[1] = { mD3D->GetRenderTargetView() };

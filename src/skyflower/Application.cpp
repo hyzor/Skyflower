@@ -118,7 +118,11 @@ void Application::Start()
 	double time, deltaTime;
 	double timeSinceLight = 0;
 
+	//startTime = GetTime();
+
+	mGameTime = 0.0;
 	m_oldTime = GetTime();
+	mStartTime = GetTime();
 	m_quit = false;
 
 	while(!m_quit)
@@ -127,6 +131,8 @@ void Application::Start()
 		deltaTime = time - m_oldTime;
 		m_oldTime = time;
 		timeSinceLight += deltaTime;
+
+		mGameTime = time - mStartTime;
 
 		frameTimeChart.AddPoint(time, deltaTime * 1000.0);
 		memoryChart.AddPoint(time, GetMemoryUsage() / (1024.0 * 1024.0));
@@ -152,7 +158,7 @@ void Application::Start()
 		switch (gameState)
 		{
 		case GameState::game:
-			updateGame((float)deltaTime, (float)time, playerMove);
+			updateGame((float)deltaTime, (float)mGameTime, playerMove);
 			break;
 		case GameState::loading:
 			updateLoading((float)deltaTime);
