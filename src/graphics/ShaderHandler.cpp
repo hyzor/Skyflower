@@ -161,7 +161,7 @@ void ShaderHandler::LoadCompiledGeometryStreamOutShader(LPCWSTR fileName, char* 
 	if (FAILED(hr))
 	{
 		std::wstringstream ErrorMsg;
-		ErrorMsg << "Failed to load geometry shader " << fileName;
+		ErrorMsg << "Failed to load geometry stream out shader " << fileName;
 		MessageBox(0, ErrorMsg.str().c_str(), 0, 0);
 	}
 

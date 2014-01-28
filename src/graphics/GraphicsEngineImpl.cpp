@@ -186,6 +186,8 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->LoadCompiledGeometryShader(L"..\\shaders\\DrawParticleGS.cso", "DrawParticleGS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\DrawParticlePS.cso", "DrawParticlePS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\StreamOutParticleVS.cso", "StreamOutParticleVS", mD3D->GetDevice());
+
+	// ERROR: Causes the Graphics Diagnostics to fail
 	mShaderHandler->LoadCompiledGeometryStreamOutShader(L"..\\shaders\\StreamOutParticleGS.cso", "StreamOutParticleGS", mD3D->GetDevice(),
 		SoDeclarationEntry::ParticleSoDesc,
 		COUNT_OF(SoDeclarationEntry::ParticleSoDesc),
