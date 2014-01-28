@@ -271,6 +271,27 @@ int Event::IsTouching(lua_State* L)
 	return 1;
 }
 
+int Event::IsStanding(lua_State* L)
+{
+	int n = lua_gettop(L);
+
+	if (n >= 2)
+	{
+		EntityId aiId = lua_tointeger(L, 1);
+		EntityId targetId = lua_tointeger(L, 2);
+
+		Entity* entityAi = entityManager->getEntity(aiId);
+		Entity* entityTarget = entityManager->getEntity(targetId);
+
+		lua_pushboolean(L, entityAi->ground == entityTarget);
+		return 1;
+	}
+
+
+	lua_pushboolean(L, false);
+	return 1;
+}
+
 int Event::CanPush(lua_State* L)
 {
 	int n = lua_gettop(L);

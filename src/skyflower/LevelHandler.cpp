@@ -1,10 +1,11 @@
 #include "LevelHandler.h"
 #include "ScriptHandler.h"
+#include <string>
 
 char* levels[] = {
-	"testWorld.xml",
-	"testWorld2.xml",
-	"testExport.xml"
+	"testWorld",
+	"testWorld2",
+	"testExport"
 };
 
 #define LEVEL_COUNT 3
@@ -108,8 +109,17 @@ void LevelHandler::loadQueued(int id)
 			j--;
 		}
 	}
-	_entityManager->loadXML(_levels.at(queueID)._path);
+
+	std::string xmlfile = _levels.at(queueID)._path;
+	xmlfile += ".xml";
+	_entityManager->loadXML(xmlfile);
 	_current = queueID;
+
+
+	std::string luafile = _levels.at(queueID)._path;
+	luafile += ".lua";
+	_entityManager->modules->script->Run(luafile);
+
 	loading = false;
 }
 
