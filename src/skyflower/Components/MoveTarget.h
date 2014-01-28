@@ -57,19 +57,7 @@ public:
 		m_progress += deltaTime / m_duration;
 		m_progress = std::max(0.0f, std::min(1.0f, m_progress));
 
-		float positionalProgress;
-
-		if (m_progress < 0.5f)
-		{
-			// Ease in
-			positionalProgress = powf(m_progress * 2.0f, m_easingPower) * 0.5f;
-		}
-		else
-		{
-			// Ease out
-			positionalProgress = (1.0f - powf(1.0f - (m_progress - 0.5f) * 2.0f, m_easingPower)) * 0.5f + 0.5f;
-		}
-
+		float positionalProgress = GetPositionalProgress(m_progress);
 		Vec3 targetPosition = (m_state == MoveTargetStateMovingToTarget? m_targetPosition : m_spawnPosition);
 		Vec3 direction = (targetPosition - getEntityPos()).Normalize();
 		Vec3 position = targetPosition - direction * m_travelDistance * (1.0f - positionalProgress);
@@ -102,6 +90,7 @@ public:
 
 	void moveToSpawn()
 	{
+		// FIXME: This is positional progress!
 		m_progress = 1.0f - (getEntityPos() - m_spawnPosition).Length() / m_travelDistance;
 		m_state = MoveTargetStateMovingToSpawn;
 	}
@@ -115,6 +104,21 @@ public:
 	void setContinuous(bool continuous)
 	{
 		m_continuous = continuous;
+	}
+
+private:
+	float GetPositionalProgress(float progress)
+	{
+		if (progress < 0.5f)
+		{
+			// Ease in
+			return powf(progress * 2.0f, m_easingPower) * 0.5f;
+		}
+		else
+		{
+			// Ease out
+			return (1.0f - powf(1.0f - (progress - 0.5f) * 2.0f, m_easingPower)) * 0.5f + 0.5f;
+		}
 	}
 
 private:
