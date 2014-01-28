@@ -56,7 +56,7 @@ public:
 
 private:
 
-	Physics *p;
+	PhysicsEntity *p;
 	bool isPushed;
 	Vec3 startPos;			//position the entity have when being pushed
 	float maxDistance;		//the distance the entity will be pushed

@@ -46,6 +46,8 @@ void Application::Start()
 	m_soundEngine = CreateSoundEngine("../../content/sounds/");
 	assert(m_soundEngine);
 
+	m_physicsEngine = new PhysicsEngine();
+
 	m_backgroundMusicMenu.push_back("music/ants.opus");
 
 	m_backgroundMusicGame.push_back("music/creepy.opus");
@@ -71,9 +73,9 @@ void Application::Start()
 	modules.potentialField = new PotentialField();
 
 	modules.script = new ScriptHandler();
-	modules.script->Run("testWorld2.lua");
 	Event::Register(modules.script);
 
+	modules.physicsEngine = m_physicsEngine;
 	
 	entityManager = new EntityManager("../../XML/", &modules);
 
@@ -180,6 +182,7 @@ void Application::Start()
 	delete entityManager;
 	DestroySoundEngine(m_soundEngine);
 	DestroyGraphicsEngine(m_graphicsEngine);
+	delete m_physicsEngine;
 	delete m_window;
 }
 
@@ -268,6 +271,12 @@ void Application::OnKeyDown(unsigned short key)
 			m_menu->setActive(true);
 		}
 
+		break;
+	case 'P':
+		m_graphicsEngine->SetPostProcessingEffects(m_graphicsEngine->GetPostProcessingEffects() ^ POST_PROCESSING_SSAO);
+		break;
+	case 'O':
+		m_graphicsEngine->SetPostProcessingEffects(m_graphicsEngine->GetPostProcessingEffects() ^ POST_PROCESSING_DOF);
 		break;
 	default:
 		break;

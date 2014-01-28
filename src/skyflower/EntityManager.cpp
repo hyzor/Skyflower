@@ -1242,16 +1242,16 @@ void EntityManager::handleCollision()
 				//reset jump
 				if (t == -1)
 				{
-					Vec3 vel = fEntitys[i]->physics->getVelocity();
+					Vec3 vel = fEntitys[i]->mPhysicsEntity->getVelocity();
 					if (vel.Y < 0)
 						vel.Y = 0;
-					fEntitys[i]->physics->setVelocity(vel);
-					fEntitys[i]->physics->setJumping(false);
+					fEntitys[i]->mPhysicsEntity->setVelocity(vel);
+					fEntitys[i]->mPhysicsEntity->setJumping(false);
 
 				}
 				if (t == 1)
 				{
-					fEntitys[i]->physics->setVelocity(Vec3());
+					fEntitys[i]->mPhysicsEntity->setVelocity(Vec3());
 					ground = nullptr;
 				}
 			}

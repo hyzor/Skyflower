@@ -386,3 +386,24 @@ int Event::MoveToSpawn(lua_State* L)
 
 	return 0;
 }
+
+int Event::SetContinous(lua_State* L)
+{
+	int n = lua_gettop(L);
+
+	assert(n == 2);
+
+	EntityId entityID = lua_tointeger(L, 1);
+	bool continous = lua_toboolean(L, 2)? true : false;
+	Entity *entity = entityManager->getEntity(entityID);
+
+	if (entity)
+	{
+		MoveTargetComponent *component = entity->getComponent<MoveTargetComponent *>("MoveTarget");
+
+		if (component)
+			component->setContinuous(continous);
+	}
+
+	return 0;
+}

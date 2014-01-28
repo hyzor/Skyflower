@@ -112,6 +112,21 @@ public:
 		m_state = MoveTargetStateMovingToTarget;
 	}
 
+	void setContinuous(bool continuous)
+	{
+		if (!continuous)
+		{
+			// Stop moving
+			m_state = MoveTargetStateIdle;
+		}
+		else
+		{
+			moveToSpawn();
+		}
+
+		m_continuous = continuous;
+	}
+
 private:
 	Vec3 m_spawnPosition;
 	Vec3 m_targetPosition;

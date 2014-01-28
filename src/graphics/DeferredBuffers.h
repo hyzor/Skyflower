@@ -9,7 +9,6 @@ enum DeferredBuffersIndex
 	Diffuse = 0,
 	Normal,
 	Specular,
-	Position,
 	Count
 };
 
@@ -19,7 +18,6 @@ public:
 	DeferredBuffers();
 	~DeferredBuffers();
 
-	bool Init(ID3D11Device* device, UINT width, UINT height, float nearZ, float farZ);
 	bool Init(ID3D11Device* device, UINT width, UINT height);
 	void OnResize(ID3D11Device* device, UINT width, UINT height);
 

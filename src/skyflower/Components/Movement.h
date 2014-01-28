@@ -7,7 +7,7 @@
 #include <sstream>
 #include "shared/Vec3.h"
 #include "shared/util.h"
-#include "physics/Physics.h"
+#include "physics/PhysicsEngine.h"
 #include "physics/Collision.h"
 #include "Entity.h"
 #include "Health.h"
@@ -188,7 +188,7 @@ public:
 	}
 
 private:
-	Physics* p;
+	PhysicsEntity* p;
 	bool isMovingForward;
 	bool isMovingBackward;
 	bool isMovingLeft;
