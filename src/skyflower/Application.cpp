@@ -279,6 +279,18 @@ void Application::OnKeyDown(unsigned short key)
 	case 'O':
 		m_graphicsEngine->SetPostProcessingEffects(m_graphicsEngine->GetPostProcessingEffects() ^ POST_PROCESSING_DOF);
 		break;
+	case 'T':
+	{
+		static const size_t num_taunts = 2;
+		static const char *taunts[num_taunts] = {
+			"quake/taunt1.wav",
+			"quake/taunt2.wav"
+		};
+
+		Vec3 position = Vec3(0.0f, 0.0f, 0.0f);
+		m_soundEngine->PlaySound(taunts[rand() % num_taunts], &position.X, 0.25f, true);
+		break;
+	}
 	default:
 		break;
 	}

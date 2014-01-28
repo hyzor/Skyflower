@@ -17,6 +17,12 @@ using namespace Cistron;
 
 #define MAX_JUMP_KEY_TIME 0.4f
 
+#define NUM_FALLING_SOUNDS 2
+static const char *fallingSounds[NUM_FALLING_SOUNDS] = {
+	"player/wilhelm_scream.wav",
+	"quake/falling1.wav"
+};
+
 class Movement : public Component {
 
 public:
@@ -92,7 +98,7 @@ public:
 				if (getOwnerId() == 1)
 				{
 					float soundPosition[3] = { 0.0f, 0.0f, 0.0f };
-					getOwner()->getModules()->sound->PlaySound("player/wilhelm_scream.wav", soundPosition, 0.25f, true);
+					getOwner()->getModules()->sound->PlaySound(fallingSounds[rand() % NUM_FALLING_SOUNDS], soundPosition, 0.25f, true);
 				}
 			}
 
