@@ -682,7 +682,7 @@ void GraphicsEngineImpl::DeleteInstance(AnimatedInstance* ai)
 	}
 
 	if (index != -1)
-		mInstances.erase(mInstances.begin() + index);
+		mAnimatedInstances.erase(mAnimatedInstances.begin() + index);
 
 	if (!found) //delete model if no other instance uses it
 	{
