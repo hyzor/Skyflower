@@ -592,7 +592,7 @@ void GraphicsEngineImpl::Present()
 {
 	// Present the back buffer to front buffer
 	// Set SyncInterval to 1 if you want to limit the FPS to the monitors refresh rate
-	HR(mD3D->GetSwapChain()->Present(1, 0));
+	HR(mD3D->GetSwapChain()->Present(0, 0));
 }
 
 void GraphicsEngineImpl::Begin2D()
