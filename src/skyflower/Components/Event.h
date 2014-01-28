@@ -53,6 +53,7 @@ public:
 		// MoveTarget component
 		lua_register(sh->L, "MoveToTarget", Event::MoveToTarget);
 		lua_register(sh->L, "MoveToSpawn", Event::MoveToSpawn);
+		lua_register(sh->L, "SetContinous", Event::SetContinous);
 	};
 
 	// we are added to an Entity, and thus to the component system
@@ -114,6 +115,7 @@ private:
 
 	static int MoveToTarget(lua_State* L);
 	static int MoveToSpawn(lua_State* L);
+	static int SetContinous(lua_State* L);
 };
 
 #endif
