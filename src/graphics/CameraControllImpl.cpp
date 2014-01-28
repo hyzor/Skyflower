@@ -5,7 +5,8 @@ using namespace DirectX;
 
 XMMATRIX rotate;
 
-static float Lerp(float a, float b, float amount)
+template <typename T>
+static T Lerp(T a, T b, float amount)
 {
 	return a + (b - a) * amount;
 }
@@ -17,7 +18,7 @@ CameraControllImpl::CameraControllImpl(Camera *c)
 	pitch = 0;
 	targetPitch = 0;
 	targetYaw = 0;
-
+	targetZoom = offset;
 	Vec3 look(camera->GetLook().x, camera->GetLook().y, camera->GetLook().z);
 }
 
@@ -36,6 +37,7 @@ void CameraControllImpl::Update(float dt)
 	
 	target.Y = targetY;
 	camera->LookAt(target);
+	offset = Lerp(offset, targetZoom, 3 * dt);
 	SetPosition(Vec3(target + (o*offset)));
 }
 
@@ -112,17 +114,17 @@ void CameraControllImpl::RotateCamera(float mouseX, float mouseY)
 	if (targetYaw - yaw < 1 && targetYaw - yaw > -1)
 	{
 		targetYaw -= mouseX / 350;
-		targetPitch -= mouseY / 200;
+		targetPitch -= mouseY / 250;
 	}
 	if (targetPitch > 1)
 		targetPitch = 1;
-	else if (targetPitch < 0)
-		targetPitch = 0;
+	else if (targetPitch < -0.1)
+		targetPitch = -0.1;  
 }
 
 void CameraControllImpl::Zoom(float d, float speed)
 {
-	if ((d < 0 && offset < MIN_ZOOM) || (d > 0 && offset > MAX_ZOOM))
-		offset -= d * speed;
+	if ((d < 0 && targetZoom < MIN_ZOOM) || (d > 0 && targetZoom > MAX_ZOOM))
+		targetZoom -= d * speed;
 }
 

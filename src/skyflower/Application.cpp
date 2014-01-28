@@ -41,7 +41,7 @@ void Application::Start()
 	camera = m_graphicsEngine->CreateCameraController();
 
 	// FIXME: Tweaka dessa när vi har en riktig bana i spelet.
-	m_graphicsEngine->SetDepthOfFieldFocusPlanes(20.0f, 75.0f, 300.0f, 400.0f);
+	m_graphicsEngine->SetDepthOfFieldFocusPlanes(10.0f, 50.0f, 300.0f, 400.0f);
 
 	m_soundEngine = CreateSoundEngine("../../content/sounds/");
 	assert(m_soundEngine);
@@ -72,6 +72,7 @@ void Application::Start()
 	modules.sound = m_soundEngine;
 	modules.potentialField = new PotentialField();
 	modules.physicsEngine = m_physicsEngine;
+	modules.camera = camera;
 	
 	entityManager = new EntityManager("../../XML/", &modules);
 
@@ -236,7 +237,7 @@ void Application::OnMouseButtonUp(enum MouseButton button)
 
 void Application::OnMouseWheel(int delta)
 {
-	camera->Zoom((float)delta, 10.0f);
+	camera->Zoom((float)delta, 8.0f);
 }
 
 void Application::OnKeyDown(unsigned short key)

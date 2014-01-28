@@ -8,6 +8,7 @@
 #include "physics/PhysicsEngine.h"
 #include "PotentialField.h"
 #include "ScriptHandler.h"
+#include "graphics/CameraController.h"
 
 // IMPORTANT!
 // decide below which version you want - a version using boost::any or a version using a simple void pointer
@@ -33,6 +34,7 @@ struct Modules
 	PotentialField* potentialField;
 	ScriptHandler* script;
 	PhysicsEngine* physicsEngine;
+	CameraController* camera;
 };
 
 };
