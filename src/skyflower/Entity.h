@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "graphics/GraphicsEngine.h"
-#include "physics/Physics.h"
+#include "physics/PhysicsEngine.h"
 #include "PotentialField.h"
 
 namespace Cistron {
@@ -37,7 +37,7 @@ class Entity {
 		void update(float deltaTime);
 
 		const Modules *getModules();
-		Physics* getPhysics();
+		PhysicsEntity* getPhysics();
 		string getType();
 
 		template <typename T>
@@ -86,7 +86,7 @@ class Entity {
 		bool isActive;
 		ModelInstance* modelInst;
 		AnimatedInstance* AnimInst;
-		Physics* physics;
+		PhysicsEntity* mPhysicsEntity;
 		bool isAnimated;
 		bool isCollidible;
 

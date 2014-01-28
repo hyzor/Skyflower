@@ -39,9 +39,9 @@ Entity::Entity(const Modules *modules, EntityId id, EntityId relativeid, string 
 	this->model = model;
 	this->isVisible = isVisible;
 	this->isAnimated = isAnimated;
-	this->physics = new Physics();
 
 	this->modules = modules;
+	this->mPhysicsEntity = this->modules->physicsEngine->CreateEntity(this->mPhysicsEntity);
 
 	ground = nullptr;
 	wall = nullptr;
@@ -138,7 +138,8 @@ Entity::~Entity() {
 	if (field)
 		this->modules->potentialField->DeleteField(field);
 	
-	delete this->physics;
+	if (mPhysicsEntity)
+		this->modules->physicsEngine->DestroyEntity(mPhysicsEntity);
 }
 
 void Entity::update(float deltaTime)
@@ -161,9 +162,9 @@ const Modules *Entity::getModules()
 	return this->modules;
 }
 
-Physics* Entity::getPhysics()
+PhysicsEntity* Entity::getPhysics()
 {
-	return this->physics;
+	return this->mPhysicsEntity;
 }
 
 // is the Entity finalized

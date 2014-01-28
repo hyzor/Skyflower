@@ -5,6 +5,7 @@
 #include "graphics/GraphicsEngine.h"
 #include "InputHandler.h"
 #include "Sound/SoundEngine.h"
+#include "physics/PhysicsEngine.h"
 #include "PotentialField.h"
 #include "ScriptHandler.h"
 
@@ -31,6 +32,7 @@ struct Modules
 	SoundEngine *sound;
 	PotentialField* potentialField;
 	ScriptHandler* script;
+	PhysicsEngine* physicsEngine;
 };
 
 };

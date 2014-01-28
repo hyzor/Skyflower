@@ -46,6 +46,8 @@ void Application::Start()
 	m_soundEngine = CreateSoundEngine("../../content/sounds/");
 	assert(m_soundEngine);
 
+	m_physicsEngine = new PhysicsEngine();
+
 	m_backgroundMusicMenu.push_back("music/ants.opus");
 
 	m_backgroundMusicGame.push_back("music/creepy.opus");
@@ -69,6 +71,7 @@ void Application::Start()
 	modules.graphics = m_graphicsEngine;
 	modules.sound = m_soundEngine;
 	modules.potentialField = new PotentialField();
+	modules.physicsEngine = m_physicsEngine;
 	
 	entityManager = new EntityManager("../../XML/", &modules);
 
@@ -177,6 +180,7 @@ void Application::Start()
 	delete entityManager;
 	DestroySoundEngine(m_soundEngine);
 	DestroyGraphicsEngine(m_graphicsEngine);
+	delete m_physicsEngine;
 	delete m_window;
 }
 
