@@ -20,7 +20,7 @@ struct PixelOut
 	float4 Normal : SV_Target1;
 };
 
-PixelOut main(VertexOut pIn) : SV_TARGET
+PixelOut main(VertexOut pIn)// : SV_TARGET
 {
 	PixelOut pOut;
 

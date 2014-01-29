@@ -21,8 +21,8 @@ struct VertexOut
 	float4 Pos : SV_POSITION;
 	float2 Tex : TEXCOORD0;
 	//float4 ShadowPosH : TEXCOORD1;
-	float4 ProjTex : POSITION;
-	float4 shadowPosH : POSITION2;
+	//float4 ProjTex : POSITION;
+	//float4 shadowPosH : POSITION2;
 };
 
 VertexOut main(VertexIn vIn)
