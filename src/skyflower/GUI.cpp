@@ -24,6 +24,7 @@ void GUI::Destroy(GraphicsEngine* gEngine)
 	for (unsigned int i = 0; i < this->mGUIElements.size(); i++)
 	{
 		this->mGUIElements.at(i)->Destroy(gEngine);
+		delete this->mGUIElements.at(i);
 	}
 }
 
