@@ -29,7 +29,7 @@ PixelOut main(VertexOut pIn)// : SV_TARGET
 	// Skybox "always in shadow"
 	pOut.Color.w = 0.0f;
 
-	pOut.Normal.xyz = -1.0f;
+	pOut.Normal.xyz = 0.0f;
 
 	// Diffuse is initially fully lit
 	pOut.Normal.w = 1.0f;
