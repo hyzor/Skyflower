@@ -287,6 +287,11 @@ CameraController* GraphicsEngineImpl::CreateCameraController()
 	return CreateCameraControll(mCamera);
 }
 
+void GraphicsEngineImpl::DeleteCameraController(CameraController *controller)
+{
+	DestroyCameraController(controller);
+}
+
 void GraphicsEngineImpl::Run(float dt)
 {
 	UpdateScene(dt);

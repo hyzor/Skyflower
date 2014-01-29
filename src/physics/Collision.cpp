@@ -1,20 +1,13 @@
 #include "Collision.h"
 
-Collision* Collision::instance = nullptr;
-
 Collision::Collision()
 {
 }
+
 Collision::~Collision()
 {
 	for (std::map<std::string, CollisionModel*>::iterator it = models.begin(); it != models.end(); it++)
 		delete it->second;
-}
-Collision* Collision::GetInstance()
-{
-	if (!instance)
-		instance = new Collision();
-	return instance;
 }
 
 CollisionInstance* Collision::CreateCollisionInstance(std::string file, Vec3 pos)

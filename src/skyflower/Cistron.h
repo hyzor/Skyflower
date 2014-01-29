@@ -6,6 +6,7 @@
 #include "InputHandler.h"
 #include "Sound/SoundEngine.h"
 #include "physics/PhysicsEngine.h"
+#include "physics/Collision.h"
 #include "PotentialField.h"
 #include "ScriptHandler.h"
 #include "graphics/CameraController.h"
@@ -31,10 +32,11 @@ struct Modules
 	InputHandler *input;
 	GraphicsEngine *graphics;
 	SoundEngine *sound;
+	CameraController* camera;
+	PhysicsEngine* physicsEngine;
+	Collision *collision;
 	PotentialField* potentialField;
 	ScriptHandler* script;
-	PhysicsEngine* physicsEngine;
-	CameraController* camera;
 };
 
 };

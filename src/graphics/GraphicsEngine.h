@@ -71,6 +71,7 @@ public:
 	virtual void clearLights() = 0;
 
 	virtual CameraController *CreateCameraController() = 0;
+	virtual void DeleteCameraController(CameraController *controller) = 0;
 
 	virtual void UpdateSceneData() = 0;
 	virtual Texture2D *CreateTexture2D(unsigned int width, unsigned int height) = 0;

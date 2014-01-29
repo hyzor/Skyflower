@@ -1170,7 +1170,7 @@ void EntityManager::handleCollision()
 
 			if (fEntitys[i]->collInst)
 			{
-				Box bounds = fEntitys[i]->collInst->Model->GetBox();
+				Box bounds = fEntitys[i]->collInst->GetBox();
 				
 				Box small = bounds;
 				small.Position += Vec3(2, 2, 2);

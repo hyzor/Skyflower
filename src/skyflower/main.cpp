@@ -3,7 +3,6 @@
 #include <ctime>
 
 #include "Application.h"
-#include "Physics/collision.h"
 
 //int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 int main(int argc, const char *argv[])
@@ -17,10 +16,6 @@ int main(int argc, const char *argv[])
 
 	Application app;
 	app.Start();
-
-	//delete singletons
-	//delete levelHandler;
-	delete Collision::GetInstance();
 
 	return 0;
 }

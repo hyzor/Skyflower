@@ -55,6 +55,7 @@ public:
 	ModelInstance* CreateInstance(std::string file);
 	ModelInstance* CreateInstance(std::string file, Vec3 pos);
 	CameraController *CreateCameraController();
+	void DeleteCameraController(CameraController *controller);
 	void DeleteInstance(ModelInstance* mi);
 
 	AnimatedInstance* CreateAnimatedInstance(std::string file);

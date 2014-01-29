@@ -30,6 +30,14 @@ public:
 
 	void Start();
 
+private:
+	void updateGame(float dt, Movement* playerMove);
+	void updateMenu(float dt);
+	void updateLoading(float dt);
+	void changeGameState(GameState newState);
+
+	void setBackgroundMusicList(const std::vector<std::string> &musicList);
+
 public: // WindowListener
 	void OnWindowShouldClose();
 	void OnWindowResized(unsigned int width, unsigned int height);
@@ -46,28 +54,23 @@ public: // InputListener
 	void OnKeyDown(unsigned short key);
 	void OnKeyUp(unsigned short key);
 
-
-private:
-	void updateGame(float dt, Movement* playerMove);
-	void updateMenu(float dt);
-	void updateLoading(float dt);
-	void changeGameState(GameState newState);
-
-	void setBackgroundMusicList(const std::vector<std::string> &musicList);
-
 private:
 	double m_oldTime;
+	bool m_quit;
+	GameState gameState;
 
 	Window *m_window;
 	InputHandler *m_inputHandler;
 	GraphicsEngine *m_graphicsEngine;
 	SoundEngine *m_soundEngine;
+	CameraController *m_camera;
 	PhysicsEngine* m_physicsEngine;
-	EntityManager* entityManager;
-	CameraController *camera;
+	Collision *m_collision;
+	PotentialField *m_potentialField;
+	ScriptHandler *m_scriptHandler;
+	
+	EntityManager* m_entityManager;
 	GUI *m_GUI;
-	bool m_quit;
-	GameState gameState;
 	Menu *m_menu;
 
 	bool m_showCharts;

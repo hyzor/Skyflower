@@ -10,7 +10,7 @@
 class DLL_API Collision
 {
 	public:
-		static Collision* GetInstance();
+		Collision();
 		~Collision();
 
 		CollisionInstance* CreateCollisionInstance(std::string file, Vec3 Position);
@@ -19,14 +19,8 @@ class DLL_API Collision
 		std::vector<CollisionInstance*> GetCollisionInstances();
 
 	private:
-		Collision();
-		static Collision* instance;
-
 		std::map<std::string, CollisionModel*> models;
 		std::vector<CollisionInstance*> instances;
 };
-
-
-
 
 #endif

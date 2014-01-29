@@ -119,7 +119,7 @@ void CameraControllImpl::RotateCamera(float mouseX, float mouseY)
 	if (targetPitch > 1)
 		targetPitch = 1;
 	else if (targetPitch < -0.1)
-		targetPitch = -0.1;  
+		targetPitch = -0.1f;  
 }
 
 void CameraControllImpl::Zoom(float d, float speed)
