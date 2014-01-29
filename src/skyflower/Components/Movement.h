@@ -178,6 +178,25 @@ public:
 			}
 		}
 
+		if (getOwnerId() == 1 && getOwner()->getAnimatedInstance())
+		{
+			if (this->isInAir)
+			{
+				getOwner()->getAnimatedInstance()->SetAnimation(1);
+			}
+			else
+			{
+				if (p->getIsMoving())
+				{
+					getOwner()->getAnimatedInstance()->SetAnimation(0);
+				}
+				else
+				{
+					getOwner()->getAnimatedInstance()->SetAnimation(4);
+				}
+			}
+		}
+
 		updateEntityPos(pos);
 		updateEntityRot(rot);
 	}

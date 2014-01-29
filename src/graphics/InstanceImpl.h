@@ -51,6 +51,7 @@ public:
 	Vec3 GetPosition();
 	Vec3 GetRotation();
 	Vec3 GetScale();
+	int GetAnimation();
 
 	void SetVisibility(bool visible);
 	void SetPosition(Vec3 pos);

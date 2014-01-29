@@ -69,7 +69,7 @@ class Entity {
 		void changeRelative(Entity* ground);
 		void updateRelativePos(Vec3 pos);
 		Vec3 getRelativePos();
-
+		AnimatedInstance *getAnimatedInstance();
 
 		void updateRot(Vec3 rot);
 

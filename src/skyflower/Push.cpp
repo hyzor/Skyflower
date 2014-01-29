@@ -33,6 +33,13 @@ void Push::update(float dt)
 
 			pushedObject->updatePos(pushedObjectPos + dir * dt * pushedObject->getComponent<Movement*>("Movement")->GetSpeed());
 			pusher->updateRot(rotation);
+
+			EntityId pusherId = getOwnerId();
+
+			if (pusherId == 1 && pusher->getAnimatedInstance())
+			{
+				pusher->getAnimatedInstance()->SetAnimation(3);
+			}
 		}
 	}
 

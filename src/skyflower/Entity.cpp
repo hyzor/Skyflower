@@ -43,6 +43,9 @@ Entity::Entity(const Modules *modules, EntityId id, EntityId relativeid, string 
 	this->modules = modules;
 	this->mPhysicsEntity = this->modules->physicsEngine->CreateEntity(this->mPhysicsEntity);
 
+	modelInst = nullptr;
+	AnimInst = nullptr;
+
 	ground = nullptr;
 	wall = nullptr;
 
@@ -459,4 +462,9 @@ void Entity::updateRelativePos(Vec3 pos)
 Vec3 Entity::getRelativePos()
 {
 	return this->pos;
+}
+
+AnimatedInstance *Entity::getAnimatedInstance()
+{
+	return this->AnimInst;
 }

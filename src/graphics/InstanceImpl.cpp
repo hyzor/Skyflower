@@ -215,6 +215,11 @@ Vec3 AnimatedInstanceImpl::GetScale()
 	return scale;
 }
 
+int AnimatedInstanceImpl::GetAnimation()
+{
+	return model->mCurAnim;
+}
+
 XMMATRIX AnimatedInstanceImpl::GetWorld()
 {
 	return XMLoadFloat4x4(&modelWorld);
