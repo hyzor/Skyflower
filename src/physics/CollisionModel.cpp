@@ -1,5 +1,8 @@
 #include "CollisionModel.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 CollisionModel::CollisionModel()
 {
 	tree = nullptr;

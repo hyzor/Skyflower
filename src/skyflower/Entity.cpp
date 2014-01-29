@@ -6,6 +6,8 @@
 #include <iostream>
 #include <fstream>
 
+// Must be included last!
+#include "shared/debug.h"
 
 using namespace Cistron;
 

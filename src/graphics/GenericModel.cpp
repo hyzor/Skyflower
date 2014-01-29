@@ -1,5 +1,7 @@
 #include "GenericModel.h"
 
+// Must be included last!
+#include "shared/debug.h"
 
 GenericModel::GenericModel(ID3D11Device* device, TextureManager* textureMgr, const std::string& fileName)
 {

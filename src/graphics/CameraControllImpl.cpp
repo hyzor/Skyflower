@@ -1,6 +1,9 @@
 #include "CameraControllImpl.h"
 #include <DirectXMath.h>
 
+// Must be included last!
+#include "shared/debug.h"
+
 using namespace DirectX;
 
 XMMATRIX rotate;

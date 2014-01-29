@@ -1,5 +1,8 @@
 #include "InstanceImpl.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 ModelInstanceImpl::ModelInstanceImpl(Vec3 pos, Vec3 rot, Vec3 scale)
 {
 	this->isVisible = true;

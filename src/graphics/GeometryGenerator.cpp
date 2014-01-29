@@ -6,6 +6,9 @@
 
 #include "GeometryGenerator.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 void GeometryGenerator::createSphere(float radius, UINT sliceCount, UINT stackCount, MeshData& meshData)
 {
 	meshData.vertices.clear();

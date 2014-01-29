@@ -2,6 +2,9 @@
 #include "ScriptHandler.h"
 #include <string>
 
+// Must be included last!
+#include "shared/debug.h"
+
 char* levels[] = {
 	"testWorld",
 	"testWorld2",

@@ -1,5 +1,7 @@
 #include "Box.h"
 
+// Must be included last!
+#include "shared/debug.h"
 
 Box::Box()
 {

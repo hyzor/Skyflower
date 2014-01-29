@@ -1,6 +1,9 @@
 #include "GUI.h"
 #include "Graphics/Texture2DImpl.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 GUI::GUI()
 {
 	this->mCurrGUIElementId = 0;

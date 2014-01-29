@@ -1,5 +1,8 @@
 #include "RenderStates.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 ID3D11RasterizerState* RenderStates::mDefaultRS = 0;
 ID3D11RasterizerState* RenderStates::mWireframeRS = 0;
 ID3D11RasterizerState* RenderStates::mNoCullRS = 0;

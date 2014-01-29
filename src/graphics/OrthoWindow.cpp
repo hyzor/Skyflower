@@ -3,6 +3,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "OrthoWindow.h"
 
+// Must be included last!
+#include "shared/debug.h"
 
 OrthoWindow::OrthoWindow()
 {

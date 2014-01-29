@@ -1,5 +1,8 @@
 #include "ShaderHandler.h"
 
+// Must be included last!
+//#include "shared/debug.h"
+
 #pragma region ShaderHandler
 ShaderHandler::ShaderHandler()
 {

@@ -1,5 +1,7 @@
 #include "Ray.h"
 
+// Must be included last!
+#include "shared/debug.h"
 
 Ray::Ray()
 {

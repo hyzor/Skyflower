@@ -4,6 +4,9 @@
 
 #include "Window.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 static const wchar_t *windowClassName = L"Skyflower";
 
 static LRESULT CALLBACK GlobalWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)

@@ -13,6 +13,9 @@
 
 #include "LineChart.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 static double lerp(double x, double y, double a)
 {
 	return x * (1.0 - a) + y * a;

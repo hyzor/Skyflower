@@ -1,6 +1,9 @@
 #include "ModelTree.h"
 #include <iostream>
 
+// Must be included last!
+#include "shared/debug.h"
+
 ModelTreeNode::ModelTreeNode(){ Position = Vec3(); }
 ModelTreeNode::~ModelTreeNode(){}
 ModelTreeLeaf::ModelTreeLeaf() : ModelTreeLeaf::ModelTreeNode() {}

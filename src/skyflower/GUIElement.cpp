@@ -1,8 +1,10 @@
 #include "GUIElement.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 GUIElement::GUIElement()
 {
-	this->mDrawInput = new Draw2DInput();
 	this->mTexture = nullptr;
 }
 
@@ -27,9 +29,9 @@ void GUIElement::Draw(GraphicsEngine* gEngine)
 	if (this->mIsVisible)
 	{
 		if (this->mFromFile)
-			gEngine->Draw2DTextureFile(this->mFile, this->mDrawInput);
+			gEngine->Draw2DTextureFile(this->mFile, &this->mDrawInput);
 		else
-			gEngine->Draw2DTexture(this->mTexture, this->mDrawInput);
+			gEngine->Draw2DTexture(this->mTexture, &this->mDrawInput);
 	}
 }
 

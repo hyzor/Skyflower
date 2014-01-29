@@ -1,5 +1,7 @@
 #include "GenericSkinnedModel.h"
 
+// Must be included last!
+#include "shared/debug.h"
 
 GenericSkinnedModel::GenericSkinnedModel(ID3D11Device* device, TextureManager* textureMgr, const std::string& fileName)
 {

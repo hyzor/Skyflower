@@ -10,6 +10,9 @@
 #include "ComponentHeaders.h"
 #include "LineChart.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 using namespace std;
 using namespace tinyxml2;
 using namespace Cistron;
@@ -237,12 +240,12 @@ void Application::updateGame(float dt, Movement* playerMove)
 
 void Application::updateLoading(float dt)
 {
-	Draw2DInput* input = new Draw2DInput();
-	input->pos.x = 0.0f;
-	input->pos.y = 0.0f;
+	Draw2DInput input;
+	input.pos.x = 0.0f;
+	input.pos.y = 0.0f;
 
 	m_graphicsEngine->Begin2D();
-	m_graphicsEngine->Draw2DTextureFile("..\\..\\content\\Textures\\Menygrafik\\fyraTreRatio.png", input);
+	m_graphicsEngine->Draw2DTextureFile("..\\..\\content\\Textures\\Menygrafik\\fyraTreRatio.png", &input);
 	m_graphicsEngine->End2D();
 
 	if (!levelHandler->isLoading())

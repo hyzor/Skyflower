@@ -1,5 +1,8 @@
 #include "PhysicsEngine.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 PhysicsEngine::PhysicsEngine()
 {
 	PhysicsEntity::SetGlobalGravity(DEFAULT_GRAVITY);

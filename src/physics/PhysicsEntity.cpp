@@ -1,5 +1,8 @@
 #include "PhysicsEntity.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 Vec3 PhysicsEntity::mGlobalGravity = Vec3(0.0f, 0.0f, 0.0f);
 
 PhysicsEntity::PhysicsEntity()

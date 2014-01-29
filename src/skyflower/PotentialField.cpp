@@ -1,5 +1,7 @@
 #include "potentialfield.h"
 
+// Must be included last!
+#include "shared/debug.h"
 
 PotentialField::PotentialField()
 {

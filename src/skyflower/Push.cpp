@@ -3,8 +3,8 @@
 #include "Components/Push.h"
 #include "EntityManager.h"
 
-
-
+// Must be included last!
+#include "shared/debug.h"
 
 void Push::update(float dt)
 {
