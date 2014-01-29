@@ -1,25 +1,14 @@
 #include "ParticleSystemShared.hlsli"
 #include "DrawParticleVS.hlsl"
 
-cbuffer cbFixed
-{
-	// Texture coordinates used to stretch texture over quad 
-	// when we expand point particle into a quad.
-	float2 gQuadTexC[4] =
-	{
-		float2(0.0f, 1.0f),
-		float2(1.0f, 1.0f),
-		float2(0.0f, 0.0f),
-		float2(1.0f, 0.0f)
-	};
-};
-
-cbuffer cbPerFrame
+cbuffer cbPerFrame : register(b0)
 {
 	float3 gEyePosW;
 	float padding;
 
 	float4x4 gViewProj;
+
+	float4 gQuadTexC[4];
 };
 
 struct GeoOut
@@ -65,7 +54,7 @@ void main(point VertexOut gin[1],
 		for (int i = 0; i < 4; ++i)
 		{
 			gout.PosH = mul(v[i], gViewProj);
-			gout.Tex = gQuadTexC[i];
+			gout.Tex = gQuadTexC[i].xy;
 			gout.Color = gin[0].Color;
 			triStream.Append(gout);
 		}

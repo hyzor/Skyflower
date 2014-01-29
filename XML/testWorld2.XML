@@ -82,6 +82,7 @@
 		<Movement speed="20" />
 	</Platform>
 	
+	<!--
 	<Platform entityName="AI" id="36" isVisible="1" isCollidible="0" Type="object" isAnimated="0" 
 		xPos="-36.0960396599" yPos="0.0" zPos="39.4741144045" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
@@ -111,6 +112,7 @@
 		<AI />
 		<Event script="aiPush" />
 	</Platform>
+	-->
 	
 	<Platform entityName="ButtonBase3" id="72" relativeid="99" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
 		xPos="-20.0" yPos="0.0" zPos="-20.0"  

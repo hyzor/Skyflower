@@ -12,6 +12,7 @@ class SoDeclarationEntry
 {
 public:
 	static D3D11_SO_DECLARATION_ENTRY ParticleSoDesc[5];
+	static UINT stride;
 };
 
 class ParticleSystem
@@ -25,6 +26,8 @@ public:
 	void SetEyePos(const XMFLOAT3& eyePosW);
 	void SetEmitPos(const XMFLOAT3& emitPosW);
 	void SetEmitDir(const XMFLOAT3& emitDirW);
+
+	void SetConstantAccel(XMFLOAT3 accelW);
 
 	void Init(ID3D11Device* device, ParticleSystemShader* shader,
 		ID3D11ShaderResourceView* texArraySRV,
@@ -49,6 +52,8 @@ private:
 	XMFLOAT3 mEyePosW;
 	XMFLOAT3 mEmitPosW;
 	XMFLOAT3 mEmitDirW;
+
+	XMFLOAT3 mConstantAccelW;
 
 	ParticleSystemShader* mShader;
 

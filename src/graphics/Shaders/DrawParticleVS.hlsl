@@ -1,9 +1,10 @@
 #include "ParticleSystemShared.hlsli"
 
-cbuffer cbFixed
+cbuffer cbFixed : register (b0)
 {
 	// Net constant acceleration used to accelerate the particles.
-	float3 gAccelW = { 0.0f, 7.8f, 0.0f };
+	float3 gAccelW;
+	float padding1;
 };
 
 struct Particle

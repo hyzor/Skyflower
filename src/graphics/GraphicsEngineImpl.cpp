@@ -191,7 +191,9 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->LoadCompiledGeometryStreamOutShader(L"..\\shaders\\StreamOutParticleGS.cso", "StreamOutParticleGS", mD3D->GetDevice(),
 		SoDeclarationEntry::ParticleSoDesc,
 		COUNT_OF(SoDeclarationEntry::ParticleSoDesc),
-		D3D11_SO_NO_RASTERIZED_STREAM);
+		D3D11_SO_NO_RASTERIZED_STREAM,
+		&SoDeclarationEntry::stride,
+		1);
 
 	// Bind loaded shaders to shader objects
 	mShaderHandler->mBasicShader->BindShaders(
@@ -313,6 +315,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 		/*randomTexSRV*//*mTextureMgr->CreateTexture(mResourceDir + "Textures/random.png")*/mRandom1DTexSRV,
 		1000);
 	mParticleSystem->SetEmitPos(XMFLOAT3(0.0f, 25.0f, 0.0f));
+	mParticleSystem->SetConstantAccel(XMFLOAT3(0.0, 7.8f, 0.0f));
 
 	return true;
 }
@@ -560,6 +563,12 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mCompositeShader->SetFramebufferTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mCompositeShader->SetDoFCoCTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mCompositeShader->SetDoFFarFieldTexture(mD3D->GetImmediateContext(), NULL);
+
+	mSpriteBatch->Begin();
+	mSpriteBatch->Draw(mDeferredBuffers->GetSRV(DeferredBuffersIndex::Diffuse), XMFLOAT2(0.0f, 0.0f), nullptr, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
+	mSpriteBatch->Draw(mDeferredBuffers->GetSRV(DeferredBuffersIndex::Normal), XMFLOAT2(0.0f, 200.0f), nullptr, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
+	mSpriteBatch->Draw(mD3D->GetDepthStencilSRView(), XMFLOAT2(0.0f, 400.0f), nullptr, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
+	mSpriteBatch->End();
 
 	// Turn z-buffer back on
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDefaultDSS, 1);

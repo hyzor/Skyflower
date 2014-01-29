@@ -1101,6 +1101,8 @@ public:
 
 	void SetTime(float gameTime, float dt);
 
+	void SetAccelConstant(XMFLOAT3 accelConstant);
+
 	//void UpdatePerParticleSystem(ID3D11DeviceContext* dc);
 
 	void UpdateDrawShaders(ID3D11DeviceContext* dc);
@@ -1109,12 +1111,20 @@ public:
 private:
 	void Update(ID3D11DeviceContext* dc) { ; }
 
+	struct DRAW_VS_INITBUFFER
+	{
+		XMFLOAT3 accelW;
+		float padding1;
+	};
+
 	struct DRAW_GS_PERFRAMEBUFFER
 	{
 		XMFLOAT3 eyePosW;
 		float padding;
 
 		XMMATRIX viewProj;
+
+		XMFLOAT4 quadTexC[4];
 	};
 
 	struct STREAMOUT_GS_PERFRAMEBUFFER
@@ -1131,11 +1141,16 @@ private:
 
 	struct BUFFERCACHE
 	{
+		DRAW_VS_INITBUFFER drawVSInitBuffer;
 		DRAW_GS_PERFRAMEBUFFER drawGSPerFrameBuffer;
 		STREAMOUT_GS_PERFRAMEBUFFER streamOutGSPerFrameBuffer;
 	};
 
 	struct BUFFERCACHE mBufferCache;
+
+	// Draw VS init buffer
+	ID3D11Buffer* draw_VS_InitBuffer;
+	DRAW_VS_INITBUFFER draw_VS_InitBufferVariables;
 
 	// Draw GS per frame
 	ID3D11Buffer* draw_GS_PerFrameBuffer;
@@ -1204,7 +1219,7 @@ public:
 	void LoadCompiledVertexShader(LPCWSTR fileName, char* name, ID3D11Device* device);
 	void LoadCompiledPixelShader(LPCWSTR fileName, char* name, ID3D11Device* device);
 	void LoadCompiledGeometryShader(LPCWSTR fileName, char* name, ID3D11Device* device);
-	void LoadCompiledGeometryStreamOutShader(LPCWSTR fileName, char* name, ID3D11Device* device, D3D11_SO_DECLARATION_ENTRY pDecl[], UINT pDeclSize, UINT rasterizedStream);
+	void LoadCompiledGeometryStreamOutShader(LPCWSTR fileName, char* name, ID3D11Device* device, D3D11_SO_DECLARATION_ENTRY pDecl[], UINT pDeclSize, UINT rasterizedStream = 0, UINT* bufferStrides = NULL, UINT numStrides = 0);
 
 	ID3D11VertexShader* GetVertexShader(std::string name);
 	ID3D11PixelShader* GetPixelShader(std::string name);

@@ -2,13 +2,15 @@
 
 D3D11_SO_DECLARATION_ENTRY SoDeclarationEntry::ParticleSoDesc[5] =
 {
-	// semantic name, semantic index, start component, component count, output slot
+	// stream number, semantic name, semantic index, start component, component count, output slot
 	{ 0, "POSITION", 0, 0, 3, 0 },	// output the first 3 of position
 	{ 0, "VELOCITY", 0, 0, 3, 0 }, // output the first 3 of velocity
 	{ 0, "SIZE", 0, 0, 2, 0 },		// output the first 2 of size
 	{ 0, "AGE", 0, 0, 1, 0 },		// output only the first from age
 	{ 0, "TYPE", 0, 0, 1, 0 },		// output only the first from type
 };
+
+UINT SoDeclarationEntry::stride = sizeof(Vertex::Particle);
 
 ParticleSystem::ParticleSystem()
 : mInitVB(0), mDrawVB(0), mStreamOutVB(0), mTexArraySRV(0), mRandomTexSRV(0)
@@ -89,17 +91,18 @@ void ParticleSystem::Draw(ID3D11DeviceContext* dc, const Camera& cam)
 	mShader->SetRandomTex(dc, mRandomTexSRV);
 	mShader->SetTime(mGameTime, mTimeStep);
 	mShader->SetViewProj(cam.GetViewProjMatrix());
+	mShader->SetAccelConstant(mConstantAccelW);
 
 	mShader->ActivateStreamShaders(dc);
 	mShader->UpdateStreamOutShaders(dc);
 
-	UINT stride = sizeof(Vertex::Particle);
+	//UINT stride = sizeof(Vertex::Particle);
 	UINT offset = 0;
 
 	if (mFirstRun)
-		dc->IASetVertexBuffers(0, 1, &mInitVB, &stride, &offset);
+		dc->IASetVertexBuffers(0, 1, &mInitVB, &SoDeclarationEntry::stride, &offset);
 	else
-		dc->IASetVertexBuffers(0, 1, &mDrawVB, &stride, &offset);
+		dc->IASetVertexBuffers(0, 1, &mDrawVB, &SoDeclarationEntry::stride, &offset);
 
 	// First draw current particle list using stream-out only
 	dc->SOSetTargets(1, &mStreamOutVB, &offset);
@@ -124,13 +127,15 @@ void ParticleSystem::Draw(ID3D11DeviceContext* dc, const Camera& cam)
 
 	// Restore depth buffer
 	dc->OMSetDepthStencilState(0, 0);
+	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	dc->OMSetBlendState(RenderStates::mAdditiveBS, blendFactor, 0xffffffff);
 
 	// Now draw the update particle system we just streamed out
 	// Use DrawParticleVS, DrawParticleGS and DrawParticlePS
 	mShader->ActivateDrawShaders(dc);
 	mShader->UpdateDrawShaders(dc);
 
-	dc->IASetVertexBuffers(0, 1, &mDrawVB, &stride, &offset);
+	dc->IASetVertexBuffers(0, 1, &mDrawVB, &SoDeclarationEntry::stride, &offset);
 	dc->DrawAuto();
 }
 
@@ -164,4 +169,9 @@ void ParticleSystem::BuildVB(ID3D11Device* device)
 
 	HR(device->CreateBuffer(&vbd, 0, &mDrawVB));
 	HR(device->CreateBuffer(&vbd, 0, &mStreamOutVB));
+}
+
+void ParticleSystem::SetConstantAccel(XMFLOAT3 accelW)
+{
+	mConstantAccelW = accelW;
 }

@@ -149,7 +149,7 @@ void ShaderHandler::LoadCompiledGeometryShader(LPCWSTR fileName, char* name, ID3
 	mGeometryShaders[name] = gShader;
 }
 
-void ShaderHandler::LoadCompiledGeometryStreamOutShader(LPCWSTR fileName, char* name, ID3D11Device* device, D3D11_SO_DECLARATION_ENTRY pDecl[], UINT pDeclSize, UINT rasterizedStream)
+void ShaderHandler::LoadCompiledGeometryStreamOutShader(LPCWSTR fileName, char* name, ID3D11Device* device, D3D11_SO_DECLARATION_ENTRY pDecl[], UINT pDeclSize, UINT rasterizedStream, UINT* bufferStrides, UINT numStrides)
 {
 	HRESULT hr;
 
@@ -171,6 +171,7 @@ void ShaderHandler::LoadCompiledGeometryStreamOutShader(LPCWSTR fileName, char* 
 	ID3D11GeometryShader* gShader;
 // 	hr = device->CreateGeometryShader(mShaders.back()->Buffer->GetBufferPointer(),
 // 		mShaders.back()->Buffer->GetBufferSize(), nullptr, &gShader);
+
 // 	mGeometryShaders[name] = gShader;
 
 	hr = device->CreateGeometryShaderWithStreamOutput(
@@ -178,11 +179,12 @@ void ShaderHandler::LoadCompiledGeometryStreamOutShader(LPCWSTR fileName, char* 
 		mShaders.back()->Buffer->GetBufferSize(),
 		/*Stream out declaration*/pDecl,
 		pDeclSize,
-		NULL,
-		0,
+		bufferStrides, // sizeof(Vertex::Particle)
+		numStrides, // One stride
 		rasterizedStream,
 		NULL,
 		&gShader);
+
 	mGeometryShaders[name] = gShader;
 }
 
@@ -2463,6 +2465,20 @@ bool ParticleSystemShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLa
 	// DRAW GS PER FRAME
 	ZeroMemory(&draw_GS_PerFrameBufferVariables, sizeof(DRAW_GS_PERFRAMEBUFFER));
 
+	// Constant values
+	draw_GS_PerFrameBufferVariables.quadTexC[0].x = 0.0f;
+	draw_GS_PerFrameBufferVariables.quadTexC[0].y = 1.0f;
+	draw_GS_PerFrameBufferVariables.quadTexC[1].x = 1.0f;
+	draw_GS_PerFrameBufferVariables.quadTexC[1].y = 1.0f;
+	draw_GS_PerFrameBufferVariables.quadTexC[2].x = 0.0f;
+	draw_GS_PerFrameBufferVariables.quadTexC[2].y = 0.0f;
+	draw_GS_PerFrameBufferVariables.quadTexC[3].x = 1.0f;
+	draw_GS_PerFrameBufferVariables.quadTexC[3].y = 0.0f;
+	mBufferCache.drawGSPerFrameBuffer.quadTexC[0] = draw_GS_PerFrameBufferVariables.quadTexC[0];
+	mBufferCache.drawGSPerFrameBuffer.quadTexC[1] = draw_GS_PerFrameBufferVariables.quadTexC[1];
+	mBufferCache.drawGSPerFrameBuffer.quadTexC[2] = draw_GS_PerFrameBufferVariables.quadTexC[2];
+	mBufferCache.drawGSPerFrameBuffer.quadTexC[3] = draw_GS_PerFrameBufferVariables.quadTexC[3];
+
 	// Fill in a buffer description.
 	D3D11_BUFFER_DESC cbDesc;
 	cbDesc.ByteWidth = sizeof(DRAW_GS_PERFRAMEBUFFER);
@@ -2501,6 +2517,30 @@ bool ParticleSystemShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLa
 
 	// Now create the buffer
 	device->CreateBuffer(&cbDesc_2, &InitData_2, &streamOut_GS_PerFrameBuffer);
+
+	//------------------------
+	// Vertex shader buffers
+	//------------------------
+	// DRAW VS INIT BUFFER
+	ZeroMemory(&draw_VS_InitBufferVariables, sizeof(DRAW_VS_INITBUFFER));
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC cbDesc_3;
+	cbDesc_3.ByteWidth = sizeof(DRAW_VS_INITBUFFER);
+	cbDesc_3.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc_3.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc_3.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc_3.MiscFlags = 0;
+	cbDesc_3.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA InitData_3;
+	InitData_3.pSysMem = &draw_VS_InitBufferVariables;
+	InitData_3.SysMemPitch = 0;
+	InitData_3.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	device->CreateBuffer(&cbDesc_3, &InitData_3, &draw_VS_InitBuffer);
 
 	mInputLayout = inputLayout;
 
@@ -2584,7 +2624,7 @@ void ParticleSystemShader::UpdateDrawShaders(ID3D11DeviceContext* dc)
 	// Update constant shader buffers using our cache
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
-	// Vertex shader per obj buffer
+	// Geometry shader per frame buffer
 	dc->Map(draw_GS_PerFrameBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
 	DRAW_GS_PERFRAMEBUFFER* dataPtr = (DRAW_GS_PERFRAMEBUFFER*)mappedResource.pData;
@@ -2593,6 +2633,16 @@ void ParticleSystemShader::UpdateDrawShaders(ID3D11DeviceContext* dc)
 	dc->Unmap(draw_GS_PerFrameBuffer, 0);
 
 	dc->GSSetConstantBuffers(0, 1, &draw_GS_PerFrameBuffer);
+
+	// Vertex shader init buffer
+	dc->Map(draw_VS_InitBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	DRAW_VS_INITBUFFER* dataPtr_2 = (DRAW_VS_INITBUFFER*)mappedResource.pData;
+	*dataPtr_2 = mBufferCache.drawVSInitBuffer;
+
+	dc->Unmap(draw_VS_InitBuffer, 0);
+
+	dc->VSGetConstantBuffers(0, 1, &draw_VS_InitBuffer);
 
 	dc->PSSetShaderResources(0, 1, &mTexArray);
 }
@@ -2638,4 +2688,9 @@ void ParticleSystemShader::ActivateStreamShaders(ID3D11DeviceContext* dc)
 	dc->PSSetShader(nullptr, nullptr, 0);
 
 	dc->GSSetSamplers(0, 1, &RenderStates::mLinearSS);
+}
+
+void ParticleSystemShader::SetAccelConstant(XMFLOAT3 accelConstant)
+{
+	mBufferCache.drawVSInitBuffer.accelW = accelConstant;
 }
