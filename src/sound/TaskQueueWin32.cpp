@@ -2,6 +2,9 @@
 
 #include "TaskQueueWin32.h"
 
+// Must be included last!
+#include "debug.h"
+
 static void CALLBACK TaskCallback(PTP_CALLBACK_INSTANCE instance, void *context, PTP_WORK work)
 {
 	const std::function<void()> *task = (const std::function<void()> *)context;

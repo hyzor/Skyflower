@@ -11,6 +11,9 @@
 #include "ResourceCache.h"
 #include "TaskQueueWin32.h"
 
+// Must be included last!
+#include "debug.h"
+
 /* Based on http://www.w3.org/TR/PNG/#D-CRCAppendix */
 static uint32_t util_hash32(const void *data, unsigned int size)
 {

@@ -5,6 +5,9 @@
 #include "ResourceCache.h"
 #include "OpenALSourceProxy.h"
 
+// Must be included last!
+#include "debug.h"
+
 SoundSourceImpl::SoundSourceImpl(ResourceCache *resourceCache) :
 	m_sourceProxy(this)
 {
