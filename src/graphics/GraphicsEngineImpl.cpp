@@ -305,17 +305,21 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 
 	mRandom1DTexSRV = d3dHelper::CreateRandomTexture1DSRV(mD3D->GetDevice());
 
+	std::vector<std::string> particlesTest;
+	particlesTest.push_back(mResourceDir + "Textures/Particles/flare0.dds");
+	particlesTest.push_back(mResourceDir + "Textures/Particles/flare1.dds");
+
 	// Particle system
 	mParticleSystem = new ParticleSystem();
 	mParticleSystem->Init(
 		mD3D->GetDevice(),
 		mShaderHandler->mParticleSystemShader,
 		// TODO: Support 2D SRV arrays
-		/*texArraySRV*/mTextureMgr->CreateTexture(mResourceDir + "Textures/Particles/flare0.dds"),
+		/*texArraySRV*//*mTextureMgr->CreateTexture(mResourceDir + "Textures/Particles/flare0.dds")*/ d3dHelper::CreateTexture2DArraySRV(mD3D->GetDevice(), mD3D->GetImmediateContext(), particlesTest),
 		/*randomTexSRV*//*mTextureMgr->CreateTexture(mResourceDir + "Textures/random.png")*/mRandom1DTexSRV,
 		1000);
-	mParticleSystem->SetEmitPos(XMFLOAT3(0.0f, 25.0f, 0.0f));
-	mParticleSystem->SetConstantAccel(XMFLOAT3(0.0, 7.8f, 0.0f));
+	mParticleSystem->SetEmitPos(XMFLOAT3(0.0f, 15.0f, 0.0f));
+	mParticleSystem->SetConstantAccel(XMFLOAT3(0.0f, 7.8f, 0.0f));
 
 	return true;
 }
@@ -563,12 +567,6 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mCompositeShader->SetFramebufferTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mCompositeShader->SetDoFCoCTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mCompositeShader->SetDoFFarFieldTexture(mD3D->GetImmediateContext(), NULL);
-
-	mSpriteBatch->Begin();
-	mSpriteBatch->Draw(mDeferredBuffers->GetSRV(DeferredBuffersIndex::Diffuse), XMFLOAT2(0.0f, 0.0f), nullptr, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
-	mSpriteBatch->Draw(mDeferredBuffers->GetSRV(DeferredBuffersIndex::Normal), XMFLOAT2(0.0f, 200.0f), nullptr, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
-	mSpriteBatch->Draw(mD3D->GetDepthStencilSRView(), XMFLOAT2(0.0f, 400.0f), nullptr, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
-	mSpriteBatch->End();
 
 	// Turn z-buffer back on
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDefaultDSS, 1);

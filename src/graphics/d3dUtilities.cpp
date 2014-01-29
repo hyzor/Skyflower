@@ -3,13 +3,10 @@
 //==============================================================
 // D3D functions
 //==============================================================
-/*
 ID3D11ShaderResourceView* d3dHelper::CreateTexture2DArraySRV(
-	ID3D11Device* device, ID3D11DeviceContext* context,
-	std::vector<std::wstring>& filenames,
-	DXGI_FORMAT format,
-	UINT filter, 
-	UINT mipFilter)
+	ID3D11Device* device,
+	ID3D11DeviceContext* context,
+	std::vector<std::string>& filenames)
 {
 	//
 	// Load the texture elements individually from file.  These textures
@@ -18,29 +15,45 @@ ID3D11ShaderResourceView* d3dHelper::CreateTexture2DArraySRV(
 	// CPU can read the resource.
 	//
 
+	HRESULT hr;
+
 	UINT size = (UINT)filenames.size();
 
 	std::vector<ID3D11Texture2D*> srcTex(size);
 	for(UINT i = 0; i < size; ++i)
 	{
-		D3DX11_IMAGE_LOAD_INFO loadInfo;
+// 		D3DX11_IMAGE_LOAD_INFO loadInfo;
+// 
+// 		loadInfo.Width  = D3DX11_FROM_FILE;
+// 		loadInfo.Height = D3DX11_FROM_FILE;
+// 		loadInfo.Depth  = D3DX11_FROM_FILE;
+// 		loadInfo.FirstMipLevel = 0;
+// 		loadInfo.MipLevels = D3DX11_FROM_FILE;
+// 		loadInfo.Usage = D3D11_USAGE_STAGING;
+// 		loadInfo.BindFlags = 0;
+// 		loadInfo.CpuAccessFlags = D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ;
+// 		loadInfo.MiscFlags = 0;
+// 		loadInfo.Format = format;
+// 		loadInfo.Filter = filter;
+// 		loadInfo.MipFilter = mipFilter;
+// 		loadInfo.pSrcInfo  = 0;
 
-		loadInfo.Width  = D3DX11_FROM_FILE;
-		loadInfo.Height = D3DX11_FROM_FILE;
-		loadInfo.Depth  = D3DX11_FROM_FILE;
-		loadInfo.FirstMipLevel = 0;
-		loadInfo.MipLevels = D3DX11_FROM_FILE;
-		loadInfo.Usage = D3D11_USAGE_STAGING;
-		loadInfo.BindFlags = 0;
-		loadInfo.CpuAccessFlags = D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ;
-		loadInfo.MiscFlags = 0;
-		loadInfo.Format = format;
-		loadInfo.Filter = filter;
-		loadInfo.MipFilter = mipFilter;
-		loadInfo.pSrcInfo  = 0;
+		std::wstring path(filenames[i].begin(), filenames[i].end());
 
-		HR(D3DX11CreateTextureFromFile(device, filenames[i].c_str(),
-			&loadInfo, 0, (ID3D11Resource**)&srcTex[i], 0));
+		//hr = CreateDDSTextureFromFile(device, path.c_str(), (ID3D11Resource**)&srcTex[i], nullptr);
+
+		hr = CreateDDSTextureFromFileEx(device, path.c_str(), 0u, D3D11_USAGE_STAGING, 0, D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ,
+			0, false, (ID3D11Resource**)&srcTex[i], nullptr, nullptr);
+
+		if (srcTex[i] == NULL)
+		{
+			std::wostringstream ErrorStream;
+			ErrorStream << "Failed to load texture " << path << std::endl << "(From CreateTexture2DArraySRV)";
+			MessageBox(0, ErrorStream.str().c_str(), 0, 0);
+		}
+
+// 		HR(D3DX11CreateTextureFromFile(device, filenames[i].c_str(),
+// 			&loadInfo, 0, (ID3D11Resource**)&srcTex[i], 0));
 	}
 
 	//
@@ -65,7 +78,7 @@ ID3D11ShaderResourceView* d3dHelper::CreateTexture2DArraySRV(
 	texArrayDesc.MiscFlags          = 0;
 
 	ID3D11Texture2D* texArray = 0;
-	HR(device->CreateTexture2D( &texArrayDesc, 0, &texArray));
+	hr = device->CreateTexture2D( &texArrayDesc, 0, &texArray);
 
 	//
 	// Copy individual texture elements into texture array.
@@ -78,7 +91,7 @@ ID3D11ShaderResourceView* d3dHelper::CreateTexture2DArraySRV(
 		for(UINT mipLevel = 0; mipLevel < texElementDesc.MipLevels; ++mipLevel)
 		{
 			D3D11_MAPPED_SUBRESOURCE mappedTex2D;
-			HR(context->Map(srcTex[texElement], mipLevel, D3D11_MAP_READ, 0, &mappedTex2D));
+			hr = context->Map(srcTex[texElement], mipLevel, D3D11_MAP_READ, 0, &mappedTex2D);
 
 			context->UpdateSubresource(texArray, 
 				D3D11CalcSubresource(mipLevel, texElement, texElementDesc.MipLevels),
@@ -101,7 +114,7 @@ ID3D11ShaderResourceView* d3dHelper::CreateTexture2DArraySRV(
 	viewDesc.Texture2DArray.ArraySize = size;
 
 	ID3D11ShaderResourceView* texArraySRV = 0;
-	HR(device->CreateShaderResourceView(texArray, &viewDesc, &texArraySRV));
+	hr = device->CreateShaderResourceView(texArray, &viewDesc, &texArraySRV);
 
 	//
 	// Cleanup--we only need the resource view.
@@ -114,7 +127,6 @@ ID3D11ShaderResourceView* d3dHelper::CreateTexture2DArraySRV(
 
 	return texArraySRV;
 }
-*/
 
 ID3D11ShaderResourceView* d3dHelper::CreateRandomTexture1DSRV(ID3D11Device* device)
 {

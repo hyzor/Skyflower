@@ -28,6 +28,8 @@
 #include "MathHelper.h"
 #include <windows.h>
 
+#include <DDSTextureLoader.h>
+
 //===============================================================
 // Simple d3d error checker
 //===============================================================
@@ -70,14 +72,10 @@ class d3dHelper
 public:
 	// Creates a 2D array with textures
 	// Does not work with compressed formats
-// 	static ID3D11ShaderResourceView* CreateTexture2DArraySRV(
-// 		ID3D11Device* device, ID3D11DeviceContext* context,
-// 		std::vector<std::wstring>& filenames,
-// 		DXGI_FORMAT format = DXGI_FORMAT_FROM_FILE,
-// 		//UINT filter = D3DX11_FILTER_NONE, 
-// 		UINT filter = D3D11_FILTER_MIN_MAG_MIP_POINT,
-// 		//UINT mipFilter = D3DX11_FILTER_LINEAR);
-// 		UINT mipFilter = D3D11_FILTER_MIN_LINEAR_MAG_MIP_POINT);
+	static ID3D11ShaderResourceView* CreateTexture2DArraySRV(
+		ID3D11Device* device,
+		ID3D11DeviceContext* context,
+		std::vector<std::string>& filenames);
 
 	static ID3D11ShaderResourceView* CreateRandomTexture1DSRV(ID3D11Device* device);
 };
