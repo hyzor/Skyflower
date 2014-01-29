@@ -351,6 +351,7 @@ void GraphicsEngineImpl::DrawScene()
 		mShaderHandler->mSSAOShader->SetInverseProjectionMatrix(XMMatrixInverse(nullptr, mCamera->GetProjMatrix()));
 		mShaderHandler->mSSAOShader->SetViewMatrix(mCamera->GetViewMatrix());
 		mShaderHandler->mSSAOShader->SetZFar(zFar);
+		mShaderHandler->mSSAOShader->SetParameters(mSSAOradius, mSSAOprojectionFactor, mSSAObias, mSSAOcontrast, mSSAOsigma);
 		mShaderHandler->mSSAOShader->Update(mD3D->GetImmediateContext());
 
 		mShaderHandler->mSSAOShader->SetActive(mD3D->GetImmediateContext());
@@ -994,4 +995,13 @@ void GraphicsEngineImpl::SetDepthOfFieldFocusPlanes(float nearBlurryPlane, float
 	mNearSharpPlane = nearSharpPlane;
 	mFarSharpPlane = farSharpPlane;
 	mFarBlurryPlane = farBlurryPlane;
+}
+
+void GraphicsEngineImpl::SetSSAOParameters(float radius, float projection_factor, float bias, float contrast, float sigma)
+{
+	mSSAOradius = radius;
+	mSSAOprojectionFactor = projection_factor;
+	mSSAObias = bias;
+	mSSAOcontrast = contrast;
+	mSSAOsigma = sigma;
 }

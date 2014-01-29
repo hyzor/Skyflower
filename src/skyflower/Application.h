@@ -80,6 +80,12 @@ private:
 	SoundSource *m_backgroundMusic;
 	size_t m_backgroundMusicIndex;
 	const std::vector<std::string> *m_backgroundMusicList;
+
+	float m_SSAOradius;
+	float m_SSAOprojectionFactor;
+	float m_SSAObias;
+	float m_SSAOcontrast;
+	float m_SSAOsigma;
 };
 
 #endif

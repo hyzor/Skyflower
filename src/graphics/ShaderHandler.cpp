@@ -1891,6 +1891,15 @@ void SSAOShader::SetZFar(float z_far)
 	ps_cPerFrameBufferVariables.z_far = z_far;
 }
 
+void SSAOShader::SetParameters(float radius, float projection_factor, float bias, float contrast, float sigma)
+{
+	ps_cPerFrameBufferVariables.radius = radius;
+	ps_cPerFrameBufferVariables.projection_factor = projection_factor;
+	ps_cPerFrameBufferVariables.bias = bias;
+	ps_cPerFrameBufferVariables.contrast = contrast;
+	ps_cPerFrameBufferVariables.sigma = sigma;
+}
+
 #pragma endregion SSAOShader
 
 #pragma region DepthOfFieldCoCShader

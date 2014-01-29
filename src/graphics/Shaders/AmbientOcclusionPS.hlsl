@@ -9,6 +9,19 @@ cbuffer cPerFramebuffer : register(b0)
 	float4x4 inverseProjectionMatrix;
 	float4x4 viewMatrix;
 	float z_far;
+
+	float radius;
+	float projection_factor;
+	/* Bias distance is the ambient-obscurance analog of shadow map
+	 * bias: increase to reduce self-shadowing, decrease if light
+	 * leaks into corners. We scale it by z to efficiently
+	 * compensate for the dot products becoming increasingly
+	 * sensitive to error in normal at distant points.
+	 */
+	float bias;
+
+	float contrast;
+	float sigma;
 };
 
 Texture2D depthTexture : register(t0);
@@ -44,19 +57,8 @@ float main(VertexOut input) : SV_Target
 	// Convert from worldspace to viewspace.
 	normal = normalize(mul(float4(normal, 0.0), viewMatrix).xyz);
 
-	// FIXME: Tweak these values.
-	const float radius = 0.7;
-	const float projection_factor = 0.3;
 	const float random_texture_stride = 18.0;
 	const float epsilon = 0.0001;
-	/* Bias distance is the ambient-obscurance analog of shadow map
-	 * bias: increase to reduce self-shadowing (figure 4), decrease if
-	 * light leaks into corners. We scale it by z to efficiently
-	 * compensate for the dot products becoming increasingly
-	 * sensitive to error in normal at distant points.
-	 */
-	//const float bias = 0.0001;
-	const float bias = 0.15;
 
 	const int base_samples = 16;
 	const int min_samples = 4;
@@ -74,11 +76,10 @@ float main(VertexOut input) : SV_Target
 		float3 occlusion_sample = reconstruct_viewspace_position(input.uv + random_direction * projected_radius);
 		float3 v = occlusion_sample - position;
 
+		// Set bias to ~0.0001 if scaling by distance.
 		ambient_occlusion += max(0.0, dot(v, normal) - bias/* * occlusion_sample.z*/) / (dot(v, v) + epsilon);
 	}
 
-	const float contrast = 3.0;
-	const float sigma = 2.0;
 	ambient_occlusion = pow(max(0.0, 1.0 - 2.0 * sigma / float(samples) * ambient_occlusion), contrast);
 
 	return ambient_occlusion;

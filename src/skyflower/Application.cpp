@@ -41,6 +41,12 @@ void Application::Start()
 	camera = m_graphicsEngine->CreateCameraController();
 
 	// FIXME: Tweaka dessa när vi har en riktig bana i spelet.
+	m_SSAOradius = 0.7f;
+	m_SSAOprojectionFactor = 0.3f;
+	m_SSAObias = 0.15f;
+	m_SSAOcontrast = 3.0f;
+	m_SSAOsigma = 2.0f;
+	m_graphicsEngine->SetSSAOParameters(m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
 	m_graphicsEngine->SetDepthOfFieldFocusPlanes(10.0f, 50.0f, 300.0f, 400.0f);
 
 	m_soundEngine = CreateSoundEngine("../../content/sounds/");
@@ -291,6 +297,66 @@ void Application::OnKeyDown(unsigned short key)
 		m_soundEngine->PlaySound(taunts[rand() % num_taunts], &position.X, 0.25f, true);
 		break;
 	}
+	case 'Y':
+		m_SSAOradius += 0.1f;
+		m_graphicsEngine->SetSSAOParameters(m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
+
+		printf("radius=%.1f, projection factor=%.1f, bias=%.2f, contrast=%.1f, sigma=%.1f\n", m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
+		break;
+	case 'H':
+		m_SSAOradius -= 0.1f;
+		m_graphicsEngine->SetSSAOParameters(m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
+
+		printf("radius=%.1f, projection factor=%.1f, bias=%.2f, contrast=%.1f, sigma=%.1f\n", m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
+		break;
+	case 'U':
+		m_SSAOprojectionFactor += 0.1f;
+		m_graphicsEngine->SetSSAOParameters(m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
+
+		printf("radius=%.1f, projection factor=%.1f, bias=%.2f, contrast=%.1f, sigma=%.1f\n", m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
+		break;
+	case 'J':
+		m_SSAOprojectionFactor -= 0.1f;
+		m_graphicsEngine->SetSSAOParameters(m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
+
+		printf("radius=%.1f, projection factor=%.1f, bias=%.2f, contrast=%.1f, sigma=%.1f\n", m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
+		break;
+	case 'I':
+		m_SSAObias += 0.05f;
+		m_graphicsEngine->SetSSAOParameters(m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
+
+		printf("radius=%.1f, projection factor=%.1f, bias=%.2f, contrast=%.1f, sigma=%.1f\n", m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
+		break;
+	case 'K':
+		m_SSAObias -= 0.05f;
+		m_graphicsEngine->SetSSAOParameters(m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
+
+		printf("radius=%.1f, projection factor=%.1f, bias=%.2f, contrast=%.1f, sigma=%.1f\n", m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
+		break;
+	case 'C':
+		m_SSAOcontrast += 0.5f;
+		m_graphicsEngine->SetSSAOParameters(m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
+
+		printf("radius=%.1f, projection factor=%.1f, bias=%.2f, contrast=%.1f, sigma=%.1f\n", m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
+		break;
+	case 'V':
+		m_SSAOcontrast -= 0.5f;
+		m_graphicsEngine->SetSSAOParameters(m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
+
+		printf("radius=%.1f, projection factor=%.1f, bias=%.2f, contrast=%.1f, sigma=%.1f\n", m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
+		break;
+	case 'B':
+		m_SSAOsigma += 0.5f;
+		m_graphicsEngine->SetSSAOParameters(m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
+
+		printf("radius=%.1f, projection factor=%.1f, bias=%.2f, contrast=%.1f, sigma=%.1f\n", m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
+		break;
+	case 'N':
+		m_SSAOsigma -= 0.5f;
+		m_graphicsEngine->SetSSAOParameters(m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
+
+		printf("radius=%.1f, projection factor=%.1f, bias=%.2f, contrast=%.1f, sigma=%.1f\n", m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
+		break;
 	default:
 		break;
 	}

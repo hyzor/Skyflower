@@ -890,12 +890,23 @@ public:
 	void SetViewMatrix(const XMMATRIX& viewMatrix);
 	void SetZFar(float z_far);
 
+	void SetParameters(float radius, float projection_factor, float bias, float contrast, float sigma);
+
 private:
 	struct PS_CPERFRAMEBUFFER
 	{
 		XMMATRIX inverseProjectionMatrix;
 		XMMATRIX viewMatrix;
 		float z_far;
+
+		float radius;
+		float projection_factor;
+		float bias;
+
+		float contrast;
+		float sigma;
+
+		float padding[2];
 	};
 
 	ID3D11Buffer* ps_cPerFrameBuffer;

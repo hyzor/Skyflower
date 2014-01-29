@@ -84,6 +84,7 @@ public:
 	virtual unsigned int GetPostProcessingEffects() = 0;
 	virtual void SetPostProcessingEffects(unsigned int effects) = 0;
 	virtual void SetDepthOfFieldFocusPlanes(float nearBlurryPlane, float nearSharpPlane, float farSharpPlane, float farBlurryPlane) = 0;
+	virtual void SetSSAOParameters(float radius, float projection_factor, float bias, float contrast, float sigma) = 0;
 };
 
 DLL_API GraphicsEngine* CreateGraphicsEngine();

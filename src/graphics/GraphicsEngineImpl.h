@@ -75,6 +75,7 @@ public:
 	unsigned int GetPostProcessingEffects();
 	void SetPostProcessingEffects(unsigned int effects);
 	void SetDepthOfFieldFocusPlanes(float nearBlurryPlane, float nearSharpPlane, float farSharpPlane, float farBlurryPlane);
+	void SetSSAOParameters(float radius, float projection_factor, float bias, float contrast, float sigma);
 
 private:
 	Direct3D* mD3D;
@@ -119,6 +120,11 @@ private:
 	float mSSAOScale;
 	Texture2DImpl *mSSAOTexture;
 	Texture2DImpl *mSSAOBlurTexture;
+	float mSSAOradius;
+	float mSSAOprojectionFactor;
+	float mSSAObias;
+	float mSSAOcontrast;
+	float mSSAOsigma;
 
 	float mDoFScale;
 	Texture2DImpl *mDoFCoCTexture;
