@@ -25,6 +25,11 @@
     <ClCompile Include="src\skyflower\Components\Button.cpp" />
     <ClCompile Include="src\skyflower\Components\Checkpoint.cpp" />
     <ClCompile Include="src\skyflower\Components\Event.cpp" />
+    <ClCompile Include="src\skyflower\Components\Footsteps.cpp" />
+    <ClCompile Include="src\skyflower\Components\Input.cpp" />
+    <ClCompile Include="src\skyflower\Components\Listener.cpp" />
+    <ClCompile Include="src\skyflower\Components\Movement.cpp" />
+    <ClCompile Include="src\skyflower\Components\MoveTarget.cpp" />
     <ClCompile Include="src\skyflower\Entity.cpp" />
     <ClCompile Include="src\skyflower\EntityManager.cpp" />
     <ClCompile Include="src\skyflower\Field.cpp" />

@@ -1,233 +1,50 @@
 #ifndef MOVEMENT_H
 #define MOVEMENT_H
 
-#include "Cistron.h"
 #include <string>
-#include <iostream>
-#include <sstream>
+
 #include "shared/Vec3.h"
-#include "shared/util.h"
 #include "physics/PhysicsEngine.h"
-#include "physics/Collision.h"
-#include "Entity.h"
-#include "Health.h"
-#include "Gravity.h"
-using namespace std;
+
+#include "Cistron.h"
+#include "Component.h"
+
 using namespace Cistron;
 
 #define MAX_JUMP_KEY_TIME 0.4f
 
-#define NUM_FALLING_SOUNDS 2
-static const char *fallingSounds[NUM_FALLING_SOUNDS] = {
-	"player/wilhelm_scream.wav",
-	"quake/falling1.wav"
-};
-
-class Movement : public Component {
-
+class Movement : public Component
+{
 public:
+	Movement(float speed);
+	virtual ~Movement();
 
-	Movement(float speed) : Component("Movement")
-	{
-		this->isMovingForward = false;
-		this->isMovingBackward = false;
-		this->isMovingLeft = false;
-		this->isMovingRight = false;
-		this->canMove = true;
-		this->camLook = Vec3(0.0f, 0.0f, 0.0f);
-		this->speed = speed;
-		this->targetRot = 0.0f;
-		this->walkAngle = 0.0f;
-	}
-	virtual ~Movement()
-	{
-	}
+	void addedToEntity();
+	void removeFromEntity();
 
-	// we are added to an Entity, and thus to the component system
-	void addedToEntity() {
-		this->p = getOwner()->getPhysics();
+	void update(float deltaTime);
 
-		requestMessage("StartMoveForward", &Movement::startMoveForward);
-		requestMessage("StartMoveBackward", &Movement::startMoveBackward);
-		requestMessage("StartMoveLeft", &Movement::startMoveLeft);
-		requestMessage("StartMoveRight", &Movement::startMoveRight);
-		requestMessage("StopMoveForward", &Movement::stopMoveForward);
-		requestMessage("StopMoveBackward", &Movement::stopMoveBackward);
-		requestMessage("StopMoveLeft", &Movement::stopMoveLeft);
-		requestMessage("StopMoveRight", &Movement::stopMoveRight);
-		
-		//used when pushed
-		requestMessage("StartMoving", &Movement::startMoving);
-		requestMessage("StopMoving", &Movement::stopMoving);
+	void setCamera(Vec3 look, Vec3 right, Vec3 up);
+	void setYaw(float yaw);
 
-		requestMessage("inAir", &Movement::inAir);
-		requestMessage("notInAir", &Movement::notInAir);
+	void moveforward();
+	float GetSpeed();
 
-		requestMessage("Jump", &Movement::Jump);
-		requestMessage("StopJump", &Movement::StopJump);
-	}
-
-	void removeFromEntity()
-	{
-		this->p = NULL;
-	}
-
-	void update(float deltaTime)
-	{
-		Vec3 pos = getEntityPos();
-		Vec3 rot = getEntityRot();
-		p->update(deltaTime);
-		
-		GravityComponent *gravity = getOwner()->getComponent<GravityComponent*>("Gravity");
-
-		if (gravity && !gravity->isEnabled())
-		{
-			if (this->timeUntilGravityEnable > 0.0f)
-				this->timeUntilGravityEnable -= deltaTime;
-
-			if (this->timeUntilGravityEnable <= 0.0f)
-				gravity->setEnabled(true);
-		}
-
-		Health *health = getOwner()->getComponent<Health*>("Health");
-
-		if (health)
-		{
-			if (pos.Y < -100)
-			{
-				health->setHealth(0);
-				
-				if (getOwnerId() == 1)
-				{
-					float soundPosition[3] = { 0.0f, 0.0f, 0.0f };
-					getOwner()->getModules()->sound->PlaySound(fallingSounds[rand() % NUM_FALLING_SOUNDS], soundPosition, 0.25f, true);
-				}
-			}
-
-			if (!health->isAlive())
-			{
-				sendMessageToEntity(this->getOwnerId(), "Respawn");
-				p->setVelocity(Vec3(0, 0, 0));
-				health->setHealth(100);
-				return;
-			}
-		}
-
-		//float walkAngle = 0.0f;
-
-		if (canMove)
-		{
-			if (this->isMovingForward) {
-				if (this->isMovingLeft) {
-					targetRot = -45.0f;
-				}
-				else if (this->isMovingRight) {
-					targetRot = 45.0f;
-				}
-				else {
-					targetRot = 0.0f;
-				}
-			}
-			else if (this->isMovingBackward) {
-				if (this->isMovingLeft) {
-					targetRot = -90.0f - 45.0f;
-				}
-				else if (this->isMovingRight) {
-					targetRot = 180.0f - 45.0f;
-				}
-				else {
-					targetRot = 180.0f;
-				}
-			}
-			else if (this->isMovingLeft) {
-				targetRot = -90.0f;
-			}
-			else if (this->isMovingRight) {
-				targetRot = 90.0f;
-			}
-
-			if (isMovingBackward || isMovingForward || isMovingLeft || isMovingRight)
-			{
-				if (std::abs(targetRot - walkAngle) > 1.0f)
-				{
-					float tot = targetRot - walkAngle;
-					if (tot > 180)
-						tot -= 360;
-					if (tot < -180)
-						tot += 360;
-
-					if (tot > 0)
-						walkAngle += deltaTime * 750;
-					else
-						walkAngle -= deltaTime * 750;
-				}
-				else
-					walkAngle = targetRot;
-				p->setIsMoving(true);
-				p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, targetRot);
-
-				// If the player is moving, rotate it to match the camera's direction.
-				if (getOwnerId() == 1)
-				{
-					rot = Vec3(0.0f, -this->yaw + DegreesToRadians(90.0f + walkAngle), 0.0f);
-				}
-			}
-			else
-			{
-				p->setIsMoving(false);
-			}
-		}
-
-		if (getOwnerId() == 1 && getOwner()->getAnimatedInstance())
-		{
-			if (this->isInAir)
-			{
-				getOwner()->getAnimatedInstance()->SetAnimation(1);
-			}
-			else
-			{
-				if (p->getIsMoving())
-				{
-					getOwner()->getAnimatedInstance()->SetAnimation(0);
-				}
-				else
-				{
-					getOwner()->getAnimatedInstance()->SetAnimation(4);
-				}
-			}
-		}
-
-		updateEntityPos(pos);
-		updateEntityRot(rot);
-	}
-
-	void sendAMessage(string message)
-	{
-		sendMessage(message);
-	}
-
-	void setCamera(Vec3 look, Vec3 right, Vec3 up)
-	{
-		if (p)
-		{
-			this->camLook = look;
-		}
-	}
-
-	void setYaw(float yaw)
-	{
-		this->yaw = yaw;
-	}
-
-	void moveforward()
-	{
-		this->isMovingForward = true;
-	}
-
-	float GetSpeed()
-	{
-		return speed;
-	}
+private:
+	void startMoveForward(Message const& msg);
+	void startMoveBackward(Message const& msg);
+	void startMoveLeft(Message const& msg);
+	void startMoveRight(Message const& msg);
+	void stopMoveForward(Message const& msg);
+	void stopMoveBackward(Message const& msg);
+	void stopMoveLeft(Message const& msg);
+	void stopMoveRight(Message const& msg);
+	void stopMoving(Message const& msg);
+	void startMoving(Message const& msg);
+	void inAir(Message const& msg);
+	void notInAir(Message const& msg);
+	void Jump(Message const& msg);
+	void StopJump(Message const& msg);
 
 private:
 	PhysicsEntity* p;
@@ -243,88 +60,6 @@ private:
 	float yaw;
 	float targetRot;
 	float walkAngle;
-
-	void startMoveForward(Message const& msg)
-	{
-		this->isMovingForward = true;
-	}
-	void startMoveBackward(Message const& msg)
-	{
-		this->isMovingBackward = true;
-	}
-	void startMoveLeft(Message const& msg)
-	{
-		this->isMovingLeft = true;
-	}
-	void startMoveRight(Message const& msg)
-	{
-		this->isMovingRight = true;
-	}
-	void stopMoveForward(Message const& msg)
-	{
-		this->isMovingForward = false;
-	}
-	void stopMoveBackward(Message const& msg)
-	{
-		this->isMovingBackward = false;
-	}
-	void stopMoveLeft(Message const& msg)
-	{
-		this->isMovingLeft = false;
-	}
-	void stopMoveRight(Message const& msg)
-	{
-		this->isMovingRight = false;
-	}
-
-	void stopMoving(Message const& msg)
-	{
-		this->canMove = false;
-	}
-
-	void startMoving(Message const& msg)
-	{
-		this->canMove = true;
-	}
-
-	void inAir(Message const& msg)
-	{
-		this->isInAir = true;
-	}
-
-	void notInAir(Message const& msg)
-	{
-		this->isInAir = false;
-	}
-
-	void Jump(Message const& msg)
-	{
-		if (!getOwner()->ground)
-			return;
-
-		Vec3 pos = getEntityPos();
-
-		if (p->jump(pos))
-		{
-			updateEntityPos(pos);
-
-			Entity *owner = getOwner();
-			GravityComponent *gravity = owner->getComponent<GravityComponent*>("Gravity");
-
-			if (gravity)
-			{
-				gravity->setEnabled(false);
-				this->timeUntilGravityEnable = MAX_JUMP_KEY_TIME;
-			}
-
-			owner->getModules()->sound->PlaySound("player/jump1.wav", &pos.X, 1.0f);
-		}
-	}
-
-	void StopJump(Message const& msg)
-	{
-		this->timeUntilGravityEnable = 0.0f;
-	}
 };
 
 #endif
