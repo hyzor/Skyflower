@@ -8,13 +8,14 @@
 #include <AL/alc.h>
 
 #include "Sound/Listener.h"
+#include "Sound/SoundEngine.h"
 #include "Sound/SoundSource.h"
 #include "Config.h"
 #include "ListenerImpl.h"
 #include "SoundSourceImpl.h"
 #include "ResourceCache.h"
 
-class SoundEngineImpl
+class SoundEngineImpl : public SoundEngine
 {
 public:
 	SoundEngineImpl();
