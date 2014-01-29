@@ -1,5 +1,5 @@
-#ifndef ORIENTATION_H
-#define ORIENTATION_H
+#ifndef PHYSICS_ORIENTATION_H
+#define PHYSICS_ORIENTATION_H
 
 #include "shared/platform.h"
 #include "shared/Vec3.h"
@@ -24,22 +24,22 @@ public:
 	Orientation(const Orientation &other);
 	virtual ~Orientation();
 
-	void update(float deltaTime);
-	void strafe(float length, Vec3 &pos);
-	void walk(float length, Vec3 &pos);
-	void rotateX(Vec3 &rot, float angle);
-	void rotateY(Vec3 &rot, float angle);
-	void rotateZ(Vec3 &rot, float angle);
-	void rotateAxis(Vec3 &rot, Vec3 axis, float angle);
-	void resetRotationXYZ(Vec3 &rot, int Axis); // the enum "Axis"
+	void Update(float deltaTime);
+	void Strafe(float length, Vec3 &pos);
+	void Walk(float length, Vec3 &pos);
+	void RotateX(Vec3 &rot, float angle);
+	void RotateY(Vec3 &rot, float angle);
+	void RotateZ(Vec3 &rot, float angle);
+	void RotateAxis(Vec3 &rot, Vec3 axis, float angle);
+	void ResetRotationXYZ(Vec3 &rot, int Axis); // the enum "Axis"
 
-	void setOrientation(Vec3 look, Vec3 right, Vec3 up);
-	void setRotRelativeCam(Vec3 rot);
+	void SetOrientation(Vec3 look, Vec3 right, Vec3 up);
+	void SetRotRelativeCam(Vec3 rot);
 
-	Vec3 getLook() const;
-	Vec3 getRight() const;
-	Vec3 getUp() const;
-	Vec3 getRotRelativeCam() const;
+	Vec3 GetLook() const;
+	Vec3 GetRight() const;
+	Vec3 GetUp() const;
+	Vec3 GetRotRelativeCam() const;
 };
 
 #endif

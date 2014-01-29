@@ -66,7 +66,7 @@ void Movement::update(float deltaTime)
 {
 	Vec3 pos = getEntityPos();
 	Vec3 rot = getEntityRot();
-	p->update(deltaTime);
+	p->Update(deltaTime);
 		
 	GravityComponent *gravity = getOwner()->getComponent<GravityComponent*>("Gravity");
 
@@ -97,7 +97,7 @@ void Movement::update(float deltaTime)
 		if (!health->isAlive())
 		{
 			sendMessageToEntity(this->getOwnerId(), "Respawn");
-			p->setVelocity(Vec3(0, 0, 0));
+			p->SetVelocity(Vec3(0, 0, 0));
 			health->setHealth(100);
 			return;
 		}
@@ -153,8 +153,8 @@ void Movement::update(float deltaTime)
 			}
 			else
 				walkAngle = targetRot;
-			p->setIsMoving(true);
-			p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, targetRot);
+			p->GetStates()->isMoving = true;
+			p->MoveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, targetRot);
 
 			// If the player is moving, rotate it to match the camera's direction.
 			if (getOwnerId() == 1)
@@ -164,7 +164,7 @@ void Movement::update(float deltaTime)
 		}
 		else
 		{
-			p->setIsMoving(false);
+			p->GetStates()->isMoving = false;
 		}
 	}
 
@@ -176,7 +176,7 @@ void Movement::update(float deltaTime)
 		}
 		else
 		{
-			if (p->getIsMoving())
+			if (p->GetStates()->isMoving)
 			{
 				getOwner()->getAnimatedInstance()->SetAnimation(0);
 			}
@@ -281,7 +281,7 @@ void Movement::Jump(Message const& msg)
 
 	Vec3 pos = getEntityPos();
 
-	if (p->jump(pos))
+	if (p->Jump(pos))
 	{
 		updateEntityPos(pos);
 

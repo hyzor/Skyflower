@@ -39,7 +39,7 @@ void FootstepsComponent::addedToEntity()
 
 void FootstepsComponent::update(float deltaTime)
 {
-	if (getOwner()->getPhysics()->isJumping()) {
+	if (getOwner()->getPhysics()->GetStates()->isJumping) {
 		return;
 	}
 

@@ -169,6 +169,7 @@
     <ClInclude Include="src\physics\CollisionModel.h" />
     <ClInclude Include="src\physics\ModelTree.h" />
     <ClInclude Include="src\physics\Orientation.h" />
+    <ClInclude Include="src\physics\PhysicsHelper.h" />
     <ClInclude Include="src\physics\PhysicsEntity.h" />
     <ClInclude Include="src\physics\PhysicsEngine.h" />
     <ClInclude Include="src\physics\Ray.h" />

@@ -27,7 +27,7 @@ Orientation::~Orientation()
 {
 }
 
-void Orientation::update(float dt)
+void Orientation::Update(float dt)
 {
 	Vec3 r = this->right;
 	Vec3 u = this->up;
@@ -46,17 +46,17 @@ void Orientation::update(float dt)
 	this->look = l;
 }
 
-void Orientation::strafe(float length, Vec3 &pos)
+void Orientation::Strafe(float length, Vec3 &pos)
 {
 	pos += this->right * length;
 }
 
-void Orientation::walk(float length, Vec3 &pos)
+void Orientation::Walk(float length, Vec3 &pos)
 {
 	pos += this->look * length;
 }
 
-void Orientation::rotateX(Vec3 &rot, float angle)
+void Orientation::RotateX(Vec3 &rot, float angle)
 {
 	rot.X += angle;
 
@@ -80,7 +80,7 @@ void Orientation::rotateX(Vec3 &rot, float angle)
 	this->look = Vec3(rFloat3.x, rFloat3.y, rFloat3.z);
 }
 
-void Orientation::rotateY(Vec3 &rot, float angle)
+void Orientation::RotateY(Vec3 &rot, float angle)
 {
 	rot.Y += angle;
 	//rot.Y = angle;
@@ -108,7 +108,7 @@ void Orientation::rotateY(Vec3 &rot, float angle)
 
 }
 
-void Orientation::rotateZ(Vec3 &rot, float angle)
+void Orientation::RotateZ(Vec3 &rot, float angle)
 {
 	rot.Z += angle;
 
@@ -136,7 +136,7 @@ void Orientation::rotateZ(Vec3 &rot, float angle)
 
 
 
-void Orientation::rotateAxis(Vec3 &rot, Vec3 axis, float angle)
+void Orientation::RotateAxis(Vec3 &rot, Vec3 axis, float angle)
 {
 	DirectX::XMMATRIX rotX;
 	DirectX::XMVECTOR a = DirectX::XMLoadFloat3(&(DirectX::XMFLOAT3(axis.X, axis.Y, axis.Z)));
@@ -160,7 +160,7 @@ void Orientation::rotateAxis(Vec3 &rot, Vec3 axis, float angle)
 	this->look = Vec3(rFloat3.x, rFloat3.y, rFloat3.z);
 }
 
-void Orientation::resetRotationXYZ(Vec3 &rot, int Axis)
+void Orientation::ResetRotationXYZ(Vec3 &rot, int Axis)
 {
 	rot = Vec3(0.0f, 0.0f, 0.0f);
 	switch (Axis)
@@ -184,34 +184,34 @@ void Orientation::resetRotationXYZ(Vec3 &rot, int Axis)
 	this->up = Vec3(0.0f, 1.0f, 0.0f);
 }
 
-void Orientation::setOrientation(Vec3 look, Vec3 right, Vec3 up)
+void Orientation::SetOrientation(Vec3 look, Vec3 right, Vec3 up)
 {
 	this->look = look;
 	this->right = right;
 	this->up = up;
 }
 
-void Orientation::setRotRelativeCam(Vec3 rot)
+void Orientation::SetRotRelativeCam(Vec3 rot)
 {
 	this->rotRelativeCam = rot;
 }
 
-Vec3 Orientation::getLook() const
+Vec3 Orientation::GetLook() const
 {
 	return this->look;
 }
 
-Vec3 Orientation::getRight() const
+Vec3 Orientation::GetRight() const
 {
 	return this->right;
 }
 
-Vec3 Orientation::getUp() const
+Vec3 Orientation::GetUp() const
 {
 	return this->up;
 }
 
-Vec3 Orientation::getRotRelativeCam() const
+Vec3 Orientation::GetRotRelativeCam() const
 {
 	return this->rotRelativeCam;
 }

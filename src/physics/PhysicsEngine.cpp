@@ -2,7 +2,7 @@
 
 PhysicsEngine::PhysicsEngine()
 {
-	PhysicsEntity::SetGlobalGravity(DEFAULT_GRAVITY);
+	PhysicsEntity::SetGlobalGravity(GRAVITY_DEFAULT);
 }
 
 PhysicsEngine::PhysicsEngine(const PhysicsEngine& other)
