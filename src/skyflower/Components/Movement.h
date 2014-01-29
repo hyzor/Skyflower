@@ -36,6 +36,8 @@ public:
 		this->canMove = true;
 		this->camLook = Vec3(0.0f, 0.0f, 0.0f);
 		this->speed = speed;
+		this->targetRot = 0.0f;
+		this->walkAngle = 0.0f;
 	}
 	virtual ~Movement()
 	{
@@ -111,43 +113,58 @@ public:
 			}
 		}
 
-		float walkAngle = 0.0f;
+		//float walkAngle = 0.0f;
 
 		if (canMove)
 		{
 			if (this->isMovingForward) {
 				if (this->isMovingLeft) {
-					walkAngle = -45.0f;
+					targetRot = -45.0f;
 				}
 				else if (this->isMovingRight) {
-					walkAngle = 45.0f;
+					targetRot = 45.0f;
 				}
 				else {
-					walkAngle = 0.0f;
+					targetRot = 0.0f;
 				}
 			}
 			else if (this->isMovingBackward) {
 				if (this->isMovingLeft) {
-					walkAngle = -90.0f - 45.0f;
+					targetRot = -90.0f - 45.0f;
 				}
 				else if (this->isMovingRight) {
-					walkAngle = 180.0f - 45.0f;
+					targetRot = 180.0f - 45.0f;
 				}
 				else {
-					walkAngle = 180.0f;
+					targetRot = 180.0f;
 				}
 			}
 			else if (this->isMovingLeft) {
-				walkAngle = -90.0f;
+				targetRot = -90.0f;
 			}
 			else if (this->isMovingRight) {
-				walkAngle = 90.0f;
+				targetRot = 90.0f;
 			}
 
 			if (isMovingBackward || isMovingForward || isMovingLeft || isMovingRight)
 			{
+				if (std::abs(targetRot - walkAngle) > 1.0f)
+				{
+					float tot = targetRot - walkAngle;
+					if (tot > 180)
+						tot -= 360;
+					if (tot < -180)
+						tot += 360;
+
+					if (tot > 0)
+						walkAngle += deltaTime * 750;
+					else
+						walkAngle -= deltaTime * 750;
+				}
+				else
+					walkAngle = targetRot;
 				p->setIsMoving(true);
-				p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, walkAngle);
+				p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, targetRot);
 
 				// If the player is moving, rotate it to match the camera's direction.
 				if (getOwnerId() == 1)
@@ -205,6 +222,8 @@ private:
 	bool canMove;
 	float timeUntilGravityEnable;
 	float yaw;
+	float targetRot;
+	float walkAngle;
 
 	void startMoveForward(Message const& msg)
 	{
