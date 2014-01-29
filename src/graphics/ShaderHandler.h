@@ -24,6 +24,21 @@ using namespace DirectX;
 class IShader
 {
 public:
+	void* operator new(size_t size)
+	{
+		void* p = _aligned_malloc(size, 16);
+
+		if (!p)
+			throw std::bad_alloc();
+
+		return p;
+	}
+
+	void operator delete(void* p)
+	{
+		_aligned_free(p);
+	}
+
 	virtual bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout) = 0;
 	virtual bool SetActive(ID3D11DeviceContext* dc) = 0;
 
@@ -44,22 +59,6 @@ class ShadowShader : public IShader
 public:
 	ShadowShader();
 	~ShadowShader();
-
-	void* operator new (size_t size)
-	{
-		void* p = _aligned_malloc(size, 16);
-
-		if (!p)
-			throw std::bad_alloc();
-
-		return p;
-	}
-
-	void operator delete (void* p)
-	{
-		ShadowShader* ptr = static_cast<ShadowShader*>(p);
-		_aligned_free(p);
-	}
 
 	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
 	bool SetActive(ID3D11DeviceContext* dc);
@@ -97,23 +96,6 @@ class BasicShader : public IShader
 public:
 	BasicShader();
 	~BasicShader();
-
-	// Overload new and delete, because this class contains XMMATRIX (16 byte alignment)
-	void* operator new (size_t size)
-	{
-		void* p = _aligned_malloc(size, 16);
-
-		if (!p)
-			throw std::bad_alloc();
-
-		return p;
-	}
-
-	void operator delete (void* p)
-	{
-		BasicShader* ptr = static_cast<BasicShader*>(p);
-		_aligned_free(p);
-	}
 
 	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
 	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
@@ -210,23 +192,6 @@ public:
 	SkyShader();
 	~SkyShader();
 
-	// Override new and delete, because this class contains XMMATRIX (16 byte alignment)
-	void* operator new (size_t size)
-	{
-		void* p = _aligned_malloc(size, 16);
-
-		if (!p)
-			throw std::bad_alloc();
-
-		return p;
-	}
-
-	void operator delete (void* p)
-	{
-		BasicShader* ptr = static_cast<BasicShader*>(p);
-		_aligned_free(p);
-	}
-
 	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
 	bool SetActive(ID3D11DeviceContext* dc);
 
@@ -263,23 +228,6 @@ public:
 	SkyDeferredShader();
 	~SkyDeferredShader();
 
-	// Override new and delete, because this class contains XMMATRIX (16 byte alignment)
-	void* operator new (size_t size)
-	{
-		void* p = _aligned_malloc(size, 16);
-
-		if (!p)
-			throw std::bad_alloc();
-
-		return p;
-	}
-
-	void operator delete (void* p)
-	{
-		BasicShader* ptr = static_cast<BasicShader*>(p);
-		_aligned_free(p);
-	}
-
 	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
 	bool SetActive(ID3D11DeviceContext* dc);
 
@@ -315,23 +263,6 @@ class NormalMappedSkinned : public IShader
 public:
 	NormalMappedSkinned();
 	~NormalMappedSkinned();
-
-	// Override new and delete, because this class contains XMMATRIX (16 byte alignment)
-	void* operator new (size_t size)
-	{
-		void* p = _aligned_malloc(size, 16);
-
-		if (!p)
-			throw std::bad_alloc();
-
-		return p;
-	}
-
-	void operator delete (void* p)
-	{
-		NormalMappedSkinned* ptr = static_cast<NormalMappedSkinned*>(p);
-		_aligned_free(p);
-	}
 
 	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
 	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
@@ -443,23 +374,6 @@ public:
 	SkinnedShadowShader();
 	~SkinnedShadowShader();
 
-	// Overload new and delete, because this class contains XMMATRIX (16 byte alignment)
-	void* operator new (size_t size)
-	{
-		void* p = _aligned_malloc(size, 16);
-
-		if (!p)
-			throw std::bad_alloc();
-
-		return p;
-	}
-
-	void operator delete (void* p)
-	{
-		SkinnedShadowShader* ptr = static_cast<SkinnedShadowShader*>(p);
-		_aligned_free(p);
-	}
-
 	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
 	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
 	bool BindVertexShader(ID3D11VertexShader* vShader);
@@ -512,23 +426,6 @@ public:
 	ShadowMorphShader();
 	~ShadowMorphShader();
 
-	// Overload new and delete, because this class contains XMMATRIX (16 byte alignment)
-	void* operator new (size_t size)
-	{
-		void* p = _aligned_malloc(size, 16);
-
-		if (!p)
-			throw std::bad_alloc();
-
-		return p;
-	}
-
-	void operator delete (void* p)
-	{
-		ShadowMorphShader* ptr = static_cast<ShadowMorphShader*>(p);
-		_aligned_free(p);
-	}
-
 	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
 	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
 	bool SetActive(ID3D11DeviceContext* dc);
@@ -567,23 +464,6 @@ class BasicDeferredShader : public IShader
 public:
 	BasicDeferredShader();
 	~BasicDeferredShader();
-
-	// Overload new and delete, because this class contains XMMATRIX (16 byte alignment)
-	void* operator new (size_t size)
-	{
-		void* p = _aligned_malloc(size, 16);
-
-		if (!p)
-			throw std::bad_alloc();
-
-		return p;
-	}
-
-	void operator delete (void* p)
-	{
-		BasicDeferredShader* ptr = static_cast<BasicDeferredShader*>(p);
-		_aligned_free(p);
-	}
 
 	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
 	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
@@ -643,23 +523,6 @@ class BasicDeferredSkinnedShader : public IShader
 public:
 	BasicDeferredSkinnedShader();
 	~BasicDeferredSkinnedShader();
-
-	// Overload new and delete, because this class contains XMMATRIX (16 byte alignment)
-	void* operator new (size_t size)
-	{
-		void* p = _aligned_malloc(size, 16);
-
-		if (!p)
-			throw std::bad_alloc();
-
-		return p;
-	}
-
-	void operator delete (void* p)
-	{
-		BasicDeferredSkinnedShader* ptr = static_cast<BasicDeferredSkinnedShader*>(p);
-		_aligned_free(p);
-	}
 
 	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
 	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
@@ -733,23 +596,6 @@ class LightDeferredShader : public IShader
 public:
 	LightDeferredShader();
 	~LightDeferredShader();
-
-	// Overload new and delete, because this class contains XMMATRIX (16 byte alignment)
-	void* operator new (size_t size)
-	{
-		void* p = _aligned_malloc(size, 16);
-
-		if (!p)
-			throw std::bad_alloc();
-
-		return p;
-	}
-
-	void operator delete (void* p)
-	{
-		LightDeferredShader* ptr = static_cast<LightDeferredShader*>(p);
-		_aligned_free(p);
-	}
 
 	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
 	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
@@ -857,23 +703,6 @@ class SSAOShader : public IShader
 public:
 	SSAOShader();
 	~SSAOShader();
-
-	// Overload new and delete, because this class contains XMMATRIX (16 byte alignment)
-	void* operator new (size_t size)
-	{
-		void* p = _aligned_malloc(size, 16);
-
-		if (!p)
-			throw std::bad_alloc();
-
-		return p;
-	}
-
-	void operator delete (void* p)
-	{
-		SSAOShader* ptr = static_cast<SSAOShader*>(p);
-		_aligned_free(p);
-	}
 
 	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
 	bool SetActive(ID3D11DeviceContext* dc);
@@ -990,23 +819,6 @@ class BasicDeferredMorphShader : public IShader
 public:
 	BasicDeferredMorphShader();
 	~BasicDeferredMorphShader();
-
-	// Overload new and delete, because this class contains XMMATRIX (16 byte alignment)
-	void* operator new (size_t size)
-	{
-		void* p = _aligned_malloc(size, 16);
-
-		if (!p)
-			throw std::bad_alloc();
-
-		return p;
-	}
-
-	void operator delete (void* p)
-	{
-		BasicDeferredMorphShader* ptr = static_cast<BasicDeferredMorphShader*>(p);
-		_aligned_free(p);
-	}
 
 	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
 	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
