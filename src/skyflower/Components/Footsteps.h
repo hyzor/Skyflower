@@ -49,7 +49,7 @@ public:
 
 	void update(float deltaTime)
 	{
-		if (getOwner()->getPhysics()->isJumping()) {
+		if (getOwner()->getPhysics()->GetStates().isJumping) {
 			return;
 		}
 

@@ -41,8 +41,8 @@ public:
 		if (this->isPushed)
 		{
 			Vec3 entityPos = getEntityPos();
-			p->movePushed(entityPos);
-			this->updateEntityPos(this->p->movePushed(entityPos));
+			p->MovePushed(entityPos);
+			this->updateEntityPos(this->p->MovePushed(entityPos));
 			float distance = (entityPos - this->startPos).Length();
 
 			//if you have been pushed away far enough, entity is able to move again
@@ -68,7 +68,7 @@ private:
 			//cout << "BEING PUSHED" << endl;
 			this->isPushed = true;
 			this->startPos = getEntityPos();
-			this->p->setIsBeingPushed(true);
+			this->p->GetStates().SetIsBeingPushed(true);
 			//stop the entity from moving, except for the push
 			sendMessageToEntity(getOwnerId(), "StopMoving");
 		}

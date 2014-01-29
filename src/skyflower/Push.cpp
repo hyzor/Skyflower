@@ -43,7 +43,7 @@ void Push::update(float dt)
 
 void Push::stopPush(Message const& msg)
 {
-	if (getOwner()->getPhysics()->getIsBeingPushed())
+	if (getOwner()->getPhysics()->GetStates().isBeingPushed)
 		getEntityManager()->sendMessageToEntity("stopBeingPushed", getOwnerId());
 }
 
@@ -69,9 +69,9 @@ void Push::push(Entity* target)
 				//if (this->fEntitys[i]->getType() == "player" || this->fEntitys[j]->getType() == "player")
 
 				//if "i" is moving and can push, and that "j" is pushable
-				if (getOwner()->getPhysics()->getIsMoving() && e->hasComponents("Pushable"))
+				if (getOwner()->getPhysics()->GetStates().isMoving && e->hasComponents("Pushable"))
 				{
-					e->getPhysics()->setPushDirection(dir * 10);
+					e->getPhysics()->SetPushDirection(dir * 10);
 					getEntityManager()->sendMessageToEntity("beingPushed", e->fId);
 				}
 			}

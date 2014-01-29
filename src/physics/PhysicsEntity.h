@@ -12,12 +12,10 @@
 #include "Orientation.h"
 #include "PhysicsHelper.h"
 
-const float PI = 3.141592653589f;
-
 using namespace std;
 using namespace PhysicsHelper;
 
-struct PhysicsEntityStates
+struct DLL_API PhysicsEntityStates
 {
 	bool isJumping;
 	bool isMoving;
@@ -39,6 +37,11 @@ struct PhysicsEntityStates
 		this->isBeingPushed = other.isBeingPushed;
 		this->isActiveProjectile = other.isActiveProjectile;
 	}
+
+	void SetIsJumping(bool isJumping) { this->isJumping = isJumping; }
+	void SetIsMoving(bool isMoving) { this->isMoving = isMoving; }
+	void SetIsBeingPushed(bool isBeingPushed) { this->isBeingPushed = isBeingPushed; }
+	void SetIsActiveProjectile(bool isActiveProjectile) { this->isActiveProjectile = isActiveProjectile; }
 };
 
 //Currently sort of a helper class, to be held by each entity to make sure that the velocity and other entity-specific data are kept by and manipulated only by the right entity
@@ -84,8 +87,8 @@ public:
 	void AddGravityCalc(Vec3 &pos, bool addGravity);
 
 	//to be used for projectile calculations
-	void FireProjectile(Vec3 &pos, Vec3 direction);
-	void FireProjectileAt(Vec3 &pos, Vec3 target);
+	bool FireProjectile(Vec3 &pos, Vec3 direction);
+	bool FireProjectileAt(Vec3 &pos, Vec3 target);
 
 	//walk along the look vector kept in Orientation
 	void Walk(Vec3 &pos, float speed);
@@ -120,7 +123,7 @@ public:
 	//Standard getfunctions.
 	float GetMass() const;
 	Vec3 GetGravity() const;
-	PhysicsEntityStates GetStates(); //Not constant,
+	PhysicsEntityStates GetStates() { return this->mStates; }; //Not constant,
 	Orientation GetOrientation() const;
 	Vec3 GetVelocity() const; //Fetched from EntityManager (used for checking if you can push something)
 

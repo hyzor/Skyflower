@@ -3,19 +3,40 @@
 
 #include "shared/Vec3.h"
 
-#define DEFAULT_GRAVITY Vec3(0.0f, -120.82f, 0.0f)
-#define DEFAULT_MASS 50.0f //In KG
-#define DEFAULT_VELOCITY Vec3(0.0f, 0.0f, 0.0f)
-#define DEFAULT_MOVEMENTSPEED 50.0f
-#define DEFAULT_JUMP_VELOCITY 35.0f
-#define DEFAULT_THROW_TIME 2.5f
-#define DEFAULT_THROW_ANGLE_DEGREES 30.0f
-#define DEFAULT_THROW_HEIGHT 15.0f
-#define THROW_HEIGHT_HIGH 30.0f
-#define THROW_HEIGHT_LOW 5.0f
+#define GRAVITY_LOW Vec3(0.0f, -60.82f, 0.0f)
+#define GRAVITY_DEFAULT Vec3(0.0f, -120.82f, 0.0f)
+#define GRAVITY_HIGH Vec3(0.0f, -180.82f, 0.0f)
+
+#define MASS_LOW 25.0f
+#define MASS_DEFAULT 50.0f
+#define MASS_HIGH 75.0f
+
+#define VELOCITY_DEFAULT Vec3(0.0f, 0.0f, 0.0f)
+
+#define MOVEMENTSPEED_LOW 25.0f
+#define MOVEMENTSPEED_DEFAULT 50.0f
+#define MOVEMENTSPEED_HIGH 75.0f
+
+#define JUMP_VELOCITY_LOW 15.0f
+#define JUMP_VELOCITY_DEFAULT 25.0f
+#define JUMP_VELOCITY_HIGH 35.0f
+
+//#define PROJECTILE_TIME_LOW 0.75f
+//#define PROJECTILE_TIME_DEFAULT 1.5f
+//#define PROJECTILE_TIME_HIGH 2.5f
+#define PROJECTILE_HEIGHT_DEFAULT 5
+#define PROJECTILE_HEIGHT_HIGH 10.0f
+#define PROJECTILE_HEIGHT_LOW 2.5f
+#define PROJECTILE_LENGTH_SHORT 40.0f
+#define PROJECTILE_LENGTH_DEFAULT 50.0f
+#define PROJECTILE_LENGTH_FAR 150.0f
+#define PROJECTILE_ANGLE_DEGREES_DEFAULT 30.0f
 
 namespace PhysicsHelper
 {
+	const float PI = 3.141592653589f;
+
+
 	inline float ToRadians(float degrees)
 	{
 		return (degrees * PI / 180.0f);

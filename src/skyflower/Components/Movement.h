@@ -68,7 +68,7 @@ public:
 	{
 		Vec3 pos = getEntityPos();
 		Vec3 rot = getEntityRot();
-		p->update(deltaTime);
+		p->Update(deltaTime);
 		
 		GravityComponent *gravity = getOwner()->getComponent<GravityComponent*>("Gravity");
 
@@ -99,7 +99,7 @@ public:
 			if (!health->isAlive())
 			{
 				sendMessageToEntity(this->getOwnerId(), "Respawn");
-				p->setVelocity(Vec3(0, 0, 0));
+				p->SetVelocity(Vec3(0, 0, 0));
 				health->setHealth(100);
 				return;
 			}
@@ -140,8 +140,9 @@ public:
 
 			if (isMovingBackward || isMovingForward || isMovingLeft || isMovingRight)
 			{
-				p->setIsMoving(true);
-				p->moveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, walkAngle);
+				//p->setIsMoving(true);
+				p->GetStates().SetIsMoving(true);
+				p->MoveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, walkAngle);
 
 				// If the player is moving, rotate it to match the camera's direction.
 				if (getOwnerId() == 1)
@@ -151,7 +152,7 @@ public:
 			}
 			else
 			{
-				p->setIsMoving(false);
+				p->GetStates().SetIsMoving(false);
 			}
 		}
 
@@ -262,8 +263,15 @@ private:
 
 		if (/*p->jump(pos)*/true)
 		{
-			Vec3 target = Vec3(50.0f, 50.0f, 50.0f);
-			p->fireProjectileAt(pos, target);
+			Vec3 target = Vec3(36.0f, 20.0f, 39.5f);
+			std::cout << "X: ";
+			std::cout << pos.X;
+			std::cout << " Y: " ;
+			std::cout << pos.Y;
+			std::cout << " Z: ";
+			std::cout << pos.Z;
+			std::cout << "\n";
+			p->FireProjectileAt(pos, target);
 			updateEntityPos(pos);
 
 			Entity *owner = getOwner();

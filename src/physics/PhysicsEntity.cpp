@@ -4,21 +4,21 @@ Vec3 PhysicsEntity::mGlobalGravity = Vec3(0.0f, 0.0f, 0.0f);
 
 PhysicsEntity::PhysicsEntity()
 {
-	this->mGravity = DEFAULT_GRAVITY;
-	this->mMass = DEFAULT_MASS;
+	this->mGravity = GRAVITY_DEFAULT;
+	this->mMass = MASS_DEFAULT;
 	this->mProjectileAngle = 0.0f;
 	this->mDeltaTime = 0.0;
-	this->mVelocity = DEFAULT_VELOCITY;
+	this->mVelocity = VELOCITY_DEFAULT;
 	this->mStates = PhysicsEntityStates();
 }
 
 PhysicsEntity::PhysicsEntity(Vec3 pos)
 {
-	this->mGravity = DEFAULT_GRAVITY;
-	this->mMass = DEFAULT_MASS;
+	this->mGravity = GRAVITY_DEFAULT;
+	this->mMass = MASS_DEFAULT;
 	this->mProjectileAngle = 0.0f;
 	this->mDeltaTime = 0.0;
-	this->mVelocity = DEFAULT_VELOCITY;
+	this->mVelocity = VELOCITY_DEFAULT;
 	this->mStates = PhysicsEntityStates();
 }
 
@@ -110,7 +110,7 @@ bool PhysicsEntity::Jump(Vec3 &pos)
 	if (!this->mStates.isJumping)
 	{
 		this->mStates.isJumping = true;
-		this->mVelocity.Y += DEFAULT_JUMP_VELOCITY;
+		this->mVelocity.Y += JUMP_VELOCITY_DEFAULT;
 
 		pos += this->mVelocity*this->mDeltaTime;
 
@@ -124,44 +124,77 @@ bool PhysicsEntity::Jump(Vec3 &pos)
 
 
 
-void PhysicsEntity::FireProjectile(Vec3 &pos, Vec3 direction)
+bool PhysicsEntity::FireProjectile(Vec3 &pos, Vec3 direction)
 {
 	if (!this->mStates.isActiveProjectile)
 	{
 		this->mStates.isActiveProjectile = true;
 		this->mVelocity += direction;
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
-void PhysicsEntity::FireProjectileAt(Vec3 &pos, Vec3 target)
+bool PhysicsEntity::FireProjectileAt(Vec3 &pos, Vec3 target)
 {
 	if (!this->mStates.isActiveProjectile)
 	{
-		Vec3 delta, projectileVelocity;
-		float angle, time, velocityX, velocityY, velocityZ, heightY;
+		Vec3 delta, projectileVelocity, deltaXZPlane;
+		float initVelocityX, initVelocityY, initVelocityZ,
+			height, lenXZ, projectileConst;
 
 		delta = target - pos;
-		heightY = DEFAULT_THROW_HEIGHT + delta.Y;
+		deltaXZPlane = delta;
+		deltaXZPlane.Y = 0.0f;
+		lenXZ = deltaXZPlane.Length();
+		height = PROJECTILE_HEIGHT_DEFAULT;
+		projectileConst = 0.95;
 
+		//Use appropriate defined numbers depending on the length and height of the projectilemotion
 
-
-
+		//Height
 		if (delta.Y > 0.0f)
 		{
-
+			height = PROJECTILE_HEIGHT_HIGH;
 		}
 		else if (delta.Y < 0.0f)
 		{
-
+			height = PROJECTILE_HEIGHT_LOW;
 		}
-		else
+
+		//Length
+		if (lenXZ < PROJECTILE_LENGTH_SHORT)
 		{
-
+			//Increase in order to prevent the throw from being too "weak"
+			//and instead make the throw to go past the target in order to for it
+			//to appear more like a throw
+			projectileConst = 0.50;
 		}
+		else if (lenXZ > PROJECTILE_LENGTH_FAR)
+		{
+			//Reverse action here, when the target is very far away, increase
+			//the constant  to make it not quite reach its target
+			projectileConst = 1.10;
+		}
+
+		initVelocityX = delta.X / projectileConst;
+		initVelocityZ = delta.Z / projectileConst;
+		initVelocityY = sqrtf(0 - (2 * this->mGravity.Y * height));
+
+		projectileVelocity = Vec3(initVelocityX, initVelocityY, initVelocityZ);
 
 		this->mStates.isActiveProjectile = true;
 		this->mVelocity += projectileVelocity;
 		pos += this->mVelocity * this->mDeltaTime;
+
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
@@ -177,7 +210,7 @@ void PhysicsEntity::Walk(Vec3 &pos, float speed)
 
 void PhysicsEntity::Walk(Vec3 &pos)
 {
-	float speed = DEFAULT_MOVEMENTSPEED;
+	float speed = MOVEMENTSPEED_DEFAULT;
 	this->mOrient.Walk(speed, pos);
 }
 
@@ -187,7 +220,7 @@ void PhysicsEntity::Strafe(Vec3 &pos, float speed)
 }
 void PhysicsEntity::Strafe(Vec3 &pos)
 {
-	float speed = DEFAULT_MOVEMENTSPEED;
+	float speed = MOVEMENTSPEED_DEFAULT;
 	this->mOrient.Strafe(speed, pos);
 }
 
@@ -225,7 +258,7 @@ void PhysicsEntity::MoveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, Vec3 &rot, fl
 
 		this->RotateY(rot, ToDegrees(angle));
 	}
-	float speed = DEFAULT_MOVEMENTSPEED;
+	float speed = MOVEMENTSPEED_DEFAULT;
 	this->Walk(pos);
 }
 
