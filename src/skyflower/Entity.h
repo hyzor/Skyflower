@@ -13,6 +13,7 @@
 
 #include "graphics/GraphicsEngine.h"
 #include "physics/PhysicsEngine.h"
+#include "physics/Sphere.h"
 #include "PotentialField.h"
 
 namespace Cistron {

@@ -1,7 +1,6 @@
 #ifndef COLLISIONMODEL_H
 #define COLLISIONMODEL_H
 
-#include "shared/platform.h"
 #include "shared/Vec3.h"
 #include <string>
 #include <stdlib.h>
@@ -12,7 +11,7 @@
 #include "ModelTree.h"
 #include "Box.h"
 
-class DLL_API CollisionModel
+class CollisionModel
 {
 	public:
 		CollisionModel();

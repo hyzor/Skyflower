@@ -1,37 +1,30 @@
 #ifndef COLLISIONINSTANCE_H
 #define COLLISIONINSTANCE_H
 
-#include "shared/platform.h"
-#include "CollisionModel.h"
+#include "shared/Vec3.h"
 
-class DLL_API CollisionInstance
+#include "Box.h"
+#include "Ray.h"
+#include "Triangle.h"
+
+class CollisionInstance
 {
-	public:
-		CollisionInstance(CollisionModel* Model, Vec3 Position);
+public:
+	virtual ~CollisionInstance() {}
 
-		void SetScale(Vec3 scale);
-		void SetRotation(Vec3 rot);
-		
-		float Test(Ray r);
-		bool Test(Triangle t);
-		bool Test(CollisionInstance* ci);
+	virtual void SetScale(Vec3 scale) = 0;
+	virtual void SetRotation(Vec3 rot) = 0;
+	virtual void SetPosition(Vec3 position) = 0;
 
-		Box GetBox();
+	virtual float Test(Ray r) = 0;
+	virtual bool Test(Triangle t) = 0;
+	virtual bool Test(CollisionInstance* ci) = 0;
 
-		CollisionModel* Model;
-		Vec3 Position;
-		bool isActive;
+	virtual Box GetBox() = 0;
+	virtual Vec3 GetPosition() = 0;
 
-		void setIsActive(bool status);
-
-	private:
-
-		Vec3 scaleInv;
-		Vec3 rot1Inv;
-		Vec3 rot2Inv;
-		Vec3 rot3Inv;
-		
+	virtual bool isActive() = 0;
+	virtual void setIsActive(bool status) = 0;
 };
-
 
 #endif

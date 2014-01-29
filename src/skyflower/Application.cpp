@@ -48,7 +48,7 @@ void Application::Start()
 
 	m_camera = m_graphicsEngine->CreateCameraController();
 	m_physicsEngine = new PhysicsEngine();
-	m_collision = new Collision();
+	m_collision = CreateCollision("../../content/");
 	m_potentialField = new PotentialField();
 	m_scriptHandler = new ScriptHandler();
 	Event::Register(m_scriptHandler);
@@ -191,7 +191,7 @@ void Application::Start()
 	delete m_entityManager;
 	delete m_scriptHandler;
 	delete m_potentialField;
-	delete m_collision;
+	DestroyCollision(m_collision);
 	delete m_physicsEngine;
 	m_soundEngine->DestroySource(m_backgroundMusic);
 	DestroySoundEngine(m_soundEngine);

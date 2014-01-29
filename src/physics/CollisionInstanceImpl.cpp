@@ -1,6 +1,6 @@
-#include "CollisionInstance.h"
+#include "CollisionInstanceImpl.h"
 
-CollisionInstance::CollisionInstance(CollisionModel* Model, Vec3 Position)
+CollisionInstanceImpl::CollisionInstanceImpl(CollisionModel* Model, Vec3 Position)
 {
 	this->Model = Model;
 	this->Position = Position;
@@ -11,12 +11,16 @@ CollisionInstance::CollisionInstance(CollisionModel* Model, Vec3 Position)
 	this->rot2Inv = Vec3(0, 1, 0);
 	this->rot3Inv = Vec3(0, 0, 1);
 
-	this->isActive = true;
+	this->_isActive = true;
 }
 
-float CollisionInstance::Test(Ray r)
+CollisionInstanceImpl::~CollisionInstanceImpl()
 {
-	if (this->isActive)
+}
+
+float CollisionInstanceImpl::Test(Ray r)
+{
+	if (this->_isActive)
 	{
 		r.Pos -= Position; //translate ray instead of all triangles
 
@@ -64,7 +68,7 @@ float CollisionInstance::Test(Ray r)
 		return 0;
 }
 
-bool CollisionInstance::Test(Triangle t)
+bool CollisionInstanceImpl::Test(Triangle t)
 {
 
 	t.P1 -= Position*Vec3(1, 1, -1);
@@ -90,23 +94,26 @@ bool CollisionInstance::Test(Triangle t)
 		return Model->GetTree()->Test(t);
 }
 
-bool CollisionInstance::Test(CollisionInstance* ci)
+bool CollisionInstanceImpl::Test(CollisionInstance* ci)
 {
+	CollisionInstanceImpl *cii = (CollisionInstanceImpl *)ci;
+	CollisionModel *ciModel = cii->GetModel();
+	Vec3 ciPosition = cii->GetPosition();
 
 	Box b1 = Model->GetBox();
-	Box b2 = ci->Model->GetBox();
-	b2.Position += ci->Position*Vec3(1, 1, -1) - Position*Vec3(1, 1, -1);
+	Box b2 = ciModel->GetBox();
+	b2.Position += ciPosition*Vec3(1, 1, -1) - Position*Vec3(1, 1, -1);
 	if (b1.Test(b2))
 	{
 		//if (!ci->Model->GetTree())
 		{
-			for (int i = 0; i < ci->Model->Triangles(); i++)
+			for (int i = 0; i < ciModel->Triangles(); i++)
 			{
-				Triangle* t = ci->Model->GetTriangle(i);
+				Triangle* t = ciModel->GetTriangle(i);
 				Triangle t2 = *t;
-				t2.P1 += ci->Position*Vec3(1, 1, -1);
-				t2.P2 += ci->Position*Vec3(1, 1, -1);
-				t2.P3 += ci->Position*Vec3(1, 1, -1);
+				t2.P1 += ciPosition*Vec3(1, 1, -1);
+				t2.P2 += ciPosition*Vec3(1, 1, -1);
+				t2.P3 += ciPosition*Vec3(1, 1, -1);
 				if (Test(t2))
 					return true;
 			}
@@ -134,12 +141,12 @@ bool CollisionInstance::Test(CollisionInstance* ci)
 	return false;
 }
 
-void CollisionInstance::SetScale(Vec3 scale)
+void CollisionInstanceImpl::SetScale(Vec3 scale)
 {
 	scaleInv = Vec3(1, 1, 1) / scale;
 }
 
-void CollisionInstance::SetRotation(Vec3 rot)
+void CollisionInstanceImpl::SetRotation(Vec3 rot)
 {
 	//x rot
 	Vec3 r1 = Vec3(1, 0, 0);
@@ -171,7 +178,17 @@ void CollisionInstance::SetRotation(Vec3 rot)
 	rot3Inv = r3;
 }
 
-Box CollisionInstance::GetBox()
+void CollisionInstanceImpl::SetPosition(Vec3 position)
+{
+	this->Position = position;
+}
+
+CollisionModel *CollisionInstanceImpl::GetModel()
+{
+	return Model;
+}
+
+Box CollisionInstanceImpl::GetBox()
 {
 	Box bounds = Model->GetBox();
 	bounds.Position += this->Position;
@@ -179,7 +196,17 @@ Box CollisionInstance::GetBox()
 	return bounds;
 }
 
-void CollisionInstance::setIsActive(bool status)
+Vec3 CollisionInstanceImpl::GetPosition()
 {
-	this->isActive = status;
+	return this->Position;
+}
+
+bool CollisionInstanceImpl::isActive()
+{
+	return this->_isActive;
+}
+
+void CollisionInstanceImpl::setIsActive(bool status)
+{
+	this->_isActive = status;
 }

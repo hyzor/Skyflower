@@ -380,7 +380,7 @@ void Entity::updatePos(Vec3 pos)
 	if (this->AnimInst)
 		this->AnimInst->SetPosition(returnPos());
 	if (this->collInst)
-		this->collInst->Position = returnPos();
+		this->collInst->SetPosition(returnPos());
 	if (this->field)
 		this->field->Move(returnPos());
 
