@@ -1,6 +1,3 @@
-#include "SkinnedShadowBuildVS.hlsl"
-
-float4 main(VertexOut pIn) : SV_TARGET
+void main()
 {
-	return pIn.Pos;
 }
