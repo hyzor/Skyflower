@@ -1007,7 +1007,6 @@ void GraphicsEngineImpl::UpdateSceneData()
 	            0.5f*(maxPt.z - minPt.z));
 	 
 	    mSceneBounds.Radius = sqrtf(extent.x*extent.x + extent.y*extent.y + extent.z*extent.z);
-		mSceneBounds.Radius = 1000.0f;
 }
 
 void GraphicsEngineImpl::addDirLight(Vec3 color, Vec3 direction, float intensity)
