@@ -12,6 +12,8 @@
 #include "Health.h"
 #include "Gravity.h"
 
+#include <sstream>
+
 static const char *fallingSounds[] = {
 	"player/wilhelm_scream.wav",
 	"quake/falling1.wav"
@@ -67,7 +69,7 @@ void Movement::update(float deltaTime)
 	Vec3 pos = getEntityPos();
 	Vec3 rot = getEntityRot();
 	p->Update(deltaTime);
-		
+
 	GravityComponent *gravity = getOwner()->getComponent<GravityComponent*>("Gravity");
 
 	if (gravity && !gravity->isEnabled())
@@ -138,7 +140,7 @@ void Movement::update(float deltaTime)
 
 		if (isMovingBackward || isMovingForward || isMovingLeft || isMovingRight)
 		{
-			if (std::abs(targetRot - walkAngle) > 1.0f)
+			if (std::abs((((int)targetRot) % 360) - ((int)walkAngle % 360)) > 1)
 			{
 				float tot = targetRot - walkAngle;
 				if (tot > 180)
@@ -147,9 +149,9 @@ void Movement::update(float deltaTime)
 					tot += 360;
 
 				if (tot > 0)
-					walkAngle += deltaTime * 750;
+					walkAngle += std::abs(tot) * deltaTime * 7;
 				else
-					walkAngle -= deltaTime * 750;
+					walkAngle -= std::abs(tot) * deltaTime * 7;
 			}
 			else
 				walkAngle = targetRot;

@@ -37,3 +37,25 @@ void GUIElement::UploadTextureData(const void* data)
 {
 	this->mTexture->UploadData(data);
 }
+
+TextElement::TextElement()
+{
+	this->color = Vec3::Zero();
+	this->x = 0.0f;
+	this->y = 0.0f;
+	this->text = nullptr;
+	this->scale = 0.0f;
+}
+
+TextElement::TextElement(wchar_t* text, int x, int y, Vec3 color, float scale)
+{
+	this->color = color;
+	this->x = x;
+	this->y = y;
+	this->text = text;
+	this->scale = scale;
+}
+void TextElement::Draw(GraphicsEngine* gEngine)
+{
+	gEngine->printText(text, x, y, color, scale);
+}

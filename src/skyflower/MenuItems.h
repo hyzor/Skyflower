@@ -60,7 +60,7 @@ protected:
 	Rectangle bounds;
 	int width, height;
 	GUI *guiPtr;
-	float origScreenWidth, origScreenHeigh, originalWidth, originalHeight;
+	int origScreenWidth, origScreenHeigh, originalWidth, originalHeight;
 	Vec3 origPos;
 };
 
@@ -79,7 +79,7 @@ public:
 	void setOnClick(const std::function<void()> &handler);
 	void SetPosition(Vec3 pos);
 	void setScale(float x, float y);
-	void updateScreenRes(float x, float y);
+	void updateScreenRes(unsigned int x, unsigned int y);
 
 private:
 	bool highlighted;
@@ -103,7 +103,7 @@ public:
 	bool isChecked();
 	void SetPosition(Vec3 pos);
 	void setScale(float x, float y);
-	void updateScreenRes(float x, float y);
+	void updateScreenRes(unsigned int x, unsigned int y);
 
 private:
 	std::function<void()> handler;

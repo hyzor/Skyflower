@@ -1,5 +1,4 @@
 
-#include "Cistron.h"
 #include "EntityManager.h"
 #include "ComponentHeaders.h"
 

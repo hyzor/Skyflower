@@ -171,8 +171,6 @@ void Application::Start()
 			load = thread(&LevelHandler::LoadQueued, levelHandler);
 			changeGameState(GameState::loading);
 		}
-		
-		m_GUI->Draw();
 
 		switch (gameState)
 		{
@@ -190,6 +188,8 @@ void Application::Start()
 			break;
 		}
 		
+		m_GUI->Draw();
+
 		m_graphicsEngine->Present();
 
 		m_soundEngine->Update((float)deltaTime);
@@ -222,9 +222,8 @@ void Application::updateMenu(float dt)
 	if (!m_menu->isActive())
 		changeGameState(GameState::game);
 
-	m_graphicsEngine->Begin2D();
+
 	m_menu->draw();
-	m_graphicsEngine->End2D();
 
 	switch (m_menu->getStatus())
 	{
@@ -240,17 +239,18 @@ void Application::updateMenu(float dt)
 			this->OnWindowResized(1024, 768);
 		}
 		m_menu->setActive(false);
-		/*if (!cs->isDone())
-			changeGameState(GameState::cutScene);
-		else */
+		
 			changeGameState(GameState::game);
+		break;
+	case Menu::exit:
+		m_quit = true;
 	}
 }
 
 void Application::updateCutScene(float dt)
 {
 	m_camera->Update(dt);
-	m_graphicsEngine->UpdateScene(dt, mGameTime);
+	m_graphicsEngine->UpdateScene(dt, (float)mGameTime);
 	m_graphicsEngine->DrawScene();
 
 	//cs->update(dt);
@@ -269,10 +269,10 @@ void Application::updateGame(float dt, float gameTime, Movement* playerMove)
 	playerMove->setCamera(m_camera->GetLook(), m_camera->GetRight(), m_camera->GetUp());
 	playerMove->setYaw(m_camera->GetYaw());
 	m_camera->Update(dt);
-	m_entityManager->update(dt);
+	
 	m_graphicsEngine->UpdateScene(dt, gameTime);
 	m_graphicsEngine->DrawScene();
-
+	m_entityManager->update(dt);
 	if (m_menu->isActive())
 		changeGameState(GameState::menu);
 }
@@ -450,15 +450,15 @@ void Application::OnKeyDown(unsigned short key)
 		break;
 	case 'T':
 	{
-				static const size_t num_taunts = 2;
-				static const char *taunts[num_taunts] = {
-					"quake/taunt1.wav",
-					"quake/taunt2.wav"
-				};
+		static const size_t num_taunts = 2;
+		static const char *taunts[num_taunts] = {
+			"quake/taunt1.wav",
+			"quake/taunt2.wav"
+		};
 
-				Vec3 position = Vec3(0.0f, 0.0f, 0.0f);
-				m_soundEngine->PlaySound(taunts[rand() % num_taunts], &position.X, 0.25f, true);
-				break;
+		Vec3 position = Vec3(0.0f, 0.0f, 0.0f);
+		m_soundEngine->PlaySound(taunts[rand() % num_taunts], &position.X, 0.25f, true);
+		break;
 	}
 	case 'Y':
 		m_SSAOradius += 0.1f;

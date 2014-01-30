@@ -10,7 +10,7 @@ Menu::Menu()
 
 Menu::~Menu()
 {
-	for (int i = 0; m_buttons.size() != 0; i++)
+	for (unsigned i = 0; i < m_buttons.size(); i++)
 	{
 		delete m_buttons.at(i);
 	}
@@ -64,7 +64,7 @@ void Menu::setActive(bool active)
 void Menu::draw()
 {
 	Vec3 checkBoxPos = m_checkboxes.at(0)->getPosition();
-	guiPtr->printText(L"Set fullscreen", checkBoxPos.X + 50, checkBoxPos.Y, Vec3(1, 1, 1), 1.0f);
+	guiPtr->printText(L"Set fullscreen", (int)checkBoxPos.X + 50, (int)checkBoxPos.Y, Vec3(1.0f, 1.0f, 1.0f), 1.0f);
 }
 
 void Menu::keyPressed(unsigned short key)

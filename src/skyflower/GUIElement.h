@@ -52,4 +52,19 @@ public:
 	int GetID() const { return mId; }
 };
 
+class TextElement
+{
+public:
+	TextElement();
+	TextElement(wchar_t* text, int x, int y, Vec3 color = Vec3::Zero(), float scale = 1.0f);
+	void Draw(GraphicsEngine* gEngine);
+
+	wchar_t* text;
+	float x, y, scale;
+	Vec3 color;
+	
+
+
+};
+
 #endif
