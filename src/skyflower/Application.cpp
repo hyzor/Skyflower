@@ -198,12 +198,10 @@ void Application::Start()
 	
 	//m_graphicsEngine->DeleteTexture2D(memoryChartTexture);
 	//m_graphicsEngine->DeleteTexture2D(frameTimeChartTexture);
-	m_GUI->Destroy();
 
 	delete m_menu;
 	m_GUI->Destroy();
 	delete m_GUI;
-	m_GUI->Destroy();
 	delete levelHandler;
 	delete m_entityManager;
 	delete m_scriptHandler;

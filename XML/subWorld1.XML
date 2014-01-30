@@ -1,8 +1,10 @@
 <root>
     <Entity entityName="plattform1" model="Models\Worlds\Subworld 1\plattform1" id="100" isVisible="1" isCollidible="1" isAnimated="0" xPos="0.0" yPos="0.0" zPos="-0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity entityName="plattform1Cloud" model="Models\Worlds\Subworld 1\plattform1Cloud" id="2" isVisible="1" isCollidible="0" isAnimated="0" xPos="0.0" yPos="0.0" zPos="-0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
-    <Entity entityName="plattform2" model="Models\Worlds\Subworld 1\plattform2" id="3" isVisible="1" isCollidible="1" isAnimated="0" xPos="0.0" yPos="0.0" zPos="-0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
-    <Entity entityName="plattform4" model="Models\Worlds\Subworld 1\plattform4" id="4" isVisible="1" isCollidible="1" isAnimated="0" xPos="442.880970738" yPos="98.3288103873" zPos="61.9462885566" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.8655369642" yScale="1.8655369642" zScale="1.285" />
+    <Entity entityName="plattform2" model="Models\Worlds\Subworld 1\plattform2" id="3" isVisible="1" isCollidible="1" isAnimated="0" xPos="0.0" yPos="0.0" zPos="-0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
+    			<MoveTarget targetPosX="0" targetPosY="10" targetPosZ="0" duration="5" easingPower="2" continuous="1" />
+	</Entity>
+	<Entity entityName="plattform4" model="Models\Worlds\Subworld 1\plattform4" id="4" isVisible="1" isCollidible="1" isAnimated="0" xPos="442.880970738" yPos="98.3288103873" zPos="61.9462885566" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.8655369642" yScale="1.8655369642" zScale="1.285" />
     <Entity entityName="plattform3Cloud" model="Models\Worlds\Subworld 1\plattform3Cloud" id="5" isVisible="1" isCollidible="0" isAnimated="0" xPos="442.880970738" yPos="97.4620284616" zPos="61.9462885566" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.8655369642" yScale="1.8655369642" zScale="3.69853255722"/>
 	
     <Entity entityName="plattform3" model="Models\Worlds\Subworld 1\plattform3" id="6" isVisible="1" isCollidible="1" isAnimated="0" xPos="565.370649948" yPos="97.4624337169" zPos="41.8543727491" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.8655369642" yScale="1.8655369642" zScale="1.8655369642"/>
@@ -10,8 +12,10 @@
 	
     <Entity entityName="plattform3" model="Models\Worlds\Subworld 1\plattform3" id="8" isVisible="1" isCollidible="1" isAnimated="0" xPos="309.001247671" yPos="58.9019072742" zPos="155.286195192" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.8655369642" yScale="1.8655369642" zScale="1.8655369642"/>
     <Entity entityName="plattform3Cloud" model="Models\Worlds\Subworld 1\plattform3Cloud" id="9" isVisible="1" isCollidible="0" isAnimated="0" xPos="309.001247671" yPos="58.0351253485" zPos="155.286195192" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.8655369642" yScale="1.8655369642" zScale="1.8655369642"/>
-    <Entity entityName="ropeBallonPlattform" model="Models\Worlds\Subworld 1\ropeBallonPlattform" id="11" isVisible="1" isCollidible="1" isAnimated="0" xPos="0.0" yPos="0.0" zPos="-0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
-    <Entity entityName="Rock" model="Models\Worlds\Subworld 1\Rock" id="12" isVisible="1" isCollidible="1" isAnimated="0" xPos="326.041811054" yPos="83.32834014" zPos="149.181274461" xRot="1.73764218889" yRot="-0.192779884652" zRot="-0.0324277093744" xScale="6.76847965241" yScale="6.76847965241" zScale="6.76847965241"/>
+    <Entity entityName="ropeBallonPlattform" model="Models\Worlds\Subworld 1\ropeBallonPlattform" id="11" isVisible="1" isCollidible="1" isAnimated="0" xPos="0.0" yPos="0.0" zPos="-0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
+			<MoveTarget targetPosX="0" targetPosY="10" targetPosZ="0" duration="5" easingPower="2" continuous="1" />
+    </Entity>
+	<Entity entityName="Rock" model="Models\Worlds\Subworld 1\Rock" id="12" isVisible="1" isCollidible="1" isAnimated="0" xPos="326.041811054" yPos="83.32834014" zPos="149.181274461" xRot="1.73764218889" yRot="-0.192779884652" zRot="-0.0324277093744" xScale="6.76847965241" yScale="6.76847965241" zScale="6.76847965241"/>
     <Entity entityName="Rock" model="Models\Worlds\Subworld 1\Rock" id="13" isVisible="1" isCollidible="1" isAnimated="0" xPos="301.101785755" yPos="77.6491530009" zPos="176.172195801" xRot="-0.169338101103" yRot="0.0" zRot="0.0" xScale="6.76847965241" yScale="6.76847965241" zScale="6.76847965241"/>
     <Entity entityName="WoodBlock" model="Models\Worlds\Subworld 1\WoodBlock" id="14" isVisible="1" isCollidible="0" isAnimated="0" xPos="290.030637847" yPos="79.7036492634" zPos="152.252250723" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
 		<Messenger />
