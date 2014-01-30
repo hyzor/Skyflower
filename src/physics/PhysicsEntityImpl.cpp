@@ -33,49 +33,26 @@ PhysicsEntityImpl::PhysicsEntityImpl(const PhysicsEntityImpl& other)
 	this->mStates = other.mStates;
 }
 
-
 PhysicsEntityImpl::~PhysicsEntityImpl()
 {
 	delete this->mStates;
 }
 
-void PhysicsEntityImpl::SetGravity(Vec3 gravity)
-{
-	this->mGravity = gravity;
-}
-
-void PhysicsEntityImpl::SetGlobalGravity(Vec3 gravity)
-{
-	PhysicsEntityImpl::mGlobalGravity = gravity;
-}
-
-void PhysicsEntityImpl::SetMass(float m)
-{
-	this->mMass = m;
-}
 void PhysicsEntityImpl::Update(float dt)
 {
 	this->mDeltaTime = dt;
 	this->mOrient.Update(dt);
 }
 
-void PhysicsEntityImpl::SetVelocity(Vec3 vel)
+void PhysicsEntityImpl::ApplyVelocityToPos(Vec3 &pos)
 {
-	this->mVelocity = vel;
+	pos = pos + this->mVelocity * this->mDeltaTime;
 }
 
-void PhysicsEntityImpl::AddGravityCalc(Vec3 &pos, bool addGravity)
+void PhysicsEntityImpl::AddGravityCalc(Vec3 &pos)
 {
-	Vec3 previousPos = pos;
-	Vec3 previousVelocity = this->mVelocity;
-
-	pos = previousPos + previousVelocity * this->mDeltaTime;
-
-	if (addGravity)
-	{
-		this->mVelocity = previousVelocity + this->mGravity * this->mDeltaTime;
-		pos += this->mGravity * (this->mDeltaTime * this->mDeltaTime) / 2.0f;
-	}
+	this->mVelocity = this->mVelocity + this->mGravity * this->mDeltaTime;
+	pos += this->mGravity * (this->mDeltaTime * this->mDeltaTime) / 2.0f;
 }
 
 bool PhysicsEntityImpl::Jump(Vec3 &pos)
@@ -94,8 +71,6 @@ bool PhysicsEntityImpl::Jump(Vec3 &pos)
 		return false;
 	}
 }
-
-
 
 bool PhysicsEntityImpl::FireProjectile(Vec3 &pos, Vec3 direction)
 {
@@ -291,16 +266,6 @@ void PhysicsEntityImpl::ResetRot(Vec3 &rot)
 	this->mOrient.ResetRotationXYZ(rot, X);
 	this->mOrient.ResetRotationXYZ(rot, Y);
 	this->mOrient.ResetRotationXYZ(rot, Z);
-}
-
-void PhysicsEntityImpl::SetOrientation(Vec3 look, Vec3 right, Vec3 up)
-{
-	this->mOrient.SetOrientation(look, right, up);
-}
-
-void PhysicsEntityImpl::SetPushDirection(Vec3 direction)
-{
-	this->mPushDirection = direction;
 }
 
 void PhysicsEntityImpl::MoveUp(Vec3 &pos)

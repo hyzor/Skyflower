@@ -24,7 +24,8 @@ public:
 	virtual void Update(float dt) = 0;
 
 	virtual bool Jump(Vec3 &pos) = 0; 
-	virtual void AddGravityCalc(Vec3 &pos, bool addGravity) = 0;
+	virtual void ApplyVelocityToPos(Vec3 &pos) = 0;
+	virtual void AddGravityCalc(Vec3 &pos) = 0;
 
 	virtual bool FireProjectile(Vec3 &pos, Vec3 direction) = 0;
 	virtual bool FireProjectileAt(Vec3 &pos, Vec3 target) = 0;

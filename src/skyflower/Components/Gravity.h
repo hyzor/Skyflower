@@ -37,7 +37,9 @@ public:
 	void update(float deltaTime)
 	{
 		Vec3 pos = getEntityPos();
-		this->p->AddGravityCalc(pos, this->enabled);
+
+		if (this->enabled)
+			this->p->AddGravityCalc(pos);
 
 		updateEntityPos(pos);
 	}
