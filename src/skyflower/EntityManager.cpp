@@ -1171,6 +1171,7 @@ void EntityManager::handleCollision()
 			if (fEntitys[i]->collInst)
 			{
 				Box bounds = fEntitys[i]->collInst->GetBox();
+				bounds.Position -= fEntitys[i]->collInst->GetPosition();
 				
 				Box small = bounds;
 				small.Position += Vec3(2, 2, 2);
@@ -1244,11 +1245,7 @@ void EntityManager::handleCollision()
 				{
 					Vec3 vel = fEntitys[i]->mPhysicsEntity->GetVelocity();
 					if (vel.Y < 0)
-					{
-						vel.X = 0;
 						vel.Y = 0;
-						vel.Z = 0;
-					}
 
 					fEntitys[i]->mPhysicsEntity->SetVelocity(vel);
 					fEntitys[i]->mPhysicsEntity->GetStates()->isJumping = false;
@@ -1277,9 +1274,7 @@ void EntityManager::handleCollision()
 				fEntitys[i]->sendMessageToEntity("notInAir", this->fEntitys[i]->getEntityId());
 			}
 			else
-			{
 				fEntitys[i]->sendMessageToEntity("inAir", this->fEntitys[i]->getEntityId());
-			}
 
 			//activate event for wall
 			if (fEntitys[i]->wall)
