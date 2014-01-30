@@ -473,6 +473,8 @@ public:
 		XMMATRIX& viewProj,
 		XMMATRIX& tex);
 
+	void SetPrevWorldViewProj(XMMATRIX& prevWorld, XMMATRIX& prevViewProj);
+
 	void SetShadowTransformLightViewProj(XMMATRIX& shadowTransform, XMMATRIX& lightView, XMMATRIX& lightProj);
 
 	void SetMaterial(const Material& mat);
@@ -492,6 +494,8 @@ private:
 		//XMMATRIX worldViewProjTex;
 		XMMATRIX texTransform;
 		XMMATRIX shadowTransform;
+
+		XMMATRIX prevWorldViewProj;
 	};
 
 	struct PS_CPEROBJBUFFER
@@ -615,8 +619,9 @@ public:
 	void SetDiffuseTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetNormalTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetSpecularTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
-	void SetPositionTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	//void SetPositionTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetSSAOTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetVelocityTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
 	void SetDepthTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 

@@ -151,6 +151,8 @@ private:
 	ID3D11ShaderResourceView* mParticlesTextureArray;
 
 	void LoadParticles(std::string particlesPath, std::string particleFileName);
+
+	XMFLOAT4X4 mPrevViewProjMatrix;
 };
 
 #endif

@@ -73,6 +73,7 @@ void ModelInstanceImpl::Set(Vec3 pos, Vec3 rot, Vec3 scale)
 	XMStoreFloat4x4(&modelRot, mrot);
 	XMStoreFloat4x4(&modelScale, mscale);
 	XMStoreFloat4x4(&modelWorld, world);
+	XMStoreFloat4x4(&mPrevWorld, world);
 }
 
 void ModelInstanceImpl::SetVisibility(bool visible)
@@ -101,21 +102,15 @@ XMMATRIX ModelInstanceImpl::GetWorld()
 	return XMLoadFloat4x4(&modelWorld);
 }
 
+void ModelInstanceImpl::SetPrevWorld(XMMATRIX& prevWorld)
+{
+	XMStoreFloat4x4(&mPrevWorld, prevWorld);
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+XMMATRIX ModelInstanceImpl::GetPrevWorld()
+{
+	return XMLoadFloat4x4(&mPrevWorld);
+}
 
 AnimatedInstanceImpl::AnimatedInstanceImpl(Vec3 pos, Vec3 rot, Vec3 scale)
 {

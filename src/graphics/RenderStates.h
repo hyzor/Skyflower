@@ -19,6 +19,7 @@ public:
 	static ID3D11SamplerState* mSSAODepthSS;
 	static ID3D11SamplerState* mAnisotropicSS;
 	static ID3D11SamplerState* mComparisonSS;
+	static ID3D11SamplerState* mPointSS;
 
 	static ID3D11DepthStencilState* mLessEqualDSS;
 	static ID3D11DepthStencilState* mDefaultDSS;

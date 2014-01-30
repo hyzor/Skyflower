@@ -19,6 +19,7 @@ struct PixelOut
 	float4 Normal : SV_Target1;
 	float4 Specular : SV_Target2;
 	//float4 Position : SV_Target3;
+	float2 Velocity : SV_Target3;
 };
 
 PixelOut main(VertexOut pIn)
@@ -38,6 +39,9 @@ PixelOut main(VertexOut pIn)
 	float shadowFactor = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
 
 	pOut.Color.w = shadowFactor;
+
+	//pOut.Velocity = ((pIn.CurPosH - pIn.PrevPosH) / 2.0f).xy;
+	pOut.Velocity = pIn.Velocity;
 
 	return pOut;
 }

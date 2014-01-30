@@ -481,6 +481,7 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mLightDeferredShader->SetDiffuseTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Diffuse));
 	mShaderHandler->mLightDeferredShader->SetNormalTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Normal));
 	mShaderHandler->mLightDeferredShader->SetSpecularTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Specular));
+	mShaderHandler->mLightDeferredShader->SetVelocityTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Velocity));
 	mShaderHandler->mLightDeferredShader->SetSSAOTexture(mD3D->GetImmediateContext(), mSSAOTexture->GetShaderResourceView());
 	mShaderHandler->mLightDeferredShader->SetDepthTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
 
@@ -494,9 +495,10 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mLightDeferredShader->SetDiffuseTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mLightDeferredShader->SetNormalTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mLightDeferredShader->SetSpecularTexture(mD3D->GetImmediateContext(), NULL);
-	mShaderHandler->mLightDeferredShader->SetPositionTexture(mD3D->GetImmediateContext(), NULL);
+	//mShaderHandler->mLightDeferredShader->SetPositionTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mLightDeferredShader->SetSSAOTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mLightDeferredShader->SetDepthTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mLightDeferredShader->SetVelocityTexture(mD3D->GetImmediateContext(), NULL);
 
 	if (mPostProcessingEffects & POST_PROCESSING_DOF)
 	{
@@ -596,6 +598,25 @@ void GraphicsEngineImpl::DrawScene()
 		mD3D->GetImmediateContext()->CopyResource(destination, source);
 	}
 
+	//-------------------------------------------------------------------------------------
+	// Motion blur cache
+	//-------------------------------------------------------------------------------------
+	// Store current view projection matrix as previous view proj for use in next frame
+	XMStoreFloat4x4(&mPrevViewProjMatrix, mCamera->GetViewProjMatrix());
+
+	// Loop through all model instances
+	for (UINT i = 0; i < mInstances.size(); ++i)
+	{
+		if (mInstances[i]->IsVisible())
+		{
+			mInstances[i]->SetPrevWorld(mInstances[i]->GetWorld());
+		}
+
+	}
+
+	//-------------------------------------------------------------------------------------
+	// Restore defaults
+	//-------------------------------------------------------------------------------------
 	// Reset the render target to the back buffer.
 	renderTarget = mD3D->GetRenderTargetView();
 	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
@@ -864,6 +885,7 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 		0.5f, 0.5f, 0.0f, 1.0f);
 
 	mShaderHandler->mBasicDeferredShader->SetShadowMap(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
+	//mShaderHandler->mBasicDeferredShader->SetViewProjMatrices(mCamera->GetViewProjMatrix(), XMLoadFloat4x4(&mPrevViewProjMatrix));
 
 	// Loop through all model instances
 	for (UINT i = 0; i < mInstances.size(); ++i)
@@ -873,6 +895,9 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 			mShaderHandler->mBasicDeferredShader->SetWorldViewProjTex(mInstances[i]->GetWorld(),
 				mCamera->GetViewProjMatrix(),
 				toTexSpace);
+
+			mShaderHandler->mBasicDeferredShader->SetPrevWorldViewProj(mInstances[i]->GetPrevWorld(),
+				XMLoadFloat4x4(&mPrevViewProjMatrix));
 
 			mShaderHandler->mBasicDeferredShader->SetShadowTransformLightViewProj(
 				XMMatrixMultiply(mInstances[i]->GetWorld(), mShadowMap->GetShadowTransform()),

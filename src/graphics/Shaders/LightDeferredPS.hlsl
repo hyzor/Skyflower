@@ -23,6 +23,7 @@ cbuffer cLightBuffer : register(b0)
 
 	float4 gFogColor;
 
+	// Needs cleanup!
 	float4x4 gShadowTransform_PS; // Light: view * projection * toTexSpace
 	float4x4 gCameraView;
 	float4x4 gCameraInvView;
@@ -38,12 +39,14 @@ cbuffer cLightBuffer : register(b0)
 Texture2D gDiffuseTexture : register(t0);
 Texture2D gNormalTexture : register(t1);
 Texture2D gSpecularTexture : register(t2);
+Texture2D gVelocityTexture : register(t3);
 Texture2D gSSAOTexture : register(t4);
 Texture2D gDepthTexture : register(t5);
 
 SamplerState samLinear : register(s0);
 SamplerState samAnisotropic : register(s1);
 SamplerComparisonState samShadow : register(s2);
+SamplerState samPoint : register(s3);
 
 float4 main(VertexOut pIn) : SV_TARGET
 {
@@ -53,11 +56,13 @@ float4 main(VertexOut pIn) : SV_TARGET
 	float3 positionW;
 	float shadowFactor;
 	float diffuseMultiplier;
+	float2 velocity;
 	
 	diffuse = gDiffuseTexture.Sample(samLinear, pIn.Tex);
 	normal = gNormalTexture.Sample(samLinear, pIn.Tex).xyz;
 	specular = gSpecularTexture.Sample(samLinear, pIn.Tex);
 	shadowFactor = gDiffuseTexture.Sample(samLinear, pIn.Tex).w;
+	velocity = gVelocityTexture.Sample(samPoint, pIn.Tex).xy;
 
 	// Pretty ugly, normal texture w component contains a "diffuse multiplier"
 	// which sets the inital lit diffuse color by the unlit diffuse color multiplied with
@@ -86,6 +91,45 @@ float4 main(VertexOut pIn) : SV_TARGET
 	// Normalize
 	toEye /= distToEye;
 
+	//--------------------------------------------------
+	// Motion blur
+	//--------------------------------------------------
+	// http://http.developer.nvidia.com/GPUGems3/gpugems3_ch27.html
+	// Microsoft DirectX SDK (June 2010)\Samples\C++\Direct3D\PixelMotionBlur
+	// http://john-chapman-graphics.blogspot.se/2013/01/per-object-motion-blur.html
+
+	/*
+	float2 texCoord = pIn.Tex;
+		texCoord += velocity;
+
+	for (int n = 1; n < 4; ++n, texCoord += velocity)
+	{
+		float4 curColor = gDiffuseTexture.Sample(samLinear, texCoord);
+		diffuse += curColor;
+	}
+
+	diffuse = diffuse / 4;
+	*/
+
+	float3 Blurred = 0;
+	for (int n = 1; n < 12; ++n)
+	{
+		float2 lookUp = velocity * n / 12 + pIn.Tex;
+
+			float4 curColor = gDiffuseTexture.Sample(samPoint, lookUp);
+
+			Blurred.xyz += curColor.xyz;
+	}
+
+	Blurred /= 12;
+
+	diffuse.xyz = Blurred.xyz;
+
+
+
+	//--------------------------------------------------
+	// Lighting
+	//--------------------------------------------------
 	float4 litColor = diffuse;
 
 	float4 ambient_Lights = float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -130,6 +174,7 @@ float4 main(VertexOut pIn) : SV_TARGET
 	// http://udn.epicgames.com/Three/HeightFog.html
 	// http://iancubin.wordpress.com/projects/opengl-volumetric-fog/
 	// http://msdn.microsoft.com/en-us/library/bb173401%28v=vs.85%29.aspx
+
 	if (gEnableFogging)
 	{
 		float3 eyeDirOffset = eyeDir;

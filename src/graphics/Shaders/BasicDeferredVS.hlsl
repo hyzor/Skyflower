@@ -6,6 +6,8 @@ cbuffer cbPerObject : register(b0)
 	//float4x4 gWorldViewProjTex;
 	float4x4 gTexTransform;
 	float4x4 gShadowTransform;
+
+	float4x4 gPrevWorldViewProj;
 };
 
 struct VertexIn
@@ -22,6 +24,11 @@ struct VertexOut
 	float3 NormalW : NORMAL;
 	float2 Tex : TEXCOORD0;
 	float4 ShadowPosH : TEXCOORD1;
+
+	float4 CurPosH : CURPOSV;
+	float4 PrevPosH : PREVPOSV;
+
+	float2 Velocity : VELOCITY;
 };
 
 VertexOut main(VertexIn vIn)
@@ -46,6 +53,18 @@ VertexOut main(VertexIn vIn)
 
 	// Generate projective tex coords to project shadow map onto scene
 	vOut.ShadowPosH = mul(float4(vIn.PosL, 1.0f), gShadowTransform);
+
+	//vOut.CurPosV = mul(float4(vOut.PosW, 1.0f), gViewProj);
+	//vOut.PrevPosV = mul(float4(vOut.PosW, 1.0f), gPrevViewProj);
+
+	vOut.CurPosH = vOut.PosH;
+	vOut.CurPosH /= vOut.CurPosH.w;
+
+	vOut.PrevPosH = mul(float4(vIn.PosL, 1.0f), gPrevWorldViewProj);
+	vOut.PrevPosH /= vOut.PrevPosH.w;
+
+	vOut.Velocity = vOut.CurPosH - vOut.PrevPosH;
+	vOut.Velocity /= 2.0f;
 
 	return vOut;
 }
