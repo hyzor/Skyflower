@@ -1,21 +1,14 @@
 #ifndef PHYSICS_PHYSICSENTITY_H
 #define PHYSICS_PHYSICSENTITY_H
 
-#include <DirectXMath.h>
-#include <ctime>
-#include <math.h>
-#include <string>
-#include <iostream>
 
 #include "shared/platform.h"
 #include "shared/Vec3.h"
-#include "Orientation.h"
 #include "PhysicsHelper.h"
+#include "Orientation.h"
 
-using namespace std;
-using namespace PhysicsHelper;
 
-struct DLL_API PhysicsEntityStates
+struct PhysicsEntityStates
 {
 	bool isJumping;
 	bool isMoving;
@@ -24,93 +17,70 @@ struct DLL_API PhysicsEntityStates
 };
 
 //Currently sort of a helper class, to be held by each entity to make sure that the velocity and other entity-specific data are kept by and manipulated only by the right entity
-class DLL_API PhysicsEntity
+class PhysicsEntity
 {
-private:
-	//used for jumping and gravity calculation
-	Vec3 mGravity;
-	Vec3 mVelocity;
-	Vec3 mPushDirection;
-
-	//not relevant yet
-	float mMass; 
-	float mProjectileAngle;
-	float mDeltaTime;
-
-	//A simple class that keeps track of and manipulates the orientation (meaning rotation, look/right and up -vectors) of the entity holding the physics instance
-	Orientation mOrient;
-
-	//A struct containing bools to keep track of various states
-	PhysicsEntityStates* mStates;
-
-	//A "common" gravity that is applied for all the entities
-	static Vec3 mGlobalGravity;
 public:
-	//basic constructors
-	PhysicsEntity();
-	PhysicsEntity(Vec3 pos);
-	PhysicsEntity(const PhysicsEntity& other);
-	virtual ~PhysicsEntity();
+	virtual ~PhysicsEntity(){};
 
 	//Call each frame, updates delta and orientation
-	void Update(float dt);
+	virtual void Update(float dt) = 0;
 
 	//perform a jump on the given vector that represents a position by increasing velocity in Y-axis
-	bool Jump(Vec3 &pos); 
+	virtual bool Jump(Vec3 &pos) = 0; 
 
 	// Dessa gör mer än att bara applicera gravitationen, utan att kalla på någon av dessa
 	// funktioner fungerar ingen velocity alls, alltså kan man inte hoppa om man inte kallar
 	// någon av dessa funktion. Därav den dumma addGravity boolen.
 	//apply gravity the given vector that represents a position
-	void AddGravityCalc(Vec3 &pos, Vec3 &velocity, bool addGravity); 
-	void AddGravityCalc(Vec3 &pos, bool addGravity);
+	virtual void AddGravityCalc(Vec3 &pos, Vec3 &velocity, bool addGravity) = 0; 
+	virtual void AddGravityCalc(Vec3 &pos, bool addGravity) = 0;
 
 	//to be used for projectile calculations
-	bool FireProjectile(Vec3 &pos, Vec3 direction);
-	bool FireProjectileAt(Vec3 &pos, Vec3 target);
+	virtual bool FireProjectile(Vec3 &pos, Vec3 direction) = 0;
+	virtual bool FireProjectileAt(Vec3 &pos, Vec3 target) = 0;
 
 	//walk along the look vector kept in Orientation
-	void Walk(Vec3 &pos, float speed);
-	void Walk(Vec3 &pos);
+	virtual void Walk(Vec3 &pos, float speed) = 0;
+	virtual void Walk(Vec3 &pos) = 0;
 
 	//walk along the right vector kept in Orientation
-	void Strafe(Vec3 &pos, float speed);
-	void Strafe(Vec3 &pos);
+	virtual void Strafe(Vec3 &pos, float speed) = 0;
+	virtual void Strafe(Vec3 &pos) = 0;
 
-	void MoveUp(Vec3 &pos);
-	void MoveDown(Vec3 &pos);
+	virtual void MoveUp(Vec3 &pos) = 0;
+	virtual void MoveDown(Vec3 &pos) = 0;
 
-	Vec3 MovePushed(Vec3 pos);
+	virtual Vec3 MovePushed(Vec3 pos) = 0;
 
 	//rotate in relation to given vector plus an offset (angle) and move
-	void MoveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, Vec3 &rot, float angleY);
-	void MoveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, float speed,Vec3 &rot, float angleY);
+	virtual void MoveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, Vec3 &rot, float angleY) = 0;
+	virtual void MoveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, float speed,Vec3 &rot, float angleY) = 0;
 	
 	//rotate the different vectors in Orientation
-	void RotateX(Vec3 &rot, float angleX);
-	void RotateY(Vec3 &rot, float angleY);
-	void RotateZ(Vec3 &rot, float angleZ);
-	void ResetRot(Vec3 &rot);
+	virtual void RotateX(Vec3 &rot, float angleX) = 0;
+	virtual void RotateY(Vec3 &rot, float angleY) = 0;
+	virtual void RotateZ(Vec3 &rot, float angleZ) = 0;
+	virtual void ResetRot(Vec3 &rot) = 0;
 
 	//set parameters of calculations, achieveing different effects. And other setfunctions
-	void SetGravity(Vec3 gravity); 
-	void SetMass(float mass); 
-	void SetVelocity(Vec3 vel);
-	void SetOrientation(Vec3 look, Vec3 right, Vec3 up);
-	void SetPushDirection(Vec3 direction);
+	virtual void SetGravity(Vec3 gravity) = 0;
+	virtual void SetMass(float mass) = 0;
+	virtual void SetVelocity(Vec3 vel) = 0;
+	virtual void SetOrientation(Vec3 look, Vec3 right, Vec3 up) = 0;
+	virtual void SetPushDirection(Vec3 direction) = 0;
 
 	//Standard getfunctions.
-	float GetMass() const;
-	Vec3 GetGravity() const;
-	PhysicsEntityStates* GetStates() { return this->mStates; }; //Not constant,
-	Orientation GetOrientation() const;
-	Vec3 GetVelocity() const; //Fetched from EntityManager (used for checking if you can push something)
+	virtual float GetMass() const = 0;
+	virtual Vec3 GetGravity() const = 0;
+	virtual PhysicsEntityStates* GetStates() = 0; //Not constant,
+	virtual Orientation GetOrientation() const = 0;
+	virtual Vec3 GetVelocity() const = 0; //Fetched from EntityManager (used for checking if you can push something)
 
 	//Set gravity that should affect all the entities
-	static void SetGlobalGravity(Vec3 gravity);
+	//static void SetGlobalGravity(Vec3 gravity);
 
 private:
-	float Lerp(float a, float b, float amount);
+	virtual float Lerp(float a, float b, float amount) = 0;
 };
 
 

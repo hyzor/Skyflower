@@ -1,8 +1,8 @@
-#include "PhysicsEntity.h"
+#include "PhysicsEntityImpl.h"
 
-Vec3 PhysicsEntity::mGlobalGravity = Vec3(0.0f, 0.0f, 0.0f);
+Vec3 PhysicsEntityImpl::mGlobalGravity = Vec3(0.0f, 0.0f, 0.0f);
 
-PhysicsEntity::PhysicsEntity()
+PhysicsEntityImpl::PhysicsEntityImpl()
 {
 	this->mGravity = GRAVITY_DEFAULT;
 	this->mMass = MASS_DEFAULT;
@@ -12,7 +12,7 @@ PhysicsEntity::PhysicsEntity()
 	this->mStates = new PhysicsEntityStates();
 }
 
-PhysicsEntity::PhysicsEntity(Vec3 pos)
+PhysicsEntityImpl::PhysicsEntityImpl(Vec3 pos)
 {
 	this->mGravity = GRAVITY_DEFAULT;
 	this->mMass = MASS_DEFAULT;
@@ -23,7 +23,7 @@ PhysicsEntity::PhysicsEntity(Vec3 pos)
 }
 
 
-PhysicsEntity::PhysicsEntity(const PhysicsEntity& other)
+PhysicsEntityImpl::PhysicsEntityImpl(const PhysicsEntityImpl& other)
 {
 	this->mGravity = other.mGravity;
 	this->mMass = other.mMass;
@@ -34,47 +34,47 @@ PhysicsEntity::PhysicsEntity(const PhysicsEntity& other)
 }
 
 
-PhysicsEntity::~PhysicsEntity()
+PhysicsEntityImpl::~PhysicsEntityImpl()
 {
 	delete this->mStates;
 }
 
-void PhysicsEntity::SetGravity(Vec3 gravity)
+void PhysicsEntityImpl::SetGravity(Vec3 gravity)
 {
 	this->mGravity = gravity;
 }
 
-void PhysicsEntity::SetGlobalGravity(Vec3 gravity)
+void PhysicsEntityImpl::SetGlobalGravity(Vec3 gravity)
 {
-	PhysicsEntity::mGlobalGravity = gravity;
+	PhysicsEntityImpl::mGlobalGravity = gravity;
 }
 
-void PhysicsEntity::SetMass(float m)
+void PhysicsEntityImpl::SetMass(float m)
 {
 	this->mMass = m;
 }
 
-float PhysicsEntity::GetMass() const
+float PhysicsEntityImpl::GetMass() const
 {
 	return this->mMass;
 }
 
-Vec3 PhysicsEntity::GetGravity() const
+Vec3 PhysicsEntityImpl::GetGravity() const
 {
 	return this->mGravity;
 }
 
-Vec3 PhysicsEntity::GetVelocity() const
+Vec3 PhysicsEntityImpl::GetVelocity() const
 {
 	return this->mVelocity;
 }
-void PhysicsEntity::Update(float dt)
+void PhysicsEntityImpl::Update(float dt)
 {
 	this->mDeltaTime = dt;
 	this->mOrient.Update(dt);
 }
 
-void PhysicsEntity::AddGravityCalc(Vec3 &pos, Vec3 &velocity, bool addGravity)
+void PhysicsEntityImpl::AddGravityCalc(Vec3 &pos, Vec3 &velocity, bool addGravity)
 {
 	Vec3 previousVelocity = velocity;
 	Vec3 previousPos = pos;
@@ -89,12 +89,12 @@ void PhysicsEntity::AddGravityCalc(Vec3 &pos, Vec3 &velocity, bool addGravity)
 	}
 }
 
-void PhysicsEntity::SetVelocity(Vec3 vel)
+void PhysicsEntityImpl::SetVelocity(Vec3 vel)
 {
 	this->mVelocity = vel;
 }
 
-void PhysicsEntity::AddGravityCalc(Vec3 &pos, bool addGravity)
+void PhysicsEntityImpl::AddGravityCalc(Vec3 &pos, bool addGravity)
 {
 	Vec3 previousPos = pos;
 	Vec3 previousVelocity = this->mVelocity;
@@ -108,7 +108,7 @@ void PhysicsEntity::AddGravityCalc(Vec3 &pos, bool addGravity)
 	}
 }
 
-bool PhysicsEntity::Jump(Vec3 &pos)
+bool PhysicsEntityImpl::Jump(Vec3 &pos)
 {
 	if (!this->mStates->isJumping)
 	{
@@ -127,7 +127,7 @@ bool PhysicsEntity::Jump(Vec3 &pos)
 
 
 
-bool PhysicsEntity::FireProjectile(Vec3 &pos, Vec3 direction)
+bool PhysicsEntityImpl::FireProjectile(Vec3 &pos, Vec3 direction)
 {
 	if (!this->mStates->isActiveProjectile)
 	{
@@ -141,7 +141,7 @@ bool PhysicsEntity::FireProjectile(Vec3 &pos, Vec3 direction)
 	}
 }
 
-bool PhysicsEntity::FireProjectileAt(Vec3 &pos, Vec3 target)
+bool PhysicsEntityImpl::FireProjectileAt(Vec3 &pos, Vec3 target)
 {
 	if (!this->mStates->isActiveProjectile)
 	{
@@ -201,33 +201,33 @@ bool PhysicsEntity::FireProjectileAt(Vec3 &pos, Vec3 target)
 	}
 }
 
-float PhysicsEntity::Lerp(float a, float b, float amount)
+float PhysicsEntityImpl::Lerp(float a, float b, float amount)
 {
 	return a + (b - a) * amount;
 }
 
-void PhysicsEntity::Walk(Vec3 &pos, float speed)
+void PhysicsEntityImpl::Walk(Vec3 &pos, float speed)
 {
 	this->mOrient.Walk(speed, pos);
 }
 
-void PhysicsEntity::Walk(Vec3 &pos)
+void PhysicsEntityImpl::Walk(Vec3 &pos)
 {
 	float speed = MOVEMENTSPEED_DEFAULT;
 	this->mOrient.Walk(speed, pos);
 }
 
-void PhysicsEntity::Strafe(Vec3 &pos, float speed)
+void PhysicsEntityImpl::Strafe(Vec3 &pos, float speed)
 {
 	this->mOrient.Strafe(speed, pos);
 }
-void PhysicsEntity::Strafe(Vec3 &pos)
+void PhysicsEntityImpl::Strafe(Vec3 &pos)
 {
 	float speed = MOVEMENTSPEED_DEFAULT;
 	this->mOrient.Strafe(speed, pos);
 }
 
-void PhysicsEntity::MoveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, Vec3 &rot, float angleY)
+void PhysicsEntityImpl::MoveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, Vec3 &rot, float angleY)
 {
 	if (relativeVec != Vec3(0.0f, 0.0f, 0.0f))
 	{
@@ -265,7 +265,7 @@ void PhysicsEntity::MoveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, Vec3 &rot, fl
 	this->Walk(pos);
 }
 
-void PhysicsEntity::MoveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, float speed, Vec3 &rot, float angleY)
+void PhysicsEntityImpl::MoveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, float speed, Vec3 &rot, float angleY)
 {
 	if (relativeVec != Vec3(0.0f, 0.0f, 0.0f))
 	{
@@ -303,51 +303,51 @@ void PhysicsEntity::MoveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, float speed, 
 }
 
 //moving the entity that is being pushed by another entity
-Vec3 PhysicsEntity::MovePushed(Vec3 pos)
+Vec3 PhysicsEntityImpl::MovePushed(Vec3 pos)
 {
 	pos += this->mPushDirection * (this->mDeltaTime * 5);
 	return pos;
 }
 
-void PhysicsEntity::RotateX(Vec3 &rot, float angleX)
+void PhysicsEntityImpl::RotateX(Vec3 &rot, float angleX)
 {
 	angleX = ToRadians(angleX);
 	this->mOrient.RotateX(rot, angleX);
 }
 
-void PhysicsEntity::RotateY(Vec3 &rot, float angleY)
+void PhysicsEntityImpl::RotateY(Vec3 &rot, float angleY)
 {
 	angleY = ToRadians(angleY);
 	this->mOrient.RotateY(rot, angleY);
 }
 
-void PhysicsEntity::RotateZ(Vec3 &rot, float angleZ)
+void PhysicsEntityImpl::RotateZ(Vec3 &rot, float angleZ)
 {
 	angleZ = ToRadians(angleZ);
 	this->mOrient.RotateZ(rot, angleZ);
 }
 
-void PhysicsEntity::ResetRot(Vec3 &rot)
+void PhysicsEntityImpl::ResetRot(Vec3 &rot)
 {
 	this->mOrient.ResetRotationXYZ(rot, X);
 	this->mOrient.ResetRotationXYZ(rot, Y);
 	this->mOrient.ResetRotationXYZ(rot, Z);
 }
 
-void PhysicsEntity::SetOrientation(Vec3 look, Vec3 right, Vec3 up)
+void PhysicsEntityImpl::SetOrientation(Vec3 look, Vec3 right, Vec3 up)
 {
 	this->mOrient.SetOrientation(look, right, up);
 }
 
-void PhysicsEntity::SetPushDirection(Vec3 direction)
+void PhysicsEntityImpl::SetPushDirection(Vec3 direction)
 {
 	this->mPushDirection = direction;
 }
 
-void PhysicsEntity::MoveUp(Vec3 &pos)
+void PhysicsEntityImpl::MoveUp(Vec3 &pos)
 {
 }
 
-void PhysicsEntity::MoveDown(Vec3 &pos)
+void PhysicsEntityImpl::MoveDown(Vec3 &pos)
 {
 }

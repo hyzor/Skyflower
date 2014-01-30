@@ -41,7 +41,7 @@ Entity::Entity(const Modules *modules, EntityId id, EntityId relativeid, string 
 	this->isAnimated = isAnimated;
 
 	this->modules = modules;
-	this->mPhysicsEntity = this->modules->physicsEngine->CreateEntity(this->mPhysicsEntity);
+	this->mPhysicsEntity = this->modules->physicsEngine->CreateEntity();
 
 	modelInst = nullptr;
 	AnimInst = nullptr;

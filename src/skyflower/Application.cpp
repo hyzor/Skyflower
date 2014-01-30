@@ -47,7 +47,7 @@ void Application::Start()
 	assert(m_soundEngine);
 
 	m_camera = m_graphicsEngine->CreateCameraController();
-	m_physicsEngine = new PhysicsEngine();
+	m_physicsEngine = CreatePhysicsEngine();
 	m_collision = CreateCollision("../../content/");
 	m_potentialField = new PotentialField();
 	m_scriptHandler = new ScriptHandler();
@@ -192,7 +192,7 @@ void Application::Start()
 	delete m_scriptHandler;
 	delete m_potentialField;
 	DestroyCollision(m_collision);
-	delete m_physicsEngine;
+	DestroyPhysicsEngine(m_physicsEngine);
 	m_soundEngine->DestroySource(m_backgroundMusic);
 	DestroySoundEngine(m_soundEngine);
 	m_graphicsEngine->DeleteCameraController(m_camera);
