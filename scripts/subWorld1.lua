@@ -60,6 +60,8 @@ function load_aiPush(id)
 end
 
 rush = true
+rushtime = 0
+scaredtime = 0
 function update_aiPush(id, dt)
 	if IsTouching(id, 12) or IsTouching(id, 13) then
 		Jump(id)
@@ -71,18 +73,35 @@ function update_aiPush(id, dt)
 			Jump(id)
 		end
 	else
-		SetTarget(id, player)
 		
-		if rush and InRange(id, player, 10) then
-			SetSpeed(id, 50)
-			if InRange(id, player, 2) then
-				rush = false
+		if rush then
+			SetTarget(id, player)
+			
+			if InRange(id, player, 15) then
+				SetSpeed(id, 50)
+				if CanPush(id, player) then
+					Push(id, player)
+					rush = false
+					scaredtime = 0
+				elseif rushtime > 2 then
+					rush = false
+					scaredtime = 0
+				end
+			
+				rushtime = rushtime + dt
+			else
+				SetSpeed(id, 10)
 			end
 		else
-			SetSpeed(id, 10)
-			if not InRange(id, player, 15) then
+			SetTarget(id, player, 30)
+			SetSpeed(id, 30)
+			Push(player, id)
+			if scaredtime > 4 then
 				rush = true
+				rushtime = 0
 			end
+			
+			scaredtime = scaredtime + dt
 		end
 	end
 	

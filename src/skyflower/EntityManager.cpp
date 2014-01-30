@@ -1334,23 +1334,7 @@ float EntityManager::testMove(Ray r, Entity* e, Entity* &out)
 	return dir;
 }
 
-//used for push-collisions
-void EntityManager::createSphereOnEntities()
-{
-	for (size_t i = 0; i < fEntitys.size(); i++)
-	{
-		if (this->fEntitys[i]->getType() == "player")
-		{
-			Vec3 temp = getEntityPos("player");
-			Sphere *s = new Sphere(temp.X, temp.Y, temp.Z);
-		}
-		else if (this->fEntitys[i]->getType() == "AI")
-		{
-			Vec3 temp = getEntityPos("AI");
-			Sphere *s = new Sphere(temp.X, temp.Y, temp.Z);
-		}
-	}
-}
+
 
 void EntityManager::activateEntity(int entityIndex)
 {
