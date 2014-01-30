@@ -8,7 +8,6 @@ Event* Event::self = nullptr;
 
 // we are added to an Entity, and thus to the component system
 void Event::addedToEntity() {
-	//cout << "A Event was added to the system." << endl;
 
 	requestMessage("Activated", &Event::Activated);
 	requestMessage("Deactivated", &Event::Deactivated);

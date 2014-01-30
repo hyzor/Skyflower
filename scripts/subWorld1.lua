@@ -75,7 +75,7 @@ function update_aiPush(id, dt)
 		
 		if rush and InRange(id, player, 10) then
 			SetSpeed(id, 50)
-			if InRange(is, player, 2) then
+			if InRange(id, player, 2) then
 				rush = false
 			end
 		else
