@@ -264,3 +264,31 @@ DirectX::XMMATRIX Camera::GetWorldMatrix() const
 {
 	return XMLoadFloat4x4(&mWorld);
 }
+
+void Camera::Rotate(float yaw, float pitch)
+{
+	XMVECTOR DefaultForward = XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
+	XMVECTOR DefaultRight = XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f);
+	XMVECTOR camTarget;
+	XMVECTOR camRight;
+	XMVECTOR camForward;
+	
+	XMMATRIX view = XMLoadFloat4x4(&mView);
+	XMMATRIX rotation = DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, 0);
+
+	camTarget = XMVector3TransformCoord(DefaultForward, rotation);
+	camTarget = XMVector3Normalize(camTarget);
+
+	camRight = XMVector3TransformCoord(DefaultRight, rotation);
+	camForward = XMVector3TransformCoord(DefaultForward, rotation);
+
+	XMStoreFloat3(&mUp, XMVector3Cross(camForward, camRight));
+	XMStoreFloat3(&mRight, camRight);
+	XMStoreFloat3(&mLook, camForward);
+
+	camTarget = XMLoadFloat3(&mPosition) + camTarget;
+
+	view = XMMatrixLookAtLH(XMLoadFloat3(&mPosition), camTarget, XMLoadFloat3(&mUp));
+
+	XMStoreFloat4x4(&mView, view);
+}

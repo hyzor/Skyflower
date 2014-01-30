@@ -5,7 +5,6 @@ GraphicsEngineImpl::GraphicsEngineImpl()
 {
 }
 
-
 GraphicsEngineImpl::~GraphicsEngineImpl()
 {
 
@@ -24,8 +23,8 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 
 	for (unsigned int i = 0; i < mAnimatedInstances.size(); i++)
 	{
-		if (mAnimatedInstances[i])
-			delete mAnimatedInstances[i];
+		/*if (mAnimatedInstances[i])
+			delete mAnimatedInstances[i];*/
 	}
 
 	for (auto& it(mSkinnedModels.begin()); it != mSkinnedModels.end(); ++it)
@@ -613,14 +612,31 @@ void GraphicsEngineImpl::End2D()
 
 void GraphicsEngineImpl::Draw2DTextureFile(const std::string file, const Draw2DInput* input)
 {
-	mSpriteBatch->Draw(mTextureMgr->CreateTexture(file), input->pos);
+	mSpriteBatch->Draw(
+		mTextureMgr->CreateTexture(file),
+		input->pos,
+		0,
+		input->color,
+		0.0f, 
+		XMFLOAT2(0.0f, 0.0f),
+		input->scale,
+		SpriteEffects::SpriteEffects_None,
+		input->layerDepth);
 }
 
 void GraphicsEngineImpl::Draw2DTexture(Texture2D *texture, const Draw2DInput* input)
 {
 	Texture2DImpl *textureImpl = (Texture2DImpl *)texture;
-
-	mSpriteBatch->Draw(textureImpl->GetShaderResourceView(), input->pos);
+	mSpriteBatch->Draw(
+		textureImpl->GetShaderResourceView(), 
+		input->pos, 
+		0, 
+		D3dColors::White, 
+		0.0f,
+		XMFLOAT2(0.0f,0.0f),
+		input->scale,
+		SpriteEffects::SpriteEffects_None, 
+		input->layerDepth);
 }
 
 ModelInstance* GraphicsEngineImpl::CreateInstance(std::string file)
@@ -920,6 +936,7 @@ void GraphicsEngineImpl::UpdateSceneData()
 	            0.5f*(maxPt.z - minPt.z));
 	 
 	    mSceneBounds.Radius = sqrtf(extent.x*extent.x + extent.y*extent.y + extent.z*extent.z);
+		mSceneBounds.Radius = 1000.0f;
 }
 
 void GraphicsEngineImpl::addDirLight(Vec3 color, Vec3 direction, float intensity)
@@ -972,6 +989,11 @@ void GraphicsEngineImpl::clearLights()
 	mPointLights.clear();
 }
 
+void GraphicsEngineImpl::printText(wchar_t* text, int x, int y, Vec3 color, float scale)
+{
+	XMVECTORF32 v_color = { color.X, color.Y, color.Z, 1 };
+	mSpriteFont->DrawString(mSpriteBatch, text, XMFLOAT2((float)x, (float)y), v_color, 0.0f, XMFLOAT2(0, 0), scale);
+}
 void GraphicsEngineImpl::Clear()
 {
 	mD3D->GetImmediateContext()->RSSetState(0);
@@ -995,7 +1017,7 @@ void GraphicsEngineImpl::SetPostProcessingEffects(unsigned int effects)
 }
 
 void GraphicsEngineImpl::SetDepthOfFieldFocusPlanes(float nearBlurryPlane, float nearSharpPlane, float farSharpPlane, float farBlurryPlane)
-{
+{	
 	mNearBlurryPlane = nearBlurryPlane;
 	mNearSharpPlane = nearSharpPlane;
 	mFarSharpPlane = farSharpPlane;
@@ -1009,4 +1031,15 @@ void GraphicsEngineImpl::SetSSAOParameters(float radius, float projection_factor
 	mSSAObias = bias;
 	mSSAOcontrast = contrast;
 	mSSAOsigma = sigma;
+}
+void GraphicsEngineImpl::SetFullscreen(bool fullscreen)
+{
+	mD3D->GetSwapChain()->SetFullscreenState(fullscreen, NULL);
+}
+
+bool GraphicsEngineImpl::isFullscreen()
+{
+	BOOL fullscreen;
+	mD3D->GetSwapChain()->GetFullscreenState(&fullscreen, NULL);
+	return fullscreen == 1;
 }

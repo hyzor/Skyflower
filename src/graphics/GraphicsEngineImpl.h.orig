@@ -55,7 +55,6 @@ public:
 	ModelInstance* CreateInstance(std::string file);
 	ModelInstance* CreateInstance(std::string file, Vec3 pos);
 	CameraController *CreateCameraController();
-	void DeleteCameraController(CameraController *controller);
 	void DeleteInstance(ModelInstance* mi);
 
 	AnimatedInstance* CreateAnimatedInstance(std::string file);
@@ -74,13 +73,15 @@ public:
 	void printText(wchar_t* text, int x, int y, Vec3 color = Vec3::Zero(), float scale = 1.0f);
 	void Clear();
 
+<<<<<<< HEAD
 	void SetFullscreen(bool fullscreen);
 	bool isFullscreen();
 
+=======
 	unsigned int GetPostProcessingEffects();
 	void SetPostProcessingEffects(unsigned int effects);
+>>>>>>> master
 	void SetDepthOfFieldFocusPlanes(float nearBlurryPlane, float nearSharpPlane, float farSharpPlane, float farBlurryPlane);
-	void SetSSAOParameters(float radius, float projection_factor, float bias, float contrast, float sigma);
 
 private:
 	Direct3D* mD3D;
@@ -125,11 +126,6 @@ private:
 	float mSSAOScale;
 	Texture2DImpl *mSSAOTexture;
 	Texture2DImpl *mSSAOBlurTexture;
-	float mSSAOradius;
-	float mSSAOprojectionFactor;
-	float mSSAObias;
-	float mSSAOcontrast;
-	float mSSAOsigma;
 
 	float mDoFScale;
 	Texture2DImpl *mDoFCoCTexture;

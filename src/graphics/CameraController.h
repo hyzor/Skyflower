@@ -14,6 +14,7 @@ public:
 	virtual void SetPosition(Vec3 pos) = 0;
 	virtual void SetDirection(Vec3 dir) = 0;
 	virtual void SetOffset(float offset) = 0; // Set the offset from the player.
+	//virtual void SetRotation(float x, float z) = 0;
 	virtual void Update(float dt) = 0;
 	virtual void Follow(Vec3 target) = 0; // Set target for the camera to look at and follow
 	virtual Vec3 GetPosition() = 0;
@@ -23,7 +24,8 @@ public:
 	virtual Vec3 GetUp() = 0; // Up vector
 	virtual float GetYaw() = 0;
 	virtual float GetPitch() = 0;
-	virtual void RotateCamera(float mouseX, float mouseY) = 0;
+	virtual void onMouseMove(float mouseX, float mouseY) = 0;
+	virtual void Rotate(float yaw, float pitch) = 0;
 	virtual void Zoom(float, float speed) = 0; // Lowers/Increases the offset to the player
 };
 
