@@ -50,7 +50,7 @@ public:
 
 	virtual void Run(float dt) = 0;
 	virtual void DrawScene() = 0;
-	virtual void UpdateScene(float dt) = 0;
+	virtual void UpdateScene(float dt, float gameTime) = 0;
 	virtual void Present() = 0;
 
 	virtual void Begin2D() = 0;

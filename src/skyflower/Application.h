@@ -30,14 +30,6 @@ public:
 
 	void Start();
 
-private:
-	void updateGame(float dt, Movement* playerMove);
-	void updateMenu(float dt);
-	void updateLoading(float dt);
-	void changeGameState(GameState newState);
-
-	void setBackgroundMusicList(const std::vector<std::string> &musicList);
-
 public: // WindowListener
 	void OnWindowShouldClose();
 	void OnWindowResized(unsigned int width, unsigned int height);
@@ -55,9 +47,20 @@ public: // InputListener
 	void OnKeyUp(unsigned short key);
 
 private:
+	void updateGame(float dt, float gameTime, Movement* playerMove);
+	void updateMenu(float dt);
+	void updateLoading(float dt);
+	void changeGameState(GameState newState);
+
+	void setBackgroundMusicList(const std::vector<std::string> &musicList);
+
+private:
 	double m_oldTime;
 	bool m_quit;
 	GameState gameState;
+
+	double mGameTime;
+	double mStartTime;
 
 	Window *m_window;
 	InputHandler *m_inputHandler;

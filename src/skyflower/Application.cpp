@@ -129,7 +129,11 @@ void Application::Start()
 	double time, deltaTime;
 	double timeSinceLight = 0.0;
 
+	//startTime = GetTime();
+
+	mGameTime = 0.0;
 	m_oldTime = GetTime();
+	mStartTime = GetTime();
 	m_quit = false;
 
 	while(!m_quit)
@@ -138,6 +142,8 @@ void Application::Start()
 		deltaTime = time - m_oldTime;
 		m_oldTime = time;
 		timeSinceLight += deltaTime;
+
+		mGameTime = time - mStartTime;
 
 		frameTimeChart.AddPoint(time, deltaTime * 1000.0);
 		memoryChart.AddPoint(time, GetMemoryUsage() / (1024.0 * 1024.0));
@@ -164,7 +170,7 @@ void Application::Start()
 		switch (gameState)
 		{
 		case GameState::game:
-			updateGame((float)deltaTime, playerMove);
+			updateGame((float)deltaTime, (float)mGameTime, playerMove);
 			break;
 		case GameState::loading:
 			updateLoading((float)deltaTime);
@@ -221,14 +227,14 @@ void Application::updateMenu(float dt)
 	}
 }
 
-void Application::updateGame(float dt, Movement* playerMove)
+void Application::updateGame(float dt, float gameTime, Movement* playerMove)
 {
 	m_camera->Follow(m_entityManager->getEntityPos("player"));
 	playerMove->setCamera(m_camera->GetLook(), m_camera->GetRight(), m_camera->GetUp());
 	playerMove->setYaw(m_camera->GetYaw());
 	m_camera->Update(dt);
 	m_entityManager->update(dt);
-	m_graphicsEngine->UpdateScene(dt);
+	m_graphicsEngine->UpdateScene(dt, gameTime);
 	m_graphicsEngine->DrawScene();
 
 	if (m_menu->isActive())
@@ -388,15 +394,15 @@ void Application::OnKeyDown(unsigned short key)
 		break;
 	case 'T':
 	{
-		static const size_t num_taunts = 2;
-		static const char *taunts[num_taunts] = {
-			"quake/taunt1.wav",
-			"quake/taunt2.wav"
-		};
+				static const size_t num_taunts = 2;
+				static const char *taunts[num_taunts] = {
+					"quake/taunt1.wav",
+					"quake/taunt2.wav"
+				};
 
-		Vec3 position = Vec3(0.0f, 0.0f, 0.0f);
-		m_soundEngine->PlaySound(taunts[rand() % num_taunts], &position.X, 0.25f, true);
-		break;
+				Vec3 position = Vec3(0.0f, 0.0f, 0.0f);
+				m_soundEngine->PlaySound(taunts[rand() % num_taunts], &position.X, 0.25f, true);
+				break;
 	}
 	case 'Y':
 		m_SSAOradius += 0.1f;
@@ -431,7 +437,7 @@ void Application::OnKeyDown(unsigned short key)
 	case 'K':
 		m_SSAObias -= 0.05f;
 		m_graphicsEngine->SetSSAOParameters(m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
-
+		
 		printf("radius=%.1f, projection factor=%.1f, bias=%.2f, contrast=%.1f, sigma=%.1f\n", m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
 		break;
 	case 'C':

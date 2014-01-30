@@ -82,6 +82,7 @@
 		<Movement speed="20" />
 	</Platform>
 	
+	<!--
 	<Platform entityName="AI" id="36" isVisible="1" isCollidible="0" Type="object" isAnimated="0" 
 		xPos="-36.0960396599" yPos="0.0" zPos="39.4741144045" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
@@ -111,6 +112,7 @@
 		<AI />
 		<Event script="aiPush" />
 	</Platform>
+	-->
 	
 	<!-- SCENERY -->
 	<Platform entityName="Mountain" id="14" isVisible="1" isCollidible="0" Type="object" isAnimated="0" 

@@ -27,6 +27,8 @@
 
 #include "MorphModel.h"
 
+#include "ParticleSystem.h"
+
 const float fovY = 0.785398f; // 0.25f * MathHelper::pi
 const float zNear = 1.0f;
 const float zFar = 10000.0f;
@@ -43,7 +45,7 @@ public:
 	void Run(float dt);
 
 	void DrawScene();
-	void UpdateScene(float dt);
+	void UpdateScene(float dt, float gameTime);
 	void RenderSceneToTexture();
 	void Present();
 
@@ -137,6 +139,14 @@ private:
 	bool morphIncrease;
 
 	unsigned int mPostProcessingEffects;
+
+	float mGameTime;
+
+	std::vector<ParticleSystem*> mParticleSystems;
+	ID3D11ShaderResourceView* mRandom1DTexSRV;
+	ID3D11ShaderResourceView* mParticlesTextureArray;
+
+	void LoadParticles(std::string particlesPath, std::string particleFileName);
 };
 
 #endif

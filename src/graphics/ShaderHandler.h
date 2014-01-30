@@ -876,6 +876,139 @@ private:
 };
 #pragma endregion BasicDeferredMorphShader
 
+#pragma region ParticleSystemShader
+class ParticleSystemShader : public IShader
+{
+public:
+	ParticleSystemShader();
+	~ParticleSystemShader();
+
+	// Overload new and delete, because this class contains XMMATRIX (16 byte alignment)
+	void* operator new (size_t size)
+	{
+		void* p = _aligned_malloc(size, 16);
+
+		if (!p)
+			throw std::bad_alloc();
+
+		return p;
+	}
+
+	void operator delete (void* p)
+	{
+		ParticleSystemShader* ptr = static_cast<ParticleSystemShader*>(p);
+		_aligned_free(p);
+	}
+
+	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
+	//bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+
+	bool BindShaders(
+		ID3D11VertexShader* streamOutVS,
+		ID3D11GeometryShader* streamOutGS,
+		ID3D11VertexShader* drawVS,
+		ID3D11GeometryShader* drawGS,
+		ID3D11PixelShader* drawPS);
+
+	bool SetActive(ID3D11DeviceContext* dc) { return false; }
+
+	void ActivateDrawShaders(ID3D11DeviceContext* dc);
+	void ActivateStreamShaders(ID3D11DeviceContext* dc);
+
+	void SetViewProj(XMMATRIX& viewProj);
+	void SetTexArray(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* texArray);
+	void SetRandomTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* randomTex);
+
+	void SetEyePosW(XMFLOAT3 eyePosW);
+	void SetEmitProperties(XMFLOAT3 emitPosW, XMFLOAT3 emitDirW);
+	void SetParticleProperties(float particleAgeLimit, float emitFrequency);
+
+	void SetTime(float gameTime, float dt);
+
+	void SetAccelConstant(XMFLOAT3 accelConstant);
+
+	void SetTextureIndex(UINT textureIndex);
+
+	void SetParticleType(UINT particleType);
+
+	//void UpdatePerParticleSystem(ID3D11DeviceContext* dc);
+
+	void UpdateDrawShaders(ID3D11DeviceContext* dc);
+	void UpdateStreamOutShaders(ID3D11DeviceContext* dc);
+
+private:
+	void Update(ID3D11DeviceContext* dc) { ; }
+
+	struct DRAW_VS_INITBUFFER
+	{
+		XMFLOAT3 accelW;
+		float padding1;
+	};
+
+	struct DRAW_GS_PERFRAMEBUFFER
+	{
+		XMFLOAT3 eyePosW;
+		float padding;
+
+		XMMATRIX viewProj;
+
+		XMFLOAT4 quadTexC[4];
+
+		UINT textureIndex;
+		XMFLOAT3 paddingTex;
+	};
+
+	struct STREAMOUT_GS_PERFRAMEBUFFER
+	{
+		XMFLOAT3 eyePosW;
+		float gameTime;
+
+		XMFLOAT3 emitPosW;
+		float timeStep;
+
+		XMFLOAT3 emitDirW;
+		float particleAgeLimit;
+
+		float emitFrequency;
+		UINT particleType;
+		XMFLOAT2 padding;
+	};
+
+	struct BUFFERCACHE
+	{
+		DRAW_VS_INITBUFFER drawVSInitBuffer;
+		DRAW_GS_PERFRAMEBUFFER drawGSPerFrameBuffer;
+		STREAMOUT_GS_PERFRAMEBUFFER streamOutGSPerFrameBuffer;
+	};
+
+	struct BUFFERCACHE mBufferCache;
+
+	// Draw VS init buffer
+	ID3D11Buffer* draw_VS_InitBuffer;
+	DRAW_VS_INITBUFFER draw_VS_InitBufferVariables;
+
+	// Draw GS per frame
+	ID3D11Buffer* draw_GS_PerFrameBuffer;
+	DRAW_GS_PERFRAMEBUFFER draw_GS_PerFrameBufferVariables;
+
+	// StreamOut GS per frame
+	ID3D11Buffer* streamOut_GS_PerFrameBuffer;
+	STREAMOUT_GS_PERFRAMEBUFFER streamOut_GS_perFrameBufferVariables;
+
+	// Shaders
+	ID3D11VertexShader* mDrawParticleVS;
+	ID3D11GeometryShader* mDrawParticleGS;
+	ID3D11PixelShader* mDrawParticlePS;
+
+	ID3D11VertexShader* mStreamOutVS;
+	ID3D11GeometryShader* mStreamOutGS;
+
+	// Shared data
+	ID3D11ShaderResourceView* mTexArray;
+	ID3D11ShaderResourceView* mRandomTex;
+};
+#pragma endregion ParticleSystemShader
+
 #pragma region CompositeShader
 class CompositeShader : public IShader
 {
@@ -900,7 +1033,8 @@ public:
 enum ShaderType
 {
 	VERTEXSHADER = 0,
-	PIXELSHADER
+	PIXELSHADER,
+	GEOMETRYSHADER
 };
 
 struct Shader
@@ -919,9 +1053,12 @@ public:
 
 	void LoadCompiledVertexShader(LPCWSTR fileName, char* name, ID3D11Device* device);
 	void LoadCompiledPixelShader(LPCWSTR fileName, char* name, ID3D11Device* device);
+	void LoadCompiledGeometryShader(LPCWSTR fileName, char* name, ID3D11Device* device);
+	void LoadCompiledGeometryStreamOutShader(LPCWSTR fileName, char* name, ID3D11Device* device, D3D11_SO_DECLARATION_ENTRY pDecl[], UINT pDeclSize, UINT rasterizedStream = 0, UINT* bufferStrides = NULL, UINT numStrides = 0);
 
 	ID3D11VertexShader* GetVertexShader(std::string name);
 	ID3D11PixelShader* GetPixelShader(std::string name);
+	ID3D11GeometryShader* GetGeometryShader(std::string name);
 
 	Shader* GetShader(std::string name);
 
@@ -945,6 +1082,7 @@ public:
 	CompositeShader* mCompositeShader;
 	BasicDeferredMorphShader* mDeferredMorphShader;
 	ShadowMorphShader* mShadowMorphShader;
+	ParticleSystemShader* mParticleSystemShader;
 
 private:
 
@@ -955,6 +1093,7 @@ private:
 
 	std::map<std::string, ID3D11VertexShader*> mVertexShaders;
 	std::map<std::string, ID3D11PixelShader*> mPixelShaders;
+	std::map<std::string, ID3D11GeometryShader*> mGeometryShaders;
 
 	std::vector<Shader*> mShaders;
 };
