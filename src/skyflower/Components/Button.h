@@ -22,6 +22,7 @@ public:
 	{
 		activated = 0;
 		act = false;
+		first = true;
 	};
 	virtual ~Button() {};
 
@@ -29,15 +30,13 @@ public:
 	void addedToEntity()
 	{
 		requestMessage("Ground", &Button::Activate);
-		moveTo = getOwner()->getRelativePos();
-		startPos = moveTo;
-		downPos = Vec3(0, -getEntityScale().Y, 0);
 	}
 
 	void sendAMessage(string message)
 	{
 		sendMessage(message);
 	}
+
 
 	void update(float dt);
 private:
@@ -52,6 +51,7 @@ private:
 	Vec3 moveTo;
 	Vec3 startPos;
 	Vec3 downPos;
+	bool first;
 
 
 

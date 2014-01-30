@@ -76,6 +76,8 @@ class Entity {
 
 		EntityId fId;
 
+		void ActiveteField(bool b);
+
 	private:
 
 		string type;

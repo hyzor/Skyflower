@@ -19,7 +19,7 @@ public:
 	void SetPosition(float x, float y, float z);
 	void SetPosition(const XMFLOAT3& v);
 	void SetDirection(Vec3 direction);
-	void Rotate(Vec3 rotation);
+	void Rotate(float yaw, float pitch);
 
 	// Get functions
 	XMVECTOR GetRightXM() const;

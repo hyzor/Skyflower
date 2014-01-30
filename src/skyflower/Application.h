@@ -12,6 +12,7 @@
 #include "LevelHandler.h"
 #include "Menu.h"
 #include "GUI.h"
+#include "CutScene.h"
 
 using namespace Cistron;
 
@@ -22,13 +23,24 @@ public:
 	{
 		menu,
 		game,
-		loading
+		loading,
+		cutScene
 	};
 
 	Application();
 	virtual ~Application();
 
 	void Start();
+
+private:
+
+	void updateGame(float dt, float gameTime, Movement* playerMove);
+	void updateMenu(float dt);
+	void updateLoading(float dt);
+	void updateCutScene(float dt);
+	void changeGameState(GameState newState);
+
+	void setBackgroundMusicList(const std::vector<std::string> &musicList);
 
 public: // WindowListener
 	void OnWindowShouldClose();
@@ -45,14 +57,6 @@ public: // InputListener
 
 	void OnKeyDown(unsigned short key);
 	void OnKeyUp(unsigned short key);
-
-private:
-	void updateGame(float dt, float gameTime, Movement* playerMove);
-	void updateMenu(float dt);
-	void updateLoading(float dt);
-	void changeGameState(GameState newState);
-
-	void setBackgroundMusicList(const std::vector<std::string> &musicList);
 
 private:
 	double m_oldTime;
@@ -75,6 +79,7 @@ private:
 	EntityManager* m_entityManager;
 	GUI *m_GUI;
 	Menu *m_menu;
+	CutScene *cs;
 
 	bool m_showCharts;
 	int m_frameChartID;

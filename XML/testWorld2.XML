@@ -38,7 +38,6 @@
 		<Messenger />
 		<Event script="btnBig" />
 		<Button />
-		<Movement speed="20" />
 	</Platform>
 	
 	<Platform entityName="ButtonBase2" id="22" relativeid="8" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
@@ -54,7 +53,6 @@
 		<Messenger />
 		<Event script="btnLevelCompleted" />
 		<Button />
-		<Movement speed="20" />
 		<Goal />
 	</Platform>
 	

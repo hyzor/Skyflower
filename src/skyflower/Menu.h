@@ -3,6 +3,7 @@
 #include "graphics\GraphicsEngine.h"
 #include <string>
 #include <vector>
+#include "MenuItems.h"
 
 using namespace std;
 
@@ -15,7 +16,7 @@ public:
 		resume,
 		exit
 	};
-	struct Button
+	/*struct Button
 	{
 		bool _active;
 		string _tex;
@@ -24,31 +25,52 @@ public:
 		Button() : _active(false), _tex(""), _position(Vec3()){}
 		Button(bool active, string tex, string hoverTex, Vec3 pos)
 			: _active(active), _tex(tex), _hoverTex(hoverTex), _position(pos){}
-	};
+	}; */
 
 public:
 	Menu();
-	void init(GraphicsEngine *g);
+	void init(GUI *g, int screenWidth, int screeenHeight);
 	virtual ~Menu();
-
+	
 	// Set wether or not the menu is active
-	void setActive(bool active);
+	 void setActive(bool active);
 
 	// Is the menu active? I don´t know bro. Better ask that mo-fo 
-	bool isActive();
+	 bool isActive();
 
 	// Draw the menu
-	void draw(GraphicsEngine *g);
+	 void draw();
 
-	int getStatus();
+	 int getStatus();
 
-	void buttonPressed(unsigned short key);
+	 void keyPressed(unsigned short key);
+
+	 void mousePressed(Vec3 position);
+
+	 // Events
+	 void buttonResumeClicked();
+	 void buttonExitClicked();
+	 bool isFullscreen();
+	 void onResize(unsigned int width, unsigned int height);
+	 void onMouseMove(Vec3 mousePos);
+
 private:
-	bool m_active;
-	int selectedButton;
-	string m_bg;
-	std::vector<Button> m_buttons;
-	MenuStatus status;
+	 bool m_active;
+	 int selectedButton;
+	 int m_bg;
+	 int settingsBox;
+	 std::vector<MenuButton*> m_buttons;
+	 std::vector<CheckBox*> m_checkboxes;
+	 MenuStatus status;
+	 GUI* guiPtr;
+	 bool fullscreen;
+private:
+	 void setVisible(bool visible);
+	 int width, height;
+	 float oldScaleX, oldScaleY;
+
+	
+	
 };
 
 #endif

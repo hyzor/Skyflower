@@ -81,6 +81,9 @@
     <ClCompile Include="src\skyflower\GUIElement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\skyflower\MenuItems.cpp">
+      <Filter>Source Files</Filter>
+	</ClCompile>
     <ClCompile Include="src\skyflower\Push.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
@@ -95,6 +98,9 @@
     </ClCompile>
     <ClCompile Include="src\skyflower\Components\Movement.cpp">
       <Filter>Source Files\Components</Filter>
+	</ClCompile>
+    <ClCompile Include="src\skyflower\CutScene.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\skyflower\Components\MoveTarget.cpp">
       <Filter>Source Files\Components</Filter>
@@ -197,11 +203,17 @@
     <ClInclude Include="src\skyflower\Components\BoxComp.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="src\skyflower\MenuItems.h">
+      <Filter>Header Files</Filter>
+	</ClInclude>
     <ClInclude Include="src\skyflower\Components\Goal.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\skyflower\Components\MoveTarget.h">
       <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\CutScene.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

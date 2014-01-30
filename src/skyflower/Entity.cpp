@@ -468,3 +468,10 @@ AnimatedInstance *Entity::getAnimatedInstance()
 {
 	return this->AnimInst;
 }
+void Entity::ActiveteField(bool b)
+{
+	if (field)
+		field->Active = b;
+	if (ground)
+		ground->ActiveteField(b);
+}

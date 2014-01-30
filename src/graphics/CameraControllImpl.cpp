@@ -18,7 +18,10 @@ CameraControllImpl::CameraControllImpl(Camera *c)
 	pitch = 0;
 	targetPitch = 0;
 	targetYaw = 0;
+
 	targetZoom = offset;
+	time = 0;
+	camera->LookAt(Vec3::Zero());
 	Vec3 look(camera->GetLook().x, camera->GetLook().y, camera->GetLook().z);
 }
 
@@ -26,19 +29,24 @@ CameraControllImpl::~CameraControllImpl(){}
 
 void CameraControllImpl::Update(float dt)
 {
-	pitch = Lerp(pitch, targetPitch, dt*5);
-	yaw = Lerp(yaw, targetYaw, dt*5);
+	if (target != Vec3::Zero())
+	{
+		o.Y = sin(pitch);
+		o.X = cos(yaw)*cos(pitch);
+		o.Z = sin(yaw)*cos(pitch);
+		o = o.Normalize();
 
-	o.Y = sin(pitch);
-	o.X = cos(yaw)*cos(pitch);
-	o.Z = sin(yaw)*cos(pitch);
-	o = o.Normalize();
-	targetY = Lerp(targetY, target.Y, 2 * dt);
+		pitch = Lerp(pitch, targetPitch, dt * 5);
+		yaw = Lerp(yaw, targetYaw, dt * 5);
+
+		targetY = Lerp(targetY, target.Y, 2 * dt);
 	
-	target.Y = targetY;
-	camera->LookAt(target);
-	offset = Lerp(offset, targetZoom, 3 * dt);
-	SetPosition(Vec3(target + (o*offset)));
+		target.Y = targetY;
+		offset = Lerp(offset, targetZoom, 3 * dt);
+		camera->LookAt(target);
+		SetPosition(Vec3(target + (o*offset)));
+	}
+	target = Vec3::Zero();
 }
 
 void CameraControllImpl::SetDirection(Vec3 direction)
@@ -109,7 +117,7 @@ void CameraControllImpl::SetOffset(float offset)
 	this->offset = offset;
 }
 
-void CameraControllImpl::RotateCamera(float mouseX, float mouseY)
+void CameraControllImpl::onMouseMove(float mouseX, float mouseY)
 {
 	if (targetYaw - yaw < 1 && targetYaw - yaw > -1)
 	{
@@ -120,6 +128,7 @@ void CameraControllImpl::RotateCamera(float mouseX, float mouseY)
 		targetPitch = 1;
 	else if (targetPitch < -0.1)
 		targetPitch = -0.1f;  
+
 }
 
 void CameraControllImpl::Zoom(float d, float speed)
@@ -128,3 +137,7 @@ void CameraControllImpl::Zoom(float d, float speed)
 		targetZoom -= d * speed;
 }
 
+void CameraControllImpl::Rotate(float yaw, float pitch)
+{
+	camera->Rotate(yaw, pitch);
+}

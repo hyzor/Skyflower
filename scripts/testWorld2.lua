@@ -1,19 +1,26 @@
 player = 1 --player id
 
 
+--Intro script--
+----------------
 
-trapButtonDown = false
-
-
-
---aiPush script--
------------------
-
-function load_aiPush(id)
-	Print("AI loaded")
-	
-	StartUpdate()
+function intro()
+-- syntax: AddPoint(x, y, z, yaw, pitch, time(in seconds))
+	AddPoint(0, 100, -100, 0, 45, 5)
+	AddPoint(180, 150, -120, 0, 45, 5)
+	AddPoint(130, 100, 100, 90, 20, 5)
+	AddPoint(350, 120, 100, 0, 20, 5)
+	AddPoint(500, 200, -50, 0, 45, 5)
 end
+
+
+--platform_start script--
+-------------------------
+
+function activated_platform_start(id)
+	SetContinous(24, true)
+end
+
 
 buttontime = 0
 inRange = false
@@ -53,94 +60,49 @@ function update_aiPush(id, dt)
 		end
 	end
 	
+function deactivated_platform_start(id)
+	SetContinous(24, false)
 end
 
---aiPush2 script--
-------------------
 
-function load_aiPush2(id)
-	Print("AI2 loaded")
+--btnStair script--
+-------------------
+
+stairdown = true
+function activated_btnStair(id)
+	if stairdown then
+		MoveToTarget(20)
+		MoveToTarget(80)
+		MoveToTarget(23)
+		MoveToTarget(10)
+		MoveToTarget(90)
+		stairdown = false
+	else
+		MoveToSpawn(20)
+		MoveToSpawn(80)
+		MoveToSpawn(23)
+		MoveToSpawn(10)
+		MoveToSpawn(90)
+		stairdown = true
+	end
+end
+
+
+
+--aiPush script--
+-----------------
+
+function load_aiPush(id)
+	Print("AI loaded")
 	
 	StartUpdate()
 end
 
-function update_aiPush2(id, dt)
-	if not inRange then
-		SetTarget(id, player, 50) --hunt player 10 behind
+function update_aiPush(id, dt)
+	if not stairdown then
+		SetTarget(id,16)
 	else
-		--push player
-		SetTarget(id, player)
-		
-		if CanPush(id, player) then
-			Push(id, player)
-		end
-		
+		SetTarget(id,player)
 	end
-end
-
-
-
-
-
---btnTrap script--
-------------------
-function activated_btnTrap(id)
-
-	--trap!
-	--Spawn(36, 9) --spawn enemy(10) on spawnpoint(7)
-	Spawn(37, 9) --spawn enemy(11) on spawnpoint(7)
-end
-
-function deactivated_btnTrap(id)
-	--trapButtonDown = false
-end
-
-
-
---btnBig script--
------------------
-
-function activated_btnBig(id)
-	--PlaySound(id, "player/jump1.wav")
-	Jump(3) --woodblock
-	--trapButtonDown = true
-end
-
-
-
-
-
-
-
-
-
-function activated_btnLevelCompleted(id)
 	
 end
-
-function deactivated_btnLevelCompleted(id)
-	if Level() ~= 0 then
-		ChangeLevel(0) --hubb värld
-	else
-		ChangeLevel(1)
-	end
-end
-
-
-
-function activated_save(id)
-	Print("Saved")
-end
-
-function deactivated_save(id)
-	
-end
-
-
-
-
-
-
-
-
-

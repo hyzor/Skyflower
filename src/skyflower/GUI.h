@@ -28,15 +28,15 @@ private:
 
 public:
 	//Standard constructors/destructors
-	GUI();
+	GUI(GraphicsEngine *graphics);
 	GUI(const GUI& other);
 	~GUI();
 
 	//Draw the GUI
-	void Draw(GraphicsEngine* gEngine);
+	void Draw();
 
 	//Create a texture, created texture is returned as a pointer
-	Texture2D* CreateTexture2D(GraphicsEngine* gEngine, unsigned int width, unsigned int height);
+	Texture2D* CreateTexture2D(unsigned int width, unsigned int height);
 
 	//Create a GUI element without binding it to a texture, returns the ID of the GUI element
 	int CreateGUIElement(Vec3 pos);
@@ -52,7 +52,7 @@ public:
 	void CreateTextObject();
 
 	//Destroy the GUI and all its Textures
-	void Destroy(GraphicsEngine* gEngine);
+	void Destroy();
 	
 	//Upload data to be rendered
 	void UploadData(unsigned int id, const void* data);
@@ -63,10 +63,12 @@ public:
 	//Set all elements as not visible
 	void HideGUI();
 
+	void printText(wchar_t* text, int x, int y, Vec3 color = Vec3::Zero(), float scale = 1.0f);
+
 private:
+	GraphicsEngine *mGraphics;
 
 	//private functions
-
 	GUIElement* _GetGUIElement(unsigned int id);
 };
 
