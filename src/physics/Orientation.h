@@ -31,7 +31,7 @@ public:
 	void RotateY(Vec3 &rot, float angle);
 	void RotateZ(Vec3 &rot, float angle);
 	void RotateAxis(Vec3 &rot, Vec3 axis, float angle);
-	void ResetRotationXYZ(Vec3 &rot, int Axis); // the enum "Axis"
+	void ResetRotationXYZ(Vec3 &rot, Axis axis); // the enum "Axis"
 
 	void SetOrientation(Vec3 look, Vec3 right, Vec3 up);
 	void SetRotRelativeCam(Vec3 rot);

@@ -72,11 +72,10 @@ public:
 	void MoveDown(Vec3 &pos);
 	Vec3 MovePushed(Vec3 pos);
 
-	//rotate in relation to given vector plus an offset (angle) and move
-	void MoveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, Vec3 &rot, float angleY);
-	void MoveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, float speed,Vec3 &rot, float angleY);
+	//Rotate in relation to given vector plus an offset (angle)
+	void RotateRelativeVec3(Vec3 &rot, Vec3 relativeVec, float angleY);
 	
-	//rotate the different vectors in Orientation
+	//Rotate the different vectors in Orientation
 	void RotateX(Vec3 &rot, float angleX);
 	void RotateY(Vec3 &rot, float angleY);
 	void RotateZ(Vec3 &rot, float angleZ);

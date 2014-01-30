@@ -152,8 +152,10 @@ void Movement::update(float deltaTime)
 			}
 			else
 				walkAngle = targetRot;
+
 			p->GetStates()->isMoving = true;
-			p->MoveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, targetRot);
+			p->RotateRelativeVec3(rot, this->camLook, targetRot);
+			p->Walk(pos, this->speed * deltaTime);
 
 			// If the player is moving, rotate it to match the camera's direction.
 			if (getOwnerId() == 1)

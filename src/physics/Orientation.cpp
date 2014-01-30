@@ -64,12 +64,8 @@ void Orientation::RotateX(Vec3 &rot, float angle)
 	rotX = DirectX::XMMatrixRotationX(angle);
 	DirectX::XMVECTOR u = DirectX::XMLoadFloat3(&(DirectX::XMFLOAT3(this->up.X, this->up.Y, this->up.Z)));
 	DirectX::XMVECTOR l = DirectX::XMLoadFloat3(&(DirectX::XMFLOAT3(this->look.X, this->look.Y, this->look.Z)));
-	DirectX::XMVECTOR r = DirectX::XMLoadFloat3(&(DirectX::XMFLOAT3(this->right.X, this->right.Y, this->right.Z)));
 
 	DirectX::XMFLOAT3 rFloat3;
-	//r = DirectX::XMVector3TransformNormal(r, rotX);
-	//DirectX::XMStoreFloat3(&rFloat3, r);
-	//this->right = Vec3(rFloat3.x, rFloat3.y, rFloat3.z);
 
 	u = DirectX::XMVector3TransformNormal(u, rotX);
 	DirectX::XMStoreFloat3(&rFloat3, u);
@@ -87,7 +83,6 @@ void Orientation::RotateY(Vec3 &rot, float angle)
 
 	DirectX::XMMATRIX mRotY;
 	mRotY = DirectX::XMMatrixRotationY(angle);
-	DirectX::XMVECTOR u = DirectX::XMLoadFloat3(&(DirectX::XMFLOAT3(this->up.X, this->up.Y, this->up.Z)));
 	DirectX::XMVECTOR l = DirectX::XMLoadFloat3(&(DirectX::XMFLOAT3(this->look.X, this->look.Y, this->look.Z)));
 	DirectX::XMVECTOR r = DirectX::XMLoadFloat3(&(DirectX::XMFLOAT3(this->right.X, this->right.Y, this->right.Z)));
 
@@ -95,11 +90,6 @@ void Orientation::RotateY(Vec3 &rot, float angle)
 	DirectX::XMFLOAT3 rFloat3;
 	DirectX::XMStoreFloat3(&rFloat3, r);
 	this->right = Vec3(rFloat3.x, rFloat3.y, rFloat3.z);
-
-	//u = DirectX::XMVector3TransformNormal(u, mRotY);
-	//DirectX::XMFLOAT3 uFloat3;
-	//DirectX::XMStoreFloat3(&uFloat3, u);
-	//this->up = Vec3(uFloat3.x, uFloat3.y, uFloat3.z);
 
 	l = DirectX::XMVector3TransformNormal(l, mRotY);
 	DirectX::XMFLOAT3 lFloat3;
@@ -115,7 +105,6 @@ void Orientation::RotateZ(Vec3 &rot, float angle)
 	DirectX::XMMATRIX mRotZ;
 	mRotZ = DirectX::XMMatrixRotationZ(angle);
 	DirectX::XMVECTOR u = DirectX::XMLoadFloat3(&(DirectX::XMFLOAT3(this->up.X, this->up.Y, this->up.Z)));
-	DirectX::XMVECTOR l = DirectX::XMLoadFloat3(&(DirectX::XMFLOAT3(this->look.X, this->look.Y, this->look.Z)));
 	DirectX::XMVECTOR r = DirectX::XMLoadFloat3(&(DirectX::XMFLOAT3(this->right.X, this->right.Y, this->right.Z)));
 
 	r = DirectX::XMVector3TransformNormal(r, mRotZ);
@@ -127,11 +116,6 @@ void Orientation::RotateZ(Vec3 &rot, float angle)
 	DirectX::XMFLOAT3 uFloat3;
 	DirectX::XMStoreFloat3(&uFloat3, u);
 	this->up = Vec3(uFloat3.x, uFloat3.y, uFloat3.z);
-
-	//l = DirectX::XMVector3TransformNormal(l, mRotZ);
-	//DirectX::XMFLOAT3 lFloat3;
-	//DirectX::XMStoreFloat3(&lFloat3, l);
-	//this->look = Vec3(lFloat3.x, lFloat3.y, lFloat3.z);
 }
 
 
@@ -160,22 +144,19 @@ void Orientation::RotateAxis(Vec3 &rot, Vec3 axis, float angle)
 	this->look = Vec3(rFloat3.x, rFloat3.y, rFloat3.z);
 }
 
-void Orientation::ResetRotationXYZ(Vec3 &rot, int Axis)
+void Orientation::ResetRotationXYZ(Vec3 &rot, Axis axis)
 {
 	rot = Vec3(0.0f, 0.0f, 0.0f);
-	switch (Axis)
+	switch (axis)
 	{
 	case X:
 		rot.X = 0.0f;
-		//this->rotateX(rot, -(rot.X));
 		break;
 	case Y:
 		rot.Y = 0.0f;
-		//this->rotateY(rot, -(rot.Y));
 		break;
 	case Z:
 		rot.Z = 0.0f;
-		//this->rotateZ(rot, -(rot.Z));
 		break;
 	}
 

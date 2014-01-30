@@ -95,8 +95,7 @@ bool PhysicsEntityImpl::FireProjectileAt(Vec3 &pos, Vec3 target)
 			height, lenXZ, projectileConst;
 
 		delta = target - pos;
-		deltaXZPlane = delta;
-		deltaXZPlane.Y = 0.0f;
+		deltaXZPlane = Vec3(delta.X, 0.0f, delta.Z);
 		lenXZ = deltaXZPlane.Length();
 		height = PROJECTILE_HEIGHT_DEFAULT;
 		projectileConst = 0.95f;
@@ -118,7 +117,7 @@ bool PhysicsEntityImpl::FireProjectileAt(Vec3 &pos, Vec3 target)
 		{
 			//Increase in order to prevent the throw from being too "weak"
 			//and instead make the throw to go past the target in order to for it
-			//to appear more like a throw
+			//to appear more like a real-life throw
 			projectileConst = 0.50f;
 		}
 		else if (lenXZ > PROJECTILE_LENGTH_FAR)
@@ -161,45 +160,7 @@ void PhysicsEntityImpl::Strafe(Vec3 &pos, float speed)
 	this->mOrient.Strafe(speed, pos);
 }
 
-void PhysicsEntityImpl::MoveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, Vec3 &rot, float angleY)
-{
-	if (relativeVec != Vec3(0.0f, 0.0f, 0.0f))
-	{
-		Vec3 cRot, eLook, eRight, eUp, rVec, normal, cross;
-		float s, c, angle;
-
-		eLook = this->mOrient.GetLook();
-		eRight = this->mOrient.GetRight();
-		eUp = this->mOrient.GetUp();
-		rVec = relativeVec;
-
-		rVec.Y = 0;
-		rVec.Normalize();
-		s = eLook.Cross(rVec).Length();
-		c = eLook.Dot(rVec);
-
-		angle = atan2f(s, c);
-
-		normal = eLook.Cross(rVec);
-		cross = normal.Cross(rVec);
-		if (normal.Y < 0.0f)
-		{
-			angle = -angle;
-		}
-
-		if (this->mOrient.GetRotRelativeCam().Y != ToDegrees(angleY))
-		{
-			this->mOrient.SetRotRelativeCam(Vec3(0.0f, ToRadians(angleY), 0.0f));
-			angle += ToRadians(angleY);
-		}
-
-		this->RotateY(rot, ToDegrees(angle));
-	}
-	float speed = MOVEMENTSPEED_DEFAULT;
-	this->Walk(pos);
-}
-
-void PhysicsEntityImpl::MoveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, float speed, Vec3 &rot, float angleY)
+void PhysicsEntityImpl::RotateRelativeVec3(Vec3 &rot, Vec3 relativeVec, float angleY)
 {
 	if (relativeVec != Vec3(0.0f, 0.0f, 0.0f))
 	{
@@ -233,7 +194,6 @@ void PhysicsEntityImpl::MoveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, float spe
 
 		this->RotateY(rot, ToDegrees(angle));
 	} 
-	this->Walk(pos, speed);
 }
 
 //moving the entity that is being pushed by another entity
