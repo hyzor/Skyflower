@@ -51,20 +51,19 @@ public:
 	// funktioner fungerar ingen velocity alls, alltså kan man inte hoppa om man inte kallar
 	// någon av dessa funktion. Därav den dumma addGravity boolen.
 	//apply gravity the given vector that represents a position
-	void AddGravityCalc(Vec3 &pos, Vec3 &velocity, bool addGravity); 
 	void AddGravityCalc(Vec3 &pos, bool addGravity);
 
-	//to be used for projectile calculations
+	//Fire a projectile in a given direction
 	bool FireProjectile(Vec3 &pos, Vec3 direction);
+
+	//Fire a projectile towards a specific target
 	bool FireProjectileAt(Vec3 &pos, Vec3 target);
 
 	//walk along the look vector kept in Orientation
-	void Walk(Vec3 &pos, float speed);
-	void Walk(Vec3 &pos);
+	void Walk(Vec3 &pos, float speed = MOVEMENTSPEED_DEFAULT);
 
 	//walk along the right vector kept in Orientation
-	void Strafe(Vec3 &pos, float speed);
-	void Strafe(Vec3 &pos);
+	void Strafe(Vec3 &pos, float speed = MOVEMENTSPEED_DEFAULT);
 
 	void MoveUp(Vec3 &pos);
 	void MoveDown(Vec3 &pos);
@@ -89,11 +88,11 @@ public:
 	void SetPushDirection(Vec3 direction);
 
 	//Standard getfunctions.
-	float GetMass() const;
-	Vec3 GetGravity() const;
+	float GetMass() const { return this->mMass; }
+	Vec3 GetGravity() const { return this->mGravity; }
 	PhysicsEntityStates* GetStates() { return this->mStates; } //Not constant,
 	Orientation GetOrientation() const { return this->mOrient; }
-	Vec3 GetVelocity() const; //Fetched from EntityManager (used for checking if you can push something)
+	Vec3 GetVelocity() const { return this->mVelocity; }//Fetched from EntityManager (used for checking if you can push something)
 
 	//Set gravity that should affect all the entities
 	static void SetGlobalGravity(Vec3 gravity);

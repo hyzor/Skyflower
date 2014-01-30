@@ -53,40 +53,10 @@ void PhysicsEntityImpl::SetMass(float m)
 {
 	this->mMass = m;
 }
-
-float PhysicsEntityImpl::GetMass() const
-{
-	return this->mMass;
-}
-
-Vec3 PhysicsEntityImpl::GetGravity() const
-{
-	return this->mGravity;
-}
-
-Vec3 PhysicsEntityImpl::GetVelocity() const
-{
-	return this->mVelocity;
-}
 void PhysicsEntityImpl::Update(float dt)
 {
 	this->mDeltaTime = dt;
 	this->mOrient.Update(dt);
-}
-
-void PhysicsEntityImpl::AddGravityCalc(Vec3 &pos, Vec3 &velocity, bool addGravity)
-{
-	Vec3 previousVelocity = velocity;
-	Vec3 previousPos = pos;
-
-	velocity = previousVelocity;
-	pos = previousPos + previousVelocity * this->mDeltaTime;
-
-	if (addGravity)
-	{
-		velocity += this->mGravity * this->mDeltaTime;
-		pos += this->mGravity * (this->mDeltaTime * this->mDeltaTime) / 2.0f;
-	}
 }
 
 void PhysicsEntityImpl::SetVelocity(Vec3 vel)
@@ -211,19 +181,8 @@ void PhysicsEntityImpl::Walk(Vec3 &pos, float speed)
 	this->mOrient.Walk(speed, pos);
 }
 
-void PhysicsEntityImpl::Walk(Vec3 &pos)
-{
-	float speed = MOVEMENTSPEED_DEFAULT;
-	this->mOrient.Walk(speed, pos);
-}
-
 void PhysicsEntityImpl::Strafe(Vec3 &pos, float speed)
 {
-	this->mOrient.Strafe(speed, pos);
-}
-void PhysicsEntityImpl::Strafe(Vec3 &pos)
-{
-	float speed = MOVEMENTSPEED_DEFAULT;
 	this->mOrient.Strafe(speed, pos);
 }
 

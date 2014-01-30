@@ -39,6 +39,14 @@ PhysicsEngineImpl::~PhysicsEngineImpl()
 	this->mPhysicsEntities.clear();
 }
 
+void PhysicsEngineImpl::Update(float dt)
+{
+	for (unsigned int i = 0; i < this->mPhysicsEntities.size(); i++)
+	{
+		this->mPhysicsEntities.at(i)->Update(dt);
+	}
+}
+
 PhysicsEntity* PhysicsEngineImpl::CreateEntity()
 {
 	PhysicsEntity* physEntity = (PhysicsEntity*)new PhysicsEntityImpl();

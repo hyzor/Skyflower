@@ -66,7 +66,6 @@ void Movement::update(float deltaTime)
 {
 	Vec3 pos = getEntityPos();
 	Vec3 rot = getEntityRot();
-	p->Update(deltaTime);
 		
 	GravityComponent *gravity = getOwner()->getComponent<GravityComponent*>("Gravity");
 

@@ -9,6 +9,8 @@ class PhysicsEngine
 public:
 	virtual ~PhysicsEngine(){};
 
+	virtual void Update(float deltaTime) = 0;
+
 	virtual PhysicsEntity* CreateEntity() = 0;
 	virtual PhysicsEntity* CreateEntity(Vec3 pos) = 0;
 	virtual void DestroyEntity(PhysicsEntity* physEntity) = 0;

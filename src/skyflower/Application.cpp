@@ -177,6 +177,8 @@ void Application::Start()
 		m_GUI->Draw(m_graphicsEngine);
 		m_graphicsEngine->Present();
 
+		m_physicsEngine->Update((float)deltaTime);
+
 		m_soundEngine->Update((float)deltaTime);
 		m_window->PumpMessages();
 	}
