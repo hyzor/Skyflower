@@ -214,6 +214,11 @@ float Movement::GetSpeed()
 	return speed;
 }
 
+void Movement::SetSpeed(float speed)
+{
+	this->speed = speed;
+}
+
 void Movement::startMoveForward(Message const& msg)
 {
 	this->isMovingForward = true;

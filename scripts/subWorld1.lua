@@ -59,11 +59,31 @@ function load_aiPush(id)
 	StartUpdate()
 end
 
+rush = true
 function update_aiPush(id, dt)
+	if IsTouching(id, 12) or IsTouching(id, 13) then
+		Jump(id)
+	end
+
 	if not stairdown then
 		SetTarget(id,16)
+		if IsActivated(16) and IsStanding(id, 16) then
+			Jump(id)
+		end
 	else
-		SetTarget(id,player)
+		SetTarget(id, player)
+		
+		if rush and InRange(id, player, 10) then
+			SetSpeed(id, 50)
+			if InRange(is, player, 2) then
+				rush = false
+			end
+		else
+			SetSpeed(id, 10)
+			if not InRange(id, player, 15) then
+				rush = true
+			end
+		end
 	end
 	
 end

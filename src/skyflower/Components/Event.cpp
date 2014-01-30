@@ -347,6 +347,22 @@ int Event::pushAll(lua_State* L)
 	return 0;
 }
 
+int Event::SetSpeed(lua_State* L)
+{
+	int n = lua_gettop(L);
+
+	if (n >= 2)
+	{
+		EntityId aiId = lua_tointeger(L, 1);
+
+		Entity* entityAi = entityManager->getEntity(aiId);
+
+		entityAi->getComponent<Movement*>("Movement")->SetSpeed(lua_tonumber(L, 2));
+	}
+
+	return 0;
+}
+
 int Event::MoveToTarget(lua_State* L)
 {
 	int n = lua_gettop(L);
@@ -402,7 +418,11 @@ int Event::SetContinous(lua_State* L)
 		MoveTargetComponent *component = entity->getComponent<MoveTargetComponent *>("MoveTarget");
 
 		if (component)
+		{
 			component->setContinuous(continous);
+			if(continous)
+				component->moveToSpawn();
+		}
 	}
 
 	return 0;
