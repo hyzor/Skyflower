@@ -20,45 +20,6 @@ end
 function activated_platform_start(id)
 	SetContinous(24, true)
 end
-
-
-buttontime = 0
-inRange = false
-function update_aiPush(id, dt)
-	
-
-	if not trapButtonDown then
-		inRange = false
-	
-		SetTarget(id, 64) --start button
-		if IsTouching(id, 64) then
-			Jump(id)
-		end
-		
-		if IsActivated(64) and IsStanding(id, 64) then --if button is down
-			trapButtonDown = true
-		end
-	else
-		SetTarget(id, player) --hunt player
-		
-		--if InRange(id, player, 30) then
-			inRange = true --attack with both ai
-			
-			if CanPush(id, player) then
-				Push(id, player)
-			end
-		--else
-			--inRange = false
-		--end
-		
-		--reactivate button after 5 sec
-		buttontime = buttontime + dt
-		if buttontime > 5 then
-			buttontime = 0
-			trapButtonDown = false
-			inRange = false
-		end
-	end
 	
 function deactivated_platform_start(id)
 	SetContinous(24, false)

@@ -7,7 +7,7 @@
 		model="Models/Player/playerAnimated"
 		isVisible="1" isCollidible="1" isAnimated="1">
 			<Input />
-			<Movement speed="60" />
+			<Movement speed="50" />
 			<Gravity />
 			<Listener />
 			<Footsteps />
