@@ -131,8 +131,11 @@ private:
 
 	float mGameTime;
 
-	ParticleSystem* mParticleSystem;
+	std::vector<ParticleSystem*> mParticleSystems;
 	ID3D11ShaderResourceView* mRandom1DTexSRV;
+	ID3D11ShaderResourceView* mParticlesTextureArray;
+
+	void LoadParticles(std::string particlesPath, std::string particleFileName);
 };
 
 #endif

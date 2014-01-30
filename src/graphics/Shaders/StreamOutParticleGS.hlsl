@@ -11,8 +11,11 @@ cbuffer cbPerFrame
 	float gTimeStep;
 
 	float3 gEmitDirW;
-	float padding;
+	float gParticleAgeLimit;
 
+	float gEmitFrequency;
+	unsigned int gParticleType;
+	float2 padding;
 };
 
 // Random texture used to generate random numbers in shaders.
@@ -40,7 +43,7 @@ void main(point Particle gIn[1], inout PointStream<Particle> ptStream)
 	if (gIn[0].Type == PT_EMITTER)
 	{
 		// Check if time to emit a new particle
-		if (gIn[0].Age > 0.005f)
+		if (gIn[0].Age > gEmitFrequency)
 		{
 			float3 vRandom = RandUnitVec3(0.0f);
 			vRandom.x *= 0.5f;
@@ -51,7 +54,7 @@ void main(point Particle gIn[1], inout PointStream<Particle> ptStream)
 			p.InitialVelW = 4.0f*vRandom;
 			p.SizeW = float2(3.0f, 3.0f);
 			p.Age = 0.0f;
-			p.Type = PT_FLARE;
+			p.Type = gParticleType;
 
 			ptStream.Append(p);
 
@@ -65,7 +68,7 @@ void main(point Particle gIn[1], inout PointStream<Particle> ptStream)
 	else
 	{
 		// Specify conditions to keep particle; this may vary from system to system.
-		if (gIn[0].Age <= 1.0f)
+		if (gIn[0].Age <= gParticleAgeLimit)
 			ptStream.Append(gIn[0]);
 	}
 }

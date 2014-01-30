@@ -1,6 +1,6 @@
 #include "ParticleSystem.h"
 
-D3D11_SO_DECLARATION_ENTRY SoDeclarationEntry::ParticleSoDesc[5] =
+D3D11_SO_DECLARATION_ENTRY GeoStreamOutDesc::ParticleSoDesc[5] =
 {
 	// stream number, semantic name, semantic index, start component, component count, output slot
 	{ 0, "POSITION", 0, 0, 3, 0 },	// output the first 3 of position
@@ -10,7 +10,7 @@ D3D11_SO_DECLARATION_ENTRY SoDeclarationEntry::ParticleSoDesc[5] =
 	{ 0, "TYPE", 0, 0, 1, 0 },		// output only the first from type
 };
 
-UINT SoDeclarationEntry::stride = sizeof(Vertex::Particle);
+UINT GeoStreamOutDesc::ParticleStride = sizeof(Vertex::Particle);
 
 ParticleSystem::ParticleSystem()
 : mInitVB(0), mDrawVB(0), mStreamOutVB(0), mTexArraySRV(0), mRandomTexSRV(0)
@@ -23,6 +23,10 @@ ParticleSystem::ParticleSystem()
 	mEyePosW = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	mEmitPosW = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	mEmitDirW = XMFLOAT3(0.0f, 1.0f, 0.0f);
+
+	mEmitFrequency = 0.005f;
+	mParticleAgeLimit = 1.0f;
+	mParticleType = ParticleType::PT_FLARE0;
 }
 
 ParticleSystem::~ParticleSystem()
@@ -52,7 +56,11 @@ void ParticleSystem::SetEmitDir(const XMFLOAT3& emitDirW)
 	mEmitDirW = emitDirW;
 }
 
-void ParticleSystem::Init(ID3D11Device* device, ParticleSystemShader* shader, ID3D11ShaderResourceView* texArraySRV, ID3D11ShaderResourceView* randomTexSRV, UINT maxParticles)
+void ParticleSystem::Init(ID3D11Device* device,
+	ParticleSystemShader* shader,
+	ID3D11ShaderResourceView* texArraySRV,
+	ID3D11ShaderResourceView* randomTexSRV,
+	UINT maxParticles)
 {
 	mShader = shader;
 	mTexArraySRV = texArraySRV;
@@ -92,6 +100,8 @@ void ParticleSystem::Draw(ID3D11DeviceContext* dc, const Camera& cam)
 	mShader->SetTime(mGameTime, mTimeStep);
 	mShader->SetViewProj(cam.GetViewProjMatrix());
 	mShader->SetAccelConstant(mConstantAccelW);
+	mShader->SetParticleProperties(mParticleAgeLimit, mEmitFrequency);
+	mShader->SetParticleType(mParticleType);
 
 	mShader->ActivateStreamShaders(dc);
 	mShader->UpdateStreamOutShaders(dc);
@@ -100,9 +110,9 @@ void ParticleSystem::Draw(ID3D11DeviceContext* dc, const Camera& cam)
 	UINT offset = 0;
 
 	if (mFirstRun)
-		dc->IASetVertexBuffers(0, 1, &mInitVB, &SoDeclarationEntry::stride, &offset);
+		dc->IASetVertexBuffers(0, 1, &mInitVB, &GeoStreamOutDesc::ParticleStride, &offset);
 	else
-		dc->IASetVertexBuffers(0, 1, &mDrawVB, &SoDeclarationEntry::stride, &offset);
+		dc->IASetVertexBuffers(0, 1, &mDrawVB, &GeoStreamOutDesc::ParticleStride, &offset);
 
 	// First draw current particle list using stream-out only
 	dc->SOSetTargets(1, &mStreamOutVB, &offset);
@@ -135,7 +145,7 @@ void ParticleSystem::Draw(ID3D11DeviceContext* dc, const Camera& cam)
 	mShader->ActivateDrawShaders(dc);
 	mShader->UpdateDrawShaders(dc);
 
-	dc->IASetVertexBuffers(0, 1, &mDrawVB, &SoDeclarationEntry::stride, &offset);
+	dc->IASetVertexBuffers(0, 1, &mDrawVB, &GeoStreamOutDesc::ParticleStride, &offset);
 	dc->DrawAuto();
 }
 
@@ -154,7 +164,7 @@ void ParticleSystem::BuildVB(ID3D11Device* device)
 	Vertex::Particle p;
 	ZeroMemory(&p, sizeof(Vertex::Particle));
 	p.Age = 0.0f;
-	p.Type = 0;
+	p.Type = ParticleType::PT_EMITTER;
 
 	D3D11_SUBRESOURCE_DATA vinitData;
 	vinitData.pSysMem = &p;
@@ -174,4 +184,22 @@ void ParticleSystem::BuildVB(ID3D11Device* device)
 void ParticleSystem::SetConstantAccel(XMFLOAT3 accelW)
 {
 	mConstantAccelW = accelW;
+}
+
+void ParticleSystem::SetEmitFrequency(float emitFrequency)
+{
+	mEmitFrequency = emitFrequency;
+}
+
+void ParticleSystem::SetParticleAgeLimit(float particleAgeLimit)
+{
+	mParticleAgeLimit = particleAgeLimit;
+}
+
+void ParticleSystem::SetParticleType(UINT particleType)
+{
+	if (particleType < ParticleType::NROFTYPES)
+		mParticleType = particleType;
+	else
+		particleType = ParticleType::PT_FLARE0;
 }

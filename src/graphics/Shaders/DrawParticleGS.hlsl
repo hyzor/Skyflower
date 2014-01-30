@@ -9,6 +9,9 @@ cbuffer cbPerFrame : register(b0)
 	float4x4 gViewProj;
 
 	float4 gQuadTexC[4];
+
+	unsigned int gTextureIndex;
+	float3 paddingTex;
 };
 
 struct GeoOut
@@ -16,6 +19,7 @@ struct GeoOut
 	float4 PosH  : SV_Position;
 	float4 Color : COLOR;
 	float2 Tex   : TEXCOORD;
+	unsigned int TexIndex : TEXINDEX;
 };
 
 // The draw GS just expands points into camera facing quads.
@@ -56,6 +60,7 @@ void main(point VertexOut gin[1],
 			gout.PosH = mul(v[i], gViewProj);
 			gout.Tex = gQuadTexC[i].xy;
 			gout.Color = gin[0].Color;
+			gout.TexIndex = gin[0].Type - 1;
 			triStream.Append(gout);
 		}
 	}

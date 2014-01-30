@@ -8,7 +8,10 @@ GraphicsEngineImpl::GraphicsEngineImpl()
 
 GraphicsEngineImpl::~GraphicsEngineImpl()
 {
-	ReleaseCOM(mRandom1DTexSRV);
+	if (mRandom1DTexSRV)
+		ReleaseCOM(mRandom1DTexSRV);
+	if (mParticlesTextureArray)
+		ReleaseCOM(mParticlesTextureArray);
 
 	for (auto& it(mModels.begin()); it != mModels.end(); ++it)
 	{
@@ -46,7 +49,11 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 		delete mMorphInstances[i];
 	}
 
-	delete mParticleSystem;
+	for (UINT i = 0; i < mParticleSystems.size(); ++i)
+	{
+		delete mParticleSystems[i];
+	}
+
 	delete mSky;
 	delete mShadowMap;
 	delete mCamera;
@@ -186,13 +193,11 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->LoadCompiledGeometryShader(L"..\\shaders\\DrawParticleGS.cso", "DrawParticleGS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\DrawParticlePS.cso", "DrawParticlePS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\StreamOutParticleVS.cso", "StreamOutParticleVS", mD3D->GetDevice());
-
-	// ERROR: Causes the Graphics Diagnostics to fail
 	mShaderHandler->LoadCompiledGeometryStreamOutShader(L"..\\shaders\\StreamOutParticleGS.cso", "StreamOutParticleGS", mD3D->GetDevice(),
-		SoDeclarationEntry::ParticleSoDesc,
-		COUNT_OF(SoDeclarationEntry::ParticleSoDesc),
+		GeoStreamOutDesc::ParticleSoDesc,
+		COUNT_OF(GeoStreamOutDesc::ParticleSoDesc),
 		D3D11_SO_NO_RASTERIZED_STREAM,
-		&SoDeclarationEntry::stride,
+		&GeoStreamOutDesc::ParticleStride,
 		1);
 
 	// Bind loaded shaders to shader objects
@@ -303,23 +308,24 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mOrthoWindow = new OrthoWindow();
 	mOrthoWindow->Initialize(mD3D->GetDevice(), width, height);
 
+	// PARTICLE SYSTEM TEST
+	/*
 	mRandom1DTexSRV = d3dHelper::CreateRandomTexture1DSRV(mD3D->GetDevice());
 
-	std::vector<std::string> particlesTest;
-	particlesTest.push_back(mResourceDir + "Textures/Particles/flare0.dds");
-	particlesTest.push_back(mResourceDir + "Textures/Particles/flare1.dds");
+	LoadParticles(mResourceDir + "Textures/Particles/", "Particles.particlelist");
 
-	// Particle system
-	mParticleSystem = new ParticleSystem();
-	mParticleSystem->Init(
+	ParticleSystem* testSystem1 = new ParticleSystem();
+	testSystem1->Init(
 		mD3D->GetDevice(),
 		mShaderHandler->mParticleSystemShader,
-		// TODO: Support 2D SRV arrays
-		/*texArraySRV*//*mTextureMgr->CreateTexture(mResourceDir + "Textures/Particles/flare0.dds")*/ d3dHelper::CreateTexture2DArraySRV(mD3D->GetDevice(), mD3D->GetImmediateContext(), particlesTest),
-		/*randomTexSRV*//*mTextureMgr->CreateTexture(mResourceDir + "Textures/random.png")*/mRandom1DTexSRV,
+		mParticlesTextureArray,
+		mRandom1DTexSRV,
 		1000);
-	mParticleSystem->SetEmitPos(XMFLOAT3(0.0f, 15.0f, 0.0f));
-	mParticleSystem->SetConstantAccel(XMFLOAT3(0.0f, 7.8f, 0.0f));
+	testSystem1->SetEmitPos(XMFLOAT3(0.0f, 15.0f, 0.0f));
+	testSystem1->SetConstantAccel(XMFLOAT3(0.0f, 7.8f, 0.0f));
+	testSystem1->SetParticleType(ParticleType::PT_FLARE1);
+	mParticleSystems.push_back(testSystem1);
+	*/
 
 	return true;
 }
@@ -608,7 +614,11 @@ void GraphicsEngineImpl::UpdateScene(float dt, float gameTime)
 	}
 	*/
 
-	mParticleSystem->Update(dt, gameTime);
+	for (UINT i = 0; i < mParticleSystems.size(); ++i)
+	{
+		mParticleSystems[i]->Update(dt, gameTime);
+		mParticleSystems[i]->SetParticleType((rand() % ParticleType::NROFTYPES - 1) + 1);
+	}
 
 	mCamera->Update();
 }
@@ -891,9 +901,11 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	// Particles
 	//---------------------------------------------------------------------------------------
 	//mD3D->GetImmediateContext()->RSSetState(0);
-	mParticleSystem->SetEyePos(mCamera->GetPosition());
-	mParticleSystem->Draw(mD3D->GetImmediateContext(), *mCamera);
-	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff); // restore default
+	for (UINT i = 0; i < mParticleSystems.size(); ++i)
+	{
+		mParticleSystems[i]->SetEyePos(mCamera->GetPosition());
+		mParticleSystems[i]->Draw(mD3D->GetImmediateContext(), *mCamera);
+	}
 
 	// Restore to not using a geometry shader
 	mD3D->GetImmediateContext()->GSSetShader(nullptr, nullptr, 0);
@@ -1020,4 +1032,36 @@ void GraphicsEngineImpl::SetDepthOfFieldFocusPlanes(float nearBlurryPlane, float
 	mNearSharpPlane = nearSharpPlane;
 	mFarSharpPlane = farSharpPlane;
 	mFarBlurryPlane = farBlurryPlane;
+}
+
+void GraphicsEngineImpl::LoadParticles(std::string particlesPath, std::string particleFileName)
+{
+	std::string particleFilePath = particlesPath + particleFileName;
+
+	// Open corresponding particle file
+	std::ifstream particleFile;
+	particleFile.open(particleFilePath.c_str(), std::ios::in);
+
+	if (!particleFile.is_open())
+	{
+		std::stringstream ErrorStream;
+		ErrorStream << "Failed to load particle file " << particleFilePath;
+		std::string ErrorStreamStr = ErrorStream.str();
+		LPCSTR Text = ErrorStreamStr.c_str();
+		MessageBoxA(0, Text, 0, 0);
+	}
+	else
+	{
+		std::vector<std::string> particles;
+		std::string particle;
+
+		while (particleFile >> particle)
+		{
+			particles.push_back(particlesPath + particle);
+		}
+
+		particleFile.close();
+
+		mParticlesTextureArray = d3dHelper::CreateTexture2DArraySRV(mD3D->GetDevice(), mD3D->GetImmediateContext(), particles);
+	}
 }

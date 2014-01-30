@@ -17,9 +17,9 @@ PixelOut main(GeoOut pIn)
 
 	// Clip pixels that are alpha 0.15f or lower
 	// The z-component in float3 represents the texture index in the texture array
-	clip((gTexArray.Sample(samLinear, float3(pIn.Tex, 0)) * pIn.Color).a - 0.15f);
+	clip((gTexArray.Sample(samLinear, float3(pIn.Tex, pIn.TexIndex)) * pIn.Color).a - 0.15f);
 
-	pOut.Color = gTexArray.Sample(samLinear, float3(pIn.Tex, 0)) * pIn.Color;
+	pOut.Color = gTexArray.Sample(samLinear, float3(pIn.Tex, pIn.TexIndex)) * pIn.Color;
 
 	// No shadow cast on it
 	pOut.Color.w = 1.0f;

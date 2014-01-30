@@ -1098,10 +1098,15 @@ public:
 
 	void SetEyePosW(XMFLOAT3 eyePosW);
 	void SetEmitProperties(XMFLOAT3 emitPosW, XMFLOAT3 emitDirW);
+	void SetParticleProperties(float particleAgeLimit, float emitFrequency);
 
 	void SetTime(float gameTime, float dt);
 
 	void SetAccelConstant(XMFLOAT3 accelConstant);
+
+	void SetTextureIndex(UINT textureIndex);
+
+	void SetParticleType(UINT particleType);
 
 	//void UpdatePerParticleSystem(ID3D11DeviceContext* dc);
 
@@ -1125,6 +1130,9 @@ private:
 		XMMATRIX viewProj;
 
 		XMFLOAT4 quadTexC[4];
+
+		UINT textureIndex;
+		XMFLOAT3 paddingTex;
 	};
 
 	struct STREAMOUT_GS_PERFRAMEBUFFER
@@ -1136,7 +1144,11 @@ private:
 		float timeStep;
 
 		XMFLOAT3 emitDirW;
-		float padding;
+		float particleAgeLimit;
+
+		float emitFrequency;
+		UINT particleType;
+		XMFLOAT2 padding;
 	};
 
 	struct BUFFERCACHE

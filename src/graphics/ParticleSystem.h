@@ -7,12 +7,22 @@
 
 using namespace DirectX;
 
-// Stream-out declaration entries
-class SoDeclarationEntry
+// Geometry shader stream-out declaration entries
+class GeoStreamOutDesc
 {
 public:
 	static D3D11_SO_DECLARATION_ENTRY ParticleSoDesc[5];
-	static UINT stride;
+	static UINT ParticleStride;
+};
+
+// Must be mirrored with "ParticleSystemShared.hlsli"
+static const enum ParticleType
+{
+	PT_EMITTER,
+	PT_FLARE0,
+	PT_FLARE1,
+	PT_PARTICLE,
+	NROFTYPES
 };
 
 class ParticleSystem
@@ -29,7 +39,13 @@ public:
 
 	void SetConstantAccel(XMFLOAT3 accelW);
 
-	void Init(ID3D11Device* device, ParticleSystemShader* shader,
+	void SetEmitFrequency(float emitFrequency);
+	void SetParticleAgeLimit(float particleAgeLimit);
+
+	void SetParticleType(UINT particleType);
+
+	void Init(ID3D11Device* device,
+		ParticleSystemShader* shader,
 		ID3D11ShaderResourceView* texArraySRV,
 		ID3D11ShaderResourceView* randomTexSRV,
 		UINT maxParticles);
@@ -63,6 +79,13 @@ private:
 
 	ID3D11ShaderResourceView* mTexArraySRV;
 	ID3D11ShaderResourceView* mRandomTexSRV;
+
+	UINT mNrOfTextures;
+
+	float mParticleAgeLimit;
+	float mEmitFrequency;
+
+	UINT mParticleType;
 };
 
 #endif

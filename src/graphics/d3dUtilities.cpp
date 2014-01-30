@@ -19,28 +19,13 @@ ID3D11ShaderResourceView* d3dHelper::CreateTexture2DArraySRV(
 
 	UINT size = (UINT)filenames.size();
 
+	D3D11_TEXTURE2D_DESC texElementDesc;
+
 	std::vector<ID3D11Texture2D*> srcTex(size);
 	for(UINT i = 0; i < size; ++i)
 	{
-// 		D3DX11_IMAGE_LOAD_INFO loadInfo;
-// 
-// 		loadInfo.Width  = D3DX11_FROM_FILE;
-// 		loadInfo.Height = D3DX11_FROM_FILE;
-// 		loadInfo.Depth  = D3DX11_FROM_FILE;
-// 		loadInfo.FirstMipLevel = 0;
-// 		loadInfo.MipLevels = D3DX11_FROM_FILE;
-// 		loadInfo.Usage = D3D11_USAGE_STAGING;
-// 		loadInfo.BindFlags = 0;
-// 		loadInfo.CpuAccessFlags = D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ;
-// 		loadInfo.MiscFlags = 0;
-// 		loadInfo.Format = format;
-// 		loadInfo.Filter = filter;
-// 		loadInfo.MipFilter = mipFilter;
-// 		loadInfo.pSrcInfo  = 0;
-
+		std::wstring texture0Path(filenames[0].begin(), filenames[0].end());
 		std::wstring path(filenames[i].begin(), filenames[i].end());
-
-		//hr = CreateDDSTextureFromFile(device, path.c_str(), (ID3D11Resource**)&srcTex[i], nullptr);
 
 		hr = CreateDDSTextureFromFileEx(device, path.c_str(), 0u, D3D11_USAGE_STAGING, 0, D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ,
 			0, false, (ID3D11Resource**)&srcTex[i], nullptr, nullptr);
@@ -52,17 +37,64 @@ ID3D11ShaderResourceView* d3dHelper::CreateTexture2DArraySRV(
 			MessageBox(0, ErrorStream.str().c_str(), 0, 0);
 		}
 
-// 		HR(D3DX11CreateTextureFromFile(device, filenames[i].c_str(),
-// 			&loadInfo, 0, (ID3D11Resource**)&srcTex[i], 0));
+		// Check if this texture has the same format/dimensions as the first loaded texture
+		else
+		{
+			if (i == 0)
+			{
+				srcTex[0]->GetDesc(&texElementDesc);
+			}
+
+			if (i > 0)
+			{
+				D3D11_TEXTURE2D_DESC curDesc;
+				srcTex[i]->GetDesc(&curDesc);
+
+				std::wostringstream ErrorMsg;
+				bool error = false;
+
+				// Format isn't the same
+				if (curDesc.Format != texElementDesc.Format)
+				{
+					ErrorMsg << "Texture " << i << " format doesn't match texture " << 0 << " format!" << std::endl;
+					ErrorMsg << "Texture " << 0 << ": " << texElementDesc.Format << std::endl;
+					ErrorMsg << "Texture " << i << ": " << curDesc.Format << std::endl;
+					error = true;
+				}
+
+				// Dimensions aren't the same
+				else if (curDesc.Width != texElementDesc.Width || curDesc.Height != texElementDesc.Height)
+				{
+					ErrorMsg << "Texture " << i << " dimensions doesn't match texture " << 0 << " dimensions!" << std::endl;
+					ErrorMsg << "Texture " << 0 << ": " << texElementDesc.Width << "x" << texElementDesc.Height << std::endl;
+					ErrorMsg << "Texture " << i << ": " << curDesc.Width << "x" << curDesc.Height << std::endl;
+					error = true;
+				}
+
+				// Mip levels doesn't match
+				else if (curDesc.MipLevels != texElementDesc.MipLevels)
+				{
+					ErrorMsg << "Texture " << i << " mip levels doesn't match texture " << 0 << " mip levels!" << std::endl;
+					ErrorMsg << "Texture " << 0 << ": " << texElementDesc.MipLevels << std::endl;
+					ErrorMsg << "Texture " << i << ": " << curDesc.MipLevels << std::endl;
+					error = true;
+				}
+
+				if (error)
+				{
+					ErrorMsg << std::endl << "Texture " << 0 << ": " << texture0Path << std::endl;
+					ErrorMsg << "Texture " << i << ": " << path << std::endl;
+					ErrorMsg << "(From CreateTexture2DArraySRV)" << std::endl;
+					MessageBox(0, ErrorMsg.str().c_str(), 0, 0);
+				}
+			}
+		}
 	}
 
 	//
 	// Create the texture array.  Each element in the texture 
 	// array has the same format/dimensions.
 	//
-
-	D3D11_TEXTURE2D_DESC texElementDesc;
-	srcTex[0]->GetDesc(&texElementDesc);
 
 	D3D11_TEXTURE2D_DESC texArrayDesc;
 	texArrayDesc.Width              = texElementDesc.Width;

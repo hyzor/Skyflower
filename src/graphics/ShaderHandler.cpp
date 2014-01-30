@@ -2694,3 +2694,19 @@ void ParticleSystemShader::SetAccelConstant(XMFLOAT3 accelConstant)
 {
 	mBufferCache.drawVSInitBuffer.accelW = accelConstant;
 }
+
+void ParticleSystemShader::SetParticleProperties(float particleAgeLimit, float emitFrequency)
+{
+	mBufferCache.streamOutGSPerFrameBuffer.particleAgeLimit = particleAgeLimit;
+	mBufferCache.streamOutGSPerFrameBuffer.emitFrequency = emitFrequency;
+}
+
+void ParticleSystemShader::SetTextureIndex(UINT textureIndex)
+{
+	mBufferCache.drawGSPerFrameBuffer.textureIndex = textureIndex;
+}
+
+void ParticleSystemShader::SetParticleType(UINT particleType)
+{
+	mBufferCache.streamOutGSPerFrameBuffer.particleType = particleType;
+}
