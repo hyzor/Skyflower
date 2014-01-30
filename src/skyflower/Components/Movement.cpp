@@ -154,8 +154,37 @@ void Movement::update(float deltaTime)
 				walkAngle = targetRot;
 
 			p->GetStates()->isMoving = true;
-			p->RotateRelativeVec3(rot, this->camLook, targetRot);
-			p->Walk(pos, this->speed * deltaTime);
+			bool move = false;
+
+			if (this->p->GetStates()->isJumping)
+			{
+				if ((isMovingForward && (this->mJumpDir == Forward)))
+				{
+					move = true;
+				}
+				else if ((isMovingBackward && (this->mJumpDir == Backward)))
+				{
+					move = true;
+				}
+				else if ((isMovingLeft && (this->mJumpDir == Left)))
+				{
+					move = true;
+				}
+				else if ((isMovingRight && (this->mJumpDir == Right)))
+				{
+					move = true;
+				}
+			}
+			else
+			{
+				move = true;
+			}
+
+			if (move)
+			{
+				p->RotateRelativeVec3(rot, this->camLook, targetRot);
+				p->Walk(pos, this->speed * deltaTime);
+			}
 
 			// If the player is moving, rotate it to match the camera's direction.
 			if (getOwnerId() == 1)
@@ -273,6 +302,7 @@ void Movement::inAir(Message const& msg)
 void Movement::notInAir(Message const& msg)
 {
 	this->isInAir = false;
+	this->mJumpDir = None;
 }
 
 void Movement::Jump(Message const& msg)
@@ -284,6 +314,18 @@ void Movement::Jump(Message const& msg)
 
 	if (p->Jump(pos))
 	{
+		//Remember the direction faced when starting the jump
+		if (this->isMovingForward)
+			this->mJumpDir = Forward;
+		else if (this->isMovingBackward)
+			this->mJumpDir = Backward;
+		else if (this->isMovingLeft)
+			this->mJumpDir = Left;
+		else if (this->isMovingRight)
+			this->mJumpDir = Right;
+		else
+			this->mJumpDir = None;
+
 		updateEntityPos(pos);
 
 		Entity *owner = getOwner();
