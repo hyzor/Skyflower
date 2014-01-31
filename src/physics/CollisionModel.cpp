@@ -9,7 +9,7 @@ CollisionModel::CollisionModel()
 }
 CollisionModel::~CollisionModel()
 {
-	if (!tree)
+	if (tree)
 		delete tree;
 }
 
