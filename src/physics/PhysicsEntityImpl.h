@@ -45,7 +45,7 @@ public:
 	void Update(float dt);
 
 	//perform a jump on the given vector that represents a position by increasing velocity in Y-axis
-	bool Jump(Vec3 &pos); 
+	bool Jump(Vec3 &pos, float forwardSpeed = MOVEMENTSPEED_DEFAULT);
 
 	//Apply the velocity that has been accumulated during previous frames to the position
 	void ApplyVelocityToPos(Vec3 &pos);

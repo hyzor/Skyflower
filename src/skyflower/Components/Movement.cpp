@@ -12,6 +12,11 @@
 #include "Health.h"
 #include "Gravity.h"
 
+#define JUMP_SPEED_FACTOR_LEFT 0.0125f
+#define JUMP_SPEED_FACTOR_RIGHT 0.0125f
+#define JUMP_SPEED_FACTOR_FORWARD 0.005f
+#define JUMP_SPEED_FACTOR_BACKWARD 0.025f
+
 static const char *fallingSounds[] = {
 	"player/wilhelm_scream.wav",
 	"quake/falling1.wav"
@@ -28,6 +33,11 @@ Movement::Movement(float speed) : Component("Movement")
 	this->speed = speed;
 	this->targetRot = 0.0f;
 	this->walkAngle = 0.0f;
+	this->mInitialJumpDir = None;
+	this->mJumpMovementBackward = 0;
+	this->mJumpMovementForward = 0;
+	this->mJumpMovementLeft = 0;
+	this->mJumpMovementRight = 0;
 }
 
 Movement::~Movement()
@@ -154,37 +164,15 @@ void Movement::update(float deltaTime)
 				walkAngle = targetRot;
 
 			p->GetStates()->isMoving = true;
-			bool move = false;
+			float totalSpeed = this->speed;
 
-			if (this->p->GetStates()->isJumping)
+			if (this->p->GetStates()->isJumping || this->isInAir)
 			{
-				if ((isMovingForward && (this->mJumpDir == Forward)))
-				{
-					move = true;
-				}
-				else if ((isMovingBackward && (this->mJumpDir == Backward)))
-				{
-					move = true;
-				}
-				else if ((isMovingLeft && (this->mJumpDir == Left)))
-				{
-					move = true;
-				}
-				else if ((isMovingRight && (this->mJumpDir == Right)))
-				{
-					move = true;
-				}
-			}
-			else
-			{
-				move = true;
+				DoJumpStuff(totalSpeed);
 			}
 
-			if (move)
-			{
-				p->RotateRelativeVec3(rot, this->camLook, targetRot);
-				p->Walk(pos, this->speed * deltaTime);
-			}
+			p->RotateRelativeVec3(rot, this->camLook, targetRot);
+			p->Walk(pos, totalSpeed);
 
 			// If the player is moving, rotate it to match the camera's direction.
 			if (getOwnerId() == 1)
@@ -216,6 +204,8 @@ void Movement::update(float deltaTime)
 			}
 		}
 	}
+
+	this->p->ApplyVelocityToPos(pos);
 
 	updateEntityPos(pos);
 	updateEntityRot(rot);
@@ -302,7 +292,11 @@ void Movement::inAir(Message const& msg)
 void Movement::notInAir(Message const& msg)
 {
 	this->isInAir = false;
-	this->mJumpDir = None;
+	this->mInitialJumpDir = None;
+	this->mJumpMovementBackward = 0;
+	this->mJumpMovementForward = 0;
+	this->mJumpMovementLeft = 0;
+	this->mJumpMovementRight = 0;
 }
 
 void Movement::Jump(Message const& msg)
@@ -312,19 +306,19 @@ void Movement::Jump(Message const& msg)
 
 	Vec3 pos = getEntityPos();
 
-	if (p->Jump(pos))
+	if (p->Jump(pos, this->speed))
 	{
 		//Remember the direction faced when starting the jump
 		if (this->isMovingForward)
-			this->mJumpDir = Forward;
+			this->mInitialJumpDir = Forward;
 		else if (this->isMovingBackward)
-			this->mJumpDir = Backward;
+			this->mInitialJumpDir = Backward;
 		else if (this->isMovingLeft)
-			this->mJumpDir = Left;
+			this->mInitialJumpDir = Left;
 		else if (this->isMovingRight)
-			this->mJumpDir = Right;
+			this->mInitialJumpDir = Right;
 		else
-			this->mJumpDir = None;
+			this->mInitialJumpDir = None;
 
 		updateEntityPos(pos);
 
@@ -344,4 +338,90 @@ void Movement::Jump(Message const& msg)
 void Movement::StopJump(Message const& msg)
 {
 	this->timeUntilGravityEnable = 0.0f;
+}
+
+
+void Movement::DoJumpStuff(float &jSpeed)
+{
+	switch (this->mInitialJumpDir)
+	{
+	case None:
+		jSpeed *= 0.01f;
+		break;
+	case Forward:
+		if (this->isMovingForward)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_FORWARD;
+		}
+		else if (this->isMovingBackward)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_BACKWARD;
+		}
+		else if (this->isMovingLeft)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_LEFT;
+		}
+		else if (this->isMovingRight)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_RIGHT;
+		}
+		break;
+
+	case Backward:
+		if (this->isMovingForward)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_BACKWARD;
+		}
+		else if (this->isMovingBackward)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_FORWARD;
+		}
+		else if (this->isMovingLeft)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_RIGHT;
+		}
+		else if (this->isMovingRight)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_LEFT;
+		}
+		break;
+
+	case Left:
+		if (this->isMovingForward)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_RIGHT;
+		}
+		else if (this->isMovingBackward)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_LEFT;
+		}
+		else if (this->isMovingLeft)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_FORWARD;
+		}
+		else if (this->isMovingRight)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_BACKWARD;
+		}
+		break;
+
+	case Right:
+		if (this->isMovingForward)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_LEFT;
+		}
+		else if (this->isMovingBackward)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_RIGHT;
+		}
+		else if (this->isMovingLeft)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_BACKWARD;
+		}
+		else if (this->isMovingRight)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_FORWARD;
+		}
+		break;
+	}
 }

@@ -55,14 +55,14 @@ void PhysicsEntityImpl::AddGravityCalc(Vec3 &pos)
 	pos += this->mGravity * (this->mDeltaTime * this->mDeltaTime) / 2.0f;
 }
 
-bool PhysicsEntityImpl::Jump(Vec3 &pos)
+bool PhysicsEntityImpl::Jump(Vec3 &pos, float forwardSpeed)
 {
 	if (!this->mStates->isJumping)
 	{
 		this->mStates->isJumping = true;
+		this->mVelocity += this->mOrient.GetLook() * forwardSpeed;
+		this->mVelocity.Y -= this->mOrient.GetLook().Y * forwardSpeed;
 		this->mVelocity.Y += JUMP_VELOCITY_DEFAULT;
-
-		pos += this->mVelocity*this->mDeltaTime;
 
 		return true;
 	}
@@ -152,12 +152,26 @@ float PhysicsEntityImpl::Lerp(float a, float b, float amount)
 
 void PhysicsEntityImpl::Walk(Vec3 &pos, float speed)
 {
-	this->mOrient.Walk(speed, pos);
+	//this->mOrient.Walk(speed, pos);
+
+	this->mVelocity += this->mOrient.GetLook() * speed;
+	
+	/*if (mVelocity.Length() > 50)
+	{
+		this->mVelocity.Normalize();
+		this->mVelocity *= 50;
+	}*/
+
+	//pos.X += this->mVelocity.X * this->mDeltaTime;
+	//pos.Z += this->mVelocity.Z * this->mDeltaTime;
 }
 
 void PhysicsEntityImpl::Strafe(Vec3 &pos, float speed)
 {
-	this->mOrient.Strafe(speed, pos);
+	//this->mOrient.Strafe(speed, pos);
+	this->mVelocity += this->mOrient.GetRight() * speed;
+	pos.X += this->mVelocity.X;
+	pos.Z += this->mVelocity.Z;
 }
 
 void PhysicsEntityImpl::RotateRelativeVec3(Vec3 &rot, Vec3 relativeVec, float angleY)

@@ -149,7 +149,7 @@ void Entity::update(float deltaTime)
 {
 	std::list<Component *> *componentList;
 
-	this->mPhysicsEntity->ApplyVelocityToPos(this->pos);
+	//this->mPhysicsEntity->ApplyVelocityToPos(this->pos);
 
 	for (auto nameIter = fComponents.begin(); nameIter != fComponents.end(); nameIter++)
 	{

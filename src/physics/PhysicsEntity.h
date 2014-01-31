@@ -23,7 +23,7 @@ public:
 
 	virtual void Update(float dt) = 0;
 
-	virtual bool Jump(Vec3 &pos) = 0; 
+	virtual bool Jump(Vec3 &pos, float forwardSpeed = MOVEMENTSPEED_DEFAULT) = 0;
 	virtual void ApplyVelocityToPos(Vec3 &pos) = 0;
 	virtual void AddGravityCalc(Vec3 &pos) = 0;
 

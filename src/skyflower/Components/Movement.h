@@ -11,7 +11,6 @@
 
 using namespace Cistron;
 
-#define MAX_JUMP_MOVEMENT 2.5f
 #define MAX_JUMP_KEY_TIME 0.4f
 
 enum JumpDirection
@@ -70,7 +69,14 @@ private:
 	float yaw;
 	float targetRot;
 	float walkAngle;
-	JumpDirection mJumpDir;
+	JumpDirection mInitialJumpDir;
+	int mJumpMovementForward;
+	int mJumpMovementBackward;
+	int mJumpMovementRight;
+	int mJumpMovementLeft;
+
+	void DoJumpStuff(float &speed);
+
 };
 
 #endif
