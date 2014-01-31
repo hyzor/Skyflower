@@ -68,27 +68,35 @@ float main(VertexOut input) : SV_Target
 #elif defined DOF_BLUR
 float4 main(VertexOut input) : SV_Target
 {
-	const int maxCoCRadiusPixels = 10; // no idea
+#if defined HORIZONTAL
+	const float framebufferScale = 1.0;
+#elif defined VERTICAL
+	// On the vertical blur pass the framebufferTexture is a half the size.
+	const float framebufferScale = 0.5;
+#endif
+
+	const int maxCoCRadiusPixels = 5;
 
 	const int kernel_taps = 6;
 	float kernel[kernel_taps + 1];
 	// 11 x 11 separated kernel weights.  This does not dictate the 
     // blur kernel for depth of field; it is scaled to the actual
     // kernel at each pixel.
-	kernel[6] = 0.00000000000000;  // Weight applied to outside-radius values
 
-    // Custom // Gaussian
-	kernel[5] = 0.50;//0.04153263993208;
-	kernel[4] = 0.60;//0.06352050813141;
-	kernel[3] = 0.75;//0.08822292796029;
-	kernel[2] = 0.90;//0.11143948794984;
-	kernel[1] = 1.00;//0.12815541114232;
-	kernel[0] = 1.00;//0.13425804976814;
+	// Gaussian
+	kernel[0] = 0.13425804976814;
+	kernel[1] = 0.12815541114232;
+	kernel[2] = 0.11143948794984;
+	kernel[3] = 0.08822292796029;
+	kernel[4] = 0.06352050813141;
+	kernel[5] = 0.04153263993208;
+	// Weight applied to outside-radius values
+	kernel[6] = 0.00000000000000;
 
-	float2 pixel_size = float2(1.0, 1.0) / framebufferSize;
+	const float2 pixel_size = float2(1.0, 1.0) / framebufferSize;
 
-	//float circle_of_confusion = inputTexture.Sample(linearClampedSampler, input.uv).x;
-	//circle_of_confusion = circle_of_confusion * 2.0 - 1.0;
+	//float centerCoC = inputTexture.Sample(linearClampedSampler, input.uv).x;
+	//centerCoC = centerCoC * 2.0 - 1.0;
 
 	float3 blur_result = float3(0.0, 0.0, 0.0);
 	float weight_sum = 0.0;
@@ -96,13 +104,7 @@ float4 main(VertexOut input) : SV_Target
 	for (int i = -maxCoCRadiusPixels; i <= maxCoCRadiusPixels; ++i)	{
 		float2 offset = float2(i, 0.0).DIRECTION_SWIZZLE * pixel_size;
 
-#if defined HORIZONTAL
-		float3 samppleColor = framebufferTexture.Sample(linearClampedSampler, input.uv + offset).xyz;
-#elif defined VERTICAL
-		// On the vertical blur pass the framebufferTexture is a half the size.
-		float3 samppleColor = framebufferTexture.Sample(linearClampedSampler, input.uv + offset * 0.5).xyz;
-#endif
-
+		float3 sampleColor = framebufferTexture.Sample(linearClampedSampler, input.uv + offset * framebufferScale).xyz;
 		float sampleCoC = inputTexture.Sample(linearClampedSampler, input.uv + offset).x;
 		sampleCoC = sampleCoC * 2.0 - 1.0;
 
@@ -112,7 +114,7 @@ float4 main(VertexOut input) : SV_Target
 		// performs the test of whether B's radius includes A.
 		float weight = kernel[clamp(int(float(abs(i) * (kernel_taps - 1)) / (0.001 + abs(sampleRadius * 0.8))), 0, kernel_taps)];
         
-		blur_result += samppleColor * weight;
+		blur_result += sampleColor * weight;
 		weight_sum  += weight;
 	}
 
