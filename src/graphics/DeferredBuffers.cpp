@@ -29,6 +29,7 @@ bool DeferredBuffers::Init(ID3D11Device* device, UINT width, UINT height)
 	formats[DeferredBuffersIndex::Diffuse] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	formats[DeferredBuffersIndex::Normal] = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	formats[DeferredBuffersIndex::Specular] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	formats[DeferredBuffersIndex::Velocity] = DXGI_FORMAT_R8G8_UNORM;
 
 	// Setup render target texture description
 	ZeroMemory(&textureDesc, sizeof(D3D11_TEXTURE2D_DESC));

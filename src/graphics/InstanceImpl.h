@@ -26,6 +26,9 @@ public:
 	int GetType();
 	void SetType(int type);
 
+	void SetPrevWorld(XMMATRIX& prevWorld);
+	XMMATRIX GetPrevWorld();
+
 	XMMATRIX GetWorld();
 
 	GenericModel* model;
@@ -35,6 +38,7 @@ private:
 	XMFLOAT4X4 modelRot;
 	XMFLOAT4X4 modelScale;
 	XMFLOAT4X4 modelWorld;
+	XMFLOAT4X4 mPrevWorld; // World matrix from previous frame
 
 	bool isVisible;
 	int type;
@@ -62,6 +66,9 @@ public:
 	void SetScale(Vec3 scale);
 	void Set(Vec3 pos, Vec3 rot, Vec3 scale);
 
+	void SetPrevWorld(XMMATRIX& prevWorld);
+	XMMATRIX GetPrevWorld();
+
 	void CreateAnimation(int id, int start, int frames);
 	void CreateAnimation(int id, int start, int frames, bool playForwards);
 	void SetAnimation(int id);
@@ -75,6 +82,7 @@ private:
 	XMFLOAT4X4 modelRot;
 	XMFLOAT4X4 modelScale;
 	XMFLOAT4X4 modelWorld;
+	XMFLOAT4X4 mPrevWorld; // World matrix from previous frame
 
 	bool isVisible;
 	Vec3 pos;

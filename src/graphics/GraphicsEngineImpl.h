@@ -151,6 +151,9 @@ private:
 	ID3D11ShaderResourceView* mParticlesTextureArray;
 
 	void LoadParticles(std::string particlesPath, std::string particleFileName);
+
+	float mCurFPS;
+	float mTargetFPS;
 };
 
 #endif

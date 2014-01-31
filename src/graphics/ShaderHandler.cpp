@@ -1333,6 +1333,11 @@ void BasicDeferredShader::SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderReso
 	dc->PSSetShaderResources(1, 1, &tex);
 }
 
+void BasicDeferredShader::SetPrevWorldViewProj(XMMATRIX& prevWorld, XMMATRIX& prevViewProj)
+{
+	mBufferCache.vsPerObjBuffer.prevWorldViewProj = XMMatrixTranspose(XMMatrixMultiply(prevWorld, prevViewProj));
+}
+
 BasicDeferredSkinnedShader::BasicDeferredSkinnedShader()
 {
 
@@ -1534,6 +1539,11 @@ void BasicDeferredSkinnedShader::SetShadowTransform(XMMATRIX& shadowTransform)
 	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
 }
 
+void BasicDeferredSkinnedShader::SetPrevWorldViewProj(XMMATRIX& prevWorld, XMMATRIX& prevViewProj)
+{
+	mBufferCache.vsPerObjBuffer.prevWorldViewProj = XMMatrixTranspose(XMMatrixMultiply(prevWorld, prevViewProj));
+}
+
 void LightDeferredShader::SetEyePosW(XMFLOAT3 eyePosW)
 {
 	mBufferCache.psPerFrameBuffer.gEyePosW = eyePosW;
@@ -1649,6 +1659,7 @@ bool LightDeferredShader::SetActive(ID3D11DeviceContext* dc)
 	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
 	dc->PSSetSamplers(1, 1, &RenderStates::mAnisotropicSS);
 	dc->PSSetSamplers(2, 1, &RenderStates::mComparisonSS);
+	dc->PSSetSamplers(3, 1, &RenderStates::mPointSS);
 
 	return true;
 }
@@ -1668,10 +1679,10 @@ void LightDeferredShader::SetSpecularTexture(ID3D11DeviceContext* dc, ID3D11Shad
 	dc->PSSetShaderResources(2, 1, &tex);
 }
 
-void LightDeferredShader::SetPositionTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
-{
-	dc->PSSetShaderResources(3, 1, &tex);
-}
+// void LightDeferredShader::SetPositionTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+// {
+// 	dc->PSSetShaderResources(3, 1, &tex);
+// }
 
 void LightDeferredShader::SetSSAOTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
 {
@@ -1810,6 +1821,22 @@ void LightDeferredShader::SetFogProperties(int enableFogging, float heightFallof
 	mBufferCache.psPerFrameBuffer.fogColor = fogColor;
 }
 
+void LightDeferredShader::SetVelocityTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(3, 1, &tex);
+}
+
+void LightDeferredShader::SetMotionBlurProperties(int enableMotionBlur)
+{
+	mBufferCache.psPerFrameBuffer.enableMotionBlur = enableMotionBlur;
+}
+
+void LightDeferredShader::SetFpsValues(float curFps, float targetFps)
+{
+	mBufferCache.psPerFrameBuffer.curFPS = curFps;
+	mBufferCache.psPerFrameBuffer.targetFPS = targetFps;
+}
+
 SkyDeferredShader::SkyDeferredShader()
 {
 
@@ -1892,6 +1919,11 @@ void SkyDeferredShader::Update(ID3D11DeviceContext* dc)
 
 	dc->Unmap(vs_cPerFrameBuffer, 0);
 	dc->VSSetConstantBuffers(0, 1, &vs_cPerFrameBuffer);
+}
+
+void SkyDeferredShader::SetPrevWorldViewProj(XMMATRIX& prevWorld, XMMATRIX& prevViewProj)
+{
+	mBufferCache.vsBuffer.prevWorldViewProj = XMMatrixTranspose(XMMatrixMultiply(prevWorld, prevViewProj));
 }
 
 #pragma region SSAOShader
@@ -2322,6 +2354,11 @@ void BasicDeferredMorphShader::SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D
 void BasicDeferredMorphShader::SetShadowTransform(XMMATRIX& shadowTransform)
 {
 	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
+}
+
+void BasicDeferredMorphShader::SetPrevWorldViewProj(XMMATRIX& prevWorld, XMMATRIX& prevViewProj)
+{
+	mBufferCache.vsPerObjBuffer.prevWorldViewProj = XMMatrixTranspose(XMMatrixMultiply(prevWorld, prevViewProj));
 }
 
 ShadowMorphShader::ShadowMorphShader()

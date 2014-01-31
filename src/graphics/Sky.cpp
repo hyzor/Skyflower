@@ -113,7 +113,7 @@ void Sky::Draw(ID3D11DeviceContext* dc, const Camera& cam, SkyDeferredShader* sk
 	skyShader->SetWorldViewProj(WVP);
 	skyShader->SetCubeMap(dc, mCubeMapSRV);
 	skyShader->Update(dc);
-
+	skyShader->SetPrevWorldViewProj(T, cam.GetPreviousViewProj());
 
 	UINT stride = sizeof(XMFLOAT3);
 	UINT offset = 0;

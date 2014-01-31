@@ -13,6 +13,7 @@ ID3D11SamplerState* RenderStates::mLinearClampedSS = 0;
 ID3D11SamplerState* RenderStates::mSSAODepthSS = 0;
 ID3D11SamplerState* RenderStates::mAnisotropicSS = 0;
 ID3D11SamplerState* RenderStates::mComparisonSS = 0;
+ID3D11SamplerState* RenderStates::mPointSS = 0;
 
 ID3D11DepthStencilState* RenderStates::mLessEqualDSS = 0;
 ID3D11DepthStencilState* RenderStates::mDefaultDSS = 0;
@@ -165,6 +166,16 @@ void RenderStates::InitAll(ID3D11Device* device)
 	comparisonSSdesc.BorderColor[3] = 0.0f;
 
 	device->CreateSamplerState(&comparisonSSdesc, &mComparisonSS);
+
+	// Point sampler state
+	D3D11_SAMPLER_DESC pointSSdesc;
+	ZeroMemory(&pointSSdesc, sizeof(D3D11_SAMPLER_DESC));
+	pointSSdesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	pointSSdesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	pointSSdesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	pointSSdesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+
+	device->CreateSamplerState(&pointSSdesc, &mPointSS);
 
 	//-----------------------------------------------------------
 	// Depth stencil states

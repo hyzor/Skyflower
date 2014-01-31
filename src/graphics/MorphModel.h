@@ -83,6 +83,7 @@ struct MorphModelInstance
 	XMFLOAT4X4 world;
 	bool isVisible;
 	XMFLOAT4 weights;
+	XMFLOAT4X4 prevWorld;
 };
 
 #endif

@@ -9,6 +9,7 @@ enum DeferredBuffersIndex
 	Diffuse = 0,
 	Normal,
 	Specular,
+	Velocity,
 	Count
 };
 

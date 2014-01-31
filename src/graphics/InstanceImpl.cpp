@@ -77,6 +77,7 @@ void ModelInstanceImpl::Set(Vec3 pos, Vec3 rot, Vec3 scale)
 	XMStoreFloat4x4(&modelRot, mrot);
 	XMStoreFloat4x4(&modelScale, mscale);
 	XMStoreFloat4x4(&modelWorld, world);
+	XMStoreFloat4x4(&mPrevWorld, world);
 }
 
 void ModelInstanceImpl::SetVisibility(bool visible)
@@ -114,20 +115,15 @@ void ModelInstanceImpl::SetType(int type)
 {
 	this->type = type;
 }
+void ModelInstanceImpl::SetPrevWorld(XMMATRIX& prevWorld)
+{
+	XMStoreFloat4x4(&mPrevWorld, prevWorld);
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+XMMATRIX ModelInstanceImpl::GetPrevWorld()
+{
+	return XMLoadFloat4x4(&mPrevWorld);
+}
 
 
 
@@ -259,4 +255,14 @@ void AnimatedInstanceImpl::SetAnimation(int id)
 	else
 		model->PlayAnimationBackwards();
 	
+}
+
+void AnimatedInstanceImpl::SetPrevWorld(XMMATRIX& prevWorld)
+{
+	XMStoreFloat4x4(&mPrevWorld, prevWorld);
+}
+
+DirectX::XMMATRIX AnimatedInstanceImpl::GetPrevWorld()
+{
+	return XMLoadFloat4x4(&mPrevWorld);
 }

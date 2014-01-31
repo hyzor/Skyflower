@@ -1,6 +1,8 @@
 #include "LightDeferredVS.hlsl"
 #include "LightDef.hlsli"
 
+#define MAX_MOTIONBLURSAMPLES 32
+
 cbuffer cLightBuffer : register(b0)
 {
 	PointLight gPointLights[MAX_POINT_LIGHTS];
@@ -23,6 +25,12 @@ cbuffer cLightBuffer : register(b0)
 
 	float4 gFogColor;
 
+	int gEnableMotionBlur;
+	float gCurFps;
+	float gTargetFps;
+	int padding001;
+
+	// Needs cleanup!
 	float4x4 gShadowTransform_PS; // Light: view * projection * toTexSpace
 	float4x4 gCameraView;
 	float4x4 gCameraInvView;
@@ -38,12 +46,14 @@ cbuffer cLightBuffer : register(b0)
 Texture2D gDiffuseTexture : register(t0);
 Texture2D gNormalTexture : register(t1);
 Texture2D gSpecularTexture : register(t2);
+Texture2D gVelocityTexture : register(t3);
 Texture2D gSSAOTexture : register(t4);
 Texture2D gDepthTexture : register(t5);
 
 SamplerState samLinear : register(s0);
 SamplerState samAnisotropic : register(s1);
 SamplerComparisonState samShadow : register(s2);
+SamplerState samPoint : register(s3);
 
 float4 main(VertexOut pIn) : SV_TARGET
 {
@@ -53,6 +63,7 @@ float4 main(VertexOut pIn) : SV_TARGET
 	float3 positionW;
 	float shadowFactor;
 	float diffuseMultiplier;
+	float2 velocity;
 	
 	diffuse = gDiffuseTexture.Sample(samLinear, pIn.Tex);
 	normal = gNormalTexture.Sample(samLinear, pIn.Tex).xyz;
@@ -86,6 +97,46 @@ float4 main(VertexOut pIn) : SV_TARGET
 	// Normalize
 	toEye /= distToEye;
 
+	//--------------------------------------------------
+	// Motion blur
+	//--------------------------------------------------
+	// http://http.developer.nvidia.com/GPUGems3/gpugems3_ch27.html
+	// Microsoft DirectX SDK (June 2010)\Samples\C++\Direct3D\PixelMotionBlur
+	// http://john-chapman-graphics.blogspot.se/2013/01/per-object-motion-blur.html
+
+	if (gEnableMotionBlur)
+	{
+		velocity = gVelocityTexture.Sample(samPoint, pIn.Tex).xy;
+		velocity = pow(velocity, 1.0f / 3.0f);
+		velocity = velocity * 2.0f - 1.0f;
+
+		// Velocity scales with the current fps
+		float velocityScale = gCurFps / gTargetFps;
+		velocity *= velocityScale;
+
+		// Get velocity texture dimensions
+		// (This could be sent in to the shader from the outside instead of calculating every time)
+		float2 velocityDimensions;
+		gVelocityTexture.GetDimensions(velocityDimensions.x, velocityDimensions.y);
+		float2 texelSize = 1.0f / velocityDimensions;
+
+		// Figure out how many samples to take
+		float speed = length(velocity / texelSize);
+		unsigned int numMotionBlurSamples = clamp(int(speed), 1, MAX_MOTIONBLURSAMPLES);
+
+		[unroll]
+		for (unsigned int n = 1; n < numMotionBlurSamples; ++n)
+		{
+			float2 offset = velocity * (float(n) / float(numMotionBlurSamples - 1) - 0.5f);
+			diffuse.xyz += gDiffuseTexture.Sample(samPoint, pIn.Tex + offset).xyz;
+		}
+
+		diffuse.xyz /= float(numMotionBlurSamples);
+	}
+
+	//--------------------------------------------------
+	// Lighting
+	//--------------------------------------------------
 	float4 litColor = diffuse;
 
 	float4 ambient_Lights = float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -130,6 +181,7 @@ float4 main(VertexOut pIn) : SV_TARGET
 	// http://udn.epicgames.com/Three/HeightFog.html
 	// http://iancubin.wordpress.com/projects/opengl-volumetric-fog/
 	// http://msdn.microsoft.com/en-us/library/bb173401%28v=vs.85%29.aspx
+
 	if (gEnableFogging)
 	{
 		float3 eyeDirOffset = eyeDir;

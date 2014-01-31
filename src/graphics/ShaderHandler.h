@@ -234,6 +234,7 @@ public:
 	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
 
 	void SetWorldViewProj(const XMMATRIX& worldViewProj);
+	void SetPrevWorldViewProj(XMMATRIX& prevWorld, XMMATRIX& prevViewProj);
 	void SetCubeMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* cubeMap);
 
 	void Update(ID3D11DeviceContext* dc);
@@ -242,6 +243,7 @@ private:
 	struct VS_CPERFRAMEBUFFER
 	{
 		XMMATRIX WorldViewProj;
+		XMMATRIX prevWorldViewProj;
 	};
 
 	struct BUFFERCACHE
@@ -473,6 +475,8 @@ public:
 		XMMATRIX& viewProj,
 		XMMATRIX& tex);
 
+	void SetPrevWorldViewProj(XMMATRIX& prevWorld, XMMATRIX& prevViewProj);
+
 	void SetShadowTransformLightViewProj(XMMATRIX& shadowTransform, XMMATRIX& lightView, XMMATRIX& lightProj);
 
 	void SetMaterial(const Material& mat);
@@ -493,6 +497,8 @@ private:
 		//XMMATRIX worldViewProjTex;
 		XMMATRIX texTransform;
 		XMMATRIX shadowTransform;
+
+		XMMATRIX prevWorldViewProj;
 	};
 
 	struct PS_CPEROBJBUFFER
@@ -535,6 +541,8 @@ public:
 		XMMATRIX& viewProj,
 		XMMATRIX& tex);
 
+	void SetPrevWorldViewProj(XMMATRIX& prevWorld, XMMATRIX& prevViewProj);
+
 	void SetMaterial(const Material& mat);
 	void SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
@@ -556,6 +564,8 @@ private:
 		//XMMATRIX worldViewProjTex;
 		XMMATRIX texTransform;
 		XMMATRIX shadowTransform;
+
+		XMMATRIX prevWorldViewProj;
 	};
 
 	struct VS_CSKINNEDBUFFER
@@ -618,8 +628,9 @@ public:
 	void SetDiffuseTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetNormalTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetSpecularTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
-	void SetPositionTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	//void SetPositionTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetSSAOTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetVelocityTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
 	void SetDepthTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
@@ -627,6 +638,8 @@ public:
 	void SetShadowTransform(XMMATRIX& shadowTransform);
 
 	void SetFogProperties(int enableFogging, float heightFalloff, float heightOffset, float globalDensity, XMFLOAT4 fogColor);
+	void SetMotionBlurProperties(int enableMotionBlur);
+	void SetFpsValues(float curFps, float targetFps);
 
 	void UpdatePerObj(ID3D11DeviceContext* dc);
 	void UpdatePerFrame(ID3D11DeviceContext* dc);
@@ -669,6 +682,11 @@ private:
 		int enableFogging;
 		float fogHeightFalloff, fogHeightOffset, fogGlobalDensity;
 		XMFLOAT4 fogColor;
+
+		int enableMotionBlur;
+		float curFPS;
+		float targetFPS;
+		int padding001;
 
 		XMMATRIX shadowTransform;
 		XMMATRIX cameraViewMatrix;
@@ -831,6 +849,8 @@ public:
 		XMMATRIX& viewProj,
 		XMMATRIX& tex);
 
+	void SetPrevWorldViewProj(XMMATRIX& prevWorld, XMMATRIX& prevViewProj);
+
 	void SetMaterial(const Material& mat);
 	void SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
@@ -854,6 +874,8 @@ private:
 		XMMATRIX shadowTransform;
 
 		XMFLOAT4 weights;
+
+		XMMATRIX prevWorldViewProj;
 	};
 
 	struct PS_CPEROBJBUFFER

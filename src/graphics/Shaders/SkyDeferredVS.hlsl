@@ -1,6 +1,7 @@
 cbuffer cbPerFrame
 {
 	float4x4 gWorldViewProj;
+	float4x4 gPrevWorldViewProj;
 };
 
 struct VertexIn
@@ -12,6 +13,9 @@ struct VertexOut
 {
 	float4 PosH : SV_POSITION;
 	float3 PosL : POSITION;
+
+	float4 CurPosH : CURPOSH;
+	float4 PrevPosH : PREVPOSH;
 };
 
 VertexOut main(VertexIn vIn)
@@ -23,6 +27,9 @@ VertexOut main(VertexIn vIn)
 
 	// Use local vertex position as cubemap lookup vector.
 	vout.PosL = vIn.PosL;
+
+	vout.CurPosH = vout.PosH;
+	vout.PrevPosH = mul(float4(vIn.PosL, 1.0f), gPrevWorldViewProj).xyww;
 
 	return vout;
 }
