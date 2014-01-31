@@ -1,6 +1,9 @@
 #include "Components/Button.h"
 #include "EntityManager.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 void Button::update(float dt)
 {
 	//run first update
@@ -39,7 +42,7 @@ void Button::update(float dt)
 	}
 
 	//move button animation
-	getOwner()->updateRelativePos(getOwner()->getRelativePos() + (moveTo - getOwner()->getRelativePos()) / (1000*dt));
+	getOwner()->updateRelativePos(getOwner()->getRelativePos() + (moveTo - getOwner()->getRelativePos()) * 10 * dt / getEntityScale().Y);
 }
 
 void Button::Activate(Message const& msg)

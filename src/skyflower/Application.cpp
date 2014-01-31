@@ -10,17 +10,16 @@
 #include "ComponentHeaders.h"
 #include "LineChart.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 using namespace std;
 using namespace tinyxml2;
 using namespace Cistron;
 
 Application::Application()
 {
-	m_window = NULL;
-	m_soundEngine = NULL;
-	this->m_entityManager = NULL;
-	m_showCharts = false;
-	cs = NULL;
+	m_oldVolume = 1.0f;
 }
 
 Application::~Application()
@@ -39,12 +38,6 @@ void Application::Start()
 	m_graphicsEngine = CreateGraphicsEngine();
 	m_graphicsEngine->Init(m_window->GetHandle(), m_window->GetWidth(), m_window->GetHeight(), "../../content/");
 
-	m_GUI = new GUI(m_graphicsEngine);
-
-	m_menu = new Menu();
-	m_menu->init(m_GUI, m_window->GetWidth(), m_window->GetHeight());
-	m_menu->setActive(false);
-
 	// FIXME: Tweaka dessa när vi har en riktig bana i spelet.
 	m_SSAOradius = 0.7f;
 	m_SSAOprojectionFactor = 0.3f;
@@ -52,7 +45,13 @@ void Application::Start()
 	m_SSAOcontrast = 3.0f;
 	m_SSAOsigma = 2.0f;
 	m_graphicsEngine->SetSSAOParameters(m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
-	m_graphicsEngine->SetDepthOfFieldFocusPlanes(10.0f, 50.0f, 300.0f, 400.0f);
+	m_graphicsEngine->SetDepthOfFieldFocusPlanes(0.0f, 0.0f, 300.0f, 400.0f);
+
+	m_GUI = new GUI(m_graphicsEngine);
+
+	m_menu = new Menu();
+	m_menu->init(m_GUI, m_window->GetWidth(), m_window->GetHeight());
+	m_menu->setActive(false);
 
 	m_soundEngine = CreateSoundEngine("../../content/sounds/");
 	assert(m_soundEngine);
@@ -104,6 +103,7 @@ void Application::Start()
 	m_graphicsEngine->UpdateSceneData();
 	m_entityManager->loadXML("subWorld1Lights.XML");
 	Movement* playerMove = (Movement*)m_entityManager->getComponent("player", "Movement");
+	ListenerComponent* playerListener = (ListenerComponent*)m_entityManager->getComponent("player", "Listener");
 
 	m_showCharts = false;
 
@@ -138,9 +138,9 @@ void Application::Start()
 	mStartTime = GetTime();
 	m_quit = false;
 
-	//changeGameState(GameState::cutScene);
-	//cs = new CutScene(m_entityManager->modules->script, m_camera);
-	//cs->play();
+	changeGameState(GameState::cutScene);
+	cs = new CutScene(m_entityManager->modules->script, m_camera);
+	cs->play();
 
 	while(!m_quit)
 	{
@@ -171,8 +171,14 @@ void Application::Start()
 			load = thread(&LevelHandler::LoadQueued, levelHandler);
 			changeGameState(GameState::loading);
 		}
-		
-		m_GUI->Draw();
+
+		float volume = m_menu->getSettings()._soundVolume;
+
+		if (m_oldVolume != volume)
+		{
+			playerListener->setVolume(volume);
+			m_oldVolume = volume;
+		}
 
 		switch (gameState)
 		{
@@ -190,6 +196,8 @@ void Application::Start()
 			break;
 		}
 		
+		m_GUI->Draw();
+
 		m_graphicsEngine->Present();
 
 		m_soundEngine->Update((float)deltaTime);
@@ -198,12 +206,11 @@ void Application::Start()
 	
 	//m_graphicsEngine->DeleteTexture2D(memoryChartTexture);
 	//m_graphicsEngine->DeleteTexture2D(frameTimeChartTexture);
-	m_GUI->Destroy();
 
+	delete cs;
 	delete m_menu;
 	m_GUI->Destroy();
 	delete m_GUI;
-	m_GUI->Destroy();
 	delete levelHandler;
 	delete m_entityManager;
 	delete m_scriptHandler;
@@ -219,48 +226,51 @@ void Application::Start()
 
 void Application::updateMenu(float dt)
 {
+	// If m has been pressed again
 	if (!m_menu->isActive())
 		changeGameState(GameState::game);
 
-	m_graphicsEngine->Begin2D();
 	m_menu->draw();
-	m_graphicsEngine->End2D();
 
 	switch (m_menu->getStatus())
 	{
 	case Menu::resume:
-		if (m_menu->isFullscreen() && !m_graphicsEngine->isFullscreen())
+		if (m_menu->getSettings()._isFullscreen && !m_graphicsEngine->isFullscreen())
 		{
 			m_graphicsEngine->SetFullscreen(true);
 			this->OnWindowResized(1920, 1080);
 		}
-		else if (!m_menu->isFullscreen() && m_graphicsEngine->isFullscreen())
+		else if (!m_menu->getSettings()._isFullscreen && m_graphicsEngine->isFullscreen())
 		{
 			m_graphicsEngine->SetFullscreen(false);
 			this->OnWindowResized(1024, 768);
 		}
+
 		m_menu->setActive(false);
-		/*if (!cs->isDone())
-			changeGameState(GameState::cutScene);
-		else */
-			changeGameState(GameState::game);
+
+		// Set if mouse is inverted based on if it's been checked in menu
+		m_camera->SetInverted(m_menu->getSettings()._mouseInverted);
+		changeGameState(GameState::game);
+		break;
+	case Menu::exit:
+		m_quit = true;
 	}
 }
 
 void Application::updateCutScene(float dt)
 {
 	m_camera->Update(dt);
-	m_graphicsEngine->UpdateScene(dt, mGameTime);
+	m_graphicsEngine->UpdateScene(dt, (float)mGameTime);
 	m_graphicsEngine->DrawScene();
 
-	//cs->update(dt);
+	cs->update(dt);
 
 	if (m_menu->isActive())
 		changeGameState(GameState::menu);
-	/*if (cs->isDone())
+	if (cs->isDone())
 	{
 		changeGameState(GameState::game);
-	}/**/
+	}
 }
 
 void Application::updateGame(float dt, float gameTime, Movement* playerMove)
@@ -269,9 +279,10 @@ void Application::updateGame(float dt, float gameTime, Movement* playerMove)
 	playerMove->setCamera(m_camera->GetLook(), m_camera->GetRight(), m_camera->GetUp());
 	playerMove->setYaw(m_camera->GetYaw());
 	m_camera->Update(dt);
-	m_entityManager->update(dt);
+	
 	m_graphicsEngine->UpdateScene(dt, gameTime);
 	m_graphicsEngine->DrawScene();
+	m_entityManager->update(dt);
 
 	if (m_menu->isActive())
 		changeGameState(GameState::menu);
@@ -279,12 +290,12 @@ void Application::updateGame(float dt, float gameTime, Movement* playerMove)
 
 void Application::updateLoading(float dt)
 {
-	Draw2DInput* input = new Draw2DInput();
-	input->pos.x = 0.0f;
-	input->pos.y = 0.0f;
+	Draw2DInput input;
+	input.pos.x = 0.0f;
+	input.pos.y = 0.0f;
 
 	m_graphicsEngine->Begin2D();
-	m_graphicsEngine->Draw2DTextureFile("..\\..\\content\\Textures\\Menygrafik\\fyraTreRatio.png", input);
+	m_graphicsEngine->Draw2DTextureFile("..\\..\\content\\Textures\\Menygrafik\\fyraTreRatio.png", &input);
 	m_graphicsEngine->End2D();
 
 	if (!levelHandler->isLoading())
@@ -439,9 +450,9 @@ void Application::OnKeyDown(unsigned short key)
 			m_menu->setActive(true);
 		}
 		break;
-	/*case VK_SPACE:
+	case VK_SPACE:
 		if (!cs->isDone())
-			cs->quit(); */
+			cs->quit(); 
 	case 'P':
 		m_graphicsEngine->SetPostProcessingEffects(m_graphicsEngine->GetPostProcessingEffects() ^ POST_PROCESSING_SSAO);
 		break;
@@ -450,15 +461,15 @@ void Application::OnKeyDown(unsigned short key)
 		break;
 	case 'T':
 	{
-				static const size_t num_taunts = 2;
-				static const char *taunts[num_taunts] = {
-					"quake/taunt1.wav",
-					"quake/taunt2.wav"
-				};
+		static const size_t num_taunts = 2;
+		static const char *taunts[num_taunts] = {
+			"quake/taunt1.wav",
+			"quake/taunt2.wav"
+		};
 
-				Vec3 position = Vec3(0.0f, 0.0f, 0.0f);
-				m_soundEngine->PlaySound(taunts[rand() % num_taunts], &position.X, 0.25f, true);
-				break;
+		Vec3 position = Vec3(0.0f, 0.0f, 0.0f);
+		m_soundEngine->PlaySound(taunts[rand() % num_taunts], &position.X, 0.25f, true);
+		break;
 	}
 	case 'Y':
 		m_SSAOradius += 0.1f;
@@ -518,5 +529,10 @@ void Application::OnKeyDown(unsigned short key)
 	case 'N':
 		m_SSAOsigma -= 0.5f;
 		m_graphicsEngine->SetSSAOParameters(m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
+
+		printf("radius=%.1f, projection factor=%.1f, bias=%.2f, contrast=%.1f, sigma=%.1f\n", m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
+		break;
+	default:
+		break;
 	}
 }

@@ -1,8 +1,11 @@
 #include "MenuItems.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 /* Button */
 
-MenuButton::MenuButton(GUI *g, string text, Vec3 position, int width, int height, string textureNormal, string textureHover)
+MenuButton::MenuButton(GUI *g, Vec3 position, int width, int height, string textureNormal, string textureHover)
 : MenuItem(g, position, width, height)
 {
 	this->textureNormalID = g->CreateGUIElementAndBindTexture(position, "Menygrafik\\" + textureNormal);
@@ -88,22 +91,22 @@ void MenuButton::setScale(float x, float y)
 {
 	guiPtr->GetGUIElement(textureNormalID)->GetDrawInput()->scale = XMFLOAT2(x, y);
 	guiPtr->GetGUIElement(textureHoverID)->GetDrawInput()->scale = XMFLOAT2(x, y);
-	this->bounds._width = (int)(this->bounds._width*x);
-	this->bounds._height *= y;
+	this->bounds._width = (int)(this->bounds._width * x);
+	this->bounds._height = (int)(this->bounds._height * y);
 }
 
-void MenuButton::updateScreenRes(float x, float y)
+void MenuButton::updateScreenRes(unsigned int x, unsigned int y)
 {
 	float scaleY, scaleX;
 
-	scaleX = x / origScreenWidth;
-	scaleY = y / origScreenHeigh;
+	scaleX = (float)x / origScreenWidth;
+	scaleY = (float)y / origScreenHeigh;
 
 	guiPtr->GetGUIElement(textureNormalID)->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
 	guiPtr->GetGUIElement(textureHoverID)->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
 
-	this->bounds._width = originalWidth * scaleX;
-	this->bounds._height = originalHeight * scaleY;
+	this->bounds._width = (int)(originalWidth * scaleX);
+	this->bounds._height = (int)(originalHeight * scaleY);
 
 	this->position.X = origPos.X * scaleX;
 	this->position.Y = origPos.Y * scaleY;
@@ -184,22 +187,22 @@ void CheckBox::setScale(float x, float y)
 {
 	guiPtr->GetGUIElement(textureNormalID)->GetDrawInput()->scale = XMFLOAT2(x, y);
 	guiPtr->GetGUIElement(textureCheckedID)->GetDrawInput()->scale = XMFLOAT2(x, y);
-	this->bounds._width *= x;
-	this->bounds._height *= y;
+	this->bounds._width = (int)(this->bounds._width * x);
+	this->bounds._height = (int)(this->bounds._height * y);
 }
 
-void CheckBox::updateScreenRes(float x, float y)
+void CheckBox::updateScreenRes(unsigned int x, unsigned int y)
 {
 	float scaleY, scaleX;
 
-	scaleX = x / origScreenWidth;
-	scaleY = y / origScreenHeigh;
+	scaleX = (float)x / origScreenWidth;
+	scaleY = (float)y / origScreenHeigh;
 
 	guiPtr->GetGUIElement(textureNormalID)->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
 	guiPtr->GetGUIElement(textureCheckedID)->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
 
-	this->bounds._width = originalWidth * scaleX;
-	this->bounds._height = originalHeight * scaleY;
+	this->bounds._width = (int)(originalWidth * scaleX);
+	this->bounds._height = (int)(originalHeight * scaleY);
 
 	this->position.X = origPos.X * scaleX;
 	this->position.Y = origPos.Y * scaleY;

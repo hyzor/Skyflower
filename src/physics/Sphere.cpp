@@ -1,5 +1,8 @@
 #include "Sphere.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 Sphere::Sphere()
 {
 	this->Radius = 0;

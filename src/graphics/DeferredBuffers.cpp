@@ -1,5 +1,8 @@
 #include "DeferredBuffers.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 DeferredBuffers::DeferredBuffers()
 {
 	for (UINT i = 0; i < DeferredBuffersIndex::Count; ++i)

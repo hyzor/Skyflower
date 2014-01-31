@@ -7,6 +7,9 @@
 #include "InputHandler.h"
 #include "Window.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 InputHandler::InputHandler(Window *window)
 {
 	m_window = window;

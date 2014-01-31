@@ -1,6 +1,9 @@
 #include "Components/Checkpoint.h"
 #include "EntityManager.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 void Checkpoint::update(float dt)
 {
 	//deactivate

@@ -1,5 +1,8 @@
 #include "Orientation.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 Orientation::Orientation()
 {
 	//this->look = Vec3(0.0f, 0.0f, 1.0f);

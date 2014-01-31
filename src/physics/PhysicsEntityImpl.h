@@ -30,7 +30,7 @@ private:
 	Orientation mOrient;
 
 	//A struct containing bools to keep track of various states
-	PhysicsEntityStates* mStates;
+	PhysicsEntityStates mStates;
 
 	//A "common" gravity that is applied for all the entities
 	static Vec3 mGlobalGravity;
@@ -91,7 +91,7 @@ public:
 	//Standard getfunctions.
 	float GetMass() const;
 	Vec3 GetGravity() const;
-	PhysicsEntityStates* GetStates() { return this->mStates; } //Not constant,
+	PhysicsEntityStates* GetStates() { return &this->mStates; } //Not constant,
 	Orientation GetOrientation() const { return this->mOrient; }
 	Vec3 GetVelocity() const; //Fetched from EntityManager (used for checking if you can push something)
 

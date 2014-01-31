@@ -2,6 +2,9 @@
 
 #include "AudioResource.h"
 
+// Must be included last!
+#include "debug.h"
+
 static bool forceSineWave = false;
 
 static struct MemoryMappedFile *MemoryMapFile(const char *file)

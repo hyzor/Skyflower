@@ -12,6 +12,9 @@
 #include "AudioResource.h"
 #include "Config.h"
 
+// Must be included last!
+#include "debug.h"
+
 struct SineWaveDecoderContext
 {
 	// In number of samples.

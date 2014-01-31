@@ -5,6 +5,9 @@
 #include "Listener.h"
 #include "Entity.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 static void MatrixFromEulerAngles(float output[4][4], float yaw, float pitch, float roll)
 {
         float tmp_ch = cosf(yaw);
@@ -72,4 +75,9 @@ void ListenerComponent::activateListener(Message const& msg)
 {
 	Entity *owner = getOwner();
 	owner->getModules()->sound->SetActiveListener(m_listener);
+}
+
+void ListenerComponent::setVolume(float volume)
+{
+	m_listener->SetMasterVolume(volume);
 }

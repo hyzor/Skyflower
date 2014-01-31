@@ -4,6 +4,9 @@
 
 #include "ListenerImpl.h"
 
+// Must be included last!
+#include "debug.h"
+
 ListenerImpl::ListenerImpl()
 {
 	m_volume = 1.0f;

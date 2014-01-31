@@ -7,6 +7,8 @@
 
 #include "GenericSkinnedMesh.h"
 
+// Must be included last!
+#include "shared/debug.h"
 
 GenericSkinnedMesh::GenericSkinnedMesh(void)
 	: mVertexBuffer(0), mIndexBuffer(0),

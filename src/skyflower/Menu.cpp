@@ -1,16 +1,21 @@
 #include "Menu.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 Menu::Menu()
 {
 	m_active = false;
 	status = MenuStatus::none;
 	selectedButton = 0;
-	fullscreen = false;
+	settings._isFullscreen = false;
+	settings._mouseInverted = false;
+	settings._soundVolume = 1.0f;
 }
 
 Menu::~Menu()
 {
-	for (int i = 0; m_buttons.size() != 0; i++)
+	for (unsigned i = 0; i < m_buttons.size(); i++)
 	{
 		delete m_buttons.at(i);
 	}
@@ -23,8 +28,8 @@ void Menu::init(GUI *g, int screenWidth, int screeenHeight)
 	width = screenWidth;
 	height = screeenHeight;
 
-	oldScaleX = 1.0f;
-	oldScaleY = 1.0f;
+	scaleX = 1.0f;
+	scaleY = 1.0f;
 
 	m_bg = g->CreateGUIElementAndBindTexture(Vec3(0, 0), "Menygrafik\\fyraTreRatio.png");
 	g->GetGUIElement(m_bg)->SetVisible(false);
@@ -34,19 +39,22 @@ void Menu::init(GUI *g, int screenWidth, int screeenHeight)
 	g->GetGUIElement(settingsBox)->GetDrawInput()->scale = XMFLOAT2(40, 40);
 	g->GetGUIElement(settingsBox)->SetVisible(false);
 
-	MenuButton *resume = new MenuButton(g, "Resume", Vec3(30, 100), 240, 100, "button_resume.png", "button_resume_hover.png");
+	MenuButton *resume = new MenuButton(g, Vec3(30, 100), 240, 100, "button_resume.png", "button_resume_hover.png");
 	resume->setOnClick([this]() {buttonResumeClicked();});
 	m_buttons.push_back(resume);
 
-	MenuButton *fillout = new MenuButton(g, "Exit", Vec3(30, 250), 240, 100, "button_resume.png", "button_resume_hover.png");
+	MenuButton *fillout = new MenuButton(g, Vec3(30, 250), 240, 100, "button_resume.png", "button_resume_hover.png");
 	m_buttons.push_back(fillout);
 
-	MenuButton *exit = new MenuButton(g, "Exit", Vec3(30, 400), 240, 100, "button_exit.png", "button_exit_hover.png");
+	MenuButton *exit = new MenuButton(g, Vec3(30, 400), 240, 100, "button_exit.png", "button_exit_hover.png");
 	exit->setOnClick([this]() {buttonExitClicked(); });
 	m_buttons.push_back(exit);
 
-	CheckBox *fullScreen = new CheckBox(g, Vec3(500, 400), 20, 20, "checkbox_unchecked.png", "checkbox_checked.png");
+	CheckBox *fullScreen = new CheckBox(g, Vec3(430, 450), 20, 20, "checkbox_unchecked.png", "checkbox_checked.png");
 	m_checkboxes.push_back(fullScreen);
+
+	CheckBox *mouseInverted = new CheckBox(g, Vec3(430, 420), 20, 20, "checkbox_unchecked.png", "checkbox_checked.png");
+	m_checkboxes.push_back(mouseInverted);
 }
 
 bool Menu::isActive()
@@ -63,8 +71,11 @@ void Menu::setActive(bool active)
 
 void Menu::draw()
 {
-	Vec3 checkBoxPos = m_checkboxes.at(0)->getPosition();
-	guiPtr->printText(L"Set fullscreen", checkBoxPos.X + 50, checkBoxPos.Y, Vec3(1, 1, 1), 1.0f);
+	Vec3 fullScreenPos = m_checkboxes.at(0)->getPosition();
+	guiPtr->printText(L"Fullscreen", (int)(fullScreenPos.X + (30 * scaleX)), (int)(fullScreenPos.Y), Vec3(1.0f, 1.0f, 1.0f), scaleX);
+
+	Vec3 mouseInvertPos = m_checkboxes.at(1)->getPosition();
+	guiPtr->printText(L"Invert Camera", (int)(mouseInvertPos.X + 30 * scaleX), (int)mouseInvertPos.Y, Vec3(1.0f, 1.0f, 1.0f), scaleX);
 }
 
 void Menu::keyPressed(unsigned short key)
@@ -110,7 +121,8 @@ void Menu::mousePressed(Vec3 pos)
 	{
 		(*it)->onMouseClick(pos);
 	}
-	fullscreen = m_checkboxes[0]->isChecked();
+	settings._isFullscreen = m_checkboxes[0]->isChecked();
+	settings._mouseInverted = m_checkboxes[1]->isChecked();
 }
 
 int Menu::getStatus()
@@ -144,15 +156,15 @@ void Menu::buttonResumeClicked()
 	status = MenuStatus::resume;
 }
 
-bool Menu::isFullscreen()
+Menu::Settings Menu::getSettings() const
 {
-	return fullscreen;
+	return settings;
 }
 
 void Menu::onResize(unsigned int width, unsigned int height)
 {
-	float scaleX = ((float)width / 1024);
-	float scaleY = ((float)height / 768);
+	scaleX = ((float)width / 1024);
+	scaleY = ((float)height / 768);
 
 	for (unsigned i = 0; i < m_buttons.size(); i++)
 	{
@@ -171,8 +183,6 @@ void Menu::onResize(unsigned int width, unsigned int height)
 
 	this->width = width;
 	this->height = height;
-	oldScaleX = scaleX;
-	oldScaleY = scaleY;
 }
 
 void Menu::onMouseMove(Vec3 mousePos)

@@ -482,6 +482,7 @@ public:
 	void SetMaterial(const Material& mat);
 	void SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetType(int type);
 
 	void UpdatePerObj(ID3D11DeviceContext* dc);
 
@@ -503,6 +504,8 @@ private:
 	struct PS_CPEROBJBUFFER
 	{
 		Material mat;
+		int type;
+		XMFLOAT3 skit;
 	};
 
 	struct BUFFERCACHE
@@ -897,23 +900,6 @@ class ParticleSystemShader : public IShader
 public:
 	ParticleSystemShader();
 	~ParticleSystemShader();
-
-	// Overload new and delete, because this class contains XMMATRIX (16 byte alignment)
-	void* operator new (size_t size)
-	{
-		void* p = _aligned_malloc(size, 16);
-
-		if (!p)
-			throw std::bad_alloc();
-
-		return p;
-	}
-
-	void operator delete (void* p)
-	{
-		ParticleSystemShader* ptr = static_cast<ParticleSystemShader*>(p);
-		_aligned_free(p);
-	}
 
 	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
 	//bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);

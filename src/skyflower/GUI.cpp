@@ -1,6 +1,9 @@
 #include "GUI.h"
 #include "Graphics/Texture2DImpl.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 GUI::GUI(GraphicsEngine *graphics)
 {
 	this->mCurrGUIElementId = 0;
@@ -20,6 +23,7 @@ void GUI::Destroy()
 	for (unsigned int i = 0; i < this->mGUIElements.size(); i++)
 	{
 		this->mGUIElements.at(i)->Destroy(mGraphics);
+		delete this->mGUIElements.at(i);
 	}
 }
 
@@ -31,7 +35,13 @@ void GUI::Draw()
 	{
 		this->mGUIElements.at(i)->Draw(mGraphics);
 	}
-
+	// Draw text
+	for (auto it = textQueue.begin(); it != textQueue.end(); ++it)
+	{
+		it->Draw(mGraphics);
+	}
+	// Flush queue
+	textQueue.clear();
 	mGraphics->End2D();
 }
 
@@ -162,5 +172,6 @@ void GUI::UploadData(unsigned int id, const void* data)
 
 void GUI::printText(wchar_t* text, int x, int y, Vec3 color, float scale)
 {
-	mGraphics->printText(text, x, y, color, scale);
+	TextElement txt(text, x, y, color, scale);
+	textQueue.push_back(txt);
 }

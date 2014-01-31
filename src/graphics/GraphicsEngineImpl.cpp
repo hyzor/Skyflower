@@ -1,16 +1,19 @@
 #include "GraphicsEngineImpl.h"
 #include "Texture2DImpl.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 GraphicsEngineImpl::GraphicsEngineImpl()
 {
+	mRandom1DTexSRV = nullptr;
+	mParticlesTextureArray = nullptr;
 }
 
 GraphicsEngineImpl::~GraphicsEngineImpl()
 {
-	if (mRandom1DTexSRV)
-		ReleaseCOM(mRandom1DTexSRV);
-	if (mParticlesTextureArray)
-		ReleaseCOM(mParticlesTextureArray);
+	ReleaseCOM(mRandom1DTexSRV);
+	ReleaseCOM(mParticlesTextureArray);
 
 	for (auto& it(mModels.begin()); it != mModels.end(); ++it)
 	{
@@ -310,7 +313,6 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mPostProcessingEffects = POST_PROCESSING_SSAO | POST_PROCESSING_DOF;
 
 	// PARTICLE SYSTEM TEST
-	/*
 	mRandom1DTexSRV = d3dHelper::CreateRandomTexture1DSRV(mD3D->GetDevice());
 
 	LoadParticles(mResourceDir + "Textures/Particles/", "Particles.particlelist");
@@ -326,7 +328,6 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	testSystem1->SetConstantAccel(XMFLOAT3(0.0f, 7.8f, 0.0f));
 	testSystem1->SetParticleType(ParticleType::PT_FLARE1);
 	mParticleSystems.push_back(testSystem1);
-	*/
 
 	return true;
 }
@@ -474,7 +475,7 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mLightDeferredShader->SetCameraViewProjMatrix(mCamera->GetViewMatrix(), mCamera->GetProjMatrix());
 	mShaderHandler->mLightDeferredShader->SetLightWorldViewProj(mShadowMap->GetLightWorld(), mShadowMap->GetLightView(), mShadowMap->GetLightProj());
 	
-	mShaderHandler->mLightDeferredShader->SetFogProperties(1, 0.0075f, -150.0f, 0.005f, XMFLOAT4(0.85f, 0.85f, 0.85f, 1.0f));
+	mShaderHandler->mLightDeferredShader->SetFogProperties(1, 0.0075f, -150.0f, 0.005f, XMFLOAT4(0.86f, 0.86f, 0.9f, 1.0f));//XMFLOAT4(0.85f, 0.85f, 0.85f, 1.0f));
 
 	mShaderHandler->mLightDeferredShader->UpdatePerFrame(mD3D->GetImmediateContext());
 
@@ -910,6 +911,9 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	{
 		if (mInstances[i]->IsVisible())
 		{
+			mShaderHandler->mBasicDeferredShader->SetType(mInstances[i]->GetType());
+
+
 			mShaderHandler->mBasicDeferredShader->SetWorldViewProjTex(mInstances[i]->GetWorld(),
 				mCamera->GetViewProjMatrix(),
 				toTexSpace);

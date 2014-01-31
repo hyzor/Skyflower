@@ -1,5 +1,8 @@
 #include "PhysicsEngineImpl.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 DLL_API PhysicsEngine* CreatePhysicsEngine()
 {
 	PhysicsEngineImpl* p = new PhysicsEngineImpl();

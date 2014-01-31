@@ -2,7 +2,7 @@
 #define SKYFLOWER_GUI_H
 
 
-//#include "graphics/GraphicsEngine.h"
+#include "graphics/GraphicsEngine.h"
 #include "shared/Vec3.h"
 #include <vector>
 #include "GUIElement.h"
@@ -21,6 +21,7 @@ class GUI
 {
 private:
 	std::vector<GUIElement*> mGUIElements;
+	std::vector<TextElement> textQueue;
 	//std::vector<Text2D> mTexts;
 	unsigned int mCurrGUIElementId;
 

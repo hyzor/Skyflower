@@ -8,6 +8,9 @@
 #include <psapi.h>
 #endif
 
+// Must be included last!
+#include "debug.h"
+
 DLL_API uint64_t GetMemoryUsage()
 {
 #ifdef PLATFORM_WINDOWS

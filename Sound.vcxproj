@@ -28,6 +28,7 @@
     <ClInclude Include="src\sound\AudioDecoderWAV.h" />
     <ClInclude Include="src\sound\AudioResource.h" />
     <ClInclude Include="src\sound\Config.h" />
+    <ClInclude Include="src\sound\debug.h" />
     <ClInclude Include="src\sound\ListenerImpl.h" />
     <ClInclude Include="src\sound\OpenALSourceProxy.h" />
     <ClInclude Include="src\sound\ResourceCache.h" />

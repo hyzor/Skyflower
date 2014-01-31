@@ -1,13 +1,16 @@
 
-#include "Cistron.h"
 #include "EntityManager.h"
 #include "ComponentHeaders.h"
 
-using namespace Cistron;
-using namespace tinyxml2;
 #include <iostream>
 #include <cassert>
 #include "shared/Vec3.h"
+
+// Must be included last!
+#include "shared/debug.h"
+
+using namespace Cistron;
+using namespace tinyxml2;
 
 using std::cout;
 using std::endl;
@@ -1221,19 +1224,19 @@ void EntityManager::handleCollision()
 			else
 			{
 				//body
-				groundRays.push_back(Ray(Vec3(0, 15, 0), Vec3(0, -15, 0)));
+				groundRays.push_back(Ray(Vec3(0, 10, 0), Vec3(0, -10, 0)));
 
 				//feet
-				wallRays.push_back(Ray(Vec3(-3, 3, 0), Vec3(6, 0, 0))); // test left and right at feet
-				wallRays.push_back(Ray(Vec3(0, 3, -3), Vec3(0, 0, 6))); // test front and back at feet
-				wallRays.push_back(Ray(Vec3(-3 * 0.71f, 3, -3 * 0.71f), Vec3(6 * 0.71f, 0, 6 * 0.71f))); // extra test
-				wallRays.push_back(Ray(Vec3(-3 * 0.71f, 3, 3 * 0.71f), Vec3(6 * 0.71f, 0, -6 * 0.71f))); // extra test
+				wallRays.push_back(Ray(Vec3(-3, 2, 0), Vec3(6, 0, 0))); // test left and right at feet
+				wallRays.push_back(Ray(Vec3(0, 2, -3), Vec3(0, 0, 6))); // test front and back at feet
+				wallRays.push_back(Ray(Vec3(-3 * 0.71f, 2, -3 * 0.71f), Vec3(6 * 0.71f, 0, 6 * 0.71f))); // extra test
+				wallRays.push_back(Ray(Vec3(-3 * 0.71f, 2, 3 * 0.71f), Vec3(6 * 0.71f, 0, -6 * 0.71f))); // extra test
 
 				//head
-				wallRays.push_back(Ray(Vec3(-3, 13, 0), Vec3(6, 0, 0))); // test left and right at head
-				wallRays.push_back(Ray(Vec3(0, 13, -3), Vec3(0, 0, 6))); // test front and back at head
-				wallRays.push_back(Ray(Vec3(-3 * 0.71f, 13, -3 * 0.71f), Vec3(6 * 0.71f, 0, 6 * 0.71f))); // extra test
-				wallRays.push_back(Ray(Vec3(-3 * 0.71f, 13, 3 * 0.71f), Vec3(6 * 0.71f, 0, -6 * 0.71f))); // extra test
+				wallRays.push_back(Ray(Vec3(-3, 8.5f, 0), Vec3(6, 0, 0))); // test left and right at head
+				wallRays.push_back(Ray(Vec3(0, 8.5f, -3), Vec3(0, 0, 6))); // test front and back at head
+				wallRays.push_back(Ray(Vec3(-3 * 0.71f, 8.5f, -3 * 0.71f), Vec3(6 * 0.71f, 0, 6 * 0.71f))); // extra test
+				wallRays.push_back(Ray(Vec3(-3 * 0.71f, 8.5f, 3 * 0.71f), Vec3(6 * 0.71f, 0, -6 * 0.71f))); // extra test
 			}
 
 			Entity *ground = nullptr;
@@ -1334,23 +1337,7 @@ float EntityManager::testMove(Ray r, Entity* e, Entity* &out)
 	return dir;
 }
 
-//used for push-collisions
-void EntityManager::createSphereOnEntities()
-{
-	for (size_t i = 0; i < fEntitys.size(); i++)
-	{
-		if (this->fEntitys[i]->getType() == "player")
-		{
-			Vec3 temp = getEntityPos("player");
-			Sphere *s = new Sphere(temp.X, temp.Y, temp.Z);
-		}
-		else if (this->fEntitys[i]->getType() == "AI")
-		{
-			Vec3 temp = getEntityPos("AI");
-			Sphere *s = new Sphere(temp.X, temp.Y, temp.Z);
-		}
-	}
-}
+
 
 void EntityManager::activateEntity(int entityIndex)
 {

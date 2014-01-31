@@ -3,10 +3,14 @@
 #include <iostream>
 #include <fstream>
 
+// Must be included last!
+#include "shared/debug.h"
+
 MorphModel::MorphModel(ID3D11Device* device, TextureManager* textureMgr, const std::string& folderPath, const std::string& morphFileName)
 {
 	std::vector<GenericMaterial> mats;
 
+	mVertexBuffer = nullptr;
 	mIndexBufferFormat = DXGI_FORMAT_R32_UINT;
 	mVertexStride = 0;
 

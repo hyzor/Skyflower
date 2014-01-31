@@ -1,8 +1,12 @@
 #include "InstanceImpl.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 ModelInstanceImpl::ModelInstanceImpl(Vec3 pos, Vec3 rot, Vec3 scale)
 {
 	this->isVisible = true;
+	this->type = 0;
 	Set(pos, rot, scale);
 }
 
@@ -102,6 +106,15 @@ XMMATRIX ModelInstanceImpl::GetWorld()
 	return XMLoadFloat4x4(&modelWorld);
 }
 
+int ModelInstanceImpl::GetType()
+{
+	return this->type;
+}
+
+void ModelInstanceImpl::SetType(int type)
+{
+	this->type = type;
+}
 void ModelInstanceImpl::SetPrevWorld(XMMATRIX& prevWorld)
 {
 	XMStoreFloat4x4(&mPrevWorld, prevWorld);
@@ -111,6 +124,8 @@ XMMATRIX ModelInstanceImpl::GetPrevWorld()
 {
 	return XMLoadFloat4x4(&mPrevWorld);
 }
+
+
 
 AnimatedInstanceImpl::AnimatedInstanceImpl(Vec3 pos, Vec3 rot, Vec3 scale)
 {

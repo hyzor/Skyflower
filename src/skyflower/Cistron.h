@@ -2,6 +2,7 @@
 #ifndef INC_CISTRON
 #define INC_CISTRON
 
+//#include "GUI.h"
 #include "graphics/GraphicsEngine.h"
 #include "InputHandler.h"
 #include "Sound/SoundEngine.h"
@@ -10,6 +11,7 @@
 #include "PotentialField.h"
 #include "ScriptHandler.h"
 #include "graphics/CameraController.h"
+
 
 // IMPORTANT!
 // decide below which version you want - a version using boost::any or a version using a simple void pointer
@@ -37,6 +39,7 @@ struct Modules
 	Collision *collision;
 	PotentialField* potentialField;
 	ScriptHandler* script;
+	//GUI* gui;
 };
 
 };

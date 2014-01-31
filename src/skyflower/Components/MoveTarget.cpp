@@ -4,6 +4,9 @@
 
 #include "MoveTarget.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 MoveTargetComponent::MoveTargetComponent(Vec3 spawnPosition, Vec3 targetPosition, float duration, float easingPower, bool continuous) : Component("MoveTarget")
 {
 	m_spawnPosition = spawnPosition;

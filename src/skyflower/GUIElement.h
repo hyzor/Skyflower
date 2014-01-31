@@ -14,7 +14,7 @@ class GUIElement
 {
 private:
 	Texture2D* mTexture;
-	Draw2DInput* mDrawInput;
+	Draw2DInput mDrawInput;
 
 	bool mIsVisible;
 	bool mFromFile;
@@ -37,7 +37,7 @@ public:
 
 	//Standard set-functions
 	void SetTexture(Texture2D* tex) { mTexture = tex; }
-	void SetDrawInput(Draw2DInput* input) { mDrawInput = input; }
+	void SetDrawInput(Draw2DInput* input) { mDrawInput = *input; }
 	void SetVisible(bool flag) { mIsVisible = flag; }
 	void SetFromFile(bool flag) { mFromFile = flag; }
 	void SetFile(std::string file){ mFile = file; }
@@ -45,11 +45,27 @@ public:
 
 	//Standard get-functions
 	Texture2D* GetTexture() const { return mTexture; }
-	Draw2DInput* GetDrawInput() const { return mDrawInput; }
+	Draw2DInput* GetDrawInput() { return &mDrawInput; }
 	bool GetVisible() const { return mIsVisible; }
 	bool GetFromFile() const { return mFromFile; }
 	std::string GetFile() const { return mFile; }
 	int GetID() const { return mId; }
+};
+
+class TextElement
+{
+public:
+	TextElement();
+	TextElement(wchar_t* text, int x, int y, Vec3 color = Vec3::Zero(), float scale = 1.0f);
+	void Draw(GraphicsEngine* gEngine);
+
+	wchar_t* text;
+	int x, y;
+	float scale;
+	Vec3 color;
+	
+
+
 };
 
 #endif

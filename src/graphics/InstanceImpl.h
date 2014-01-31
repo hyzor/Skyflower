@@ -23,6 +23,8 @@ public:
 	void SetRotation(Vec3 rot);
 	void SetScale(Vec3 scale);
 	void Set(Vec3 pos, Vec3 rot, Vec3 scale);
+	int GetType();
+	void SetType(int type);
 
 	void SetPrevWorld(XMMATRIX& prevWorld);
 	XMMATRIX GetPrevWorld();
@@ -39,6 +41,7 @@ private:
 	XMFLOAT4X4 mPrevWorld; // World matrix from previous frame
 
 	bool isVisible;
+	int type;
 	Vec3 pos;
 	Vec3 rot;
 	Vec3 scale;

@@ -1,5 +1,7 @@
 #include "Camera.h"
 
+// Must be included last!
+#include "shared/debug.h"
 
 Camera::Camera(void)
 	: mPosition(0.0f, 0.0f, 0.0f), 
