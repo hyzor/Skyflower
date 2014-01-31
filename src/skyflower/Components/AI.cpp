@@ -36,25 +36,27 @@ void AI::update(float dt)
 	
 
 	//set fields to deactivate
-	if (getOwner()->ground)
+	getOwner()->ActiveteField(false);
+	/*if (getOwner()->ground)
 	{
 		if (getOwner()->ground->field)
 			getOwner()->ground->field->Active = false;
-	}
+	}*/
 
 	Field* targetField = nullptr;
 	Field* targetcenter = nullptr;
 	if (target)
 	{
+		target->ActiveteField(false);
 		targetField = getEntityManager()->modules->potentialField->CreateField(-1000, 1000, target->returnPos()); // set target
 		targetcenter = getEntityManager()->modules->potentialField->CreateField(1000, centerradius, this->target->returnPos());
 
-		if (target->field)
+		/*if (target->field)
 			target->field->Active = false;
 
 		if (target->ground)
 			if (target->ground->field)
-				target->ground->field->Active = false;
+				target->ground->field->Active = false;*/
 	}
 
 	//find direction to target
@@ -62,22 +64,25 @@ void AI::update(float dt)
 
 
 	//re activate after use
-	if (getOwner()->ground)
+	getOwner()->ActiveteField(true);
+	if (target)
+		target->ActiveteField(true);
+	/*if (getOwner()->ground)
 	{
 		if (getOwner()->ground->field)
 			getOwner()->ground->field->Active = true;
-	}
+	}*/
 	if (target)
 	{
 		getEntityManager()->modules->potentialField->DeleteField(targetField);
 		getEntityManager()->modules->potentialField->DeleteField(targetcenter);
 
-		if (target->field)
+		/*if (target->field)
 			target->field->Active = true;
 
 		if (target->ground)
 			if (target->ground->field)
-				target->ground->field->Active = true;
+				target->ground->field->Active = true;*/
 	}
 
 

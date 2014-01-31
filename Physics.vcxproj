@@ -154,8 +154,8 @@
     <ClCompile Include="src\physics\CollisionModel.cpp" />
     <ClCompile Include="src\physics\ModelTree.cpp" />
     <ClCompile Include="src\physics\Orientation.cpp" />
-    <ClCompile Include="src\physics\PhysicsEngine.cpp" />
-    <ClCompile Include="src\physics\PhysicsEntity.cpp" />
+    <ClCompile Include="src\physics\PhysicsEngineImpl.cpp" />
+    <ClCompile Include="src\physics\PhysicsEntityImpl.cpp" />
     <ClCompile Include="src\physics\Ray.cpp" />
     <ClCompile Include="src\physics\Sphere.cpp" />
     <ClCompile Include="src\physics\Triangle.cpp" />
@@ -169,8 +169,11 @@
     <ClInclude Include="src\physics\CollisionModel.h" />
     <ClInclude Include="src\physics\ModelTree.h" />
     <ClInclude Include="src\physics\Orientation.h" />
-    <ClInclude Include="src\physics\PhysicsEntity.h" />
     <ClInclude Include="src\physics\PhysicsEngine.h" />
+    <ClInclude Include="src\physics\PhysicsEntity.h" />
+    <ClInclude Include="src\physics\PhysicsHelper.h" />
+    <ClInclude Include="src\physics\PhysicsEntityImpl.h" />
+    <ClInclude Include="src\physics\PhysicsEngineImpl.h" />
     <ClInclude Include="src\physics\Ray.h" />
     <ClInclude Include="src\physics\Sphere.h" />
     <ClInclude Include="src\physics\Triangle.h" />

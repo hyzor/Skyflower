@@ -8,10 +8,11 @@
 char* levels[] = {
 	"testWorld",
 	"testWorld2",
-	"testExport"
+	"testExport",
+	"subWorld1"
 };
 
-#define LEVEL_COUNT 3
+#define LEVEL_COUNT 4
 
 LevelHandler *LevelHandler::instance = nullptr;
 

@@ -4,50 +4,55 @@
 // Must be included last!
 #include "shared/debug.h"
 
-GUI::GUI()
+GUI::GUI(GraphicsEngine *graphics)
 {
 	this->mCurrGUIElementId = 0;
+	this->mGraphics = graphics;
 }
 
 GUI::GUI(const GUI& other)
 {
-
 }
 
 GUI::~GUI()
 {
-
 }
 
-void GUI::Destroy(GraphicsEngine* gEngine)
+void GUI::Destroy()
 {
 	for (unsigned int i = 0; i < this->mGUIElements.size(); i++)
 	{
-		this->mGUIElements.at(i)->Destroy(gEngine);
+		this->mGUIElements.at(i)->Destroy(mGraphics);
 		delete this->mGUIElements.at(i);
 	}
 }
 
-void GUI::Draw(GraphicsEngine* gEngine)
+void GUI::Draw()
 {
 	//TO ADD: Send parameters along with the Begin2D call (using the drawing options for the GUI that are to be added)
-	gEngine->Begin2D();
+	mGraphics->Begin2D();
 	for (unsigned int i = 0; i < this->mGUIElements.size(); i++)
 	{
-		this->mGUIElements.at(i)->Draw(gEngine);
+		this->mGUIElements.at(i)->Draw(mGraphics);
 	}
-	gEngine->End2D();
+	// Draw text
+	for (auto it = textQueue.begin(); it != textQueue.end(); ++it)
+	{
+		it->Draw(mGraphics);
+	}
+	// Flush queue
+	textQueue.clear();
+	mGraphics->End2D();
 }
 
 
-Texture2D* GUI::CreateTexture2D(GraphicsEngine* gEngine, unsigned int width, unsigned int height)
+Texture2D* GUI::CreateTexture2D(unsigned int width, unsigned int height)
 {
-	return gEngine->CreateTexture2D(width, height);
+	return mGraphics->CreateTexture2D(width, height);
 }
 
 void GUI::CreateTextObject()
 {
-
 }
 
 int GUI::CreateGUIElement(Vec3 pos)
@@ -163,4 +168,10 @@ void GUI::HideGUI()
 void GUI::UploadData(unsigned int id, const void* data)
 {
 	_GetGUIElement(id)->UploadTextureData(data);
+}
+
+void GUI::printText(wchar_t* text, int x, int y, Vec3 color, float scale)
+{
+	TextElement txt(text, x, y, color, scale);
+	textQueue.push_back(txt);
 }

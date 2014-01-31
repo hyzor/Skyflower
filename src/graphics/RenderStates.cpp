@@ -19,6 +19,7 @@ ID3D11DepthStencilState* RenderStates::mDefaultDSS = 0;
 ID3D11DepthStencilState* RenderStates::mDisabledDSS = 0;
 
 ID3D11BlendState* RenderStates::mDefaultBS = 0;
+ID3D11BlendState* RenderStates::mAdditiveBS = 0;
 
 void RenderStates::InitAll(ID3D11Device* device)
 {
@@ -63,7 +64,7 @@ void RenderStates::InitAll(ID3D11Device* device)
 
 	D3D11_RASTERIZER_DESC depthBiasRSdesc;
 	ZeroMemory(&depthBiasRSdesc, sizeof(D3D11_RASTERIZER_DESC));
-	depthBiasRSdesc.DepthBias = 100000;
+	depthBiasRSdesc.DepthBias = 10000;
 	depthBiasRSdesc.DepthBiasClamp = 0.0f;
 	depthBiasRSdesc.SlopeScaledDepthBias = 1.0f;
 	depthBiasRSdesc.FillMode = D3D11_FILL_SOLID;
@@ -231,6 +232,20 @@ void RenderStates::InitAll(ID3D11Device* device)
 	defaultBSdesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
 	defaultBSdesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	defaultBSdesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	// Additive blend state
+	D3D11_BLEND_DESC additiveBSdesc;
+	ZeroMemory(&additiveBSdesc, sizeof(D3D11_BLEND_DESC));
+	additiveBSdesc.AlphaToCoverageEnable = FALSE;
+	additiveBSdesc.IndependentBlendEnable = FALSE;
+	additiveBSdesc.RenderTarget[0].BlendEnable = TRUE;
+	additiveBSdesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	additiveBSdesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+	additiveBSdesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	additiveBSdesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
+	additiveBSdesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	additiveBSdesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	additiveBSdesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 }
 
 void RenderStates::DestroyAll()
@@ -251,4 +266,5 @@ void RenderStates::DestroyAll()
 	ReleaseCOM(mDisabledDSS);
 
 	ReleaseCOM(mDefaultBS);
+	ReleaseCOM(mAdditiveBS);
 }

@@ -54,7 +54,9 @@ Field* PotentialField::CreateField(std::string file, Vec3 pos, Vec3 scale)
 	for (unsigned int i = 0; i < positions.size(); i++)
 	{
 		//calculate sphere
-		float len = (positions[i] - center).Length();
+		Vec3 p = positions[i];
+		p.Y = center.Y; // skipp height
+		float len = (p - center).Length();
 		if (len > radius)
 			radius = len;
 

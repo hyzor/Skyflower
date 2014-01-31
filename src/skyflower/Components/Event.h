@@ -50,6 +50,7 @@ public:
 		lua_register(sh->L, "CanPush", Event::CanPush);
 		lua_register(sh->L, "Push", Event::push);
 		lua_register(sh->L, "PushAll", Event::pushAll);
+		lua_register(sh->L, "SetSpeed", Event::SetSpeed);
 
 		// MoveTarget component
 		lua_register(sh->L, "MoveToTarget", Event::MoveToTarget);
@@ -114,6 +115,7 @@ private:
 	static int CanPush(lua_State* L);
 	static int push(lua_State* L);
 	static int pushAll(lua_State* L);
+	static int SetSpeed(lua_State* L);
 
 	static int MoveToTarget(lua_State* L);
 	static int MoveToSpawn(lua_State* L);

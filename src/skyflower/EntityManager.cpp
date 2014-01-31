@@ -1,5 +1,4 @@
 
-#include "Cistron.h"
 #include "EntityManager.h"
 #include "ComponentHeaders.h"
 
@@ -1175,6 +1174,7 @@ void EntityManager::handleCollision()
 			if (fEntitys[i]->collInst)
 			{
 				Box bounds = fEntitys[i]->collInst->GetBox();
+				bounds.Position -= fEntitys[i]->collInst->GetPosition();
 				
 				Box small = bounds;
 				small.Position += Vec3(2, 2, 2);
@@ -1246,16 +1246,18 @@ void EntityManager::handleCollision()
 				//reset jump
 				if (t == -1)
 				{
-					Vec3 vel = fEntitys[i]->mPhysicsEntity->getVelocity();
+					Vec3 vel = fEntitys[i]->mPhysicsEntity->GetVelocity();
 					if (vel.Y < 0)
 						vel.Y = 0;
-					fEntitys[i]->mPhysicsEntity->setVelocity(vel);
-					fEntitys[i]->mPhysicsEntity->setJumping(false);
+
+					fEntitys[i]->mPhysicsEntity->SetVelocity(vel);
+					fEntitys[i]->mPhysicsEntity->GetStates()->isJumping = false;
+					fEntitys[i]->mPhysicsEntity->GetStates()->isActiveProjectile = false;
 
 				}
 				if (t == 1)
 				{
-					fEntitys[i]->mPhysicsEntity->setVelocity(Vec3());
+					fEntitys[i]->mPhysicsEntity->SetVelocity(Vec3());
 					ground = nullptr;
 				}
 			}
@@ -1275,9 +1277,7 @@ void EntityManager::handleCollision()
 				fEntitys[i]->sendMessageToEntity("notInAir", this->fEntitys[i]->getEntityId());
 			}
 			else
-			{
 				fEntitys[i]->sendMessageToEntity("inAir", this->fEntitys[i]->getEntityId());
-			}
 
 			//activate event for wall
 			if (fEntitys[i]->wall)
@@ -1337,23 +1337,7 @@ float EntityManager::testMove(Ray r, Entity* e, Entity* &out)
 	return dir;
 }
 
-//used for push-collisions
-void EntityManager::createSphereOnEntities()
-{
-	for (size_t i = 0; i < fEntitys.size(); i++)
-	{
-		if (this->fEntitys[i]->getType() == "player")
-		{
-			Vec3 temp = getEntityPos("player");
-			Sphere *s = new Sphere(temp.X, temp.Y, temp.Z);
-		}
-		else if (this->fEntitys[i]->getType() == "AI")
-		{
-			Vec3 temp = getEntityPos("AI");
-			Sphere *s = new Sphere(temp.X, temp.Y, temp.Z);
-		}
-	}
-}
+
 
 void EntityManager::activateEntity(int entityIndex)
 {

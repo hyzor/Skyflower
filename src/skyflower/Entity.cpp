@@ -43,7 +43,7 @@ Entity::Entity(const Modules *modules, EntityId id, EntityId relativeid, string 
 	this->isAnimated = isAnimated;
 
 	this->modules = modules;
-	this->mPhysicsEntity = this->modules->physicsEngine->CreateEntity(this->mPhysicsEntity);
+	this->mPhysicsEntity = this->modules->physicsEngine->CreateEntity();
 
 	modelInst = nullptr;
 	AnimInst = nullptr;
@@ -117,12 +117,12 @@ Entity::Entity(const Modules *modules, EntityId id, EntityId relativeid, string 
 		field = nullptr;
 	}
 
-	this->sphere = NULL;
-	if (this->type == "player" || this->type == "AI")
+	this->sphere = new Sphere(pos, 1.5f);
+	/*if (this->type == "player" || this->type == "AI") //fungerar inte
 	{
 		cout << "creating sphere!" << this->type << endl;
 		this->sphere = new Sphere(pos.X, pos.Y, pos.Z, 4);
-	}
+	}*/
 
 }
 Entity::~Entity() {
@@ -469,4 +469,11 @@ Vec3 Entity::getRelativePos()
 AnimatedInstance *Entity::getAnimatedInstance()
 {
 	return this->AnimInst;
+}
+void Entity::ActiveteField(bool b)
+{
+	if (field)
+		field->Active = b;
+	if (ground)
+		ground->ActiveteField(b);
 }

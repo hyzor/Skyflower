@@ -187,7 +187,6 @@ class EntityManager {
 		void updateEntityVisibility(bool isVisible, EntityId id);
 
 		void handleCollision();
-		void createSphereOnEntities();
 		void updateSpheres();
 
 		void activateEntity(int entityIndex);

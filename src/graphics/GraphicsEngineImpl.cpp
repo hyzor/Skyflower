@@ -8,9 +8,12 @@ GraphicsEngineImpl::GraphicsEngineImpl()
 {
 }
 
-
 GraphicsEngineImpl::~GraphicsEngineImpl()
 {
+	if (mRandom1DTexSRV)
+		ReleaseCOM(mRandom1DTexSRV);
+	if (mParticlesTextureArray)
+		ReleaseCOM(mParticlesTextureArray);
 
 	for (auto& it(mModels.begin()); it != mModels.end(); ++it)
 	{
@@ -27,8 +30,8 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 
 	for (unsigned int i = 0; i < mAnimatedInstances.size(); i++)
 	{
-		if (mAnimatedInstances[i])
-			delete mAnimatedInstances[i];
+		/*if (mAnimatedInstances[i])
+			delete mAnimatedInstances[i];*/
 	}
 
 	for (auto& it(mSkinnedModels.begin()); it != mSkinnedModels.end(); ++it)
@@ -46,6 +49,11 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 	for (UINT i = 0; i < mMorphInstances.size(); ++i)
 	{
 		delete mMorphInstances[i];
+	}
+
+	for (UINT i = 0; i < mParticleSystems.size(); ++i)
+	{
+		delete mParticleSystems[i];
 	}
 
 	delete mSky;
@@ -134,9 +142,10 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mFarSharpPlane = 200.0f;
 	mFarBlurryPlane = 250.0f;
 
-	mSky = new Sky(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Textures\\SkyBox_Space.dds", 2000.0f);
+	mSky = new Sky(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Textures\\SkyBox.dds", 2000.0f);
 	mShadowMap = new ShadowMap(mD3D->GetDevice(), 2048, 2048);
 
+	mGameTime = 0.0f;
 
 	//-------------------------------------------------------------------------------------------------------
 	// Shaders
@@ -180,6 +189,18 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\DepthOfFieldBlurHorizontalPS.cso", "DepthOfFieldBlurHorizontalPS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\DepthOfFieldBlurVerticalPS.cso", "DepthOfFieldBlurVerticalPS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\CompositePS.cso", "CompositePS", mD3D->GetDevice());
+
+	// Particle system shaders
+	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\DrawParticleVS.cso", "DrawParticleVS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledGeometryShader(L"..\\shaders\\DrawParticleGS.cso", "DrawParticleGS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\DrawParticlePS.cso", "DrawParticlePS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\StreamOutParticleVS.cso", "StreamOutParticleVS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledGeometryStreamOutShader(L"..\\shaders\\StreamOutParticleGS.cso", "StreamOutParticleGS", mD3D->GetDevice(),
+		GeoStreamOutDesc::ParticleSoDesc,
+		COUNT_OF(GeoStreamOutDesc::ParticleSoDesc),
+		D3D11_SO_NO_RASTERIZED_STREAM,
+		&GeoStreamOutDesc::ParticleStride,
+		1);
 
 	// Bind loaded shaders to shader objects
 	mShaderHandler->mBasicShader->BindShaders(
@@ -239,9 +260,16 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 		mShaderHandler->GetVertexShader("ShadowBuildMorphVS"),
 		mShaderHandler->GetPixelShader("ShadowBuildMorphPS"));
 
+	// Particle system
+	mShaderHandler->mParticleSystemShader->BindShaders(
+		mShaderHandler->GetVertexShader("StreamOutParticleVS"),
+		mShaderHandler->GetGeometryShader("StreamOutParticleGS"),
+		mShaderHandler->GetVertexShader("DrawParticleVS"),
+		mShaderHandler->GetGeometryShader("DrawParticleGS"),
+		mShaderHandler->GetPixelShader("DrawParticlePS"));
+
 	// Now create all the input layouts
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("BasicVS"), InputLayoutDesc::PosNormalTex, COUNT_OF(InputLayoutDesc::PosNormalTex), &mInputLayouts->PosNormalTex);
-	//mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("ShadowBuildVS"), InputLayoutDesc::Position, COUNT_OF(InputLayoutDesc::Position), &mInputLayouts->Position);
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("SkyVS"), InputLayoutDesc::Position, COUNT_OF(InputLayoutDesc::Position), &mInputLayouts->Position);
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("NormalMapSkinnedVS"),
 		InputLayoutDesc::PosNormalTexTanSkinned,
@@ -249,6 +277,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 		&mInputLayouts->PosNormalTexTanSkinned);
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("LightDeferredVS"), InputLayoutDesc::PosTex, COUNT_OF(InputLayoutDesc::PosTex), &mInputLayouts->PosTex);
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("BasicDeferredMorphVS"), InputLayoutDesc::PosNormalTexTargets4, COUNT_OF(InputLayoutDesc::PosNormalTexTargets4), &mInputLayouts->PosNormalTexTargets4);
+	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("StreamOutParticleVS"), InputLayoutDesc::Particle, COUNT_OF(InputLayoutDesc::Particle), &mInputLayouts->Particle);
 
 	// Init all the shader objects
 	mShaderHandler->mBasicShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTex);
@@ -269,6 +298,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mCompositeShader->Init(mD3D->GetDevice(), NULL);
 	mShaderHandler->mDeferredMorphShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTargets4);
 	mShaderHandler->mShadowMorphShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTargets4);
+	mShaderHandler->mParticleSystemShader->Init(mD3D->GetDevice(), mInputLayouts->Particle);
 
 	std::string fontPath = mResourceDir + "myfile.spritefont";
 	std::wstring fontPathW(fontPath.begin(), fontPath.end());
@@ -281,6 +311,25 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mOrthoWindow->Initialize(mD3D->GetDevice(), width, height);
 
 	mPostProcessingEffects = POST_PROCESSING_SSAO | POST_PROCESSING_DOF;
+
+	// PARTICLE SYSTEM TEST
+	/*
+	mRandom1DTexSRV = d3dHelper::CreateRandomTexture1DSRV(mD3D->GetDevice());
+
+	LoadParticles(mResourceDir + "Textures/Particles/", "Particles.particlelist");
+
+	ParticleSystem* testSystem1 = new ParticleSystem();
+	testSystem1->Init(
+		mD3D->GetDevice(),
+		mShaderHandler->mParticleSystemShader,
+		mParticlesTextureArray,
+		mRandom1DTexSRV,
+		1000);
+	testSystem1->SetEmitPos(XMFLOAT3(0.0f, 15.0f, 0.0f));
+	testSystem1->SetConstantAccel(XMFLOAT3(0.0f, 7.8f, 0.0f));
+	testSystem1->SetParticleType(ParticleType::PT_FLARE1);
+	mParticleSystems.push_back(testSystem1);
+	*/
 
 	return true;
 }
@@ -297,7 +346,7 @@ void GraphicsEngineImpl::DeleteCameraController(CameraController *controller)
 
 void GraphicsEngineImpl::Run(float dt)
 {
-	UpdateScene(dt);
+	UpdateScene(dt, mGameTime);
 	DrawScene();
 }
 
@@ -568,8 +617,10 @@ void GraphicsEngineImpl::DrawScene()
 	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
 }
 
-void GraphicsEngineImpl::UpdateScene(float dt)
+void GraphicsEngineImpl::UpdateScene(float dt, float gameTime)
 {
+	mGameTime = gameTime;
+
 	// Update skinned instances
 	for (size_t i = 0; i < mAnimatedInstances.size(); i++)
 	{
@@ -594,6 +645,12 @@ void GraphicsEngineImpl::UpdateScene(float dt)
 	}
 	*/
 
+	for (UINT i = 0; i < mParticleSystems.size(); ++i)
+	{
+		mParticleSystems[i]->Update(dt, gameTime);
+		mParticleSystems[i]->SetParticleType((rand() % ParticleType::NROFTYPES - 1) + 1);
+	}
+
 	mCamera->Update();
 }
 
@@ -616,14 +673,31 @@ void GraphicsEngineImpl::End2D()
 
 void GraphicsEngineImpl::Draw2DTextureFile(const std::string file, const Draw2DInput* input)
 {
-	mSpriteBatch->Draw(mTextureMgr->CreateTexture(file), input->pos);
+	mSpriteBatch->Draw(
+		mTextureMgr->CreateTexture(file),
+		input->pos,
+		0,
+		input->color,
+		0.0f, 
+		XMFLOAT2(0.0f, 0.0f),
+		input->scale,
+		SpriteEffects::SpriteEffects_None,
+		input->layerDepth);
 }
 
 void GraphicsEngineImpl::Draw2DTexture(Texture2D *texture, const Draw2DInput* input)
 {
 	Texture2DImpl *textureImpl = (Texture2DImpl *)texture;
-
-	mSpriteBatch->Draw(textureImpl->GetShaderResourceView(), input->pos);
+	mSpriteBatch->Draw(
+		textureImpl->GetShaderResourceView(), 
+		input->pos, 
+		0, 
+		D3dColors::White, 
+		0.0f,
+		XMFLOAT2(0.0f,0.0f),
+		input->scale,
+		SpriteEffects::SpriteEffects_None, 
+		input->layerDepth);
 }
 
 ModelInstance* GraphicsEngineImpl::CreateInstance(std::string file)
@@ -871,6 +945,19 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 		}
 	}
 
+	//---------------------------------------------------------------------------------------
+	// Particles
+	//---------------------------------------------------------------------------------------
+	//mD3D->GetImmediateContext()->RSSetState(0);
+	for (UINT i = 0; i < mParticleSystems.size(); ++i)
+	{
+		mParticleSystems[i]->SetEyePos(mCamera->GetPosition());
+		mParticleSystems[i]->Draw(mD3D->GetImmediateContext(), *mCamera);
+	}
+
+	// Restore to not using a geometry shader
+	mD3D->GetImmediateContext()->GSSetShader(nullptr, nullptr, 0);
+
 	// Reset the render target back to the original back buffer and not the render buffers
 	ID3D11RenderTargetView* renderTargets[1] = { mD3D->GetRenderTargetView() };
 	mD3D->GetImmediateContext()->OMSetRenderTargets(1, renderTargets, mD3D->GetDepthStencilView());
@@ -975,6 +1062,11 @@ void GraphicsEngineImpl::clearLights()
 	mPointLights.clear();
 }
 
+void GraphicsEngineImpl::printText(wchar_t* text, int x, int y, Vec3 color, float scale)
+{
+	XMVECTORF32 v_color = { color.X, color.Y, color.Z, 1 };
+	mSpriteFont->DrawString(mSpriteBatch, text, XMFLOAT2((float)x, (float)y), v_color, 0.0f, XMFLOAT2(0, 0), scale);
+}
 void GraphicsEngineImpl::Clear()
 {
 	mD3D->GetImmediateContext()->RSSetState(0);
@@ -998,7 +1090,7 @@ void GraphicsEngineImpl::SetPostProcessingEffects(unsigned int effects)
 }
 
 void GraphicsEngineImpl::SetDepthOfFieldFocusPlanes(float nearBlurryPlane, float nearSharpPlane, float farSharpPlane, float farBlurryPlane)
-{
+{	
 	mNearBlurryPlane = nearBlurryPlane;
 	mNearSharpPlane = nearSharpPlane;
 	mFarSharpPlane = farSharpPlane;
@@ -1012,4 +1104,48 @@ void GraphicsEngineImpl::SetSSAOParameters(float radius, float projection_factor
 	mSSAObias = bias;
 	mSSAOcontrast = contrast;
 	mSSAOsigma = sigma;
+}
+
+void GraphicsEngineImpl::LoadParticles(std::string particlesPath, std::string particleFileName)
+{
+	std::string particleFilePath = particlesPath + particleFileName;
+
+	// Open corresponding particle file
+	std::ifstream particleFile;
+	particleFile.open(particleFilePath.c_str(), std::ios::in);
+
+	if (!particleFile.is_open())
+	{
+		std::stringstream ErrorStream;
+		ErrorStream << "Failed to load particle file " << particleFilePath;
+		std::string ErrorStreamStr = ErrorStream.str();
+		LPCSTR Text = ErrorStreamStr.c_str();
+		MessageBoxA(0, Text, 0, 0);
+	}
+	else
+	{
+		std::vector<std::string> particles;
+		std::string particle;
+
+		while (particleFile >> particle)
+		{
+			particles.push_back(particlesPath + particle);
+		}
+
+		particleFile.close();
+
+		mParticlesTextureArray = d3dHelper::CreateTexture2DArraySRV(mD3D->GetDevice(), mD3D->GetImmediateContext(), particles);
+	}
+}
+
+void GraphicsEngineImpl::SetFullscreen(bool fullscreen)
+{
+	mD3D->GetSwapChain()->SetFullscreenState(fullscreen, NULL);
+}
+
+bool GraphicsEngineImpl::isFullscreen()
+{
+	BOOL fullscreen;
+	mD3D->GetSwapChain()->GetFullscreenState(&fullscreen, NULL);
+	return fullscreen == 1;
 }

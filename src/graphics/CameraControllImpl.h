@@ -18,7 +18,8 @@ public:
 	 void SetOffset(float offset); // Set the offset from the player.
 	 void Update(float dt);
 	 void Follow(Vec3 target); // Set target for the camera to look at and follow
-	 void RotateCamera(float mouseX, float mouseY);
+	 void onMouseMove(float mouseX, float mouseY);
+	 void Rotate(float yaw, float pitch);
 	 void Zoom(float d, float speed);
 	 Vec3 GetPosition(); 
 	 Vec3 GetDirection();
@@ -40,6 +41,8 @@ private:
 	float targetYaw; // The target yaw. Used in Lerp calculations
 	float targetY; // The Y-pos of the target. Used for Lerp.
 	float targetZoom; 
+
+	float time;
 };
 
 DLL_API CameraController* CreateCameraControll(Camera *c);

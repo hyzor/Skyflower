@@ -34,7 +34,7 @@ public:
 
 	virtual void Run(float dt) = 0;
 	virtual void DrawScene() = 0;
-	virtual void UpdateScene(float dt) = 0;
+	virtual void UpdateScene(float dt, float gameTime) = 0;
 	virtual void Present() = 0;
 
 	virtual void Begin2D() = 0;
@@ -61,9 +61,12 @@ public:
 	virtual Texture2D *CreateTexture2D(unsigned int width, unsigned int height) = 0;
 	virtual void DeleteTexture2D(Texture2D *texture) = 0;
 
+	virtual void printText(wchar_t* text, int x, int y, Vec3 color = Vec3::Zero(), float scale = 1.0f) = 0;
 //	virtual Text2D* CreateText2D() = 0;
 //	virtual void DeleteTexture2D(Text2D *text) = 0;
 
+	virtual void SetFullscreen(bool fullscreen) = 0;
+	virtual bool isFullscreen() = 0;
 	virtual void Clear() = 0;
 
 	virtual unsigned int GetPostProcessingEffects() = 0;

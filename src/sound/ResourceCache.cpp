@@ -6,6 +6,7 @@
 #include <string>
 
 #include <AL/al.h>
+#include <AL/alext.h>
 
 #include "AudioResource.h"
 #include "ResourceCache.h"
@@ -110,7 +111,9 @@ ResourceCache::ResourceCache(const std::string &resourceDir)
 
 	assert(alGetError() == AL_NO_ERROR);
 
-	for (int i = 0; i < SOUNDENGINE_BUFFER_POOL_SIZE; i++) {
+	for (unsigned int i = 0; i < SOUNDENGINE_BUFFER_POOL_SIZE; i++) {
+		alBufferData(m_buffers[i], AL_FORMAT_STEREO_FLOAT32, NULL, (ALsizei)(SOUNDENGINE_STREAM_BUFFER_SIZE * 48000 * 2 * sizeof(float)), 48000);
+
 		m_cacheEntries[i].resourceHash = 0x0;
 		m_cacheEntries[i].bufferIndex = 0;
 		m_cacheEntries[i].lastRequestedFrame = 0;

@@ -46,11 +46,17 @@ void Application::Start()
 	m_graphicsEngine->SetSSAOParameters(m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
 	m_graphicsEngine->SetDepthOfFieldFocusPlanes(10.0f, 50.0f, 300.0f, 400.0f);
 
+	m_GUI = new GUI(m_graphicsEngine);
+
+	m_menu = new Menu();
+	m_menu->init(m_GUI, m_window->GetWidth(), m_window->GetHeight());
+	m_menu->setActive(false);
+
 	m_soundEngine = CreateSoundEngine("../../content/sounds/");
 	assert(m_soundEngine);
 
 	m_camera = m_graphicsEngine->CreateCameraController();
-	m_physicsEngine = new PhysicsEngine();
+	m_physicsEngine = CreatePhysicsEngine();
 	m_collision = CreateCollision("../../content/");
 	m_potentialField = new PotentialField();
 	m_scriptHandler = new ScriptHandler();
@@ -86,23 +92,15 @@ void Application::Start()
 
 	m_entityManager = new EntityManager("../../XML/", &modules);
 	m_entityManager->loadXML("player.xml");
-	m_entityManager->loadXML("lights.XML");
 
 	levelHandler->init(m_entityManager);
+
 	// Load Hub Level
-	levelHandler->queue(1);
+	levelHandler->queue(3);
 	levelHandler->LoadQueued();
-
 	m_entityManager->sendMessageToEntity("ActivateListener", "player");
-	m_entityManager->createSphereOnEntities();
 	m_graphicsEngine->UpdateSceneData();
-
-	m_GUI = new GUI();
-
-	m_menu = new Menu();
-	m_menu->init(m_graphicsEngine);
-	m_menu->setActive(false);
-
+	m_entityManager->loadXML("subWorld1Lights.XML");
 	Movement* playerMove = (Movement*)m_entityManager->getComponent("player", "Movement");
 
 	m_showCharts = false;
@@ -114,33 +112,41 @@ void Application::Start()
 	frameTimeChart.SetUnit("ms");
 	//Texture2D *frameTimeChartTexture = m_graphicsEngine->CreateTexture2D(frameTimeChart.GetWidth(), frameTimeChart.GetHeight());
 	m_frameChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, 0.0f, 0.0f), 
-		m_GUI->CreateTexture2D(m_graphicsEngine, frameTimeChart.GetWidth(), frameTimeChart.GetHeight()));
+		m_GUI->CreateTexture2D(frameTimeChart.GetWidth(), frameTimeChart.GetHeight()));
 
 	LineChart memoryChart(chartCapacity);
 	memoryChart.SetSize(256, 128);
 	memoryChart.SetUnit("MiB");
 	//Texture2D *memoryChartTexture = m_graphicsEngine->CreateTexture2D(memoryChart.GetWidth(), memoryChart.GetHeight());
 	m_memChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, (float)(frameTimeChart.GetHeight() + 6), 0.0f),
-		m_GUI->CreateTexture2D(m_graphicsEngine, memoryChart.GetWidth(), memoryChart.GetHeight()));
+		m_GUI->CreateTexture2D(memoryChart.GetWidth(), memoryChart.GetHeight()));
+
+	thread load;
 
 	double chartUpdateDelay = 0.1;
 	double nextChartUpdate = 0.0;
 	double chartTime = 30.0;
 
-	thread load;
-
 	double time, deltaTime;
-	double timeSinceLight = 0.0;
 
+	//startTime = GetTime();
+
+	mGameTime = 0.0;
 	m_oldTime = GetTime();
+	mStartTime = GetTime();
 	m_quit = false;
+
+	//changeGameState(GameState::cutScene);
+	//cs = new CutScene(m_entityManager->modules->script, m_camera);
+	//cs->play();
 
 	while(!m_quit)
 	{
 		time = GetTime();
 		deltaTime = time - m_oldTime;
 		m_oldTime = time;
-		timeSinceLight += deltaTime;
+
+		mGameTime = time - mStartTime;
 
 		frameTimeChart.AddPoint(time, deltaTime * 1000.0);
 		memoryChart.AddPoint(time, GetMemoryUsage() / (1024.0 * 1024.0));
@@ -163,11 +169,11 @@ void Application::Start()
 			load = thread(&LevelHandler::LoadQueued, levelHandler);
 			changeGameState(GameState::loading);
 		}
-		
+
 		switch (gameState)
 		{
 		case GameState::game:
-			updateGame((float)deltaTime, playerMove);
+			updateGame((float)deltaTime, (float)mGameTime, playerMove);
 			break;
 		case GameState::loading:
 			updateLoading((float)deltaTime);
@@ -175,27 +181,31 @@ void Application::Start()
 		case GameState::menu:
 			updateMenu((float)deltaTime);
 			break;
+		case GameState::cutScene:
+			updateCutScene((float)deltaTime);
+			break;
 		}
 		
-		m_GUI->Draw(m_graphicsEngine);
+		m_GUI->Draw();
+
 		m_graphicsEngine->Present();
 
 		m_soundEngine->Update((float)deltaTime);
 		m_window->PumpMessages();
 	}
-
+	
 	//m_graphicsEngine->DeleteTexture2D(memoryChartTexture);
 	//m_graphicsEngine->DeleteTexture2D(frameTimeChartTexture);
 
 	delete m_menu;
-	m_GUI->Destroy(m_graphicsEngine);
+	m_GUI->Destroy();
 	delete m_GUI;
 	delete levelHandler;
 	delete m_entityManager;
 	delete m_scriptHandler;
 	delete m_potentialField;
 	DestroyCollision(m_collision);
-	delete m_physicsEngine;
+	DestroyPhysicsEngine(m_physicsEngine);
 	m_soundEngine->DestroySource(m_backgroundMusic);
 	DestroySoundEngine(m_soundEngine);
 	m_graphicsEngine->DeleteCameraController(m_camera);
@@ -208,31 +218,58 @@ void Application::updateMenu(float dt)
 	if (!m_menu->isActive())
 		changeGameState(GameState::game);
 
-	m_graphicsEngine->Begin2D();
-	m_menu->draw(m_graphicsEngine);
-	m_graphicsEngine->End2D();
+
+	m_menu->draw();
 
 	switch (m_menu->getStatus())
 	{
 	case Menu::resume:
+		if (m_menu->isFullscreen() && !m_graphicsEngine->isFullscreen())
+		{
+			m_graphicsEngine->SetFullscreen(true);
+			this->OnWindowResized(1920, 1080);
+		}
+		else if (!m_menu->isFullscreen() && m_graphicsEngine->isFullscreen())
+		{
+			m_graphicsEngine->SetFullscreen(false);
+			this->OnWindowResized(1024, 768);
+		}
+
 		m_menu->setActive(false);
 		changeGameState(GameState::game);
+
 		break;
 	case Menu::exit:
 		m_quit = true;
-		break;
 	}
 }
 
-void Application::updateGame(float dt, Movement* playerMove)
+void Application::updateCutScene(float dt)
+{
+	m_camera->Update(dt);
+	m_graphicsEngine->UpdateScene(dt, (float)mGameTime);
+	m_graphicsEngine->DrawScene();
+
+	//cs->update(dt);
+
+	if (m_menu->isActive())
+		changeGameState(GameState::menu);
+	/*if (cs->isDone())
+	{
+		changeGameState(GameState::game);
+	}/**/
+}
+
+void Application::updateGame(float dt, float gameTime, Movement* playerMove)
 {
 	m_camera->Follow(m_entityManager->getEntityPos("player"));
 	playerMove->setCamera(m_camera->GetLook(), m_camera->GetRight(), m_camera->GetUp());
 	playerMove->setYaw(m_camera->GetYaw());
 	m_camera->Update(dt);
-	m_entityManager->update(dt);
-	m_graphicsEngine->UpdateScene(dt);
+	
+	m_graphicsEngine->UpdateScene(dt, gameTime);
 	m_graphicsEngine->DrawScene();
+	m_entityManager->update(dt);
 
 	if (m_menu->isActive())
 		changeGameState(GameState::menu);
@@ -305,6 +342,7 @@ void Application::OnWindowShouldClose()
 void Application::OnWindowResized(unsigned int width, unsigned int height)
 {
 	m_graphicsEngine->OnResize(width, height);
+	m_menu->onResize(width, height);
 }
 
 void Application::OnWindowResizeEnd()
@@ -332,7 +370,14 @@ void Application::OnWindowDeactivate()
 void Application::OnMouseMove(int deltaX, int deltaY)
 {
 	if (m_camera)
-		m_camera->RotateCamera((float)deltaX, (float)deltaY);
+		m_camera->onMouseMove((float)deltaX, (float)deltaY);
+	if (m_menu->isActive())
+	{
+		int x, y;
+		m_inputHandler->GetMousePosition(x, y);
+		m_menu->onMouseMove(Vec3(x, y));
+	}
+		
 }
 
 void Application::OnMouseButtonDown(enum MouseButton button)
@@ -340,6 +385,12 @@ void Application::OnMouseButtonDown(enum MouseButton button)
 	if (gameState == GameState::game && !m_inputHandler->IsMouseCaptured()) {
 		m_inputHandler->SetMouseCapture(true);
 		m_window->SetCursorVisibility(false);
+	}
+	if (gameState == GameState::menu && m_menu->isActive())
+	{
+		int x, y;
+		m_inputHandler->GetMousePosition(x, y);
+		m_menu->mousePressed(Vec3(x, y));
 	}
 }
 
@@ -352,10 +403,14 @@ void Application::OnMouseWheel(int delta)
 	m_camera->Zoom((float)delta, 8.0f);
 }
 
+void Application::OnKeyUp(unsigned short key)
+{
+}
+
 void Application::OnKeyDown(unsigned short key)
 {
 	if (m_menu->isActive())
-		m_menu->buttonPressed(key);
+		m_menu->keyPressed(key);
 
 	switch (key)
 	{
@@ -371,7 +426,7 @@ void Application::OnKeyDown(unsigned short key)
 		break;
 	case 'R':
 		m_graphicsEngine->clearLights();
-		m_entityManager->loadXML("lights.XML");
+		m_entityManager->loadXML("subWorld1Lights.XML");
 		break;
 	case 'M':
 		if (m_menu->isActive())
@@ -381,8 +436,10 @@ void Application::OnKeyDown(unsigned short key)
 			m_graphicsEngine->Clear();
 			m_menu->setActive(true);
 		}
-
 		break;
+	/*case VK_SPACE:
+		if (!cs->isDone())
+			cs->quit(); */
 	case 'P':
 		m_graphicsEngine->SetPostProcessingEffects(m_graphicsEngine->GetPostProcessingEffects() ^ POST_PROCESSING_SSAO);
 		break;
@@ -424,6 +481,7 @@ void Application::OnKeyDown(unsigned short key)
 		m_graphicsEngine->SetSSAOParameters(m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
 
 		printf("radius=%.1f, projection factor=%.1f, bias=%.2f, contrast=%.1f, sigma=%.1f\n", m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
+
 		break;
 	case 'I':
 		m_SSAObias += 0.05f;
@@ -434,7 +492,7 @@ void Application::OnKeyDown(unsigned short key)
 	case 'K':
 		m_SSAObias -= 0.05f;
 		m_graphicsEngine->SetSSAOParameters(m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
-
+		
 		printf("radius=%.1f, projection factor=%.1f, bias=%.2f, contrast=%.1f, sigma=%.1f\n", m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
 		break;
 	case 'C':
@@ -464,8 +522,4 @@ void Application::OnKeyDown(unsigned short key)
 	default:
 		break;
 	}
-}
-
-void Application::OnKeyUp(unsigned short key)
-{
 }

@@ -28,7 +28,7 @@ function update_aiPush(id, dt)
 			Jump(id)
 		end
 		
-		if IsActivated(64) and IsStanding(id, 64) then --if button is down
+		if IsActivated(64) then --if button is down
 			trapButtonDown = true
 		end
 	else

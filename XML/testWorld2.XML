@@ -38,7 +38,6 @@
 		<Messenger />
 		<Event script="btnBig" />
 		<Button />
-		<Movement speed="20" />
 	</Platform>
 	
 	<Platform entityName="ButtonBase2" id="22" relativeid="8" isVisible="1" isCollidible="1" Type="object" isAnimated="0" 
@@ -54,7 +53,6 @@
 		<Messenger />
 		<Event script="btnLevelCompleted" />
 		<Button />
-		<Movement speed="20" />
 		<Goal />
 	</Platform>
 	
@@ -82,6 +80,7 @@
 		<Movement speed="20" />
 	</Platform>
 	
+	<!--
 	<Platform entityName="AI" id="36" isVisible="1" isCollidible="0" Type="object" isAnimated="0" 
 		xPos="-36.0960396599" yPos="0.0" zPos="39.4741144045" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
@@ -98,7 +97,7 @@
 	</Platform>
 	
 	<Platform entityName="AI" id="37" isVisible="1" isCollidible="0" Type="object" isAnimated="0" 
-		xPos="-3600.0960396599" yPos="0.0" zPos="3900.4741144045" 
+		xPos="-36.0960396599" yPos="-50.0" zPos="39.4741144045" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="1.0" yScale="1.0" zScale="1.0" 
 		model="Models\\Worlds\\Subworld\\Puncha">
@@ -111,6 +110,7 @@
 		<AI />
 		<Event script="aiPush" />
 	</Platform>
+	-->
 	
 	<!-- SCENERY -->
 	<Platform entityName="Mountain" id="14" isVisible="1" isCollidible="0" Type="object" isAnimated="0" 

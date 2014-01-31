@@ -3,22 +3,20 @@
 
 #include "shared/platform.h"
 #include "PhysicsEntity.h"
-#include <vector>
 
-class DLL_API PhysicsEngine
+class PhysicsEngine
 {
-private:
-	std::vector<PhysicsEntity*> mPhysicsEntities;
 public:
-	PhysicsEngine();
-	PhysicsEngine(const PhysicsEngine& other);
-	~PhysicsEngine();
+	virtual ~PhysicsEngine(){};
 
-	PhysicsEntity* CreateEntity(PhysicsEntity* physEntity);
-	PhysicsEntity* CreateEntity(PhysicsEntity* physEntity, Vec3 pos);
-	void DestroyEntity(PhysicsEntity* physEntity);
+	virtual PhysicsEntity* CreateEntity() = 0;
+	virtual PhysicsEntity* CreateEntity(Vec3 pos) = 0;
+	virtual void DestroyEntity(PhysicsEntity* physEntity) = 0;
 
-	void SetGlobalGravity(Vec3 gravity);
+	virtual void SetGlobalGravity(Vec3 gravity) = 0;
 };
+
+DLL_API PhysicsEngine* CreatePhysicsEngine();
+DLL_API void DestroyPhysicsEngine(PhysicsEngine*);
 
 #endif

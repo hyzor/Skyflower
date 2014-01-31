@@ -6,6 +6,18 @@
 
 void Button::update(float dt)
 {
+	//run first update
+	if (first)
+	{
+		moveTo = getOwner()->getRelativePos();
+		startPos = moveTo;
+		downPos = Vec3(0, -getEntityScale().Y, 0);
+		first = false;
+	}
+
+
+
+
 	//controll button deavtivation movement
 	if (activated > 0)
 	{

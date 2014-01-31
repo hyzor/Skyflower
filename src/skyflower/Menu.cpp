@@ -7,37 +7,49 @@ Menu::Menu()
 {
 	m_active = false;
 	status = MenuStatus::none;
+	selectedButton = 0;
+	fullscreen = false;
 }
 
 Menu::~Menu()
 {
-
+	for (unsigned i = 0; i < m_buttons.size(); i++)
+	{
+		delete m_buttons.at(i);
+	}
 }
 
-void Menu::init(GraphicsEngine *g)
+void Menu::init(GUI *g, int screenWidth, int screeenHeight)
 {
-	Button start;
-	start._tex = "..\\..\\content\\Textures\\Menygrafik\\button_resume.png";
-	start._hoverTex = "..\\..\\content\\Textures\\Menygrafik\\button_resume_hover.png";
-	start._position = Vec3(112, 100);
-	start._active = true;
-	m_buttons.push_back(start);
+	guiPtr = g;
 
-	Button mid;
-	mid._tex = "..\\..\\content\\Textures\\Menygrafik\\button_resume.png";
-	mid._hoverTex = "..\\..\\content\\Textures\\Menygrafik\\button_resume_hover.png";
-	mid._position = Vec3(112, 250);
-	mid._active = true;
-	m_buttons.push_back(mid);
+	width = screenWidth;
+	height = screeenHeight;
 
-	Button bot;
-	bot._tex = "..\\..\\content\\Textures\\Menygrafik\\button_exit.png";
-	bot._hoverTex = "..\\..\\content\\Textures\\Menygrafik\\button_exit_hover.png";
-	bot._position = Vec3(112, 400);
-	bot._active = true;
-	m_buttons.push_back(bot);
+	oldScaleX = 1.0f;
+	oldScaleY = 1.0f;
 
-	m_bg = "..\\..\\content\\Textures\\Menygrafik\\fyraTreRatio.png";
+	m_bg = g->CreateGUIElementAndBindTexture(Vec3(0, 0), "Menygrafik\\fyraTreRatio.png");
+	g->GetGUIElement(m_bg)->SetVisible(false);
+
+	settingsBox = g->CreateGUIElementAndBindTexture(Vec3(400, 100), "Menygrafik\\bg_settings.png");
+	g->GetGUIElement(settingsBox)->GetDrawInput()->color = XMVectorSet(1.0f, 1.0f, 1.0f, 0.9f);
+	g->GetGUIElement(settingsBox)->GetDrawInput()->scale = XMFLOAT2(40, 40);
+	g->GetGUIElement(settingsBox)->SetVisible(false);
+
+	MenuButton *resume = new MenuButton(g, "Resume", Vec3(30, 100), 240, 100, "button_resume.png", "button_resume_hover.png");
+	resume->setOnClick([this]() {buttonResumeClicked();});
+	m_buttons.push_back(resume);
+
+	MenuButton *fillout = new MenuButton(g, "Exit", Vec3(30, 250), 240, 100, "button_resume.png", "button_resume_hover.png");
+	m_buttons.push_back(fillout);
+
+	MenuButton *exit = new MenuButton(g, "Exit", Vec3(30, 400), 240, 100, "button_exit.png", "button_exit_hover.png");
+	exit->setOnClick([this]() {buttonExitClicked(); });
+	m_buttons.push_back(exit);
+
+	CheckBox *fullScreen = new CheckBox(g, Vec3(500, 400), 20, 20, "checkbox_unchecked.png", "checkbox_checked.png");
+	m_checkboxes.push_back(fullScreen);
 }
 
 bool Menu::isActive()
@@ -49,30 +61,18 @@ void Menu::setActive(bool active)
 {
 	status = MenuStatus::none;
 	m_active = active;
+	setVisible(active);
 }
 
-void Menu::draw(GraphicsEngine *g)
+void Menu::draw()
 {
-	Draw2DInput input;
-	input.pos.x = 0.0f;
-	input.pos.y = 0.0f;
-	g->Draw2DTextureFile(m_bg, &input);
-	for (unsigned int i = 0; i < m_buttons.size(); i++)
-	{
-		Button current = m_buttons.at(i);
-		if (current._active)
-		{
-			if (i == selectedButton)
-				g->Draw2DTextureFile(current._hoverTex, &input);
-			else
-				g->Draw2DTextureFile(current._tex, &input);
-		}
-		input.pos.y += 200.0f;
-	}
+	Vec3 checkBoxPos = m_checkboxes.at(0)->getPosition();
+	guiPtr->printText(L"Set fullscreen", (int)checkBoxPos.X + 50, (int)checkBoxPos.Y, Vec3(1.0f, 1.0f, 1.0f), 1.0f);
 }
 
-void Menu::buttonPressed(unsigned short key)
+void Menu::keyPressed(unsigned short key)
 {
+	int lastSelected = selectedButton;
 	status = MenuStatus::none;
 	bool enter = false;
 	switch (key)
@@ -94,14 +94,94 @@ void Menu::buttonPressed(unsigned short key)
 
 	if (enter)
 	{
-		if (selectedButton == 0)
-			status = MenuStatus::resume;
-		else if (selectedButton == 2)
-			status = MenuStatus::exit;		
+		m_buttons.at(selectedButton)->pressed();
 	}
+	if (lastSelected != selectedButton)
+	{
+		m_buttons.at(lastSelected)->setHighlighted(false);
+		m_buttons.at(selectedButton)->setHighlighted(true);
+	}
+}
+
+void Menu::mousePressed(Vec3 pos)
+{
+	for (auto it = m_buttons.begin(); it != m_buttons.end(); ++it)
+	{
+		(*it)->onMouseClick(pos);
+	}
+	for (auto it = m_checkboxes.begin(); it != m_checkboxes.end(); ++it)
+	{
+		(*it)->onMouseClick(pos);
+	}
+	fullscreen = m_checkboxes[0]->isChecked();
 }
 
 int Menu::getStatus()
 {
 	return status;
+}
+
+void Menu::setVisible(bool visible)
+{
+	guiPtr->GetGUIElement(m_bg)->SetVisible(visible);
+	guiPtr->GetGUIElement(settingsBox)->SetVisible(visible);
+	for (unsigned i = 0; i < m_buttons.size(); i++)
+	{
+		m_buttons.at(i)->setVisible(visible);
+	}
+	for (unsigned i = 0; i < m_checkboxes.size(); i++)
+	{
+		m_checkboxes.at(i)->setVisible(visible);
+	}
+
+	// Highlight the selected button
+	guiPtr->GetGUIElement(m_buttons.at(selectedButton)->getTextureIDs().at(0))->SetVisible(visible);
+}
+
+void Menu::buttonExitClicked()
+{
+	status = MenuStatus::exit;
+}
+void Menu::buttonResumeClicked()
+{
+	status = MenuStatus::resume;
+}
+
+bool Menu::isFullscreen()
+{
+	return fullscreen;
+}
+
+void Menu::onResize(unsigned int width, unsigned int height)
+{
+	float scaleX = ((float)width / 1024);
+	float scaleY = ((float)height / 768);
+
+	for (unsigned i = 0; i < m_buttons.size(); i++)
+	{
+		m_buttons.at(i)->updateScreenRes(width, height);
+	}
+	for (unsigned i = 0; i < m_checkboxes.size(); i++)
+	{
+		m_checkboxes.at(i)->updateScreenRes(width, height);
+	}
+
+	
+	guiPtr->GetGUIElement(m_bg)->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
+	XMFLOAT2 oldPos(400, 100);
+	guiPtr->GetGUIElement(settingsBox)->GetDrawInput()->pos = XMFLOAT2(oldPos.x *scaleX, oldPos.y*scaleY);
+	guiPtr->GetGUIElement(settingsBox)->GetDrawInput()->scale = XMFLOAT2(scaleX*40, scaleY*40);
+
+	this->width = width;
+	this->height = height;
+	oldScaleX = scaleX;
+	oldScaleY = scaleY;
+}
+
+void Menu::onMouseMove(Vec3 mousePos)
+{
+	for (auto it = m_buttons.begin(); it != m_buttons.end(); ++it)
+	{
+		(*it)->onMouseMove(mousePos);
+	}
 }

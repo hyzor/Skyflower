@@ -29,6 +29,7 @@ public:
 
 	void moveforward();
 	float GetSpeed();
+	void SetSpeed(float speed);
 
 private:
 	void startMoveForward(Message const& msg);
