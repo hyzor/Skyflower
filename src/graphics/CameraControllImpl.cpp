@@ -135,16 +135,16 @@ void CameraControllImpl::onMouseMove(float mouseX, float mouseY)
 	if (targetYaw - yaw < 1 && targetYaw - yaw > -1)
 	{
 		if (inverted)
-			targetPitch += mouseY / 250;
-		else
 			targetPitch -= mouseY / 250;
+		else
+			targetPitch += mouseY / 250;
 
 		targetYaw -= mouseX / 350;
 
 	}
 	if (targetPitch > 1)
 		targetPitch = 1;
-	else if (targetPitch < -0.1)
+	else if (targetPitch < -0.1f)
 		targetPitch = -0.1f;  
 
 }
@@ -164,3 +164,4 @@ void CameraControllImpl::SetInverted(bool invert)
 {
 	inverted = invert;
 }
+

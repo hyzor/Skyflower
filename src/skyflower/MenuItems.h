@@ -48,12 +48,11 @@ public:
 		this->origPos = position;
 	}
 	virtual ~MenuItem(){};
-	virtual vector<int> getTextureIDs() = 0;
-	
-	virtual Vec3 getPosition()
-	{
-		return this->position;
-	}
+	virtual void updateScreenRes(unsigned int x, unsigned int y);
+	virtual vector<int> getTextureIDs(){ return this->textureIDs; }
+	virtual void SetPosition(Vec3 pos);
+	virtual void setScale(float x, float y);
+	virtual Vec3 getPosition() { return this->position; }
 
 protected:
 	Vec3 position;
@@ -62,6 +61,7 @@ protected:
 	GUI *guiPtr;
 	int origScreenWidth, origScreenHeigh, originalWidth, originalHeight;
 	Vec3 origPos;
+	vector<int> textureIDs;
 };
 
 class MenuButton : public MenuItem
@@ -70,25 +70,15 @@ public:
 	
 	MenuButton(GUI *gui, Vec3 position, int width, int height, string textureNormal, string textureHover);
 	virtual ~MenuButton();
-	vector<int> getTextureIDs();
 	void setHighlighted(bool highlighted);
 	void onMouseClick(Vec3 mousePos);
 	void onMouseMove(Vec3 mousePos);
 	void pressed();
 	void setVisible(bool state);
 	void setOnClick(const std::function<void()> &handler);
-	void SetPosition(Vec3 pos);
-	void setScale(float x, float y);
-	void updateScreenRes(unsigned int x, unsigned int y);
 
 private:
 	bool highlighted;
-	string text;
-	int textureHoverID;
-	int textureNormalID;
-
-
-	
 	std::function<void()> handler;
 }; 
 
@@ -97,21 +87,31 @@ class CheckBox : public MenuItem
 public:
 	CheckBox(GUI *gui, Vec3 position, int width, int height, string textureNormal, string textureChecked);
 	void setOnClick(const std::function<void()> &handler);
-	vector<int> getTextureIDs();
 	void onMouseClick(Vec3 mousePos);
 	void setVisible(bool state);
 	bool isChecked();
-	void SetPosition(Vec3 pos);
-	void setScale(float x, float y);
-	void updateScreenRes(unsigned int x, unsigned int y);
+	
 
 private:
 	std::function<void()> handler;
-
 	bool checked;
-
-	int textureNormalID;
-	int textureCheckedID;
 };
 
+class Slider : public MenuItem
+{
+public:
+	Slider(GUI *gui, Vec3 position, int width, int height, string textureBack, string textureSlider);
+	void setVisible(bool state);
+	void onMouseClick(Vec3 mousePos);
+	void onMouseDown(Vec3 mousePos);
+
+	// Value between 0 - 1
+	float getValue();
+	void setMouseDown(bool state);
+private:
+	Rectangle sliderBounds;
+	bool mouseDown;
+	bool wasClicked;
+	float value;
+};
 #endif 

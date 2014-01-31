@@ -3,14 +3,57 @@
 // Must be included last!
 #include "shared/debug.h"
 
+void MenuItem::updateScreenRes(unsigned int x, unsigned int y)
+{
+	float scaleY, scaleX;
+
+	scaleX = (float)x / origScreenWidth;
+	scaleY = (float)y / origScreenHeigh;
+
+	this->bounds._width = (int)(originalWidth * scaleX);
+	this->bounds._height = (int)(originalHeight * scaleY);
+
+	this->position.X = origPos.X * scaleX;
+	this->position.Y = origPos.Y * scaleY;
+	this->bounds._position = position;
+
+	for (int i = 0; i < textureIDs.size(); i++)
+	{
+		guiPtr->GetGUIElement(textureIDs[i])->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
+		guiPtr->GetGUIElement(textureIDs[i])->GetDrawInput()->pos = XMFLOAT2(position.X, position.Y);
+	}
+
+}
+
+void MenuItem::setScale(float x, float y)
+{
+	for (int i = 0; i < textureIDs.size(); i++)
+	{
+		guiPtr->GetGUIElement(textureIDs[i])->GetDrawInput()->scale = XMFLOAT2(x, y);
+	}
+
+	this->bounds._width = (int)(this->bounds._width * x);
+	this->bounds._height = (int)(this->bounds._height * y);
+}
+
+void MenuItem::SetPosition(Vec3 pos)
+{
+	this->position = pos;
+	this->bounds._position = pos;
+	for (int i = 0; i < textureIDs.size(); i++)
+	{
+		guiPtr->GetGUIElement(textureIDs[i])->GetDrawInput()->pos = XMFLOAT2(pos.X, pos.Y);
+	}
+}
+
 /* Button */
 
 MenuButton::MenuButton(GUI *g, Vec3 position, int width, int height, string textureNormal, string textureHover)
 : MenuItem(g, position, width, height)
 {
-	this->textureNormalID = g->CreateGUIElementAndBindTexture(position, "Menygrafik\\" + textureNormal);
-	this->textureHoverID = g->CreateGUIElementAndBindTexture(position, "Menygrafik\\" + textureHover);
-	g->GetGUIElement(textureNormalID)->SetVisible(false);
+	textureIDs.push_back(g->CreateGUIElementAndBindTexture(position, "Menygrafik\\" + textureNormal));
+	textureIDs.push_back(g->CreateGUIElementAndBindTexture(position, "Menygrafik\\" + textureHover));
+	g->GetGUIElement(textureIDs[0])->SetVisible(false);
 
 	this->handler = []() {};
 }
@@ -19,27 +62,19 @@ MenuButton::~MenuButton()
 {
 } 
 
-vector<int> MenuButton::getTextureIDs()
-{
-	vector<int> ret;
-	ret.push_back(textureHoverID);
-	ret.push_back(textureNormalID);
-	return ret;
-}
-
 void MenuButton::setVisible(bool state)
 {
 	if (state)
 	{
 		if (highlighted)
-			guiPtr->GetGUIElement(textureHoverID)->SetVisible(true);
+			guiPtr->GetGUIElement(textureIDs[1])->SetVisible(true);
 		else
-			guiPtr->GetGUIElement(textureNormalID)->SetVisible(true);
+			guiPtr->GetGUIElement(textureIDs[0])->SetVisible(true);
 	}
 	else
 	{
-		guiPtr->GetGUIElement(textureHoverID)->SetVisible(false);
-		guiPtr->GetGUIElement(textureNormalID)->SetVisible(false);
+		guiPtr->GetGUIElement(textureIDs[1])->SetVisible(false);
+		guiPtr->GetGUIElement(textureIDs[0])->SetVisible(false);
 	}
 }
 
@@ -56,8 +91,8 @@ void MenuButton::onMouseClick(Vec3 mousePos)
 
 void MenuButton::setHighlighted(bool highlighted)
 {
-	guiPtr->GetGUIElement(textureNormalID)->SetVisible(!highlighted);
-	guiPtr->GetGUIElement(textureHoverID)->SetVisible(highlighted);
+	guiPtr->GetGUIElement(textureIDs[0])->SetVisible(!highlighted);
+	guiPtr->GetGUIElement(textureIDs[1])->SetVisible(highlighted);
 }
 
 void MenuButton::setOnClick(const std::function<void()> &handler)
@@ -79,61 +114,17 @@ void MenuButton::onMouseMove(Vec3 mousePos)
 		setHighlighted(false);
 }
 
-void MenuButton::SetPosition(Vec3 pos)
-{
-	this->position = pos;
-	this->bounds._position = pos;
-	guiPtr->GetGUIElement(textureNormalID)->GetDrawInput()->pos = XMFLOAT2(pos.X, pos.Y);
-	guiPtr->GetGUIElement(textureHoverID)->GetDrawInput()->pos = XMFLOAT2(pos.X, pos.Y);
-}
-
-void MenuButton::setScale(float x, float y)
-{
-	guiPtr->GetGUIElement(textureNormalID)->GetDrawInput()->scale = XMFLOAT2(x, y);
-	guiPtr->GetGUIElement(textureHoverID)->GetDrawInput()->scale = XMFLOAT2(x, y);
-	this->bounds._width = (int)(this->bounds._width * x);
-	this->bounds._height = (int)(this->bounds._height * y);
-}
-
-void MenuButton::updateScreenRes(unsigned int x, unsigned int y)
-{
-	float scaleY, scaleX;
-
-	scaleX = (float)x / origScreenWidth;
-	scaleY = (float)y / origScreenHeigh;
-
-	guiPtr->GetGUIElement(textureNormalID)->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
-	guiPtr->GetGUIElement(textureHoverID)->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
-
-	this->bounds._width = (int)(originalWidth * scaleX);
-	this->bounds._height = (int)(originalHeight * scaleY);
-
-	this->position.X = origPos.X * scaleX;
-	this->position.Y = origPos.Y * scaleY;
-	this->bounds._position = position;
-	guiPtr->GetGUIElement(textureNormalID)->GetDrawInput()->pos = XMFLOAT2(position.X, position.Y);
-	guiPtr->GetGUIElement(textureHoverID)->GetDrawInput()->pos = XMFLOAT2(position.X, position.Y);
-}
-
 /* Checkbox */
 
 CheckBox::CheckBox(GUI *g, Vec3 position, int width, int height, string textureNormal, string textureChecked)
 : MenuItem(g, position, width, height)
 {
-	this->textureNormalID = g->CreateGUIElementAndBindTexture(position, "Menygrafik\\" + textureNormal);
-	this->textureCheckedID = g->CreateGUIElementAndBindTexture(position, "Menygrafik\\" + textureChecked);
-	g->GetGUIElement(textureNormalID)->SetVisible(false);
-	g->GetGUIElement(textureCheckedID)->SetVisible(false);
+	this->textureIDs.push_back(g->CreateGUIElementAndBindTexture(position, "Menygrafik\\" + textureNormal));
+	this->textureIDs.push_back(g->CreateGUIElementAndBindTexture(position, "Menygrafik\\" + textureChecked));
+	g->GetGUIElement(textureIDs[0])->SetVisible(false);
+	g->GetGUIElement(textureIDs[1])->SetVisible(false);
 
 	this->handler = []() {};
-}
-
-vector<int> CheckBox::getTextureIDs()
-{
-	vector<int> ret;
-	ret.push_back(textureNormalID);
-	ret.push_back(textureCheckedID);
-	return ret;
 }
 
 void CheckBox::onMouseClick(Vec3 mousePos)
@@ -141,8 +132,8 @@ void CheckBox::onMouseClick(Vec3 mousePos)
 	if (this->bounds._isInside(mousePos))
 	{
 		checked = !checked;
-		guiPtr->GetGUIElement(textureNormalID)->SetVisible(!checked);
-		guiPtr->GetGUIElement(textureCheckedID)->SetVisible(checked);
+		guiPtr->GetGUIElement(textureIDs[0])->SetVisible(!checked);
+		guiPtr->GetGUIElement(textureIDs[1])->SetVisible(checked);
 	}
 	if (handler)
 	{
@@ -159,13 +150,13 @@ void CheckBox::setVisible(bool state)
 {
 	if (state)
 	{
-		guiPtr->GetGUIElement(textureNormalID)->SetVisible(!checked);
-		guiPtr->GetGUIElement(textureCheckedID)->SetVisible(checked);
+		guiPtr->GetGUIElement(textureIDs[0])->SetVisible(!checked);
+		guiPtr->GetGUIElement(textureIDs[1])->SetVisible(checked);
 	}
 	else
 	{
-		guiPtr->GetGUIElement(textureNormalID)->SetVisible(false);
-		guiPtr->GetGUIElement(textureCheckedID)->SetVisible(false);
+		guiPtr->GetGUIElement(textureIDs[0])->SetVisible(false);
+		guiPtr->GetGUIElement(textureIDs[1])->SetVisible(false);
 	}
 }
 
@@ -175,38 +166,72 @@ bool CheckBox::isChecked()
 }
 
 
-void CheckBox::SetPosition(Vec3 pos)
+/* Slider */
+
+Slider::Slider(GUI *gui, Vec3 position, int width, int height, string textureBack, string textureSlider)
+:MenuItem(gui, position, width, height)
 {
-	this->position = pos;
-	this->bounds._position = pos;
-	guiPtr->GetGUIElement(textureNormalID)->GetDrawInput()->pos = XMFLOAT2(pos.X, pos.Y);
-	guiPtr->GetGUIElement(textureCheckedID)->GetDrawInput()->pos = XMFLOAT2(pos.X, pos.Y);
+	mouseDown = false;
+	sliderBounds._position.X = position.X;
+	sliderBounds._position.Y = position.Y - 5.0f;
+
+	sliderBounds._width = 20.0f;
+	sliderBounds._height = 50.0f;
+
+	textureIDs.push_back(gui->CreateGUIElementAndBindTexture(position, "Menygrafik\\" + textureBack));
+	textureIDs.push_back(gui->CreateGUIElementAndBindTexture(sliderBounds._position, "Menygrafik\\" + textureSlider));
+	gui->GetGUIElement(textureIDs[0])->SetVisible(false);
+	gui->GetGUIElement(textureIDs[1])->SetVisible(false);
 }
 
-void CheckBox::setScale(float x, float y)
+void Slider::setVisible(bool state)
 {
-	guiPtr->GetGUIElement(textureNormalID)->GetDrawInput()->scale = XMFLOAT2(x, y);
-	guiPtr->GetGUIElement(textureCheckedID)->GetDrawInput()->scale = XMFLOAT2(x, y);
-	this->bounds._width = (int)(this->bounds._width * x);
-	this->bounds._height = (int)(this->bounds._height * y);
+	guiPtr->GetGUIElement(textureIDs[0])->SetVisible(state);
+	guiPtr->GetGUIElement(textureIDs[1])->SetVisible(state);
 }
 
-void CheckBox::updateScreenRes(unsigned int x, unsigned int y)
+void Slider::onMouseClick(Vec3 mousePos)
 {
-	float scaleY, scaleX;
+	if (bounds._isInside(mousePos))
+	{
+		sliderBounds._position.X = mousePos.X - sliderBounds._width / 2;
+		guiPtr->GetGUIElement(textureIDs[1])->GetDrawInput()->pos.x = mousePos.X - sliderBounds._width / 2;
+		if (sliderBounds._isInside(mousePos))
+			wasClicked = true;
+		else
+			wasClicked = false;
+	}
+	else
+		wasClicked = false;
+}
 
-	scaleX = (float)x / origScreenWidth;
-	scaleY = (float)y / origScreenHeigh;
+void Slider::onMouseDown(Vec3 mousePos)
+{
+	if (wasClicked)
+	{
+		sliderBounds._position.X = mousePos.X;
+		if ((sliderBounds._position.X) > (bounds._position.X + bounds._width))
+		{
+			sliderBounds._position.X = bounds._position.X + bounds._width;
+		}
+		else if (sliderBounds._position.X < bounds._position.X)
+		{
+			sliderBounds._position.X = bounds._position.X;
+		} 
 
-	guiPtr->GetGUIElement(textureNormalID)->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
-	guiPtr->GetGUIElement(textureCheckedID)->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
+		guiPtr->GetGUIElement(textureIDs[1])->GetDrawInput()->pos.x = sliderBounds._position.X - 10;
+	}
+}
 
-	this->bounds._width = (int)(originalWidth * scaleX);
-	this->bounds._height = (int)(originalHeight * scaleY);
+float Slider::getValue()
+{
+	float value = (sliderBounds._position.X - bounds._position.X) / width;
+	return value;
+}
 
-	this->position.X = origPos.X * scaleX;
-	this->position.Y = origPos.Y * scaleY;
-	this->bounds._position = position;
-	guiPtr->GetGUIElement(textureNormalID)->GetDrawInput()->pos = XMFLOAT2(position.X, position.Y);
-	guiPtr->GetGUIElement(textureCheckedID)->GetDrawInput()->pos = XMFLOAT2(position.X, position.Y);
+void Slider::setMouseDown(bool state)
+{
+	mouseDown = state;
+	if (!state)
+		wasClicked = false;
 }

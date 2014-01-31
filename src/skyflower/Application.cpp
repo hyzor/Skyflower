@@ -230,6 +230,12 @@ void Application::updateMenu(float dt)
 	if (!m_menu->isActive())
 		changeGameState(GameState::game);
 
+	if (m_inputHandler->isMouseButtonDown(MouseButton::MouseButtonLeft))
+	{
+		int x, y;
+		m_inputHandler->GetMousePosition(x, y);
+		m_menu->onMouseDown(Vec3(x, y));
+	}
 	m_menu->draw();
 
 	switch (m_menu->getStatus())

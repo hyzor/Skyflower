@@ -48,6 +48,7 @@ public:
 	 Settings getSettings() const;
 	 void onResize(unsigned int width, unsigned int height);
 	 void onMouseMove(Vec3 mousePos);
+	 void onMouseDown(Vec3 mousePos);
 
 private:
 	 bool m_active;
@@ -56,6 +57,7 @@ private:
 	 int settingsBox;
 	 std::vector<MenuButton*> m_buttons;
 	 std::vector<CheckBox*> m_checkboxes;
+	 std::vector<Slider*> m_sliders;
 	 MenuStatus status;
 	 GUI* guiPtr;
 	 Settings settings;

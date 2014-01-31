@@ -17,7 +17,19 @@ Menu::~Menu()
 {
 	for (unsigned i = 0; i < m_buttons.size(); i++)
 	{
-		delete m_buttons.at(i);
+		if (m_buttons.at(i))
+			delete m_buttons.at(i);
+	}
+	for (unsigned i = 0; i < m_checkboxes.size(); i++)
+	{
+		if (m_checkboxes.at(i))
+			delete m_checkboxes.at(i);
+	}
+
+	for (unsigned i = 0; i < m_sliders.size(); i++)
+	{
+		if (m_sliders.at(i))
+			delete m_sliders.at(i);
 	}
 }
 
@@ -55,6 +67,9 @@ void Menu::init(GUI *g, int screenWidth, int screeenHeight)
 
 	CheckBox *mouseInverted = new CheckBox(g, Vec3(430, 420), 20, 20, "checkbox_unchecked.png", "checkbox_checked.png");
 	m_checkboxes.push_back(mouseInverted);
+
+	Slider *volume = new Slider(g, Vec3(430, 350), 150, 40, "slider_back.png", "slider.png");
+	m_sliders.push_back(volume);
 }
 
 bool Menu::isActive()
@@ -121,8 +136,13 @@ void Menu::mousePressed(Vec3 pos)
 	{
 		(*it)->onMouseClick(pos);
 	}
+	for (auto it = m_sliders.begin(); it != m_sliders.end(); ++it)
+	{
+		(*it)->onMouseClick(pos);
+	}
 	settings._isFullscreen = m_checkboxes[0]->isChecked();
 	settings._mouseInverted = m_checkboxes[1]->isChecked();
+	settings._soundVolume = m_sliders[0]->getValue();
 }
 
 int Menu::getStatus()
@@ -142,6 +162,11 @@ void Menu::setVisible(bool visible)
 	{
 		m_checkboxes.at(i)->setVisible(visible);
 	}
+	for (unsigned i = 0; i < m_sliders.size(); i++)
+	{
+		m_sliders.at(i)->setVisible(visible);
+	}
+
 
 	// Highlight the selected button
 	guiPtr->GetGUIElement(m_buttons.at(selectedButton)->getTextureIDs().at(0))->SetVisible(visible);
@@ -174,8 +199,11 @@ void Menu::onResize(unsigned int width, unsigned int height)
 	{
 		m_checkboxes.at(i)->updateScreenRes(width, height);
 	}
+	for (unsigned i = 0; i < m_sliders.size(); i++)
+	{
+		m_sliders.at(i)->updateScreenRes(width, height);
+	}
 
-	
 	guiPtr->GetGUIElement(m_bg)->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
 	XMFLOAT2 oldPos(400, 100);
 	guiPtr->GetGUIElement(settingsBox)->GetDrawInput()->pos = XMFLOAT2(oldPos.x *scaleX, oldPos.y*scaleY);
@@ -191,4 +219,12 @@ void Menu::onMouseMove(Vec3 mousePos)
 	{
 		(*it)->onMouseMove(mousePos);
 	}
+}
+void Menu::onMouseDown(Vec3 mousePos)
+{
+	for (auto it = m_sliders.begin(); it != m_sliders.end(); ++it)
+	{
+		(*it)->onMouseDown(mousePos);
+	}
+	settings._soundVolume = m_sliders[0]->getValue();
 }
