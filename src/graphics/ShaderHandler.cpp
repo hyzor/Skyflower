@@ -1920,6 +1920,8 @@ bool SSAOShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
 
 bool SSAOShader::SetActive(ID3D11DeviceContext* dc)
 {
+	dc->IASetInputLayout(NULL);
+
 	// Set active shaders
 	dc->VSSetShader(mVertexShader, nullptr, 0);
 	dc->PSSetShader(mPixelShader, nullptr, 0);
@@ -2023,6 +2025,8 @@ bool DepthOfFieldCoCShader::Init(ID3D11Device* device, ID3D11InputLayout* inputL
 
 bool DepthOfFieldCoCShader::SetActive(ID3D11DeviceContext* dc)
 {
+	dc->IASetInputLayout(NULL);
+
 	// Set active shaders
 	dc->VSSetShader(mVertexShader, nullptr, 0);
 	dc->PSSetShader(mPixelShader, nullptr, 0);
@@ -2108,6 +2112,8 @@ bool BlurShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
 
 bool BlurShader::SetActive(ID3D11DeviceContext* dc)
 {
+	dc->IASetInputLayout(NULL);
+
 	// Set active shaders
 	dc->VSSetShader(mVertexShader, nullptr, 0);
 	dc->PSSetShader(mPixelShader, nullptr, 0);
@@ -2417,6 +2423,8 @@ bool CompositeShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
 
 bool CompositeShader::SetActive(ID3D11DeviceContext* dc)
 {
+	dc->IASetInputLayout(NULL);
+
 	// Set active shaders
 	dc->VSSetShader(mVertexShader, nullptr, 0);
 	dc->PSSetShader(mPixelShader, nullptr, 0);
