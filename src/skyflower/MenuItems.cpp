@@ -1,5 +1,8 @@
 #include "MenuItems.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 /* Button */
 
 MenuButton::MenuButton(GUI *g, Vec3 position, int width, int height, string textureNormal, string textureHover)

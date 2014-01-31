@@ -1,5 +1,8 @@
 #include "CutScene.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 CutScene* CutScene::self = nullptr;
 
 template <typename T>
@@ -14,6 +17,8 @@ CutScene::CutScene(ScriptHandler* sh, CameraController* camera)
 	this->mCurrentWP = 0;
 	mScriptHandlerPtr = sh;
 	mCameraPtr = camera;
+	mCurrentYaw = 0.0f;
+	mCurrentPitch = 0.0f;
 	done = true;
 	this->Register(sh);
 	
