@@ -10,6 +10,7 @@ MorphModel::MorphModel(ID3D11Device* device, TextureManager* textureMgr, const s
 {
 	std::vector<GenericMaterial> mats;
 
+	mVertexBuffer = nullptr;
 	mIndexBufferFormat = DXGI_FORMAT_R32_UINT;
 	mVertexStride = 0;
 
