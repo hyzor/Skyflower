@@ -2,7 +2,7 @@
 
 /* Button */
 
-MenuButton::MenuButton(GUI *g, string text, Vec3 position, int width, int height, string textureNormal, string textureHover)
+MenuButton::MenuButton(GUI *g, Vec3 position, int width, int height, string textureNormal, string textureHover)
 : MenuItem(g, position, width, height)
 {
 	this->textureNormalID = g->CreateGUIElementAndBindTexture(position, "Menygrafik\\" + textureNormal);

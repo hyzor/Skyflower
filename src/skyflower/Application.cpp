@@ -133,9 +133,9 @@ void Application::Start()
 	mStartTime = GetTime();
 	m_quit = false;
 
-	//changeGameState(GameState::cutScene);
-	//cs = new CutScene(m_entityManager->modules->script, m_camera);
-	//cs->play();
+	changeGameState(GameState::cutScene);
+	cs = new CutScene(m_entityManager->modules->script, m_camera);
+	cs->play();
 
 	while(!m_quit)
 	{
@@ -212,29 +212,31 @@ void Application::Start()
 
 void Application::updateMenu(float dt)
 {
+	// If m has been pressed again
 	if (!m_menu->isActive())
 		changeGameState(GameState::game);
-
 
 	m_menu->draw();
 
 	switch (m_menu->getStatus())
 	{
 	case Menu::resume:
-		if (m_menu->isFullscreen() && !m_graphicsEngine->isFullscreen())
+		if (m_menu->getSettings()._isFullscreen && !m_graphicsEngine->isFullscreen())
 		{
 			m_graphicsEngine->SetFullscreen(true);
 			this->OnWindowResized(1920, 1080);
 		}
-		else if (!m_menu->isFullscreen() && m_graphicsEngine->isFullscreen())
+		else if (!m_menu->getSettings()._isFullscreen && m_graphicsEngine->isFullscreen())
 		{
 			m_graphicsEngine->SetFullscreen(false);
 			this->OnWindowResized(1024, 768);
 		}
 
 		m_menu->setActive(false);
-		changeGameState(GameState::game);
 
+		// Set if mouse is inverted based on if it's been checked in menu
+		m_camera->SetInverted(m_menu->getSettings()._mouseInverted);
+		changeGameState(GameState::game);
 		break;
 	case Menu::exit:
 		m_quit = true;
@@ -247,14 +249,14 @@ void Application::updateCutScene(float dt)
 	m_graphicsEngine->UpdateScene(dt, (float)mGameTime);
 	m_graphicsEngine->DrawScene();
 
-	//cs->update(dt);
+	cs->update(dt);
 
 	if (m_menu->isActive())
 		changeGameState(GameState::menu);
-	/*if (cs->isDone())
+	if (cs->isDone())
 	{
 		changeGameState(GameState::game);
-	}/**/
+	}
 }
 
 void Application::updateGame(float dt, float gameTime, Movement* playerMove)
@@ -434,9 +436,9 @@ void Application::OnKeyDown(unsigned short key)
 			m_menu->setActive(true);
 		}
 		break;
-	/*case VK_SPACE:
+	case VK_SPACE:
 		if (!cs->isDone())
-			cs->quit(); */
+			cs->quit(); 
 	case 'P':
 		m_graphicsEngine->SetPostProcessingEffects(m_graphicsEngine->GetPostProcessingEffects() ^ POST_PROCESSING_SSAO);
 		break;
@@ -452,7 +454,9 @@ void Application::OnKeyDown(unsigned short key)
 		};
 
 		Vec3 position = Vec3(0.0f, 0.0f, 0.0f);
-		m_soundEngine->PlaySound(taunts[rand() % num_taunts], &position.X, 0.25f, true);
+		float volume = 0.25f * m_menu->getSettings()._soundVolume;
+
+		m_soundEngine->PlaySound(taunts[rand() % num_taunts], &position.X, volume, true);
 		break;
 	}
 	case 'Y':

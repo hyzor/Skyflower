@@ -68,7 +68,7 @@ class MenuButton : public MenuItem
 {
 public:
 	
-	MenuButton(GUI *gui, string text, Vec3 position, int width, int height, string textureNormal, string textureHover);
+	MenuButton(GUI *gui, Vec3 position, int width, int height, string textureNormal, string textureHover);
 	virtual ~MenuButton();
 	vector<int> getTextureIDs();
 	void setHighlighted(bool highlighted);

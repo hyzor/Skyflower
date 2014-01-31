@@ -6,11 +6,11 @@ player = 1 --player id
 
 function intro()
 -- syntax: AddPoint(x, y, z, yaw, pitch, time(in seconds))
-	AddPoint(0, 100, -100, 0, 45, 5)
-	AddPoint(180, 150, -120, 0, 45, 5)
-	AddPoint(130, 100, 100, 90, 20, 5)
-	AddPoint(350, 120, 100, 0, 20, 5)
-	AddPoint(500, 200, -50, 0, 45, 5)
+	AddPoint(0, 100, -100, 0, 45, 1)
+	AddPoint(180, 150, -120, 0, 45, 2)
+	AddPoint(130, 100, 100, 90, 20, 2)
+	AddPoint(350, 120, 100, 0, 20, 1)
+	AddPoint(500, 200, -50, 0, 45, 1)
 end
 
 

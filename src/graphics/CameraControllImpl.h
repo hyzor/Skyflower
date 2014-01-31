@@ -7,6 +7,7 @@
 
 #define MAX_ZOOM 20
 #define MIN_ZOOM 60
+#define MAX_CAMERA_DISTANCE 10
 
 class DLL_API CameraControllImpl : CameraController
 {
@@ -21,13 +22,14 @@ public:
 	 void onMouseMove(float mouseX, float mouseY);
 	 void Rotate(float yaw, float pitch);
 	 void Zoom(float d, float speed);
-	 Vec3 GetPosition(); 
-	 Vec3 GetDirection();
+	 Vec3 GetPosition() const; 
+	 Vec3 GetDirection() const;
 	 Vec3 GetLook(); // Look vector
-	 Vec3 GetRight(); // Right vector
-	 Vec3 GetUp(); // Up vector
-	 float GetYaw();
-	 float GetPitch();
+	 Vec3 GetRight() const; // Right vector
+	 Vec3 GetUp() const; // Up vector
+	 float GetYaw() const;
+	 float GetPitch() const;
+	 void SetInverted(bool inverted);
 
 private:
 	Camera* camera;
@@ -41,8 +43,7 @@ private:
 	float targetYaw; // The target yaw. Used in Lerp calculations
 	float targetY; // The Y-pos of the target. Used for Lerp.
 	float targetZoom; 
-
-	float time;
+	bool inverted;
 };
 
 DLL_API CameraController* CreateCameraControll(Camera *c);

@@ -38,6 +38,8 @@ void GUIElement::UploadTextureData(const void* data)
 	this->mTexture->UploadData(data);
 }
 
+/* Text Element */
+
 TextElement::TextElement()
 {
 	this->color = Vec3::Zero();

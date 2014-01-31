@@ -17,16 +17,16 @@ public:
 	//virtual void SetRotation(float x, float z) = 0;
 	virtual void Update(float dt) = 0;
 	virtual void Follow(Vec3 target) = 0; // Set target for the camera to look at and follow
-	virtual Vec3 GetPosition() = 0;
-	virtual Vec3 GetDirection() = 0;
+	virtual Vec3 GetPosition() const = 0;
 	virtual Vec3 GetLook() = 0; // Look vector
-	virtual Vec3 GetRight() = 0; // Right vector
-	virtual Vec3 GetUp() = 0; // Up vector
-	virtual float GetYaw() = 0;
-	virtual float GetPitch() = 0;
+	virtual Vec3 GetRight() const = 0; // Right vector
+	virtual Vec3 GetUp() const = 0; // Up vector
+	virtual float GetYaw() const = 0;
+	virtual float GetPitch() const = 0;
 	virtual void onMouseMove(float mouseX, float mouseY) = 0;
 	virtual void Rotate(float yaw, float pitch) = 0;
 	virtual void Zoom(float, float speed) = 0; // Lowers/Increases the offset to the player
+	virtual void SetInverted(bool invert) = 0;
 };
 
 DLL_API void DestroyCameraController(CameraController* cameraController); // Clean up

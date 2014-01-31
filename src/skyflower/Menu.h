@@ -16,17 +16,12 @@ public:
 		resume,
 		exit
 	};
-	/*struct Button
+	struct Settings
 	{
-		bool _active;
-		string _tex;
-		string _hoverTex;
-		Vec3 _position;
-		Button() : _active(false), _tex(""), _position(Vec3()){}
-		Button(bool active, string tex, string hoverTex, Vec3 pos)
-			: _active(active), _tex(tex), _hoverTex(hoverTex), _position(pos){}
-	}; */
-
+		bool _isFullscreen;
+		bool _mouseInverted;
+		float _soundVolume;
+	};
 public:
 	Menu();
 	void init(GUI *g, int screenWidth, int screeenHeight);
@@ -50,7 +45,7 @@ public:
 	 // Events
 	 void buttonResumeClicked();
 	 void buttonExitClicked();
-	 bool isFullscreen();
+	 Settings getSettings() const;
 	 void onResize(unsigned int width, unsigned int height);
 	 void onMouseMove(Vec3 mousePos);
 
@@ -63,11 +58,11 @@ private:
 	 std::vector<CheckBox*> m_checkboxes;
 	 MenuStatus status;
 	 GUI* guiPtr;
-	 bool fullscreen;
+	 Settings settings;
 private:
 	 void setVisible(bool visible);
 	 int width, height;
-	 float oldScaleX, oldScaleY;
+	 float scaleX, scaleY;
 
 	
 	
