@@ -10,6 +10,8 @@ cbuffer cbPerObject : register(b0)
 
 	// Morph target weights
 	float4 gWeights;
+
+	float4x4 gPrevWorldViewProj;
 };
 
 struct VertexIn
@@ -42,6 +44,9 @@ struct VertexOut
 	float3 NormalW : NORMAL;
 	float2 Tex : TEXCOORD;
 	float4 ShadowPosH : TEXCOORD1;
+
+	float4 CurPosH : CURPOSH;
+	float4 PrevPosH : PREVPOSH;
 };
 
 VertexOut main(VertexIn vIn)
@@ -93,6 +98,9 @@ VertexOut main(VertexIn vIn)
 
 	// Generate projective tex coords to project shadow map onto scene
 	vOut.ShadowPosH = mul(float4(posL, 1.0f), gShadowTransform);
+
+	vOut.CurPosH = vOut.PosH;
+	vOut.PrevPosH = mul(float4(posL, 1.0f), gPrevWorldViewProj);
 
 	return vOut;
 }

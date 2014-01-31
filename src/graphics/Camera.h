@@ -21,6 +21,8 @@ public:
 	void SetDirection(Vec3 direction);
 	void Rotate(float yaw, float pitch);
 
+	void SetPrevViewProj(XMMATRIX& prevViewProj);
+
 	// Get functions
 	XMVECTOR GetRightXM() const;
 	XMFLOAT3 GetRight() const;
@@ -48,6 +50,8 @@ public:
 	XMMATRIX GetOrthoMatrix() const;
 	XMMATRIX GetBaseViewMatrix() const;
 	XMMATRIX GetWorldMatrix() const;
+
+	XMMATRIX GetPreviousViewProj() const;
 
 	// Get near and far plane dimensions in view space coordinates
 	float GetNearWindowWidth() const;
@@ -83,6 +87,8 @@ private:
 	XMFLOAT4X4 mOrthographicProj; // 2D Projection matrix
 	XMFLOAT4X4 mBaseView; // Base view matrix
 	XMFLOAT4X4 mWorld;
+
+	XMFLOAT4X4 mPrevViewProj;
 
 	// Frustum cache
 	float mNearZ;

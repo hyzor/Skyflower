@@ -1531,6 +1531,11 @@ void BasicDeferredSkinnedShader::SetShadowTransform(XMMATRIX& shadowTransform)
 	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
 }
 
+void BasicDeferredSkinnedShader::SetPrevWorldViewProj(XMMATRIX& prevWorld, XMMATRIX& prevViewProj)
+{
+	mBufferCache.vsPerObjBuffer.prevWorldViewProj = XMMatrixTranspose(XMMatrixMultiply(prevWorld, prevViewProj));
+}
+
 void LightDeferredShader::SetEyePosW(XMFLOAT3 eyePosW)
 {
 	mBufferCache.psPerFrameBuffer.gEyePosW = eyePosW;
@@ -1895,6 +1900,11 @@ void SkyDeferredShader::Update(ID3D11DeviceContext* dc)
 
 	dc->Unmap(vs_cPerFrameBuffer, 0);
 	dc->VSSetConstantBuffers(0, 1, &vs_cPerFrameBuffer);
+}
+
+void SkyDeferredShader::SetPrevWorldViewProj(XMMATRIX& prevWorld, XMMATRIX& prevViewProj)
+{
+	mBufferCache.vsBuffer.prevWorldViewProj = XMMatrixTranspose(XMMatrixMultiply(prevWorld, prevViewProj));
 }
 
 #pragma region SSAOShader
@@ -2319,6 +2329,11 @@ void BasicDeferredMorphShader::SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D
 void BasicDeferredMorphShader::SetShadowTransform(XMMATRIX& shadowTransform)
 {
 	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
+}
+
+void BasicDeferredMorphShader::SetPrevWorldViewProj(XMMATRIX& prevWorld, XMMATRIX& prevViewProj)
+{
+	mBufferCache.vsPerObjBuffer.prevWorldViewProj = XMMatrixTranspose(XMMatrixMultiply(prevWorld, prevViewProj));
 }
 
 ShadowMorphShader::ShadowMorphShader()

@@ -234,6 +234,7 @@ public:
 	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
 
 	void SetWorldViewProj(const XMMATRIX& worldViewProj);
+	void SetPrevWorldViewProj(XMMATRIX& prevWorld, XMMATRIX& prevViewProj);
 	void SetCubeMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* cubeMap);
 
 	void Update(ID3D11DeviceContext* dc);
@@ -242,6 +243,7 @@ private:
 	struct VS_CPERFRAMEBUFFER
 	{
 		XMMATRIX WorldViewProj;
+		XMMATRIX prevWorldViewProj;
 	};
 
 	struct BUFFERCACHE
@@ -536,6 +538,8 @@ public:
 		XMMATRIX& viewProj,
 		XMMATRIX& tex);
 
+	void SetPrevWorldViewProj(XMMATRIX& prevWorld, XMMATRIX& prevViewProj);
+
 	void SetMaterial(const Material& mat);
 	void SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
@@ -557,6 +561,8 @@ private:
 		//XMMATRIX worldViewProjTex;
 		XMMATRIX texTransform;
 		XMMATRIX shadowTransform;
+
+		XMMATRIX prevWorldViewProj;
 	};
 
 	struct VS_CSKINNEDBUFFER
@@ -833,6 +839,8 @@ public:
 		XMMATRIX& viewProj,
 		XMMATRIX& tex);
 
+	void SetPrevWorldViewProj(XMMATRIX& prevWorld, XMMATRIX& prevViewProj);
+
 	void SetMaterial(const Material& mat);
 	void SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
@@ -856,6 +864,8 @@ private:
 		XMMATRIX shadowTransform;
 
 		XMFLOAT4 weights;
+
+		XMMATRIX prevWorldViewProj;
 	};
 
 	struct PS_CPEROBJBUFFER

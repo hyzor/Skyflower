@@ -25,10 +25,13 @@ struct VertexOut
 	float2 Tex : TEXCOORD0;
 	float4 ShadowPosH : TEXCOORD1;
 
-	float4 CurPosH : CURPOSV;
-	float4 PrevPosH : PREVPOSV;
+	float4 CurPosH : CURPOSH;
+	float4 PrevPosH : PREVPOSH;
 
-	float2 Velocity : VELOCITY;
+	//float2 CurPosXY : CURPOSXY;
+	//float2 PrevPosXY : PREVPOSXY;
+
+	//float2 Velocity : VELOCITY;
 };
 
 VertexOut main(VertexIn vIn)
@@ -57,14 +60,21 @@ VertexOut main(VertexIn vIn)
 	//vOut.CurPosV = mul(float4(vOut.PosW, 1.0f), gViewProj);
 	//vOut.PrevPosV = mul(float4(vOut.PosW, 1.0f), gPrevViewProj);
 
+	//float4 CurPosH;
+	//float4 PrevPosH;
+
 	vOut.CurPosH = vOut.PosH;
-	vOut.CurPosH /= vOut.CurPosH.w;
+	//vOut.CurPosH = (vOut.CurPosH.xy / vOut.CurPosH.w) * 0.5f + 0.5f;
 
 	vOut.PrevPosH = mul(float4(vIn.PosL, 1.0f), gPrevWorldViewProj);
-	vOut.PrevPosH /= vOut.PrevPosH.w;
+	//vOut.PrevPosH.xy = (vOut.PrevPosH.xy / vOut.PrevPosH.w) * 0.5f + 0.5f;
+	//vOut.PrevPosH.xy /= vOut.PrevPosH.w;
 
-	vOut.Velocity = vOut.CurPosH - vOut.PrevPosH;
-	vOut.Velocity /= 2.0f;
+	//vOut.Velocity = vOut.CurPosH - vOut.PrevPosH;
+	//vOut.Velocity /= 2.0f;
+
+	//CurPosXY = (CurPosH.xy / CurPosH.w) * 0.5f + 0.5f;
+	//PrevPosXY = (PrevPosH.xy / PrevPosH.w) * 0.5f + 0.5f;
 
 	return vOut;
 }

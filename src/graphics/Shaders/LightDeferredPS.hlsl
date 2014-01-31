@@ -63,6 +63,8 @@ float4 main(VertexOut pIn) : SV_TARGET
 	specular = gSpecularTexture.Sample(samLinear, pIn.Tex);
 	shadowFactor = gDiffuseTexture.Sample(samLinear, pIn.Tex).w;
 	velocity = gVelocityTexture.Sample(samPoint, pIn.Tex).xy;
+	velocity = pow(velocity, 1.0f / 3.0f);
+	velocity = velocity * 2.0f - 1.0f;
 
 	// Pretty ugly, normal texture w component contains a "diffuse multiplier"
 	// which sets the inital lit diffuse color by the unlit diffuse color multiplied with
@@ -111,19 +113,30 @@ float4 main(VertexOut pIn) : SV_TARGET
 	diffuse = diffuse / 4;
 	*/
 
+	/*
 	float3 Blurred = 0;
 	for (int n = 1; n < 12; ++n)
 	{
 		float2 lookUp = velocity * n / 12 + pIn.Tex;
 
-			float4 curColor = gDiffuseTexture.Sample(samPoint, lookUp);
+		float4 curColor = gDiffuseTexture.Sample(samPoint, lookUp);
 
-			Blurred.xyz += curColor.xyz;
+		Blurred.xyz += curColor.xyz;
 	}
 
 	Blurred /= 12;
 
 	diffuse.xyz = Blurred.xyz;
+	*/
+
+	unsigned int numSamples = 32;
+	for (int n = 1; n < numSamples; ++n)
+	{
+		float2 offset = velocity * (float(n) / float(numSamples - 1) - 0.5f);
+		diffuse.xyz += gDiffuseTexture.Sample(samPoint, pIn.Tex + offset);
+	}
+
+	diffuse.xyz /= float(numSamples);
 
 
 

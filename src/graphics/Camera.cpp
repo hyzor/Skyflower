@@ -292,3 +292,13 @@ void Camera::Rotate(float yaw, float pitch)
 
 	XMStoreFloat4x4(&mView, view);
 }
+
+void Camera::SetPrevViewProj(XMMATRIX& prevViewProj)
+{
+	XMStoreFloat4x4(&mPrevViewProj, prevViewProj);
+}
+
+DirectX::XMMATRIX Camera::GetPreviousViewProj() const
+{
+	return XMLoadFloat4x4(&mPrevViewProj);
+}

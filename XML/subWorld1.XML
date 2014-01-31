@@ -26,7 +26,7 @@
     <Entity entityName="ballonPlattform" model="Models\Worlds\Subworld 1\ballonPlattform" id="24" isVisible="1" isCollidible="1" isAnimated="0" xPos="199.477652486" yPos="39.1736969453" zPos="116.23238288" xRot="0.0" yRot="-1.57145119464" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <MoveTarget targetPosX="294" targetPosY="79" targetPosZ="125" duration="5" easingPower="3" continuous="0" />
     </Entity>
-    <Entity entityName="ballonPlattform" model="Models\Worlds\Subworld 1\ballonPlattform" id="25" isVisible="1" isCollidible="1" isAnimated="0" xPos="60.4980955585" yPos="111.0318066" zPos="-24.19353389" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
+    <Entity entityName="ballonPlattform" model="Models\Worlds\Subworld 1\ballonPlattform" id="25" isVisible="1" isCollidible="1" isAnimated="0" xPos="60.4980955585" yPos="110.0318066" zPos="-24.19353389" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <MoveTarget targetPosX="60" targetPosY="6" targetPosZ="-24" duration="5" easingPower = "3" continuous = "1" />
     </Entity>
     <Entity entityName="Puncha" model="Models\Worlds\Subworld 1\Puncha" id="27" isVisible="1" isCollidible="0" isAnimated="0" xPos="334.311318695" yPos="78.4862951289" zPos="171.906910353" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">

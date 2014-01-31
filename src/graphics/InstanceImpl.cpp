@@ -241,3 +241,13 @@ void AnimatedInstanceImpl::SetAnimation(int id)
 		model->PlayAnimationBackwards();
 	
 }
+
+void AnimatedInstanceImpl::SetPrevWorld(XMMATRIX& prevWorld)
+{
+	XMStoreFloat4x4(&mPrevWorld, prevWorld);
+}
+
+DirectX::XMMATRIX AnimatedInstanceImpl::GetPrevWorld()
+{
+	return XMLoadFloat4x4(&mPrevWorld);
+}
