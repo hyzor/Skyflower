@@ -21,6 +21,8 @@ public:
 
 	void activateListener(Message const& msg);
 
+	void setVolume(float volume);
+
 private:
 	Listener *m_listener;
 };

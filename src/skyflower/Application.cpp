@@ -16,6 +16,7 @@ using namespace Cistron;
 
 Application::Application()
 {
+	m_oldVolume = 1.0f;
 }
 
 Application::~Application()
@@ -99,6 +100,7 @@ void Application::Start()
 	m_graphicsEngine->UpdateSceneData();
 	m_entityManager->loadXML("subWorld1Lights.XML");
 	Movement* playerMove = (Movement*)m_entityManager->getComponent("player", "Movement");
+	ListenerComponent* playerListener = (ListenerComponent*)m_entityManager->getComponent("player", "Listener");
 
 	m_showCharts = false;
 
@@ -165,6 +167,14 @@ void Application::Start()
 
 			load = thread(&LevelHandler::LoadQueued, levelHandler);
 			changeGameState(GameState::loading);
+		}
+
+		float volume = m_menu->getSettings()._soundVolume;
+
+		if (m_oldVolume != volume)
+		{
+			playerListener->setVolume(volume);
+			m_oldVolume = volume;
 		}
 
 		switch (gameState)
@@ -454,9 +464,7 @@ void Application::OnKeyDown(unsigned short key)
 		};
 
 		Vec3 position = Vec3(0.0f, 0.0f, 0.0f);
-		float volume = 0.25f * m_menu->getSettings()._soundVolume;
-
-		m_soundEngine->PlaySound(taunts[rand() % num_taunts], &position.X, volume, true);
+		m_soundEngine->PlaySound(taunts[rand() % num_taunts], &position.X, 0.25f, true);
 		break;
 	}
 	case 'Y':

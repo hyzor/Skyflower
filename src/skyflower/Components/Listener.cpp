@@ -73,3 +73,8 @@ void ListenerComponent::activateListener(Message const& msg)
 	Entity *owner = getOwner();
 	owner->getModules()->sound->SetActiveListener(m_listener);
 }
+
+void ListenerComponent::setVolume(float volume)
+{
+	m_listener->SetMasterVolume(volume);
+}
