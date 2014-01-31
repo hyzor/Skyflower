@@ -45,7 +45,7 @@ void Application::Start()
 	m_SSAOcontrast = 3.0f;
 	m_SSAOsigma = 2.0f;
 	m_graphicsEngine->SetSSAOParameters(m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
-	m_graphicsEngine->SetDepthOfFieldFocusPlanes(10.0f, 50.0f, 300.0f, 400.0f);
+	m_graphicsEngine->SetDepthOfFieldFocusPlanes(0.0f, 0.0f, 300.0f, 400.0f);
 
 	m_GUI = new GUI(m_graphicsEngine);
 
