@@ -47,32 +47,37 @@ int CutScene::AddPoint(lua_State* L)
 }
 
 void CutScene::update(float dt)
-{   
-	WayPoint target = mWaypoints.at(mCurrentWP);
-	float distance = (mCameraPtr->GetPosition() - target._position).Length();
-	if (distance < 5.0f)
+{  
+	if (mWaypoints.size() > 0)
 	{
-		mCurrentWP++;
-		if ((unsigned)mCurrentWP >= mWaypoints.size())
+		WayPoint target = mWaypoints.at(mCurrentWP);
+		float distance = (mCameraPtr->GetPosition() - target._position).Length();
+		if (distance < 5.0f)
 		{
-			done = true;
-			mCurrentPitch = 0.0f;
-			mCurrentYaw = 0.0f;
-			mCurrentWP = 0;
-			mWaypoints.clear();
+			mCurrentWP++;
+			if ((unsigned)mCurrentWP >= mWaypoints.size())
+			{
+				done = true;
+				mCurrentPitch = 0.0f;
+				mCurrentYaw = 0.0f;
+				mCurrentWP = 0;
+				mWaypoints.clear();
+			}
+		}
+
+		if (!done)
+		{
+			Vec3 position = mCameraPtr->GetPosition();
+			position = Lerp(position, target._position, dt / target._time);
+			mCurrentYaw = Lerp(mCurrentYaw, target._yaw, dt / target._time);
+			mCurrentPitch = Lerp(mCurrentPitch, target._pitch, dt / target._time);
+
+			mCameraPtr->SetPosition(position);
+			mCameraPtr->Rotate(mCurrentYaw, mCurrentPitch);
 		}
 	}
-
-	if (!done)
-	{
-		Vec3 position = mCameraPtr->GetPosition();
-		position = Lerp(position, target._position, dt / target._time);
-		mCurrentYaw = Lerp(mCurrentYaw, target._yaw, dt / target._time);
-		mCurrentPitch = Lerp(mCurrentPitch, target._pitch, dt/target._time);
-
-		mCameraPtr->SetPosition(position);
-		mCameraPtr->Rotate(mCurrentYaw, mCurrentPitch);
-	}
+	else
+		done = true;
 }
 
 void CutScene::quit()
