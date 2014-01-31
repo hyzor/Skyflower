@@ -157,8 +157,6 @@ Entity::~Entity() {
 	
 	if (mPhysicsEntity)
 		this->modules->physicsEngine->DestroyEntity(mPhysicsEntity);
-
-	delete this->sphere;
 }
 
 void Entity::update(float deltaTime)
