@@ -16,11 +16,6 @@ using namespace Cistron;
 
 Application::Application()
 {
-	m_window = NULL;
-	m_soundEngine = NULL;
-	this->m_entityManager = NULL;
-	m_showCharts = false;
-	cs = NULL;
 }
 
 Application::~Application()
@@ -39,12 +34,6 @@ void Application::Start()
 	m_graphicsEngine = CreateGraphicsEngine();
 	m_graphicsEngine->Init(m_window->GetHandle(), m_window->GetWidth(), m_window->GetHeight(), "../../content/");
 
-	m_GUI = new GUI(m_graphicsEngine);
-
-	m_menu = new Menu();
-	m_menu->init(m_GUI, m_window->GetWidth(), m_window->GetHeight());
-	m_menu->setActive(false);
-
 	// FIXME: Tweaka dessa när vi har en riktig bana i spelet.
 	m_SSAOradius = 0.7f;
 	m_SSAOprojectionFactor = 0.3f;
@@ -53,6 +42,12 @@ void Application::Start()
 	m_SSAOsigma = 2.0f;
 	m_graphicsEngine->SetSSAOParameters(m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
 	m_graphicsEngine->SetDepthOfFieldFocusPlanes(10.0f, 50.0f, 300.0f, 400.0f);
+
+	m_GUI = new GUI(m_graphicsEngine);
+
+	m_menu = new Menu();
+	m_menu->init(m_GUI, m_window->GetWidth(), m_window->GetHeight());
+	m_menu->setActive(false);
 
 	m_soundEngine = CreateSoundEngine("../../content/sounds/");
 	assert(m_soundEngine);
@@ -236,9 +231,10 @@ void Application::updateMenu(float dt)
 			m_graphicsEngine->SetFullscreen(false);
 			this->OnWindowResized(1024, 768);
 		}
+
 		m_menu->setActive(false);
-		
-			changeGameState(GameState::game);
+		changeGameState(GameState::game);
+
 		break;
 	case Menu::exit:
 		m_quit = true;
@@ -271,6 +267,7 @@ void Application::updateGame(float dt, float gameTime, Movement* playerMove)
 	m_graphicsEngine->UpdateScene(dt, gameTime);
 	m_graphicsEngine->DrawScene();
 	m_entityManager->update(dt);
+
 	if (m_menu->isActive())
 		changeGameState(GameState::menu);
 }
@@ -516,5 +513,10 @@ void Application::OnKeyDown(unsigned short key)
 	case 'N':
 		m_SSAOsigma -= 0.5f;
 		m_graphicsEngine->SetSSAOParameters(m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
+
+		printf("radius=%.1f, projection factor=%.1f, bias=%.2f, contrast=%.1f, sigma=%.1f\n", m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
+		break;
+	default:
+		break;
 	}
 }
