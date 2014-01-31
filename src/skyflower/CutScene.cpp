@@ -32,9 +32,9 @@ int CutScene::AddPoint(lua_State* L)
 	int n = lua_gettop(L);
 
 	wp._position = Vec3(lua_tonumber(L, 1), lua_tonumber(L, 2), lua_tonumber(L, 3));
-	wp._yaw = lua_tonumber(L, 4) * (3.14 / 180);
-	wp._pitch = lua_tonumber(L, 5) * (3.14 / 180);
-	wp._time = lua_tonumber(L, 6);
+	wp._yaw = (float)(lua_tonumber(L, 4) * (3.14 / 180));
+	wp._pitch = (float)(lua_tonumber(L, 5) * (3.14 / 180));
+	wp._time = (float)lua_tonumber(L, 6);
 	
 	self->mWaypoints.push_back(wp);
 
@@ -48,7 +48,7 @@ void CutScene::update(float dt)
 	if (distance < 5.0f)
 	{
 		mCurrentWP++;
-		if (mCurrentWP >= mWaypoints.size())
+		if (mCurrentWP >= (int)mWaypoints.size())
 		{
 			done = true;
 			mCurrentPitch = 0.0f;

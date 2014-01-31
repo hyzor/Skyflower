@@ -60,7 +60,8 @@ public:
 	void Draw(GraphicsEngine* gEngine);
 
 	wchar_t* text;
-	float x, y, scale;
+	int x, y;
+	float scale;
 	Vec3 color;
 	
 

@@ -41,8 +41,8 @@ void GUIElement::UploadTextureData(const void* data)
 TextElement::TextElement()
 {
 	this->color = Vec3::Zero();
-	this->x = 0.0f;
-	this->y = 0.0f;
+	this->x = 0;
+	this->y = 0;
 	this->text = nullptr;
 	this->scale = 0.0f;
 }
