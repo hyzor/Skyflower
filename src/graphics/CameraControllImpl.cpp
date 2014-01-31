@@ -18,6 +18,7 @@ CameraControllImpl::CameraControllImpl(Camera *c)
 	pitch = 0;
 	targetPitch = 0;
 	targetYaw = 0;
+	targetY = 0.0f;
 
 	targetZoom = offset;
 	time = 0;
