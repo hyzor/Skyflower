@@ -30,9 +30,9 @@ ModelTreeParent::ModelTreeParent(Vec3 min, Vec3 max) : ModelTreeParent::ModelTre
 
 ModelTreeParent::~ModelTreeParent()
 {
-	if (!left)
+	if (left)
 		delete left;
-	if (!right)
+	if (right)
 		delete right;
 }
 
