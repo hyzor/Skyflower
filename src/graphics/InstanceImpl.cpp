@@ -3,6 +3,7 @@
 ModelInstanceImpl::ModelInstanceImpl(Vec3 pos, Vec3 rot, Vec3 scale)
 {
 	this->isVisible = true;
+	this->type = 0;
 	Set(pos, rot, scale);
 }
 
@@ -99,6 +100,16 @@ Vec3 ModelInstanceImpl::GetScale()
 XMMATRIX ModelInstanceImpl::GetWorld()
 {
 	return XMLoadFloat4x4(&modelWorld);
+}
+
+int ModelInstanceImpl::GetType()
+{
+	return this->type;
+}
+
+void ModelInstanceImpl::SetType(int type)
+{
+	this->type = type;
 }
 
 

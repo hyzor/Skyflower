@@ -1263,6 +1263,11 @@ bool BasicDeferredShader::SetActive(ID3D11DeviceContext* dc)
 	return true;
 }
 
+void BasicDeferredShader::SetType(int type)
+{
+	mBufferCache.psPerObjBuffer.type = type;
+}
+
 void BasicDeferredShader::SetWorldViewProjTex(XMMATRIX& world, XMMATRIX& viewProj, XMMATRIX& tex)
 {
 	mBufferCache.vsPerObjBuffer.world = XMMatrixTranspose(world);

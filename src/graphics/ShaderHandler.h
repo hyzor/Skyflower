@@ -478,6 +478,7 @@ public:
 	void SetMaterial(const Material& mat);
 	void SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetType(int type);
 
 	void UpdatePerObj(ID3D11DeviceContext* dc);
 
@@ -497,6 +498,8 @@ private:
 	struct PS_CPEROBJBUFFER
 	{
 		Material mat;
+		int type;
+		XMFLOAT3 skit;
 	};
 
 	struct BUFFERCACHE

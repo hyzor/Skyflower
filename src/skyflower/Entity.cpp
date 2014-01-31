@@ -57,6 +57,13 @@ Entity::Entity(const Modules *modules, EntityId id, EntityId relativeid, string 
 			this->modelInst->SetRotation(this->rot);
 			this->modelInst->SetScale(this->scale);
 			this->modelInst->SetVisibility(this->isVisible);
+			if (this->type == "cloud")
+				this->modelInst->SetType(1);
+			else if (this->type == "notexture")
+				this->modelInst->SetType(2);
+			else
+				this->modelInst->SetType(0);
+				
 		}
 		else
 		{
@@ -116,6 +123,7 @@ Entity::Entity(const Modules *modules, EntityId id, EntityId relativeid, string 
 	}
 
 	this->sphere = new Sphere(pos, 1.5f);
+
 	/*if (this->type == "player" || this->type == "AI") //fungerar inte
 	{
 		cout << "creating sphere!" << this->type << endl;
@@ -143,6 +151,8 @@ Entity::~Entity() {
 	
 	if (mPhysicsEntity)
 		this->modules->physicsEngine->DestroyEntity(mPhysicsEntity);
+
+	delete this->sphere;
 }
 
 void Entity::update(float deltaTime)

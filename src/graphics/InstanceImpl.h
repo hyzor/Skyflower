@@ -23,6 +23,8 @@ public:
 	void SetRotation(Vec3 rot);
 	void SetScale(Vec3 scale);
 	void Set(Vec3 pos, Vec3 rot, Vec3 scale);
+	int GetType();
+	void SetType(int type);
 
 	XMMATRIX GetWorld();
 
@@ -35,6 +37,7 @@ private:
 	XMFLOAT4X4 modelWorld;
 
 	bool isVisible;
+	int type;
 	Vec3 pos;
 	Vec3 rot;
 	Vec3 scale;
