@@ -1,6 +1,9 @@
 #include <algorithm>
 #include "Vec3.h"
 
+// Must be included last!
+#include "debug.h"
+
 Vec3::Vec3()
 {
 	this->X = 0.0f;

@@ -1,6 +1,9 @@
 #include "Components/Button.h"
 #include "EntityManager.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 void Button::update(float dt)
 {
 	//run first update

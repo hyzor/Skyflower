@@ -1,5 +1,7 @@
 #include "Character.h"
 
+// Must be included last!
+#include "shared/debug.h"
 
 Character::Character(GenericSkinnedModel* model, XMFLOAT3 position)
 {

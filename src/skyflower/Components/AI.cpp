@@ -1,6 +1,9 @@
 #include "Components/AI.h"
 #include "EntityManager.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 void AI::addedToEntity()
 {
 	//cout << "A AI was added to the system." << endl;

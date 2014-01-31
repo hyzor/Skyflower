@@ -8,6 +8,9 @@
 #include "Footsteps.h"
 #include "Entity.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 static const char *footstepSounds[] = {
 	"player/footstep1.wav",
 	"player/footstep2.wav",

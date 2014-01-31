@@ -97,6 +97,8 @@ private:
 	float m_SSAObias;
 	float m_SSAOcontrast;
 	float m_SSAOsigma;
+
+	float m_oldVolume;
 };
 
 #endif

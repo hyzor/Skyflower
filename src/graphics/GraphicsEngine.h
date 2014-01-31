@@ -16,22 +16,6 @@ enum
 
 struct Draw2DInput
 {
-	void* operator new (size_t size)
-	{
-		void* p = _aligned_malloc(size, 16);
-
-		if (!p)
-			throw std::bad_alloc();
-
-		return p;
-	}
-
-	void operator delete (void* p)
-	{
-		Draw2DInput* ptr = static_cast<Draw2DInput*>(p);
-		_aligned_free(p);
-	}
-
 	DirectX::XMFLOAT2 pos;
 	DirectX::XMFLOAT2 scale;
 	DirectX::XMFLOAT2 origin;

@@ -1,5 +1,7 @@
 #include "Direct3D.h"
 
+// Must be included last!
+#include "shared/debug.h"
 
 Direct3D::Direct3D(void)
 {

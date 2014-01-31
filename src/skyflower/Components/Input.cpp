@@ -1,5 +1,8 @@
 #include "Input.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 Input::Input() : Component("Input")
 { 
 }

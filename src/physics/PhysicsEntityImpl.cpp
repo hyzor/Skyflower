@@ -1,5 +1,8 @@
 #include "PhysicsEntityImpl.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 Vec3 PhysicsEntityImpl::mGlobalGravity = Vec3(0.0f, 0.0f, 0.0f);
 
 PhysicsEntityImpl::PhysicsEntityImpl()
@@ -9,7 +12,11 @@ PhysicsEntityImpl::PhysicsEntityImpl()
 	this->mProjectileAngle = 0.0f;
 	this->mDeltaTime = 0.0;
 	this->mVelocity = VELOCITY_DEFAULT;
-	this->mStates = new PhysicsEntityStates();
+
+	this->mStates.isActiveProjectile = false;
+	this->mStates.isBeingPushed = false;
+	this->mStates.isJumping = false;
+	this->mStates.isMoving = false;
 }
 
 PhysicsEntityImpl::PhysicsEntityImpl(Vec3 pos)
@@ -19,7 +26,11 @@ PhysicsEntityImpl::PhysicsEntityImpl(Vec3 pos)
 	this->mProjectileAngle = 0.0f;
 	this->mDeltaTime = 0.0;
 	this->mVelocity = VELOCITY_DEFAULT;
-	this->mStates = new PhysicsEntityStates();
+
+	this->mStates.isActiveProjectile = false;
+	this->mStates.isBeingPushed = false;
+	this->mStates.isJumping = false;
+	this->mStates.isMoving = false;
 }
 
 
@@ -36,7 +47,6 @@ PhysicsEntityImpl::PhysicsEntityImpl(const PhysicsEntityImpl& other)
 
 PhysicsEntityImpl::~PhysicsEntityImpl()
 {
-	delete this->mStates;
 }
 
 void PhysicsEntityImpl::SetGravity(Vec3 gravity)
@@ -110,9 +120,9 @@ void PhysicsEntityImpl::AddGravityCalc(Vec3 &pos, bool addGravity)
 
 bool PhysicsEntityImpl::Jump(Vec3 &pos)
 {
-	if (!this->mStates->isJumping)
+	if (!this->mStates.isJumping)
 	{
-		this->mStates->isJumping = true;
+		this->mStates.isJumping = true;
 		this->mVelocity.Y += JUMP_VELOCITY_DEFAULT;
 
 		pos += this->mVelocity*this->mDeltaTime;
@@ -129,9 +139,9 @@ bool PhysicsEntityImpl::Jump(Vec3 &pos)
 
 bool PhysicsEntityImpl::FireProjectile(Vec3 &pos, Vec3 direction)
 {
-	if (!this->mStates->isActiveProjectile)
+	if (!this->mStates.isActiveProjectile)
 	{
-		this->mStates->isActiveProjectile = true;
+		this->mStates.isActiveProjectile = true;
 		this->mVelocity += direction;
 		return true;
 	}
@@ -143,7 +153,7 @@ bool PhysicsEntityImpl::FireProjectile(Vec3 &pos, Vec3 direction)
 
 bool PhysicsEntityImpl::FireProjectileAt(Vec3 &pos, Vec3 target)
 {
-	if (!this->mStates->isActiveProjectile)
+	if (!this->mStates.isActiveProjectile)
 	{
 		Vec3 delta, projectileVelocity, deltaXZPlane;
 		float initVelocityX, initVelocityY, initVelocityZ,
@@ -189,7 +199,7 @@ bool PhysicsEntityImpl::FireProjectileAt(Vec3 &pos, Vec3 target)
 
 		projectileVelocity = Vec3(initVelocityX, initVelocityY, initVelocityZ);
 
-		this->mStates->isActiveProjectile = true;
+		this->mStates.isActiveProjectile = true;
 		this->mVelocity += projectileVelocity;
 		pos += this->mVelocity * this->mDeltaTime;
 

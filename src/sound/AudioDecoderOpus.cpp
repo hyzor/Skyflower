@@ -11,6 +11,9 @@
 #include "Config.h"
 #include "TaskQueueWin32.h"
 
+// Must be included last!
+#include "debug.h"
+
 struct OpusDecoderContext
 {
 	OggOpusFile *opus;

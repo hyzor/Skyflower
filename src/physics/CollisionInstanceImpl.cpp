@@ -1,5 +1,8 @@
 #include "CollisionInstanceImpl.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 CollisionInstanceImpl::CollisionInstanceImpl(CollisionModel* Model, Vec3 Position)
 {
 	this->Model = Model;

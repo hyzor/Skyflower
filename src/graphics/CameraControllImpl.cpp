@@ -1,6 +1,9 @@
 #include "CameraControllImpl.h"
 #include <DirectXMath.h>
 
+// Must be included last!
+#include "shared/debug.h"
+
 using namespace DirectX;
 
 XMMATRIX rotate;
@@ -18,9 +21,12 @@ CameraControllImpl::CameraControllImpl(Camera *c)
 	pitch = 0;
 	targetPitch = 0;
 	targetYaw = 0;
+	targetY = 0.0f;
 
+	targetY = 0.0f;
+
+	inverted = false;
 	targetZoom = offset;
-	time = 0;
 	camera->LookAt(Vec3::Zero());
 	Vec3 look(camera->GetLook().x, camera->GetLook().y, camera->GetLook().z);
 }
@@ -39,9 +45,21 @@ void CameraControllImpl::Update(float dt)
 		pitch = Lerp(pitch, targetPitch, dt * 5);
 		yaw = Lerp(yaw, targetYaw, dt * 5);
 
+		
+		if (std::abs(targetY - target.Y) > MAX_CAMERA_DISTANCE)
+		{
+			if (targetY < target.Y)
+			{
+				targetY = target.Y - MAX_CAMERA_DISTANCE;
+			}
+			else 
+				targetY = target.Y + MAX_CAMERA_DISTANCE;
+		}
+			
+
 		targetY = Lerp(targetY, target.Y, 2 * dt);
-	
 		target.Y = targetY;
+		 
 		offset = Lerp(offset, targetZoom, 3 * dt);
 		camera->LookAt(target);
 		SetPosition(Vec3(target + (o*offset)));
@@ -54,7 +72,7 @@ void CameraControllImpl::SetDirection(Vec3 direction)
 	this->camera->SetDirection(direction);
 }
 
-Vec3 CameraControllImpl::GetPosition()
+Vec3 CameraControllImpl::GetPosition() const
 {
 	Vec3 pos;
 	pos.X = camera->GetPosition().x;
@@ -68,17 +86,12 @@ void CameraControllImpl::SetPosition(Vec3 pos)
 	camera->SetPosition(XMFLOAT3(pos.X, pos.Y, pos.Z));
 }
 
-Vec3 CameraControllImpl::GetDirection()
-{
-	return Vec3::Zero();
-}
-
 Vec3 CameraControllImpl::GetLook()
 {
 	return o*-1.0f;
 }
 
-Vec3 CameraControllImpl::GetRight()
+Vec3 CameraControllImpl::GetRight() const
 {
 	Vec3 right;
 	right.X = camera->GetRight().x;
@@ -87,7 +100,7 @@ Vec3 CameraControllImpl::GetRight()
 	return right;
 }
 
-Vec3 CameraControllImpl::GetUp()
+Vec3 CameraControllImpl::GetUp() const
 {
 	Vec3 up;
 	up.X = camera->GetUp().x;
@@ -96,12 +109,12 @@ Vec3 CameraControllImpl::GetUp()
 	return up;
 }
 
-float CameraControllImpl::GetYaw()
+float CameraControllImpl::GetYaw() const
 {
 	return yaw;
 }
 
-float CameraControllImpl::GetPitch()
+float CameraControllImpl::GetPitch() const 
 {
 	return pitch;
 }
@@ -121,8 +134,13 @@ void CameraControllImpl::onMouseMove(float mouseX, float mouseY)
 {
 	if (targetYaw - yaw < 1 && targetYaw - yaw > -1)
 	{
+		if (inverted)
+			targetPitch += mouseY / 250;
+		else
+			targetPitch -= mouseY / 250;
+
 		targetYaw -= mouseX / 350;
-		targetPitch -= mouseY / 250;
+
 	}
 	if (targetPitch > 1)
 		targetPitch = 1;
@@ -140,4 +158,9 @@ void CameraControllImpl::Zoom(float d, float speed)
 void CameraControllImpl::Rotate(float yaw, float pitch)
 {
 	camera->Rotate(yaw, pitch);
+}
+
+void CameraControllImpl::SetInverted(bool invert)
+{
+	inverted = invert;
 }

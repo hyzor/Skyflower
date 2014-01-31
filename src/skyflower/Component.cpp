@@ -3,12 +3,13 @@
 #include "EntityManager.h"
 #include "Cistron.h"
 
-using namespace Cistron;
-
-
 #include <sstream>
 #include <iostream>
 
+// Must be included last!
+#include "shared/debug.h"
+
+using namespace Cistron;
 using std::stringstream;
 using namespace std;
 

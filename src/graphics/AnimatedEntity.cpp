@@ -1,5 +1,8 @@
 #include "AnimatedEntity.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 AnimatedEntity::AnimatedEntity( void )
 {
 

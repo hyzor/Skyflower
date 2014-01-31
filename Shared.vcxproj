@@ -136,6 +136,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\shared\debug.h" />
     <ClInclude Include="src\shared\platform.h" />
     <ClInclude Include="src\shared\util.h" />
     <ClInclude Include="src\shared\Vec3.h" />

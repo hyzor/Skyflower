@@ -1,5 +1,8 @@
 #include "ParticleSystem.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 D3D11_SO_DECLARATION_ENTRY GeoStreamOutDesc::ParticleSoDesc[5] =
 {
 	// stream number, semantic name, semantic index, start component, component count, output slot

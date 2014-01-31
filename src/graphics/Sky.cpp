@@ -9,6 +9,9 @@
 #include "Effects.h"
 #include "Vertex.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 Sky::Sky(ID3D11Device* device, TextureManager *textureManager, const std::string& cubeMapFileName, float skySphereRadius)
 {
 	// Create texture

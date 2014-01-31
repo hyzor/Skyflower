@@ -1,6 +1,9 @@
 #include "Sound/SoundEngine.h"
 #include "SoundEngineImpl.h"
 
+// Must be included last!
+#include "debug.h"
+
 DLL_EXPORT SoundEngine *CreateSoundEngine(const std::string &resourceDir)
 {
 	SoundEngineImpl *engine = new SoundEngineImpl();

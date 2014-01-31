@@ -1,6 +1,9 @@
 #include "ModelTree.h"
 #include <iostream>
 
+// Must be included last!
+#include "shared/debug.h"
+
 ModelTreeNode::ModelTreeNode(){ Position = Vec3(); }
 ModelTreeNode::~ModelTreeNode(){}
 ModelTreeLeaf::ModelTreeLeaf() : ModelTreeLeaf::ModelTreeNode() {}
@@ -27,9 +30,9 @@ ModelTreeParent::ModelTreeParent(Vec3 min, Vec3 max) : ModelTreeParent::ModelTre
 
 ModelTreeParent::~ModelTreeParent()
 {
-	if (!left)
+	if (left)
 		delete left;
-	if (!right)
+	if (right)
 		delete right;
 }
 

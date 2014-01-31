@@ -1,6 +1,9 @@
 #include "Components/Event.h"
 #include "EntityManager.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 Cistron::EntityManager* Event::entityManager = nullptr;
 Event* Event::self = nullptr;
 
@@ -356,7 +359,7 @@ int Event::SetSpeed(lua_State* L)
 
 		Entity* entityAi = entityManager->getEntity(aiId);
 
-		entityAi->getComponent<Movement*>("Movement")->SetSpeed(lua_tonumber(L, 2));
+		entityAi->getComponent<Movement*>("Movement")->SetSpeed((float)lua_tonumber(L, 2));
 	}
 
 	return 0;

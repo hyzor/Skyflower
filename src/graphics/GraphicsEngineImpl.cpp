@@ -1,16 +1,19 @@
 #include "GraphicsEngineImpl.h"
 #include "Texture2DImpl.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 GraphicsEngineImpl::GraphicsEngineImpl()
 {
+	mRandom1DTexSRV = nullptr;
+	mParticlesTextureArray = nullptr;
 }
 
 GraphicsEngineImpl::~GraphicsEngineImpl()
 {
-	if (mRandom1DTexSRV)
-		ReleaseCOM(mRandom1DTexSRV);
-	if (mParticlesTextureArray)
-		ReleaseCOM(mParticlesTextureArray);
+	ReleaseCOM(mRandom1DTexSRV);
+	ReleaseCOM(mParticlesTextureArray);
 
 	for (auto& it(mModels.begin()); it != mModels.end(); ++it)
 	{

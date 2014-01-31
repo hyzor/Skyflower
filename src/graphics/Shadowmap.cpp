@@ -6,6 +6,8 @@
 //------------------------------------------------------------------------------------
 #include "ShadowMap.h"
 
+// Must be included last!
+#include "shared/debug.h"
 
 ShadowMap::ShadowMap(ID3D11Device* device, UINT width, UINT height)
 : mDepthMapDSV(0), mDepthMapSRV(0)
