@@ -42,7 +42,7 @@ void Button::update(float dt)
 	}
 
 	//move button animation
-	getOwner()->updateRelativePos(getOwner()->getRelativePos() + (moveTo - getOwner()->getRelativePos()) / (1000*dt));
+	getOwner()->updateRelativePos(getOwner()->getRelativePos() + (moveTo - getOwner()->getRelativePos()) * 10 * dt / getEntityScale().Y);
 }
 
 void Button::Activate(Message const& msg)
