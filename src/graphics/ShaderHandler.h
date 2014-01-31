@@ -638,6 +638,8 @@ public:
 	void SetShadowTransform(XMMATRIX& shadowTransform);
 
 	void SetFogProperties(int enableFogging, float heightFalloff, float heightOffset, float globalDensity, XMFLOAT4 fogColor);
+	void SetMotionBlurProperties(int enableMotionBlur);
+	void SetFpsValues(float curFps, float targetFps);
 
 	void UpdatePerObj(ID3D11DeviceContext* dc);
 	void UpdatePerFrame(ID3D11DeviceContext* dc);
@@ -680,6 +682,11 @@ private:
 		int enableFogging;
 		float fogHeightFalloff, fogHeightOffset, fogGlobalDensity;
 		XMFLOAT4 fogColor;
+
+		int enableMotionBlur;
+		float curFPS;
+		float targetFPS;
+		int padding001;
 
 		XMMATRIX shadowTransform;
 		XMMATRIX cameraViewMatrix;

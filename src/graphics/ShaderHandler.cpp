@@ -1826,6 +1826,17 @@ void LightDeferredShader::SetVelocityTexture(ID3D11DeviceContext* dc, ID3D11Shad
 	dc->PSSetShaderResources(3, 1, &tex);
 }
 
+void LightDeferredShader::SetMotionBlurProperties(int enableMotionBlur)
+{
+	mBufferCache.psPerFrameBuffer.enableMotionBlur = enableMotionBlur;
+}
+
+void LightDeferredShader::SetFpsValues(float curFps, float targetFps)
+{
+	mBufferCache.psPerFrameBuffer.curFPS = curFps;
+	mBufferCache.psPerFrameBuffer.targetFPS = targetFps;
+}
+
 SkyDeferredShader::SkyDeferredShader()
 {
 

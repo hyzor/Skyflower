@@ -329,6 +329,9 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	testSystem1->SetParticleType(ParticleType::PT_FLARE1);
 	mParticleSystems.push_back(testSystem1);
 
+	mCurFPS = 0.0f;
+	mTargetFPS = 60.0f;
+
 	return true;
 }
 
@@ -475,7 +478,10 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mLightDeferredShader->SetCameraViewProjMatrix(mCamera->GetViewMatrix(), mCamera->GetProjMatrix());
 	mShaderHandler->mLightDeferredShader->SetLightWorldViewProj(mShadowMap->GetLightWorld(), mShadowMap->GetLightView(), mShadowMap->GetLightProj());
 	
+	// TODO: Instead of hard coding these properties, get them from some modifiable settings collection
 	mShaderHandler->mLightDeferredShader->SetFogProperties(1, 0.0075f, -150.0f, 0.005f, XMFLOAT4(0.86f, 0.86f, 0.9f, 1.0f));//XMFLOAT4(0.85f, 0.85f, 0.85f, 1.0f));
+	mShaderHandler->mLightDeferredShader->SetMotionBlurProperties(1);
+	mShaderHandler->mLightDeferredShader->SetFpsValues(mCurFPS, mTargetFPS);
 
 	mShaderHandler->mLightDeferredShader->UpdatePerFrame(mD3D->GetImmediateContext());
 
@@ -656,6 +662,8 @@ void GraphicsEngineImpl::DrawScene()
 void GraphicsEngineImpl::UpdateScene(float dt, float gameTime)
 {
 	mGameTime = gameTime;
+	mCurFPS = 1000.0f / dt;
+	mCurFPS = mCurFPS / 1000.0f;
 
 	// Update skinned instances
 	for (size_t i = 0; i < mAnimatedInstances.size(); i++)

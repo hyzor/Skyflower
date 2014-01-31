@@ -1,6 +1,8 @@
 #include "LightDeferredVS.hlsl"
 #include "LightDef.hlsli"
 
+#define MAX_MOTIONBLURSAMPLES 32
+
 cbuffer cLightBuffer : register(b0)
 {
 	PointLight gPointLights[MAX_POINT_LIGHTS];
@@ -22,6 +24,11 @@ cbuffer cLightBuffer : register(b0)
 	float gFogHeightFalloff, gFogHeightOffset, gFogGlobalDensity;
 
 	float4 gFogColor;
+
+	int gEnableMotionBlur;
+	float gCurFps;
+	float gTargetFps;
+	int padding001;
 
 	// Needs cleanup!
 	float4x4 gShadowTransform_PS; // Light: view * projection * toTexSpace
@@ -62,9 +69,6 @@ float4 main(VertexOut pIn) : SV_TARGET
 	normal = gNormalTexture.Sample(samLinear, pIn.Tex).xyz;
 	specular = gSpecularTexture.Sample(samLinear, pIn.Tex);
 	shadowFactor = gDiffuseTexture.Sample(samLinear, pIn.Tex).w;
-	velocity = gVelocityTexture.Sample(samPoint, pIn.Tex).xy;
-	velocity = pow(velocity, 1.0f / 3.0f);
-	velocity = velocity * 2.0f - 1.0f;
 
 	// Pretty ugly, normal texture w component contains a "diffuse multiplier"
 	// which sets the inital lit diffuse color by the unlit diffuse color multiplied with
@@ -100,45 +104,35 @@ float4 main(VertexOut pIn) : SV_TARGET
 	// Microsoft DirectX SDK (June 2010)\Samples\C++\Direct3D\PixelMotionBlur
 	// http://john-chapman-graphics.blogspot.se/2013/01/per-object-motion-blur.html
 
-	/*
-	float2 texCoord = pIn.Tex;
-		texCoord += velocity;
-
-	for (int n = 1; n < 4; ++n, texCoord += velocity)
+	if (gEnableMotionBlur)
 	{
-		float4 curColor = gDiffuseTexture.Sample(samLinear, texCoord);
-		diffuse += curColor;
+		velocity = gVelocityTexture.Sample(samPoint, pIn.Tex).xy;
+		velocity = pow(velocity, 1.0f / 3.0f);
+		velocity = velocity * 2.0f - 1.0f;
+
+		// Velocity scales with the current fps
+		float velocityScale = gCurFps / gTargetFps;
+		velocity *= velocityScale;
+
+		// Get velocity texture dimensions
+		// (This could be sent in to the shader from the outside instead of calculating every time)
+		float2 velocityDimensions;
+		gVelocityTexture.GetDimensions(velocityDimensions.x, velocityDimensions.y);
+		float2 texelSize = 1.0f / velocityDimensions;
+
+		// Figure out how many samples to take
+		float speed = length(velocity / texelSize);
+		unsigned int numMotionBlurSamples = clamp(int(speed), 1, MAX_MOTIONBLURSAMPLES);
+
+		[unroll]
+		for (unsigned int n = 1; n < numMotionBlurSamples; ++n)
+		{
+			float2 offset = velocity * (float(n) / float(numMotionBlurSamples - 1) - 0.5f);
+			diffuse.xyz += gDiffuseTexture.Sample(samPoint, pIn.Tex + offset).xyz;
+		}
+
+		diffuse.xyz /= float(numMotionBlurSamples);
 	}
-
-	diffuse = diffuse / 4;
-	*/
-
-	/*
-	float3 Blurred = 0;
-	for (int n = 1; n < 12; ++n)
-	{
-		float2 lookUp = velocity * n / 12 + pIn.Tex;
-
-		float4 curColor = gDiffuseTexture.Sample(samPoint, lookUp);
-
-		Blurred.xyz += curColor.xyz;
-	}
-
-	Blurred /= 12;
-
-	diffuse.xyz = Blurred.xyz;
-	*/
-
-	unsigned int numSamples = 32;
-	for (int n = 1; n < numSamples; ++n)
-	{
-		float2 offset = velocity * (float(n) / float(numSamples - 1) - 0.5f);
-		diffuse.xyz += gDiffuseTexture.Sample(samPoint, pIn.Tex + offset);
-	}
-
-	diffuse.xyz /= float(numSamples);
-
-
 
 	//--------------------------------------------------
 	// Lighting

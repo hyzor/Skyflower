@@ -152,7 +152,8 @@ private:
 
 	void LoadParticles(std::string particlesPath, std::string particleFileName);
 
-	//XMFLOAT4X4 mPrevViewProjMatrix;
+	float mCurFPS;
+	float mTargetFPS;
 };
 
 #endif
