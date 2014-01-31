@@ -27,6 +27,9 @@ CollisionImpl::CollisionImpl(const std::string &relativePath)
 
 CollisionImpl::~CollisionImpl()
 {
+	for (size_t i = 0; i < instances.size(); i++)
+		delete instances[i];
+
 	for (auto it = models.begin(); it != models.end(); it++)
 		delete it->second;
 }

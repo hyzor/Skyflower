@@ -134,6 +134,10 @@ Entity::~Entity() {
 			delete (*it2);
 		}
 	}*/
+
+	if (sphere)
+		delete sphere;
+
 	if (modelInst)
 		this->modules->graphics->DeleteInstance(this->modelInst);
 
