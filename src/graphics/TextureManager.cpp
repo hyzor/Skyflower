@@ -6,6 +6,9 @@
 
 #include "TextureManager.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 TextureManager::TextureManager(void)
 	: md3dDevice(0)
 {

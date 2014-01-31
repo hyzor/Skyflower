@@ -1,5 +1,8 @@
 #include "Menu.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 Menu::Menu()
 {
 	m_active = false;

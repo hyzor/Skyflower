@@ -1,5 +1,7 @@
 #include "Field.h"
 
+// Must be included last!
+#include "shared/debug.h"
 
 Field::Field(float Weight, float Size, Vec3 Pos, Box safe)
 {

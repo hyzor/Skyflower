@@ -1,6 +1,9 @@
 #include "GraphicsEngineImpl.h"
 #include "Texture2DImpl.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 GraphicsEngineImpl::GraphicsEngineImpl()
 {
 	mRandom1DTexSRV = nullptr;

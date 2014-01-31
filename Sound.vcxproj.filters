@@ -63,6 +63,9 @@
     <ClInclude Include="src\sound\AudioDecoderSineWave.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\sound\debug.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\sound\SoundEngine.cpp">

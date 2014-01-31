@@ -1,5 +1,8 @@
 #include "GenericObjectLoader.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 static std::string GetPathFromFilename(const std::string &filename)
 {
 	size_t location;

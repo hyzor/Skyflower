@@ -1,5 +1,7 @@
 #include "ScriptHandler.h"
 
+// Must be included last!
+#include "shared/debug.h"
 
 ScriptHandler::ScriptHandler()
 {

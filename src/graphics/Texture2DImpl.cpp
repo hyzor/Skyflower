@@ -2,6 +2,9 @@
 
 #include "Texture2DImpl.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 Texture2DImpl::Texture2DImpl(ID3D11Device *d3dDevice, ID3D11DeviceContext *d3dDeviceContext, unsigned int width, unsigned int height, DXGI_FORMAT format, bool renderable)
 {
 	m_d3dDevice = d3dDevice;

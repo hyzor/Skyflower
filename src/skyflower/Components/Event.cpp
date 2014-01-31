@@ -1,6 +1,9 @@
 #include "Components/Event.h"
 #include "EntityManager.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 Cistron::EntityManager* Event::entityManager = nullptr;
 Event* Event::self = nullptr;
 

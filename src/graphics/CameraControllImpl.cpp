@@ -1,6 +1,9 @@
 #include "CameraControllImpl.h"
 #include <DirectXMath.h>
 
+// Must be included last!
+#include "shared/debug.h"
+
 using namespace DirectX;
 
 XMMATRIX rotate;
@@ -18,6 +21,7 @@ CameraControllImpl::CameraControllImpl(Camera *c)
 	pitch = 0;
 	targetPitch = 0;
 	targetYaw = 0;
+	targetY = 0.0f;
 
 	targetY = 0.0f;
 

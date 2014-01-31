@@ -12,7 +12,8 @@
 #include "Health.h"
 #include "Gravity.h"
 
-#include <sstream>
+// Must be included last!
+#include "shared/debug.h"
 
 static const char *fallingSounds[] = {
 	"player/wilhelm_scream.wav",

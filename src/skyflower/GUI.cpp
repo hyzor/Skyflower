@@ -1,6 +1,9 @@
 #include "GUI.h"
 #include "Graphics/Texture2DImpl.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 GUI::GUI(GraphicsEngine *graphics)
 {
 	this->mCurrGUIElementId = 0;
@@ -20,6 +23,7 @@ void GUI::Destroy()
 	for (unsigned int i = 0; i < this->mGUIElements.size(); i++)
 	{
 		this->mGUIElements.at(i)->Destroy(mGraphics);
+		delete this->mGUIElements.at(i);
 	}
 }
 

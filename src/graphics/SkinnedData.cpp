@@ -1,5 +1,8 @@
 #include "SkinnedData.h"
 
+// Must be included last!
+#include "shared/debug.h"
+
 /*
 KeyFrame::KeyFrame()
 	: timePos(0.0f),

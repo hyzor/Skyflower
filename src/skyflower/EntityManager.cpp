@@ -2,11 +2,15 @@
 #include "EntityManager.h"
 #include "ComponentHeaders.h"
 
-using namespace Cistron;
-using namespace tinyxml2;
 #include <iostream>
 #include <cassert>
 #include "shared/Vec3.h"
+
+// Must be included last!
+#include "shared/debug.h"
+
+using namespace Cistron;
+using namespace tinyxml2;
 
 using std::cout;
 using std::endl;
