@@ -169,10 +169,15 @@ void Movement::update(float deltaTime)
 			if (this->p->GetStates()->isJumping || this->isInAir)
 			{
 				DoJumpStuff(totalSpeed);
+				p->RotateRelativeVec3(rot, this->camLook, targetRot);
+				p->Walk(pos, totalSpeed);
+			}
+			else if (!this->p->GetStates()->isJumping && !this->isInAir && this->p->GetVelocity().Y <= 0.0f)
+			{
+				p->RotateRelativeVec3(rot, this->camLook, targetRot);
+				p->Walk(pos, totalSpeed);
 			}
 
-			p->RotateRelativeVec3(rot, this->camLook, targetRot);
-			p->Walk(pos, totalSpeed);
 
 			// If the player is moving, rotate it to match the camera's direction.
 			if (getOwnerId() == 1)
@@ -306,7 +311,14 @@ void Movement::Jump(Message const& msg)
 
 	Vec3 pos = getEntityPos();
 
-	if (p->Jump(pos, this->speed))
+	float forwardJumpSpeed = 0.0f;
+
+	if (this->isMovingBackward || this->isMovingForward || this->isMovingLeft || this->isMovingRight)
+	{
+		forwardJumpSpeed = this->speed;
+	}
+
+	if (p->Jump(pos, forwardJumpSpeed))
 	{
 		//Remember the direction faced when starting the jump
 		if (this->isMovingForward)
