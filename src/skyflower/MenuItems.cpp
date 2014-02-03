@@ -54,7 +54,7 @@ MenuButton::MenuButton(GUI *g, Vec3 position, int width, int height, string text
 	textureIDs.push_back(g->CreateGUIElementAndBindTexture(position, "Menygrafik\\" + textureNormal));
 	textureIDs.push_back(g->CreateGUIElementAndBindTexture(position, "Menygrafik\\" + textureHover));
 	g->GetGUIElement(textureIDs[0])->SetVisible(false);
-
+	this->highlighted = false;
 	this->handler = []() {};
 }
 
@@ -123,7 +123,7 @@ CheckBox::CheckBox(GUI *g, Vec3 position, int width, int height, string textureN
 	this->textureIDs.push_back(g->CreateGUIElementAndBindTexture(position, "Menygrafik\\" + textureChecked));
 	g->GetGUIElement(textureIDs[0])->SetVisible(false);
 	g->GetGUIElement(textureIDs[1])->SetVisible(false);
-
+	this->checked = false;
 	this->handler = []() {};
 }
 
@@ -172,11 +172,13 @@ Slider::Slider(GUI *gui, Vec3 position, int width, int height, string textureBac
 :MenuItem(gui, position, width, height)
 {
 	mouseDown = false;
-	sliderBounds._position.X = position.X;
+	sliderBounds._position.X = position.X + (bounds._width/2);
 	sliderBounds._position.Y = position.Y - 5.0f;
 
 	sliderBounds._width = 20.0f;
 	sliderBounds._height = 50.0f;
+
+
 
 	textureIDs.push_back(gui->CreateGUIElementAndBindTexture(position, "Menygrafik\\" + textureBack));
 	textureIDs.push_back(gui->CreateGUIElementAndBindTexture(sliderBounds._position, "Menygrafik\\" + textureSlider));
