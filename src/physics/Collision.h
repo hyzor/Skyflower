@@ -17,7 +17,7 @@ public:
 	virtual CollisionInstance* CreateCollisionInstance(const std::string &file, Vec3 Position) = 0;
 	virtual void DeleteCollisionInstance(CollisionInstance* ci) = 0;
 
-	virtual std::vector<CollisionInstance*> GetCollisionInstances() = 0;
+	virtual const std::vector<CollisionInstance*> &GetCollisionInstances() = 0;
 };
 
 DLL_API Collision *CreateCollision(const std::string &relativePath);

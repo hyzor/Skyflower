@@ -90,7 +90,7 @@ void CollisionImpl::DeleteCollisionInstance(CollisionInstance* ci)
 	delete ci;
 }
 
-std::vector<CollisionInstance*> CollisionImpl::GetCollisionInstances()
+const std::vector<CollisionInstance*> &CollisionImpl::GetCollisionInstances()
 {
 	return instances;
 }

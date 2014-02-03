@@ -89,11 +89,12 @@ void AI::update(float dt)
 	//check if direction is safe
 	bool safe = false;
 	Collision *collision = getOwner()->getModules()->collision;
+	const std::vector<CollisionInstance *> &collisionInstances = collision->GetCollisionInstances();
 
-	for (size_t i = 0; i < collision->GetCollisionInstances().size(); i++)
+	for (size_t i = 0; i < collisionInstances.size(); i++)
 	{
 		Vec3 p = pos + dir * getOwner()->getComponent<Movement*>("Movement")->GetSpeed()*dt*1.5f;
-		if (collision->GetCollisionInstances()[i]->Test(Ray(p + Vec3(0, 15, 0), Vec3(0, -30, 0))) > 0.0f)
+		if (collisionInstances[i]->Test(Ray(p + Vec3(0, 15, 0), Vec3(0, -30, 0))) > 0.0f)
 		{
 			safe = true;
 			break;

@@ -16,7 +16,7 @@ class CollisionImpl : public Collision
 		CollisionInstance* CreateCollisionInstance(const std::string &file, Vec3 Position);
 		void DeleteCollisionInstance(CollisionInstance* ci);
 
-		std::vector<CollisionInstance*> GetCollisionInstances();
+		const std::vector<CollisionInstance*> &GetCollisionInstances();
 
 	private:
 		std::string relativePath;
