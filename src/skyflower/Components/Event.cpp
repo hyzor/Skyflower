@@ -85,7 +85,7 @@ int Event::PlaySound(lua_State* L)
 	int n = lua_gettop(L);
 	if (n >= 2)
 	{
-		Cistron::EntityId Id = lua_tointeger(L, 1);
+		Cistron::EntityId Id = (Cistron::EntityId)lua_tointeger(L, 1);
 		std::string file = lua_tostring(L, 2);
 
 		Entity* e = entityManager->getEntity(Id);
@@ -104,7 +104,7 @@ int Event::Jump(lua_State* L)
 	int n = lua_gettop(L);
 	if (n >= 1)
 	{
-		Cistron::EntityId Id = lua_tointeger(L, 1);
+		Cistron::EntityId Id = (Cistron::EntityId)lua_tointeger(L, 1);
 
 		entityManager->sendMessageToEntity("Jump", Id);
 	}
@@ -117,7 +117,7 @@ int Event::ChangeLevel(lua_State* L)
 	int n = lua_gettop(L);
 	if (n >= 1)
 	{
-		int level = lua_tointeger(L, 1);
+		int level = (int)lua_tointeger(L, 1);
 		if (level != 0)
 			LevelHandler::GetInstance()->levelCompleted();
 		LevelHandler::GetInstance()->queue(level);
@@ -140,7 +140,7 @@ int Event::Save(lua_State* L)
 	Vec3 pos = player->returnPos();
 	if (n >= 1)
 	{
-		EntityId Id = lua_tointeger(L, 1); 
+		EntityId Id = (Cistron::EntityId)lua_tointeger(L, 1); 
 		
 		Entity* e = entityManager->getEntity(Id);
 		pos = entityManager->getEntityPos(Id);
@@ -164,8 +164,8 @@ int Event::Spawn(lua_State* L)
 
 	if (n >= 2)
 	{
-		EntityId spawnId = lua_tointeger(L, 1);
-		EntityId pointId = lua_tointeger(L, 2);
+		EntityId spawnId = (Cistron::EntityId)lua_tointeger(L, 1);
+		EntityId pointId = (Cistron::EntityId)lua_tointeger(L, 2);
 
 		Entity* spawnEntity = entityManager->getEntity(spawnId);
 		Entity* pointEntity = entityManager->getEntity(pointId);
@@ -196,8 +196,8 @@ int Event::InRange(lua_State* L)
 
 	if (n >= 3)
 	{
-		EntityId aiId = lua_tointeger(L, 1);
-		EntityId targetId = lua_tointeger(L, 2);
+		EntityId aiId = (Cistron::EntityId)lua_tointeger(L, 1);
+		EntityId targetId = (Cistron::EntityId)lua_tointeger(L, 2);
 
 		Entity* entityAi = entityManager->getEntity(aiId);
 		Entity* entityTarget = entityManager->getEntity(targetId);
@@ -217,7 +217,7 @@ int Event::IsActivated(lua_State* L)
 
 	if (n >= 1)
 	{
-		EntityId targetId = lua_tointeger(L, 1);
+		EntityId targetId = (Cistron::EntityId)lua_tointeger(L, 1);
 
 		Entity* entityTarget = entityManager->getEntity(targetId);
 
@@ -236,8 +236,8 @@ int Event::SetTarget(lua_State* L)
 
 	if (n >= 2)
 	{
-		EntityId aiId = lua_tointeger(L, 1);
-		EntityId targetId = lua_tointeger(L, 2);
+		EntityId aiId = (Cistron::EntityId)lua_tointeger(L, 1);
+		EntityId targetId = (Cistron::EntityId)lua_tointeger(L, 2);
 
 		Entity* entityAi = entityManager->getEntity(aiId);
 		Entity* entityTarget = entityManager->getEntity(targetId);
@@ -259,8 +259,8 @@ int Event::IsTouching(lua_State* L)
 
 	if (n >= 2)
 	{
-		EntityId aiId = lua_tointeger(L, 1);
-		EntityId targetId = lua_tointeger(L, 2);
+		EntityId aiId = (Cistron::EntityId)lua_tointeger(L, 1);
+		EntityId targetId = (Cistron::EntityId)lua_tointeger(L, 2);
 
 		Entity* entityAi = entityManager->getEntity(aiId);
 		Entity* entityTarget = entityManager->getEntity(targetId);
@@ -280,8 +280,8 @@ int Event::IsStanding(lua_State* L)
 
 	if (n >= 2)
 	{
-		EntityId aiId = lua_tointeger(L, 1);
-		EntityId targetId = lua_tointeger(L, 2);
+		EntityId aiId = (Cistron::EntityId)lua_tointeger(L, 1);
+		EntityId targetId = (Cistron::EntityId)lua_tointeger(L, 2);
 
 		Entity* entityAi = entityManager->getEntity(aiId);
 		Entity* entityTarget = entityManager->getEntity(targetId);
@@ -301,8 +301,8 @@ int Event::CanPush(lua_State* L)
 
 	if (n >= 2)
 	{
-		EntityId aiId = lua_tointeger(L, 1);
-		EntityId targetId = lua_tointeger(L, 2);
+		EntityId aiId = (Cistron::EntityId)lua_tointeger(L, 1);
+		EntityId targetId = (Cistron::EntityId)lua_tointeger(L, 2);
 
 		Entity* entityAi = entityManager->getEntity(aiId);
 		Entity* entityTarget = entityManager->getEntity(targetId);
@@ -322,8 +322,8 @@ int Event::push(lua_State* L)
 
 	if (n >= 2)
 	{
-		EntityId aiId = lua_tointeger(L, 1);
-		EntityId targetId = lua_tointeger(L, 2);
+		EntityId aiId = (Cistron::EntityId)lua_tointeger(L, 1);
+		EntityId targetId = (Cistron::EntityId)lua_tointeger(L, 2);
 
 		Entity* entityAi = entityManager->getEntity(aiId);
 		Entity* entityTarget = entityManager->getEntity(targetId);
@@ -340,7 +340,7 @@ int Event::pushAll(lua_State* L)
 
 	if (n >= 1)
 	{
-		EntityId aiId = lua_tointeger(L, 1);
+		EntityId aiId = (Cistron::EntityId)lua_tointeger(L, 1);
 
 		Entity* entityAi = entityManager->getEntity(aiId);
 
@@ -356,7 +356,7 @@ int Event::SetSpeed(lua_State* L)
 
 	if (n >= 2)
 	{
-		EntityId aiId = lua_tointeger(L, 1);
+		EntityId aiId = (Cistron::EntityId)lua_tointeger(L, 1);
 
 		Entity* entityAi = entityManager->getEntity(aiId);
 
@@ -372,7 +372,7 @@ int Event::MoveToTarget(lua_State* L)
 
 	assert(n == 1);
 
-	EntityId entityID = lua_tointeger(L, 1);
+	EntityId entityID = (Cistron::EntityId)lua_tointeger(L, 1);
 	Entity *entity = entityManager->getEntity(entityID);
 
 	if (entity)
@@ -392,7 +392,7 @@ int Event::MoveToSpawn(lua_State* L)
 
 	assert(n == 1);
 
-	EntityId entityID = lua_tointeger(L, 1);
+	EntityId entityID = (Cistron::EntityId)lua_tointeger(L, 1);
 	Entity *entity = entityManager->getEntity(entityID);
 
 	if (entity)
@@ -412,7 +412,7 @@ int Event::SetContinous(lua_State* L)
 
 	assert(n == 2);
 
-	EntityId entityID = lua_tointeger(L, 1);
+	EntityId entityID = (Cistron::EntityId)lua_tointeger(L, 1);
 	bool continous = lua_toboolean(L, 2)? true : false;
 	Entity *entity = entityManager->getEntity(entityID);
 

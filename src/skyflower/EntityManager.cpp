@@ -403,7 +403,7 @@ void EntityManager::registerGlobalRequest(ComponentRequest req, RegisteredCompon
 			if (fEntitys[i]->getEntityId() == objId)
 			{
 				if (reg.required && !fEntitys[i]->isFinalized()) {
-					fRequiredComponents[i].push_back(req.name);
+					fRequiredComponents[(EntityId)i].push_back(req.name);
 				}
 				break;
 			}
@@ -1146,9 +1146,9 @@ Entity *EntityManager::getEntity(EntityId id)
 	return nullptr;
 }
 
-EntityId EntityManager::getNrOfEntities()
+int EntityManager::getNrOfEntities()
 {
-	return fEntitys.size();
+	return (int)fEntitys.size();
 }
 
 EntityId EntityManager::getEntityId(int index)
