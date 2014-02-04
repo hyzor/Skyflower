@@ -205,74 +205,76 @@ void LineChart::Draw(double startTime, double endTime, double resolution, double
 	//linePaint.setXfermodeMode(SkXfermode::kSrcOver_Mode);
 	m_canvas->drawLine(0.0f, (SkScalar)targetLinePosition, (SkScalar)m_bitmap->width(), (SkScalar)targetLinePosition, linePaint);
 
-	// Draw the actual data point lines.
-	SkPaint pathPaint;
-	pathPaint.setColor(SkColorSetARGB(255, 127, 219, 255));
-	pathPaint.setStyle(SkPaint::kStroke_Style);
-	pathPaint.setStrokeWidth(1.0f);
-	//pathPaint.setXfermodeMode(SkXfermode::kSrcOver_Mode);
-	pathPaint.setAntiAlias(true);
-	m_canvas->drawPath(path, pathPaint);
+	if (count > 0) {
+		// Draw the actual data point lines.
+		SkPaint pathPaint;
+		pathPaint.setColor(SkColorSetARGB(255, 127, 219, 255));
+		pathPaint.setStyle(SkPaint::kStroke_Style);
+		pathPaint.setStrokeWidth(1.0f);
+		//pathPaint.setXfermodeMode(SkXfermode::kSrcOver_Mode);
+		pathPaint.setAntiAlias(true);
+		m_canvas->drawPath(path, pathPaint);
 
-	// Draw the labels
-	SkPaint textPaint;
-	textPaint.setColor(SkColorSetARGB(255, 255, 255, 255));
-	textPaint.setAntiAlias(true);
-	textPaint.setSubpixelText(true);
-	textPaint.setLCDRenderText(true);
-	textPaint.setTextSize(6.0f);
-	textPaint.setTextAlign(SkPaint::kLeft_Align);
+		// Draw the labels
+		SkPaint textPaint;
+		textPaint.setColor(SkColorSetARGB(255, 255, 255, 255));
+		textPaint.setAntiAlias(true);
+		textPaint.setSubpixelText(true);
+		textPaint.setLCDRenderText(true);
+		textPaint.setTextSize(6.0f);
+		textPaint.setTextAlign(SkPaint::kLeft_Align);
 
-	SkTypeface *typeface = SkTypeface::CreateFromName("courier", SkTypeface::kNormal);
-	textPaint.setTypeface(typeface);
-	typeface->unref();
+		SkTypeface *typeface = SkTypeface::CreateFromName("courier", SkTypeface::kNormal);
+		textPaint.setTypeface(typeface);
+		typeface->unref();
 
-	std::stringstream stringStream;
-	stringStream.precision(1);
-	stringStream << std::fixed << targetValue << m_unit;
-	std::string targetValueString = stringStream.str();
+		std::stringstream stringStream;
+		stringStream.precision(1);
+		stringStream << std::fixed << targetValue << m_unit;
+		std::string targetValueString = stringStream.str();
 
-	stringStream.str("");
-	stringStream << std::fixed << drawMin - padding << m_unit;
-	std::string lowValueString = stringStream.str();
+		stringStream.str("");
+		stringStream << std::fixed << drawMin - padding << m_unit;
+		std::string lowValueString = stringStream.str();
 
-	stringStream.str("");
-	stringStream << std::fixed << drawMax + padding << m_unit;
-	std::string highValueString = stringStream.str();
+		stringStream.str("");
+		stringStream << std::fixed << drawMax + padding << m_unit;
+		std::string highValueString = stringStream.str();
 
-	stringStream.str("");
-	stringStream << "Min:" << std::fixed << minValue << m_unit;
-	std::string minValueString = stringStream.str();
+		stringStream.str("");
+		stringStream << "Min:" << std::fixed << minValue << m_unit;
+		std::string minValueString = stringStream.str();
 
-	stringStream.str("");
-	stringStream << "Max:" << std::fixed << maxValue << m_unit;
-	std::string maxValueString = stringStream.str();
+		stringStream.str("");
+		stringStream << "Max:" << std::fixed << maxValue << m_unit;
+		std::string maxValueString = stringStream.str();
 
-	stringStream.str("");
-	stringStream << "Avg:" << std::fixed << (totalValue / count) << m_unit;
-	std::string averageValueString = stringStream.str();
+		stringStream.str("");
+		stringStream << "Avg:" << std::fixed << (totalValue / count) << m_unit;
+		std::string averageValueString = stringStream.str();
 
-	stringStream.str("");
-	stringStream << "Cur:" << std::fixed << value << m_unit;
-	std::string currentValueString = stringStream.str();
+		stringStream.str("");
+		stringStream << "Cur:" << std::fixed << value << m_unit;
+		std::string currentValueString = stringStream.str();
 
-	// Draw the labels.
-	float textPadding = 10.0f;
-	float textPosition = textPadding;
-	m_canvas->drawText(currentValueString.c_str(), currentValueString.length(), 0.0f, textPosition, textPaint);
-	textPosition += textPadding;
-	m_canvas->drawText(averageValueString.c_str(), averageValueString.length(), 0.0f, textPosition, textPaint);
-	textPosition += textPadding;
-	m_canvas->drawText(minValueString.c_str(), minValueString.length(), 0.0f, textPosition, textPaint);
-	textPosition += textPadding;
-	m_canvas->drawText(maxValueString.c_str(), maxValueString.length(), 0.0f, textPosition, textPaint);
+		// Draw the labels.
+		float textPadding = 10.0f;
+		float textPosition = textPadding;
+		m_canvas->drawText(currentValueString.c_str(), currentValueString.length(), 0.0f, textPosition, textPaint);
+		textPosition += textPadding;
+		m_canvas->drawText(averageValueString.c_str(), averageValueString.length(), 0.0f, textPosition, textPaint);
+		textPosition += textPadding;
+		m_canvas->drawText(minValueString.c_str(), minValueString.length(), 0.0f, textPosition, textPaint);
+		textPosition += textPadding;
+		m_canvas->drawText(maxValueString.c_str(), maxValueString.length(), 0.0f, textPosition, textPaint);
 
-	textPaint.setTextAlign(SkPaint::kRight_Align);
+		textPaint.setTextAlign(SkPaint::kRight_Align);
 
-	// Draw the target label at the end of the chart just above the target line.
-	//m_canvas->drawText(targetValueString.c_str(), targetValueString.length(), (float)m_bitmap->width(), targetLinePosition - (textPadding / 2.0f), textPaint);
+		// Draw the target label at the end of the chart just above the target line.
+		//m_canvas->drawText(targetValueString.c_str(), targetValueString.length(), (float)m_bitmap->width(), targetLinePosition - (textPadding / 2.0f), textPaint);
 
-	// Draw the high and low values.
-	m_canvas->drawText(highValueString.c_str(), highValueString.length(), (SkScalar)m_bitmap->width(), 9.0f, textPaint);
-	m_canvas->drawText(lowValueString.c_str(), lowValueString.length(), (SkScalar)m_bitmap->width(), m_bitmap->height() - 1.0f, textPaint);
+		// Draw the high and low values.
+		m_canvas->drawText(highValueString.c_str(), highValueString.length(), (SkScalar)m_bitmap->width(), 9.0f, textPaint);
+		m_canvas->drawText(lowValueString.c_str(), lowValueString.length(), (SkScalar)m_bitmap->width(), m_bitmap->height() - 1.0f, textPaint);
+	}
 }

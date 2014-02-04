@@ -162,7 +162,11 @@ void Application::Start()
 		mGameTime = time - mStartTime;
 
 		frameTimeChart.AddPoint(time, deltaTime * 1000.0);
-		fpsChart.AddPoint(time, 1.0 / deltaTime);
+
+		// Make the fps chart more readable by ignoring delta times smaller than half a millisecond.
+		if (deltaTime > 0.0005)
+			fpsChart.AddPoint(time, 1.0 / deltaTime);
+
 		memoryChart.AddPoint(time, GetMemoryUsage() / (1024.0 * 1024.0));
 
 		if (m_showCharts && time >= nextChartUpdate) {
