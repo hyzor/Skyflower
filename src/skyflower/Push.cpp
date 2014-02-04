@@ -91,5 +91,5 @@ void Push::push(Entity* target)
 void Push::pushAll()
 {
 	for (int j = 0; j < getEntityManager()->getNrOfEntities(); j++)
-		push(getEntityManager()->getEntity(getEntityManager()->getEntityId(j)));
+		push(getEntityManager()->getEntityByIndex(j));
 }

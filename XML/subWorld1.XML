@@ -42,7 +42,6 @@
 		<Messenger />
         <Button/>
         <Event script="btnStair"/> 
-		<Movement speed="20" />
     </Entity>
     
     <Entity entityName="ballonPlattform" model="Models\Worlds\Subworld 1\ballonPlattform" id="24" isVisible="1" isCollidible="1" isAnimated="0" xPos="199.477652486" yPos="39.1736969453" zPos="116.23238288" xRot="0.0" yRot="-1.57145119464" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">

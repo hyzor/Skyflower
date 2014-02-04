@@ -18,6 +18,7 @@ public:
 	GravityComponent() : Component("Gravity")
 	{
 		this->enabled = true;
+
 	}
 
 	virtual ~GravityComponent()
@@ -27,6 +28,8 @@ public:
 	void addedToEntity()
 	{
 		this->p = getOwner()->getPhysics();
+
+		createRays();
 	}
 
 	void removeFromEntity()
@@ -34,13 +37,7 @@ public:
 		this->p = NULL;
 	}
 
-	void update(float deltaTime)
-	{
-		Vec3 pos = getEntityPos();
-		this->p->AddGravityCalc(pos, this->enabled);
-
-		updateEntityPos(pos);
-	}
+	void update(float deltaTime);
 
 	void setEnabled(bool enabled)
 	{
@@ -55,6 +52,13 @@ public:
 private:
 	PhysicsEntity* p;
 	bool enabled;
+
+	vector<Ray> groundRays;
+	vector<Ray> wallRays;
+
+	float testMove(Ray r, Entity* e, Entity* &out);
+
+	void createRays();
 };
 
 #endif

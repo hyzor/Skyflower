@@ -180,13 +180,13 @@ class EntityManager {
 		Entity *getEntity(EntityId id);
 		EntityId getNrOfEntities();
 		EntityId getEntityId(int index);
+		Entity* getEntityByIndex(int index);
 
 		void updateEntityPos(Vec3 pos, EntityId id);
 		void updateEntityRot(Vec3 rot, EntityId id);
 		void updateEntityScale(Vec3 scale, EntityId id);
 		void updateEntityVisibility(bool isVisible, EntityId id);
 
-		void handleCollision();
 		void updateSpheres();
 
 		void activateEntity(int entityIndex);
@@ -269,8 +269,6 @@ class EntityManager {
 		std::tr1::unordered_map<ComponentId, list<ComponentRequest> > fRequestsByComponentId;
 
 
-		float testMove(Ray r, Entity* e);
-		float testMove(Ray r, Entity* e, Entity* &out);
 
 
 		/**

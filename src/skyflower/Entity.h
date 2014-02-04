@@ -74,6 +74,7 @@ class Entity {
 
 		void updateRot(Vec3 rot);
 
+		PhysicsEntity* mPhysicsEntity;
 		EntityId fId;
 
 		void ActiveteField(bool b);
@@ -89,7 +90,6 @@ class Entity {
 		bool isActive;
 		ModelInstance* modelInst;
 		AnimatedInstance* AnimInst;
-		PhysicsEntity* mPhysicsEntity;
 		bool isAnimated;
 		bool isCollidible;
 
