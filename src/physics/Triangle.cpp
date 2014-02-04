@@ -22,17 +22,18 @@ float Triangle::Test(Triangle &t, Ray &r)
 {
 	Vec3 edge1 = t.P2 - t.P1;
 	Vec3 edge2 = t.P3 - t.P1;
-	Vec3 pvec = r.Dir.Cross(edge2);
+	Vec3 pvec = r.GetDir().Cross(edge2);
 	float det = edge1.Dot(pvec);
 	if (det == 0) 
 		return 0;
 	float invDet = 1 / det;
-	Vec3 tvec = r.Pos - t.P1;
+	Vec3 tvec = r.GetPos();
+	tvec -= t.P1;
 	float u = tvec.Dot(pvec) * invDet;
 	if (u < 0 || u > 1) 
 		return 0;
 	Vec3 qvec = tvec.Cross(edge1);
-	float v = r.Dir.Dot(qvec) * invDet;
+	float v = r.GetDir().Dot(qvec) * invDet;
 	if (v < 0 || u + v > 1)
 		return 0;
 	float t2 = edge2.Dot(qvec) * invDet;

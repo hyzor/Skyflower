@@ -25,31 +25,41 @@ float CollisionInstanceImpl::Test(Ray r)
 {
 	if (this->_isActive)
 	{
-		r.Pos -= Position; //translate ray instead of all triangles
+		//transform ray instead of all triangles
+		Vec3 rPos = r.GetPos();
+		Vec3 rDir = r.GetDir();
 
-		Vec3 p = r.Pos;
-		p.X = r.Pos.Dot(rot1Inv);
-		p.Y = r.Pos.Dot(rot2Inv);
-		p.Z = r.Pos.Dot(rot3Inv);
-		r.Pos = p;
+		rPos -= Position; 
 
-		Vec3 d = r.Dir;
-		d.X = r.Dir.Dot(rot1Inv);
-		d.Y = r.Dir.Dot(rot2Inv);
-		d.Z = r.Dir.Dot(rot3Inv);
-		r.Dir = d;
+		Vec3 p = rPos;
+		p.X = rPos.Dot(rot1Inv);
+		p.Y = rPos.Dot(rot2Inv);
+		p.Z = rPos.Dot(rot3Inv);
+		rPos = p;
 
-		r.Pos *= Vec3(1, 1, -1);
-		r.Dir *= Vec3(1, 1, -1);
+		Vec3 d = rDir;
+		d.X = rDir.Dot(rot1Inv);
+		d.Y = rDir.Dot(rot2Inv);
+		d.Z = rDir.Dot(rot3Inv);
+		rDir = d;
 
-		r.Pos *= scaleInv;
-		r.Dir *= scaleInv;
-		if (!Model->GetTree())
+		rPos *= Vec3(1, 1, -1);
+		rDir *= Vec3(1, 1, -1);
+
+		rPos *= scaleInv;
+		rDir *= scaleInv;
+
+		r.Set(rPos, rDir);
+
+		
+		//check bounding box
+		Box rBounds = r.GetBox();
+		if (rBounds.Test(Model->GetBox()))
 		{
-			Box rBounds = r.GetBox();
-			float hit = 0;
-			if (rBounds.Test(Model->GetBox()))
+			//triangle test
+			if (!Model->GetTree())
 			{
+				float hit = 0;
 				for (int i = 0; i < Model->Triangles(); i++)
 				{
 					float t = Model->GetTriangle(i)->Test(r);
@@ -61,14 +71,13 @@ float CollisionInstanceImpl::Test(Ray r)
 							hit = t;
 					}
 				}
+				return hit;
 			}
-			return hit;
-		}
-		else
-			return Model->GetTree()->Test(r);
+			else
+				return Model->GetTree()->Test(r);
+		}		
 	}
-	else
-		return 0;
+	return 0;
 }
 
 bool CollisionInstanceImpl::Test(Triangle t)

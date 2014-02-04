@@ -1301,7 +1301,7 @@ float EntityManager::testMove(Ray r, Entity* e, Entity* &out)
 {
 	//test ray relative to entity
 	Vec3 pos = e->returnPos();
-	r.Pos += pos;
+	r.Set(pos + r.GetPos(), r.GetDir());
 
 	//test collision for other collidible entitis
 	float col = 0;
@@ -1325,12 +1325,14 @@ float EntityManager::testMove(Ray r, Entity* e, Entity* &out)
 	float dir = 0;
 	if (col > 0.5f) //feet
 	{
-		e->updatePos(pos - r.Dir*(1 - col));
+		Vec3 rDir = r.GetDir();
+		e->updatePos(pos - rDir*(1 - col));
 		dir = -1;
 	}
 	else if (col > 0) //head
 	{
-		e->updatePos(pos + r.Dir*(col));
+		Vec3 rDir = r.GetDir();
+		e->updatePos(pos + rDir*(col));
 		dir = 1;
 	}
 

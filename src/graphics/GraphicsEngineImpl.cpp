@@ -30,8 +30,8 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 
 	for (unsigned int i = 0; i < mAnimatedInstances.size(); i++)
 	{
-		/*if (mAnimatedInstances[i])
-			delete mAnimatedInstances[i];*/
+		if (mAnimatedInstances[i])
+			delete mAnimatedInstances[i];
 	}
 
 	for (auto& it(mSkinnedModels.begin()); it != mSkinnedModels.end(); ++it)
@@ -844,6 +844,7 @@ void GraphicsEngineImpl::DeleteInstance(AnimatedInstance* ai)
 				break;
 			}
 		}
+		delete mi->model->mInstance.model;
 		delete mi->model;
 	}
 

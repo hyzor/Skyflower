@@ -1,4 +1,4 @@
-﻿bin/
+bin/
 build/
 content/
 *.fxo*
@@ -31,3 +31,7 @@ Thumbs.db
 *.dll
 *.lib
 *.sbr
+Skyflower_d.psess
+Skyflower_d1.psess
+Skyflower_d140204.vsp
+Skyflower_d2.psess

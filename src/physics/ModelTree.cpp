@@ -133,7 +133,7 @@ float ModelTreeParent::Test(Ray &r)
 	//check side to test
 	bool testright = false;
 	bool testleft = false;
-	int infront = InfrontOfPlane(r.Pos, center, normal);
+	int infront = InfrontOfPlane(r.GetPos(), center, normal);
 	if (infront == 1)
 		testright = true;
 	else if(infront == 0)
@@ -143,7 +143,9 @@ float ModelTreeParent::Test(Ray &r)
 		testright = true;
 		testleft = true;
 	}
-	infront = InfrontOfPlane(r.Pos + r.Dir, center, normal);
+	Vec3 point = r.GetPos();
+	point += r.GetDir();
+	infront = InfrontOfPlane(point, center, normal);
 	if (infront == 1)
 		testright = true;
 	else if(infront == 0)
