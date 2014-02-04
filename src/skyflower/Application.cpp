@@ -17,6 +17,9 @@ using namespace std;
 using namespace tinyxml2;
 using namespace Cistron;
 
+// Evil global variable until we have some kind of configuration system.
+static bool g_quakeSounds = true;
+
 Application::Application()
 {
 	m_oldVolume = 1.0f;
@@ -490,6 +493,7 @@ void Application::OnKeyDown(unsigned short key)
 	case 'O':
 		m_graphicsEngine->SetPostProcessingEffects(m_graphicsEngine->GetPostProcessingEffects() ^ POST_PROCESSING_DOF);
 		break;
+#if 0
 	case 'Y':
 		m_SSAOradius += 0.1f;
 		m_graphicsEngine->SetSSAOParameters(m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
@@ -551,7 +555,26 @@ void Application::OnKeyDown(unsigned short key)
 
 		printf("radius=%.1f, projection factor=%.1f, bias=%.2f, contrast=%.1f, sigma=%.1f\n", m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
 		break;
+#endif
 	default:
 		break;
 	}
+}
+
+std::string GetPlayerSoundFile(const std::string &file)
+{
+	if (!g_quakeSounds)
+		return file;
+
+	size_t pos = file.find_last_of('/');
+	std::string result;
+
+	if (pos != std::string::npos) {
+		result = file.substr(0, pos) + "/quake" + file.substr(pos, std::string::npos);
+	}
+	else {
+		result = file;
+	}
+
+	return result;
 }

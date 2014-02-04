@@ -11,13 +11,13 @@
 #include "Entity.h"
 #include "Health.h"
 #include "Gravity.h"
+#include "Application.h"
 
 // Must be included last!
 #include "shared/debug.h"
 
 static const char *fallingSounds[] = {
-	"player/wilhelm_scream.wav",
-	"quake/falling1.wav"
+	"player/falling1.wav"
 };
 
 Movement::Movement(float speed) : Component("Movement")
@@ -96,7 +96,7 @@ void Movement::update(float deltaTime)
 				
 			if (getOwnerId() == 1)
 			{
-				getOwner()->getModules()->sound->PlaySound(fallingSounds[rand()  % ARRAY_SIZE(fallingSounds)], 0.25f);
+				getOwner()->getModules()->sound->PlaySound(GetPlayerSoundFile(fallingSounds[rand()  % ARRAY_SIZE(fallingSounds)]), 0.25f);
 			}
 		}
 
@@ -306,7 +306,7 @@ void Movement::Jump(Message const& msg)
 			this->timeUntilGravityEnable = MAX_JUMP_KEY_TIME;
 		}
 
-		owner->getModules()->sound->PlaySound("player/jump1.wav", 1.0f, &pos.X);
+		owner->getModules()->sound->PlaySound(GetPlayerSoundFile("player/jump1.wav"), 1.0f, &pos.X);
 	}
 }
 
