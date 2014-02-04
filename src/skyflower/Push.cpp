@@ -6,18 +6,62 @@
 // Must be included last!
 #include "shared/debug.h"
 
+Push::Push() : Component("Push")
+{
+}
+
+Push::~Push()
+{
+}
+
+void Push::addedToEntity()
+{
+	m_isPushingBox = false;
+
+	//requestMessage("inAir", &Push::stopPush);
+	requestMessage("Wall", &Push::stopPush);
+}
+
+void Push::removeFromEntity()
+{
+}
+
 void Push::update(float dt)
 {
 	//push box
 	Entity *pusher = getOwner();
 	Entity *pushedObject = pusher->wall;
+	bool isPushingBox = false;
 
 	if (pushedObject != nullptr)
 	{
 		if (pushedObject->hasComponents("Box"))
 		{
+			isPushingBox = true;
+
 			Vec3 pushedObjectPos = pushedObject->returnPos();
-			Vec3 dir = pushedObjectPos - pusher->returnPos();
+			Vec3 pusherPos = pusher->returnPos();
+			Vec3 dir = pushedObjectPos - pusherPos;
+
+			if (!m_isPushingBox)
+			{
+				// Entity just started pushing box.
+				m_initialPushDirection = dir;
+				m_initialPushDirection.Y = 0.0f;
+				m_initialPushDirection.Normalize();
+			}
+
+			// Make the entity "stick" to the box it is pushing.
+			Vec3 tempDir = dir;
+			tempDir.Y = 0;
+
+			float oldPusherY = pusherPos.Y;
+			pusherPos = pushedObjectPos - m_initialPushDirection * tempDir.Length();
+			pusherPos.Y = oldPusherY;
+
+			pusher->updatePos(pusherPos);
+
+			// Rotate the entity to make it perpendicular to the box it is pushing.
 			Vec3 rotation = Vec3(0.0f, 0.0f, 0.0f);
 
 			if (abs(dir.X) > abs(dir.Z))
@@ -45,9 +89,9 @@ void Push::update(float dt)
 		}
 	}
 
+	m_isPushingBox = isPushingBox;
 
 	//pushAll();
-	
 }
 
 void Push::stopPush(Message const& msg)
