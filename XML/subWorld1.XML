@@ -1,6 +1,6 @@
 <root>
 	<Entity entityName="player" id="1"
-		xPos="290.030637847" yPos="79.7036492634" zPos="152.252250723" 
+		xPos="0.030637847" yPos="10.7036492634" zPos="0.252250723" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="1.0" yScale="1.0" zScale="1.0"
 		model="Models/Player/playerAnimated"
@@ -15,6 +15,12 @@
 			<Pushable />
 			<Health maxHP = "100" />
 	</Entity>
+	
+	
+	
+    <Entity entityName="ballonPlattform" model="Models\Worlds\Subworld 1\ballonPlattform" id="24" isVisible="1" isCollidible="1" isAnimated="0" xPos="199.477652486" yPos="39.1736969453" zPos="116.23238288" xRot="0.0" yRot="-1.57145119464" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
+        <MoveTarget targetPosX="294" targetPosY="79" targetPosZ="125" duration="5" easingPower="3" continuous="0" />
+    </Entity>
 	
     <Entity entityName="plattform1" model="Models\Worlds\Subworld 1\plattform1" id="100" isVisible="1" isCollidible="1" isAnimated="0" xPos="0.0" yPos="0.0" zPos="-0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity entityName="plattform1Cloud" model="Models\Worlds\Subworld 1\plattform1Cloud" id="2" isVisible="1" isCollidible="0" isAnimated="0" xPos="0.0" yPos="0.0" zPos="-0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
@@ -45,9 +51,6 @@
         <Event script="btnStair"/> 
     </Entity>
     
-    <Entity entityName="ballonPlattform" model="Models\Worlds\Subworld 1\ballonPlattform" id="24" isVisible="1" isCollidible="1" isAnimated="0" xPos="199.477652486" yPos="39.1736969453" zPos="116.23238288" xRot="0.0" yRot="-1.57145119464" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
-        <MoveTarget targetPosX="294" targetPosY="79" targetPosZ="125" duration="5" easingPower="3" continuous="0" />
-    </Entity>
     <Entity entityName="ballonPlattform" model="Models\Worlds\Subworld 1\ballonPlattform" id="25" isVisible="1" isCollidible="1" isAnimated="0" xPos="60.4980955585" yPos="110.0318066" zPos="-24.19353389" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <MoveTarget targetPosX="60" targetPosY="6" targetPosZ="-24" duration="5" easingPower = "3" continuous = "1" />
     </Entity>
@@ -97,4 +100,5 @@
     <Entity entityName="movingPlattform" model="Models\Worlds\Subworld 1\movingPlattform" id="10" isVisible="1" isCollidible="1" isAnimated="0" xPos="465.780807633" yPos="-254.173788996" zPos="175.670885517" xRot="0.0" yRot="1.5681321154" zRot="0.0" xScale="1.37679221438" yScale="1.37679221438" zScale="1.37679221438">
         <MoveTarget targetPosX="436" targetPosY="93" targetPosZ="165" duration="3" easingPower="3" continuous="0" />
     </Entity>
+	
 </root>
