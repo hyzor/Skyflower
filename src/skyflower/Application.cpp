@@ -77,8 +77,7 @@ void Application::Start()
 	
 	m_backgroundMusicMenu.push_back("music/ants.opus");
 
-	m_backgroundMusicGame.push_back("music/creepy.opus");
-	//m_backgroundMusicGame.push_back("music/wat.opus");
+	m_backgroundMusicGame.push_back("music/happy_piano.opus");
 
 	m_backgroundMusic = m_soundEngine->CreateSource();
 	m_backgroundMusic->SetRelativeToListener(true);
