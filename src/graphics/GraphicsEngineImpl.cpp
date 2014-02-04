@@ -619,7 +619,6 @@ void GraphicsEngineImpl::DrawScene()
 		{
 			mInstances[i]->SetPrevWorld(mInstances[i]->GetWorld());
 		}
-
 	}
 
 	for (UINT i = 0; i < mAnimatedInstances.size(); ++i)

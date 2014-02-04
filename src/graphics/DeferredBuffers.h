@@ -10,6 +10,7 @@ enum DeferredBuffersIndex
 	Normal,
 	Specular,
 	Velocity,
+	LitScene,
 	Count
 };
 
