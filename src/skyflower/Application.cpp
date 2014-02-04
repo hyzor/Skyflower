@@ -493,6 +493,7 @@ void Application::OnKeyDown(unsigned short key)
 	case 'O':
 		m_graphicsEngine->SetPostProcessingEffects(m_graphicsEngine->GetPostProcessingEffects() ^ POST_PROCESSING_DOF);
 		break;
+#if 0
 	case 'Y':
 		m_SSAOradius += 0.1f;
 		m_graphicsEngine->SetSSAOParameters(m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
@@ -554,6 +555,7 @@ void Application::OnKeyDown(unsigned short key)
 
 		printf("radius=%.1f, projection factor=%.1f, bias=%.2f, contrast=%.1f, sigma=%.1f\n", m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
 		break;
+#endif
 	default:
 		break;
 	}
