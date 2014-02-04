@@ -32,7 +32,6 @@ void Application::Start()
 	m_window->SetListener(this);
 
 	m_inputHandler = m_window->GetInputHandler();
-	m_inputHandler->AddListener(this);
 
 	// Create graphics engine
 	m_graphicsEngine = CreateGraphicsEngine();
@@ -122,6 +121,9 @@ void Application::Start()
 	//Texture2D *memoryChartTexture = m_graphicsEngine->CreateTexture2D(memoryChart.GetWidth(), memoryChart.GetHeight());
 	m_memChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, (float)(frameTimeChart.GetHeight() + 6), 0.0f),
 		m_GUI->CreateTexture2D(memoryChart.GetWidth(), memoryChart.GetHeight()));
+
+	// Don't start listening to input events until everything has been initialized.
+	m_inputHandler->AddListener(this);
 
 	thread load;
 
