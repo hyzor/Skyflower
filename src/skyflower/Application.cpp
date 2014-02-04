@@ -106,20 +106,29 @@ void Application::Start()
 
 	m_showCharts = false;
 
-	// Make the charts hold 60 seconds worth of values at 60fps.
-	size_t chartCapacity = 60 * 60;
+	// Make the charts hold 2 minutes worth of values at 60fps.
+	double chartResolution = 1.0 / 60.0;
+	size_t chartCapacity = (size_t)(120 * (1.0 / chartResolution));
+
 	LineChart frameTimeChart(chartCapacity);
 	frameTimeChart.SetSize(256, 128);
 	frameTimeChart.SetUnit("ms");
 	//Texture2D *frameTimeChartTexture = m_graphicsEngine->CreateTexture2D(frameTimeChart.GetWidth(), frameTimeChart.GetHeight());
 	m_frameChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, 0.0f, 0.0f), 
 		m_GUI->CreateTexture2D(frameTimeChart.GetWidth(), frameTimeChart.GetHeight()));
+	
+	LineChart fpsChart(chartCapacity);
+	fpsChart.SetSize(256, 128);
+	fpsChart.SetUnit("fps");
+	//Texture2D *fpsChartTexture = m_graphicsEngine->CreateTexture2D(fpsChart.GetWidth(), fpsChart.GetHeight());
+	m_fpsChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, (float)(frameTimeChart.GetHeight() + 6), 0.0f),
+		m_GUI->CreateTexture2D(fpsChart.GetWidth(), fpsChart.GetHeight()));
 
 	LineChart memoryChart(chartCapacity);
 	memoryChart.SetSize(256, 128);
 	memoryChart.SetUnit("MiB");
 	//Texture2D *memoryChartTexture = m_graphicsEngine->CreateTexture2D(memoryChart.GetWidth(), memoryChart.GetHeight());
-	m_memChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, (float)(frameTimeChart.GetHeight() + 6), 0.0f),
+	m_memChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, (float)((frameTimeChart.GetHeight() + 6) * 2), 0.0f),
 		m_GUI->CreateTexture2D(memoryChart.GetWidth(), memoryChart.GetHeight()));
 
 	// Don't start listening to input events until everything has been initialized.
@@ -153,15 +162,19 @@ void Application::Start()
 		mGameTime = time - mStartTime;
 
 		frameTimeChart.AddPoint(time, deltaTime * 1000.0);
+		fpsChart.AddPoint(time, 1.0 / deltaTime);
 		memoryChart.AddPoint(time, GetMemoryUsage() / (1024.0 * 1024.0));
 
 		if (m_showCharts && time >= nextChartUpdate) {
 			nextChartUpdate = time + chartUpdateDelay;
 
-			frameTimeChart.Draw(time - chartTime, time, 1.0 / 60.0, (1.0 / 60.0) * 1000.0);
+			frameTimeChart.Draw(time - chartTime, time, chartResolution, (1.0 / 60.0) * 1000.0);
 			m_GUI->UploadData(m_frameChartID, frameTimeChart.GetPixels());
+			
+			fpsChart.Draw(time - chartTime, time, chartResolution, 60.0);
+			m_GUI->UploadData(m_fpsChartID, fpsChart.GetPixels());
 
-			memoryChart.Draw(time - chartTime, time, 1.0 / 100.0, 256.0);
+			memoryChart.Draw(time - chartTime, time, chartResolution, 256.0);
 			m_GUI->UploadData(m_memChartID, memoryChart.GetPixels());
 		}
 
@@ -443,6 +456,7 @@ void Application::OnKeyDown(unsigned short key)
 		m_showCharts = !m_showCharts;
 
 		m_GUI->GetGUIElement(m_frameChartID)->SetVisible(m_showCharts);
+		m_GUI->GetGUIElement(m_fpsChartID)->SetVisible(m_showCharts);
 		m_GUI->GetGUIElement(m_memChartID)->SetVisible(m_showCharts);
 		break;
 	case 'R':

@@ -83,6 +83,7 @@ private:
 
 	bool m_showCharts;
 	int m_frameChartID;
+	int m_fpsChartID;
 	int m_memChartID;
 
 	std::vector<std::string> m_backgroundMusicMenu;
