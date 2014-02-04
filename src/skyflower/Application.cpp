@@ -91,12 +91,12 @@ void Application::Start()
 	setBackgroundMusicList(m_backgroundMusicMenu);
 
 	m_entityManager = new EntityManager("../../XML/", &modules);
-	m_entityManager->loadXML("player.xml");
+	//m_entityManager->loadXML("player.xml");
 
 	levelHandler->init(m_entityManager);
 
 	// Load Hub Level
-	levelHandler->queue(3);
+	levelHandler->queue(4);
 	levelHandler->LoadQueued();
 	m_entityManager->sendMessageToEntity("ActivateListener", "player");
 	m_graphicsEngine->UpdateSceneData();
@@ -180,11 +180,16 @@ void Application::Start()
 
 		if (levelHandler->hasQueuedLevel() && !levelHandler->isLoading())
 		{
-			if (load.joinable())
+			/*if (load.joinable())
 				load.join();
 
-			load = thread(&LevelHandler::LoadQueued, levelHandler);
-			changeGameState(GameState::loading);
+			load = thread(&LevelHandler::LoadQueued, levelHandler); */
+			//changeGameState(GameState::loading);
+			m_graphicsEngine->Clear();
+			m_graphicsEngine->clearLights();
+			m_entityManager->loadXML("subWorld1Lights.XML");
+			levelHandler->LoadQueued();
+			m_graphicsEngine->UpdateSceneData();
 		}
 
 		float volume = m_menu->getSettings()._soundVolume;
@@ -251,21 +256,23 @@ void Application::updateMenu(float dt)
 		m_inputHandler->GetMousePosition(x, y);
 		m_menu->onMouseDown(Vec3(x, y));
 	}
+
+	if (m_menu->getSettings()._isFullscreen && !m_graphicsEngine->isFullscreen())
+	{
+		m_graphicsEngine->SetFullscreen(true);
+		this->OnWindowResized(1920, 1080);
+	}
+	else if (!m_menu->getSettings()._isFullscreen && m_graphicsEngine->isFullscreen())
+	{
+		m_graphicsEngine->SetFullscreen(false);
+		this->OnWindowResized(1024, 768);
+	}
+
 	m_menu->draw();
 
 	switch (m_menu->getStatus())
 	{
 	case Menu::resume:
-		if (m_menu->getSettings()._isFullscreen && !m_graphicsEngine->isFullscreen())
-		{
-			m_graphicsEngine->SetFullscreen(true);
-			this->OnWindowResized(1920, 1080);
-		}
-		else if (!m_menu->getSettings()._isFullscreen && m_graphicsEngine->isFullscreen())
-		{
-			m_graphicsEngine->SetFullscreen(false);
-			this->OnWindowResized(1024, 768);
-		}
 
 		m_menu->setActive(false);
 
@@ -315,9 +322,7 @@ void Application::updateLoading(float dt)
 	input.pos.x = 0.0f;
 	input.pos.y = 0.0f;
 
-	m_graphicsEngine->Begin2D();
-	m_graphicsEngine->Draw2DTextureFile("..\\..\\content\\Textures\\Menygrafik\\fyraTreRatio.png", &input);
-	m_graphicsEngine->End2D();
+	//m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "Menygrafik\\fyraTreRatio.png");
 
 	if (!levelHandler->isLoading())
 		changeGameState(GameState::game);

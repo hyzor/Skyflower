@@ -185,8 +185,6 @@ Slider::Slider(GUI *gui, Vec3 position, int width, int height, string textureBac
 	sliderBounds._width = 20;
 	sliderBounds._height = 50;
 
-
-
 	textureIDs.push_back(gui->CreateGUIElementAndBindTexture(position, "Menygrafik\\" + textureBack));
 	textureIDs.push_back(gui->CreateGUIElementAndBindTexture(sliderBounds._position, "Menygrafik\\" + textureSlider));
 	gui->GetGUIElement(textureIDs[0])->SetVisible(false);
@@ -201,14 +199,16 @@ void Slider::setVisible(bool state)
 
 void Slider::onMouseClick(Vec3 mousePos)
 {
-	if (bounds._isInside(mousePos))
+	if (bounds._isInside(mousePos) || sliderBounds._isInside(mousePos))
 	{
 		sliderBounds._position.X = mousePos.X - sliderBounds._width / 2;
-		guiPtr->GetGUIElement(textureIDs[1])->GetDrawInput()->pos.x = mousePos.X - sliderBounds._width / 2;
+		guiPtr->GetGUIElement(textureIDs[1])->GetDrawInput()->pos.x = mousePos.X;
+
 		if (sliderBounds._isInside(mousePos))
 			wasClicked = true;
 		else
 			wasClicked = false;
+
 	}
 	else
 		wasClicked = false;
@@ -227,8 +227,7 @@ void Slider::onMouseDown(Vec3 mousePos)
 		{
 			sliderBounds._position.X = bounds._position.X;
 		} 
-
-		guiPtr->GetGUIElement(textureIDs[1])->GetDrawInput()->pos.x = sliderBounds._position.X - 10;
+		guiPtr->GetGUIElement(textureIDs[1])->GetDrawInput()->pos.x = sliderBounds._position.X - (sliderBounds._width / 2);
 	}
 }
 

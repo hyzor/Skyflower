@@ -61,6 +61,7 @@ private:
 	float yaw;
 	float targetRot;
 	float walkAngle;
+	float timeFalling;
 };
 
 #endif

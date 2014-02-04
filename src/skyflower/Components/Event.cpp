@@ -118,7 +118,8 @@ int Event::ChangeLevel(lua_State* L)
 	if (n >= 1)
 	{
 		int level = lua_tointeger(L, 1);
-		LevelHandler::GetInstance()->levelCompleted();
+		if (level != 0)
+			LevelHandler::GetInstance()->levelCompleted();
 		LevelHandler::GetInstance()->queue(level);
 	}
 

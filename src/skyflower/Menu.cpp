@@ -92,6 +92,9 @@ void Menu::draw()
 
 	Vec3 mouseInvertPos = m_checkboxes.at(1)->getPosition();
 	guiPtr->printText(L"Invert Camera", (int)(mouseInvertPos.X + 30 * scaleX), (int)mouseInvertPos.Y, Vec3(1.0f, 1.0f, 1.0f), scaleX);
+
+	Vec3 soundVolumePos = m_sliders.at(0)->getPosition();
+	guiPtr->printText(L"Sound Volume", (int)(soundVolumePos.X + 160 * scaleX), (int)soundVolumePos.Y+ 10, Vec3(1.0f, 1.0f, 1.0f), scaleX);
 }
 
 void Menu::keyPressed(unsigned short key)
@@ -169,8 +172,6 @@ void Menu::setVisible(bool visible)
 	{
 		m_sliders.at(i)->setVisible(visible);
 	}
-
-
 	// Highlight the selected button
 	guiPtr->GetGUIElement(m_buttons.at(selectedButton)->getTextureIDs().at(0))->SetVisible(visible);
 }

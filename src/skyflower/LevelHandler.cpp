@@ -6,13 +6,14 @@
 #include "shared/debug.h"
 
 char* levels[] = {
+	"hubWorld",
 	"testWorld",
 	"testWorld2",
 	"testExport",
 	"subWorld1"
 };
 
-#define LEVEL_COUNT 4
+#define LEVEL_COUNT 5
 
 LevelHandler *LevelHandler::instance = nullptr;
 
@@ -107,11 +108,10 @@ void LevelHandler::loadQueued(int id)
 	for (int i = 0,j = 0; i < nrEntities; i++, j++)
 	{
 		int eid = _entityManager->getEntityId(j);
-		if (_entityManager->getEntity(eid)->getType() != "player")
-		{
-			_entityManager->destroyEntity(eid);
-			j--;
-		}
+
+		_entityManager->destroyEntity(eid);
+		j--;
+
 	}
 
 	std::string xmlfile = _levels.at(queueID)._path;

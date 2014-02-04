@@ -722,8 +722,8 @@ void GraphicsEngineImpl::Draw2DTextureFile(const std::string file, const Draw2DI
 		input->pos,
 		0,
 		input->color,
-		0.0f, 
-		XMFLOAT2(0.0f, 0.0f),
+		input->rot, 
+		input->origin,
 		input->scale,
 		SpriteEffects::SpriteEffects_None,
 		input->layerDepth);

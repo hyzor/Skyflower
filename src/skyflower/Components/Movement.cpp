@@ -31,6 +31,7 @@ Movement::Movement(float speed) : Component("Movement")
 	this->speed = speed;
 	this->targetRot = 0.0f;
 	this->walkAngle = 0.0f;
+	this->timeFalling = 0.0f;
 }
 
 Movement::~Movement()
@@ -72,6 +73,9 @@ void Movement::update(float deltaTime)
 	p->Update(deltaTime);
 
 	GravityComponent *gravity = getOwner()->getComponent<GravityComponent*>("Gravity");
+
+	if (isInAir)
+		timeFalling += deltaTime;
 
 	if (gravity && !gravity->isEnabled())
 	{
@@ -172,7 +176,7 @@ void Movement::update(float deltaTime)
 
 	if (getOwnerId() == 1 && getOwner()->getAnimatedInstance())
 	{
-		if (this->isInAir)
+		if ((this->isInAir && timeFalling > 0.3f) || p->GetStates()->isJumping)
 		{
 			getOwner()->getAnimatedInstance()->SetAnimation(1);
 		}
@@ -278,12 +282,13 @@ void Movement::inAir(Message const& msg)
 
 void Movement::notInAir(Message const& msg)
 {
+	this->timeFalling = 0.0f;
 	this->isInAir = false;
 }
 
 void Movement::Jump(Message const& msg)
 {
-	if (!getOwner()->ground)
+	if (!getOwner()->ground && timeFalling > 0.3f)
 		return;
 
 	Vec3 pos = getEntityPos();
