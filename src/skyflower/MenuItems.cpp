@@ -93,6 +93,13 @@ void MenuButton::setHighlighted(bool highlighted)
 {
 	guiPtr->GetGUIElement(textureIDs[0])->SetVisible(!highlighted);
 	guiPtr->GetGUIElement(textureIDs[1])->SetVisible(highlighted);
+
+	this->highlighted = highlighted;
+}
+
+bool MenuButton::isHighlighted()
+{
+	return highlighted;
 }
 
 void MenuButton::setOnClick(const std::function<void()> &handler)

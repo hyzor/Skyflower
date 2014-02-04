@@ -92,8 +92,7 @@ void Movement::update(float deltaTime)
 				
 			if (getOwnerId() == 1)
 			{
-				float soundPosition[3] = { 0.0f, 0.0f, 0.0f };
-				getOwner()->getModules()->sound->PlaySound(fallingSounds[rand()  % ARRAY_SIZE(fallingSounds)], soundPosition, 0.25f, true);
+				getOwner()->getModules()->sound->PlaySound(fallingSounds[rand()  % ARRAY_SIZE(fallingSounds)], 0.25f);
 			}
 		}
 
@@ -302,7 +301,7 @@ void Movement::Jump(Message const& msg)
 			this->timeUntilGravityEnable = MAX_JUMP_KEY_TIME;
 		}
 
-		owner->getModules()->sound->PlaySound("player/jump1.wav", &pos.X, 1.0f);
+		owner->getModules()->sound->PlaySound("player/jump1.wav", 1.0f, &pos.X);
 	}
 }
 

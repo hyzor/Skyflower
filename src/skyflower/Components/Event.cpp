@@ -93,7 +93,7 @@ int Event::PlaySound(lua_State* L)
 		Vec3 position = entityManager->getEntityPos(Id);
 
 		if (e)
-			e->getModules()->sound->PlaySound(file, &position.X, 1.0f, false);
+			e->getModules()->sound->PlaySound(file, 1.0f, &position.X, false);
 	}
 
 	return 0;

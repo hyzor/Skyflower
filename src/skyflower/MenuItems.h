@@ -71,6 +71,7 @@ public:
 	MenuButton(GUI *gui, Vec3 position, int width, int height, string textureNormal, string textureHover);
 	virtual ~MenuButton();
 	void setHighlighted(bool highlighted);
+	bool isHighlighted();
 	void onMouseClick(Vec3 mousePos);
 	void onMouseMove(Vec3 mousePos);
 	void pressed();
