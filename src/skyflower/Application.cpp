@@ -17,6 +17,9 @@ using namespace std;
 using namespace tinyxml2;
 using namespace Cistron;
 
+// Evil global variable until we have some kind of configuration system.
+static bool g_quakeSounds = true;
+
 Application::Application()
 {
 	m_oldVolume = 1.0f;
@@ -554,4 +557,22 @@ void Application::OnKeyDown(unsigned short key)
 	default:
 		break;
 	}
+}
+
+std::string GetPlayerSoundFile(const std::string &file)
+{
+	if (!g_quakeSounds)
+		return file;
+
+	size_t pos = file.find_last_of('/');
+	std::string result;
+
+	if (pos != std::string::npos) {
+		result = file.substr(0, pos) + "/quake" + file.substr(pos, std::string::npos);
+	}
+	else {
+		result = file;
+	}
+
+	return result;
 }

@@ -102,4 +102,6 @@ private:
 	float m_oldVolume;
 };
 
+std::string GetPlayerSoundFile(const std::string &file);
+
 #endif
