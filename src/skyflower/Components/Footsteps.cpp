@@ -58,7 +58,7 @@ void FootstepsComponent::update(float deltaTime)
 
 		if (owner) {
 			// FIXME: Project the sound's position onto the ground.
-			owner->getModules()->sound->PlaySound(footstepSounds[rand() % ARRAY_SIZE(footstepSounds)], &originalPosition.X, 0.5f);
+			owner->getModules()->sound->PlaySound(footstepSounds[rand() % ARRAY_SIZE(footstepSounds)], 0.5f, &originalPosition.X);
 		}
 	}
 }

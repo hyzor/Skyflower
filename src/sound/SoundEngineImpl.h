@@ -30,7 +30,8 @@ public:
 	virtual void DestroySource(SoundSource *source);
 	virtual void DestroyListener(Listener *listener);
 
-	virtual void PlaySound(const std::string &file, const float position[3], float volume, bool relativeToListener);
+	virtual void PlaySound(const std::string &file, float volume);
+	virtual void PlaySound(const std::string &file, float volume, const float position[3], bool relativeToListener);
 
 	virtual void SetActiveListener(Listener *listener);
 	virtual void SetDopplerFactor(float dopplerFactor);

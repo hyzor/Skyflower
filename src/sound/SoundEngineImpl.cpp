@@ -234,7 +234,14 @@ void SoundEngineImpl::SetSpeedOfSound(float speed)
 	alSpeedOfSound(speed);
 }
 
-void SoundEngineImpl::PlaySound(const std::string &file, const float position[3], float volume, bool relativeToListener)
+void SoundEngineImpl::PlaySound(const std::string &file, float volume)
+{
+	static const float position[3] = {0.0f, 0.0f, 0.0f};
+
+	PlaySound(file, volume, position, true);
+}
+
+void SoundEngineImpl::PlaySound(const std::string &file, float volume, const float position[3], bool relativeToListener)
 {
 	SoundSourceImpl *source = new SoundSourceImpl(m_resourceCache);
 	source->SetResource(file);
