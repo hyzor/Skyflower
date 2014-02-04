@@ -252,7 +252,7 @@ void ShadowMap::DrawSceneToShadowMap(
 			sShadowShader->SetLightWVP(deviceContext, worldViewProj);
 			sShadowShader->SetBoneTransforms(deviceContext, 
 				mAnimatedInstances[i]->model->mInstance.FinalTransforms.data(), 
-				mAnimatedInstances[i]->model->mInstance.FinalTransforms.size());
+				(UINT)mAnimatedInstances[i]->model->mInstance.FinalTransforms.size());
 
 			for (UINT j = 0; j < mAnimatedInstances[i]->model->mInstance.model->numMeshes; ++j)
 			{
@@ -318,7 +318,7 @@ void ShadowMap::DrawSceneToShadowMap(const std::vector<ModelInstanceImpl*>& mode
 			skinnedShadowShader->SetLightWVP(deviceContext, worldViewProj);
 			skinnedShadowShader->SetBoneTransforms(deviceContext,
 				mAnimatedInstances[i]->model->mInstance.FinalTransforms.data(),
-				mAnimatedInstances[i]->model->mInstance.FinalTransforms.size());
+				(UINT)mAnimatedInstances[i]->model->mInstance.FinalTransforms.size());
 
 			for (UINT j = 0; j < mAnimatedInstances[i]->model->mInstance.model->numMeshes; ++j)
 			{

@@ -117,7 +117,7 @@ void Menu::keyPressed(unsigned short key)
 	if (selectedButton == m_buttons.size())
 		selectedButton = 0;
 	else if (selectedButton < 0)
-		selectedButton = m_buttons.size() - 1;
+		selectedButton = (int)(m_buttons.size() - 1);
 
 	if (enter)
 	{

@@ -178,7 +178,7 @@ class EntityManager {
 		CollisionInstance* getEntityCollision(EntityId ownerId);
 		Component* getComponent(string EntityName, string Componenet);
 		Entity *getEntity(EntityId id);
-		EntityId getNrOfEntities();
+		int getNrOfEntities();
 		EntityId getEntityId(int index);
 		Entity* getEntityByIndex(int index);
 

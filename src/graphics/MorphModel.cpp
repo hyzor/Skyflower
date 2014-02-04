@@ -43,7 +43,7 @@ MorphModel::MorphModel(ID3D11Device* device, TextureManager* textureMgr, const s
 			std::string morphModelPath = folderPath + morphModel;
 			TargetMesh targetModel;
 			objectLoader.LoadMorphObject(morphModelPath, mats, targetModel.meshes);
-			targetModel.nrOfMeshes = targetModel.meshes.size();
+			targetModel.nrOfMeshes = (UINT)targetModel.meshes.size();
 			mTargetModels.push_back(targetModel);
 		}
 
