@@ -17,7 +17,7 @@ void MenuItem::updateScreenRes(unsigned int x, unsigned int y)
 	this->position.Y = origPos.Y * scaleY;
 	this->bounds._position = position;
 
-	for (int i = 0; i < textureIDs.size(); i++)
+	for (size_t i = 0; i < textureIDs.size(); i++)
 	{
 		guiPtr->GetGUIElement(textureIDs[i])->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
 		guiPtr->GetGUIElement(textureIDs[i])->GetDrawInput()->pos = XMFLOAT2(position.X, position.Y);
@@ -27,7 +27,7 @@ void MenuItem::updateScreenRes(unsigned int x, unsigned int y)
 
 void MenuItem::setScale(float x, float y)
 {
-	for (int i = 0; i < textureIDs.size(); i++)
+	for (size_t i = 0; i < textureIDs.size(); i++)
 	{
 		guiPtr->GetGUIElement(textureIDs[i])->GetDrawInput()->scale = XMFLOAT2(x, y);
 	}
@@ -40,7 +40,7 @@ void MenuItem::SetPosition(Vec3 pos)
 {
 	this->position = pos;
 	this->bounds._position = pos;
-	for (int i = 0; i < textureIDs.size(); i++)
+	for (size_t i = 0; i < textureIDs.size(); i++)
 	{
 		guiPtr->GetGUIElement(textureIDs[i])->GetDrawInput()->pos = XMFLOAT2(pos.X, pos.Y);
 	}
@@ -175,8 +175,8 @@ Slider::Slider(GUI *gui, Vec3 position, int width, int height, string textureBac
 	sliderBounds._position.X = position.X + (bounds._width/2);
 	sliderBounds._position.Y = position.Y - 5.0f;
 
-	sliderBounds._width = 20.0f;
-	sliderBounds._height = 50.0f;
+	sliderBounds._width = 20;
+	sliderBounds._height = 50;
 
 
 
