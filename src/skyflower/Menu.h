@@ -1,6 +1,7 @@
 #ifndef MENU_H
 #define MENU_H
 #include "graphics\GraphicsEngine.h"
+#include "Sound/SoundEngine.h"
 #include <string>
 #include <vector>
 #include "MenuItems.h"
@@ -24,7 +25,7 @@ public:
 	};
 public:
 	Menu();
-	void init(GUI *g, int screenWidth, int screeenHeight);
+	void init(GUI *g, int screenWidth, int screeenHeight, SoundEngine *soundEngine);
 	virtual ~Menu();
 	
 	// Set wether or not the menu is active
@@ -60,6 +61,7 @@ private:
 	 std::vector<Slider*> m_sliders;
 	 MenuStatus status;
 	 GUI* guiPtr;
+	 SoundEngine* soundEngine;
 	 Settings settings;
 private:
 	 void setVisible(bool visible);

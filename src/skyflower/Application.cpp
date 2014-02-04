@@ -49,12 +49,12 @@ void Application::Start()
 
 	m_GUI = new GUI(m_graphicsEngine);
 
-	m_menu = new Menu();
-	m_menu->init(m_GUI, m_window->GetWidth(), m_window->GetHeight());
-	m_menu->setActive(false);
-
 	m_soundEngine = CreateSoundEngine("../../content/sounds/");
 	assert(m_soundEngine);
+
+	m_menu = new Menu();
+	m_menu->init(m_GUI, m_window->GetWidth(), m_window->GetHeight(), m_soundEngine);
+	m_menu->setActive(false);
 
 	m_camera = m_graphicsEngine->CreateCameraController();
 	m_physicsEngine = CreatePhysicsEngine();
@@ -465,18 +465,6 @@ void Application::OnKeyDown(unsigned short key)
 	case 'O':
 		m_graphicsEngine->SetPostProcessingEffects(m_graphicsEngine->GetPostProcessingEffects() ^ POST_PROCESSING_DOF);
 		break;
-	case 'T':
-	{
-		static const size_t num_taunts = 2;
-		static const char *taunts[num_taunts] = {
-			"quake/taunt1.wav",
-			"quake/taunt2.wav"
-		};
-
-		Vec3 position = Vec3(0.0f, 0.0f, 0.0f);
-		m_soundEngine->PlaySound(taunts[rand() % num_taunts], &position.X, 0.25f, true);
-		break;
-	}
 	case 'Y':
 		m_SSAOradius += 0.1f;
 		m_graphicsEngine->SetSSAOParameters(m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);

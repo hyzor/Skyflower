@@ -33,9 +33,10 @@ Menu::~Menu()
 	}
 }
 
-void Menu::init(GUI *g, int screenWidth, int screeenHeight)
+void Menu::init(GUI *g, int screenWidth, int screeenHeight, SoundEngine *sound)
 {
 	guiPtr = g;
+	soundEngine = sound;
 
 	width = screenWidth;
 	height = screeenHeight;
@@ -123,6 +124,8 @@ void Menu::keyPressed(unsigned short key)
 	{
 		m_buttons.at(lastSelected)->setHighlighted(false);
 		m_buttons.at(selectedButton)->setHighlighted(true);
+
+		soundEngine->PlaySound("menu/button.wav", 0.5f);
 	}
 }
 
@@ -217,7 +220,11 @@ void Menu::onMouseMove(Vec3 mousePos)
 {
 	for (auto it = m_buttons.begin(); it != m_buttons.end(); ++it)
 	{
+		bool oldHighlighted = (*it)->isHighlighted();
 		(*it)->onMouseMove(mousePos);
+
+		if (!oldHighlighted && (*it)->isHighlighted())
+			soundEngine->PlaySound("menu/button.wav", 0.5f);
 	}
 }
 void Menu::onMouseDown(Vec3 mousePos)
