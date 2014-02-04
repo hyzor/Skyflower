@@ -1,6 +1,6 @@
 <root>
 	<Entity entityName="player" id="1"
-		xPos="0" yPos="1" zPos="0" 
+		xPos="290.030637847" yPos="79.7036492634" zPos="152.252250723" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="1.0" yScale="1.0" zScale="1.0"
 		model="Models/Player/playerAnimated"
@@ -15,6 +15,7 @@
 			<Pushable />
 			<Health maxHP = "100" />
 	</Entity>
+	
     <Entity entityName="plattform1" model="Models\Worlds\Subworld 1\plattform1" id="100" isVisible="1" isCollidible="1" isAnimated="0" xPos="0.0" yPos="0.0" zPos="-0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity entityName="plattform1Cloud" model="Models\Worlds\Subworld 1\plattform1Cloud" id="2" isVisible="1" isCollidible="0" isAnimated="0" xPos="0.0" yPos="0.0" zPos="-0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity entityName="plattform2" model="Models\Worlds\Subworld 1\plattform2" id="3" isVisible="1" isCollidible="1" isAnimated="0" xPos="0.0" yPos="0.0" zPos="-0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
@@ -50,6 +51,7 @@
     <Entity entityName="ballonPlattform" model="Models\Worlds\Subworld 1\ballonPlattform" id="25" isVisible="1" isCollidible="1" isAnimated="0" xPos="60.4980955585" yPos="110.0318066" zPos="-24.19353389" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <MoveTarget targetPosX="60" targetPosY="6" targetPosZ="-24" duration="5" easingPower = "3" continuous = "1" />
     </Entity>
+	
     <Entity entityName="Puncha" model="Models\Worlds\Subworld 1\Puncha" id="27" isVisible="1" isCollidible="0" isAnimated="0" xPos="334.311318695" yPos="78.4862951289" zPos="171.906910353" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <!--Health/-->
         <Gravity/>
@@ -60,6 +62,7 @@
         <Movement speed="10"/>
 		<Event script="aiPush" />
     </Entity>
+	
     <Entity entityName="WoodBlock" model="Models\Worlds\Subworld 1\WoodBlock" id="19" isVisible="1" isCollidible="1" isAnimated="0" xPos="472.770895471" yPos="120.251395515" zPos="122.055509702" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <Gravity/>
         <Box/>

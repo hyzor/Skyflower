@@ -1022,7 +1022,7 @@ Vec3 EntityManager::getEntityPos(string type)
 			return this->fEntitys[i]->returnPos();
 		}
 	}
-
+	  
 	return Vec3(0.0f, 0.0f, 0.0f);
 }
 
