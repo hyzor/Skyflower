@@ -223,11 +223,11 @@ void Application::Start()
 
 		if (levelHandler->hasQueuedLevel() && !levelHandler->isLoading())
 		{
-			// Basically a hax \\
+			// Basically a hax - Dont do this at home 
 			m_GUI->GetGUIElement(loadingScreen)->SetVisible(true);
 			m_GUI->Draw();
 			m_graphicsEngine->Present();
-			// Dont do this at home 
+
 			float time = GetTime();
 			levelHandler->LoadQueued();
 			time = GetTime() - time;

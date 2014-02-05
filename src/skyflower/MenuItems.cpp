@@ -234,5 +234,38 @@ void Slider::onMouseDown(Vec3 mousePos)
 float Slider::getValue()
 {
 	float value = (sliderBounds._position.X - bounds._position.X) / width;
+	if (value < 0.0f)
+		value = 0.0f;
+	else if (value > 1.0f)
+		value = 1.0f;
 	return value;
+}
+
+void Slider::updateScreenRes(unsigned int x, unsigned int y)
+{
+	float scaleY, scaleX;
+
+	scaleX = (float)x / origScreenWidth;
+	scaleY = (float)y / origScreenHeigh;
+
+	this->bounds._width = (int)(originalWidth * scaleX);
+	this->bounds._height = (int)(originalHeight * scaleY);
+
+	this->position.X = origPos.X * scaleX;
+	this->position.Y = origPos.Y * scaleY;
+	this->bounds._position = position;
+
+	this->sliderBounds._width = (int)(20 * scaleX);
+	this->sliderBounds._height = (int)(50 * scaleY);
+
+	Vec3 sliderPos = Vec3(origPos.X + width / 2, origPos.Y-5.0f);
+
+	this->sliderBounds._position.X = sliderPos.X * scaleX;
+	this->sliderBounds._position.Y = sliderPos.Y * scaleY;
+
+	guiPtr->GetGUIElement(textureIDs[0])->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
+	guiPtr->GetGUIElement(textureIDs[0])->GetDrawInput()->pos = XMFLOAT2(position.X, position.Y);
+
+	guiPtr->GetGUIElement(textureIDs[1])->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
+	guiPtr->GetGUIElement(textureIDs[1])->GetDrawInput()->pos = XMFLOAT2(sliderBounds._position.X, sliderBounds._position.Y);
 }
