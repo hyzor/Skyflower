@@ -105,6 +105,7 @@ public:
 	void setVisible(bool state);
 	void onMouseClick(Vec3 mousePos);
 	void onMouseDown(Vec3 mousePos);
+	void updateScreenRes(unsigned int x, unsigned int y);
 
 	// Value between 0 - 1
 	float getValue();
