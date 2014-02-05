@@ -16,7 +16,7 @@ CollisionModel::~CollisionModel()
 void CollisionModel::Load(std::string file)
 {
 	std::stringstream ssTree;
-	ssTree << file << ".tree";
+	ssTree << file << ".tree2";
 	if (!LoadTree(ssTree.str()))
 	{
 		//load obj
