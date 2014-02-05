@@ -460,8 +460,13 @@ void Application::OnKeyDown(unsigned short key)
 	switch (key)
 	{
 	case VK_ESCAPE:
-		m_inputHandler->SetMouseCapture(false);
-		m_window->SetCursorVisibility(true);
+		if (m_menu->isActive())
+			m_menu->setActive(false);
+		else
+		{
+			m_graphicsEngine->Clear();
+			m_menu->setActive(true);
+		}
 		break;
 	case 'Z':
 		m_showCharts = !m_showCharts;
@@ -473,15 +478,6 @@ void Application::OnKeyDown(unsigned short key)
 	case 'R':
 		m_graphicsEngine->clearLights();
 		m_entityManager->loadXML("subWorld1Lights.XML");
-		break;
-	case 'M':
-		if (m_menu->isActive())
-			m_menu->setActive(false);
-		else
-		{
-			m_graphicsEngine->Clear();
-			m_menu->setActive(true);
-		}
 		break;
 	case VK_SPACE:
 		if (!cs->isDone())
