@@ -20,9 +20,9 @@ Field* PotentialField::CreateField(float weight, float size, Vec3 pos)
 	return f;
 }
 
-Field* PotentialField::CreateField(std::string file, Vec3 pos, Vec3 scale)
+Field* PotentialField::CreateField(CollisionInstance* collinst, Vec3 pos)
 {
-	//load obj
+	/*//load obj
 	std::stringstream ss;
 	ss << "../../content/" << file << ".obj";
 	std::ifstream infile(ss.str());
@@ -76,8 +76,10 @@ Field* PotentialField::CreateField(std::string file, Vec3 pos, Vec3 scale)
 	fields.push_back(f);
 
 
+	
+	return f;*/
 
-	return f;
+	return nullptr;
 }
 
 void PotentialField::DeleteField(Field* f)

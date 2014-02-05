@@ -56,6 +56,11 @@ void CollisionModel::Load(std::string file)
 		}
 		bounds = Box(vMin, vMax - vMin);
 
+
+
+		//calculate sphere
+
+
 		//create tree
 		tree = new ModelTreeParent(vMin, vMax);
 		for (unsigned int i = 0; i < triangles.size(); i++)

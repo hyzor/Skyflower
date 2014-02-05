@@ -10,6 +10,7 @@
 #include "Triangle.h"
 #include "ModelTree.h"
 #include "Box.h"
+#include "Sphere.h"
 
 class CollisionModel
 {
@@ -27,6 +28,7 @@ class CollisionModel
 	private:
 		std::vector<Triangle> triangles;
 		Box bounds;
+		Sphere sphere;
 
 		std::vector<std::string> split(std::string line);
 		ModelTreeParent* tree;

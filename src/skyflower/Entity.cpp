@@ -116,7 +116,7 @@ Entity::Entity(const Modules *modules, EntityId id, EntityId relativeid, string 
 		collInst = modules->collision->CreateCollisionInstance(model, pos);
 		collInst->SetScale(scale);
 		collInst->SetRotation(rot);
-		field = this->modules->potentialField->CreateField(model, pos, scale);
+		field = this->modules->potentialField->CreateField(collInst, pos);
 	}
 	else
 	{
@@ -154,6 +154,9 @@ Entity::~Entity() {
 
 	if (field)
 		this->modules->potentialField->DeleteField(field);
+
+	if (collInst)
+		this->modules->collision->DeleteCollisionInstance(collInst);
 	
 	if (mPhysicsEntity)
 		this->modules->physicsEngine->DestroyEntity(mPhysicsEntity);
