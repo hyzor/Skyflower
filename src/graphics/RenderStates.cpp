@@ -18,6 +18,7 @@ ID3D11SamplerState* RenderStates::mPointSS = 0;
 ID3D11DepthStencilState* RenderStates::mLessEqualDSS = 0;
 ID3D11DepthStencilState* RenderStates::mDefaultDSS = 0;
 ID3D11DepthStencilState* RenderStates::mDisabledDSS = 0;
+ID3D11DepthStencilState* RenderStates::mDepthStencilEnabledDSS = 0;
 
 ID3D11BlendState* RenderStates::mDefaultBS = 0;
 ID3D11BlendState* RenderStates::mAdditiveBS = 0;
@@ -227,6 +228,26 @@ void RenderStates::InitAll(ID3D11Device* device)
 
 	device->CreateDepthStencilState(&disabledDDSdesc, &mDisabledDSS);
 
+	// Both depth and stencil testing enabled
+	D3D11_DEPTH_STENCIL_DESC depthStencilEnabledDSSdesc;
+	ZeroMemory(&depthStencilEnabledDSSdesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+	depthStencilEnabledDSSdesc.DepthEnable = TRUE;
+	depthStencilEnabledDSSdesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthStencilEnabledDSSdesc.DepthFunc = D3D11_COMPARISON_LESS;
+	depthStencilEnabledDSSdesc.StencilEnable = TRUE;
+	depthStencilEnabledDSSdesc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+	depthStencilEnabledDSSdesc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+	depthStencilEnabledDSSdesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depthStencilEnabledDSSdesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depthStencilEnabledDSSdesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilEnabledDSSdesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilEnabledDSSdesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilEnabledDSSdesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilEnabledDSSdesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilEnabledDSSdesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+
+	device->CreateDepthStencilState(&depthStencilEnabledDSSdesc, &mDepthStencilEnabledDSS);
+
 	//-----------------------------------------------------------
 	// Blend states
 	//-----------------------------------------------------------
@@ -275,6 +296,7 @@ void RenderStates::DestroyAll()
 	ReleaseCOM(mLessEqualDSS);
 	ReleaseCOM(mDefaultDSS);
 	ReleaseCOM(mDisabledDSS);
+	ReleaseCOM(mDepthStencilEnabledDSS);
 
 	ReleaseCOM(mDefaultBS);
 	ReleaseCOM(mAdditiveBS);
