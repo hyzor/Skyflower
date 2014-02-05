@@ -46,17 +46,6 @@ LevelHandler* LevelHandler::GetInstance()
 }
 void LevelHandler::queue(int id)
 {
-	/*
-	// Removes all entities except for the player
-	for (int i = 0; _entityManager->getNrOfEntities() != 1; i++) 
-	{
-		if (_entityManager->getEntity(i)->getType() != "Player")
-			_entityManager->destroyEntity(i);
-	}
-	_entityManager->loadXML(_levels.at(id)._path);
-	_current = id;
-	*/
-
 	queued = true;
 	queueID = id;
 }
@@ -132,7 +121,7 @@ void LevelHandler::loadQueued(int id)
 
 bool LevelHandler::hasQueuedLevel()
 {
-	return queued || (loading == true);
+	return queued;
 }
 
 bool LevelHandler::isLoading()

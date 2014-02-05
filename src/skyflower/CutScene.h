@@ -27,11 +27,12 @@ public:
 	static void Register(ScriptHandler* sh)
 	{
 		lua_register(sh->L, "AddPoint", CutScene::AddPoint);
+		lua_register(sh->L, "SetCamera", CutScene::SetCamera);
 	};
 
 	void update(float dt);
-	bool isDone() const { return done; }
-	void quit();
+	bool isPlaying() const { return !done; }
+	void stop();
 public:
 	static CutScene* self;
 
@@ -46,6 +47,7 @@ private:
 	bool done;
 private:
 	static int AddPoint(lua_State* L);
+	static int SetCamera(lua_State* L);
 
 };
 

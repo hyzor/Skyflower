@@ -34,7 +34,7 @@ public:
 
 private:
 
-	void updateGame(float dt, float gameTime, Movement* playerMove);
+	void updateGame(float dt, float gameTime);
 	void updateMenu(float dt);
 	void updateLoading(float dt);
 	void updateCutScene(float dt);

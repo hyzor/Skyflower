@@ -20,7 +20,7 @@
 		<Checkpoint/>
 		<Event script="Level"/>
 	</Entity>
-    <Entity entityName="doorPlane" id="33" isVisible="1" isCollidible="1" isAnimated="0" xPos="22.0236303383" yPos="11.5446867292" zPos="87.0344042124" xRot="0.0" yRot="3.30" zRot="0.0" xScale="1.88018653941" yScale="1.95493788201" zScale="1.88018653941" model="Models\\placeHolder Subworld\\doorPlane">
+    <Entity entityName="doorPlane" id="33" isVisible="0" isCollidible="1" isAnimated="0" xPos="22.0236303383" yPos="11.5446867292" zPos="87.0344042124" xRot="0.0" yRot="3.30" zRot="0.0" xScale="1.88018653941" yScale="1.95493788201" zScale="1.88018653941" model="Models\\placeHolder Subworld\\doorPlane">
         <Checkpoint/>
         <Event script="Level"/>
 		<Messenger />

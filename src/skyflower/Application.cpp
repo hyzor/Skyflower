@@ -100,11 +100,11 @@ void Application::Start()
 	// Load Hub Level
 	levelHandler->queue(4);
 	levelHandler->LoadQueued();
+
 	m_entityManager->sendMessageToEntity("ActivateListener", "player");
 	m_graphicsEngine->UpdateSceneData();
 	m_entityManager->loadXML("subWorld1Lights.XML");
-	Movement* playerMove = (Movement*)m_entityManager->getComponent("player", "Movement");
-	ListenerComponent* playerListener = (ListenerComponent*)m_entityManager->getComponent("player", "Listener");
+	
 
 	m_showCharts = false;
 
@@ -155,6 +155,9 @@ void Application::Start()
 	cs = new CutScene(m_entityManager->modules->script, m_camera);
 	cs->play();
 
+	int loadingScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "Menygrafik\\fyraTreRatio.png");
+	m_GUI->GetGUIElement(loadingScreen)->SetVisible(false);
+
 	while(!m_quit)
 	{
 		time = GetTime();
@@ -184,24 +187,11 @@ void Application::Start()
 			m_GUI->UploadData(m_memChartID, memoryChart.GetPixels());
 		}
 
-		if (levelHandler->hasQueuedLevel() && !levelHandler->isLoading())
-		{
-			/*if (load.joinable())
-				load.join();
-
-			load = thread(&LevelHandler::LoadQueued, levelHandler); */
-			//changeGameState(GameState::loading);
-			m_graphicsEngine->Clear();
-			m_graphicsEngine->clearLights();
-			m_entityManager->loadXML("subWorld1Lights.XML");
-			levelHandler->LoadQueued();
-			m_graphicsEngine->UpdateSceneData();
-		}
-
 		float volume = m_menu->getSettings()._soundVolume;
 
 		if (m_oldVolume != volume)
 		{
+			ListenerComponent* playerListener = (ListenerComponent*)m_entityManager->getComponent("player", "Listener");
 			playerListener->setVolume(volume);
 			m_oldVolume = volume;
 		}
@@ -209,7 +199,7 @@ void Application::Start()
 		switch (gameState)
 		{
 		case GameState::game:
-			updateGame((float)deltaTime, (float)mGameTime, playerMove);
+			updateGame((float)deltaTime, (float)mGameTime);
 			break;
 		case GameState::loading:
 			updateLoading((float)deltaTime);
@@ -228,6 +218,24 @@ void Application::Start()
 
 		m_soundEngine->Update((float)deltaTime);
 		m_window->PumpMessages();
+
+		if (levelHandler->hasQueuedLevel() && !levelHandler->isLoading())
+		{
+			// Basically a hax \\ 
+			m_GUI->GetGUIElement(loadingScreen)->SetVisible(true);
+			m_GUI->Draw();
+			m_graphicsEngine->Present();
+			// Dont do this at home \\
+
+			levelHandler->LoadQueued();
+			m_graphicsEngine->Clear();
+			m_graphicsEngine->UpdateSceneData();
+			m_oldTime = GetTime();
+			m_GUI->GetGUIElement(loadingScreen)->SetVisible(false);
+			changeGameState(GameState::cutScene);
+
+			cs->play();
+		}
 	}
 	
 	//m_graphicsEngine->DeleteTexture2D(memoryChartTexture);
@@ -267,11 +275,13 @@ void Application::updateMenu(float dt)
 	{
 		m_graphicsEngine->SetFullscreen(true);
 		this->OnWindowResized(1920, 1080);
+		m_oldTime = GetTime();
 	}
 	else if (!m_menu->getSettings()._isFullscreen && m_graphicsEngine->isFullscreen())
 	{
 		m_graphicsEngine->SetFullscreen(false);
 		this->OnWindowResized(1024, 768);
+		m_oldTime = GetTime();
 	}
 
 	m_menu->draw();
@@ -284,7 +294,10 @@ void Application::updateMenu(float dt)
 
 		// Set if mouse is inverted based on if it's been checked in menu
 		m_camera->SetInverted(m_menu->getSettings()._mouseInverted);
-		changeGameState(GameState::game);
+		if (cs->isPlaying())
+			changeGameState(GameState::cutScene);
+		else
+			changeGameState(GameState::game);
 		break;
 	case Menu::exit:
 		m_quit = true;
@@ -301,15 +314,17 @@ void Application::updateCutScene(float dt)
 
 	if (m_menu->isActive())
 		changeGameState(GameState::menu);
-	if (cs->isDone())
+	if (!cs->isPlaying())
 	{
 		changeGameState(GameState::game);
 	}
 }
 
-void Application::updateGame(float dt, float gameTime, Movement* playerMove)
+void Application::updateGame(float dt, float gameTime)
 {
 	m_camera->Follow(m_entityManager->getEntityPos("player"));
+
+	Movement* playerMove = m_entityManager->getEntity(1)->getComponent<Movement*>("Movement");
 	playerMove->setCamera(m_camera->GetLook(), m_camera->GetRight(), m_camera->GetUp());
 	playerMove->setYaw(m_camera->GetYaw());
 	m_camera->Update(dt);
@@ -327,8 +342,6 @@ void Application::updateLoading(float dt)
 	Draw2DInput input;
 	input.pos.x = 0.0f;
 	input.pos.y = 0.0f;
-
-	//m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "Menygrafik\\fyraTreRatio.png");
 
 	if (!levelHandler->isLoading())
 		changeGameState(GameState::game);
@@ -388,6 +401,7 @@ void Application::OnWindowResized(unsigned int width, unsigned int height)
 {
 	m_graphicsEngine->OnResize(width, height);
 	m_menu->onResize(width, height);
+	m_oldTime = GetTime();
 }
 
 void Application::OnWindowResizeEnd()
@@ -478,10 +492,16 @@ void Application::OnKeyDown(unsigned short key)
 	case 'R':
 		m_graphicsEngine->clearLights();
 		m_entityManager->loadXML("subWorld1Lights.XML");
+		if (!cs->isPlaying())
+		{
+			cs->play();
+			changeGameState(GameState::cutScene);
+		}
+			
 		break;
 	case VK_SPACE:
-		if (!cs->isDone())
-			cs->quit(); 
+		if (cs->isPlaying())
+			cs->stop(); 
 	case 'P':
 		m_graphicsEngine->SetPostProcessingEffects(m_graphicsEngine->GetPostProcessingEffects() ^ POST_PROCESSING_SSAO);
 		break;

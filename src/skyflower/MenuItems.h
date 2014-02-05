@@ -108,7 +108,6 @@ public:
 
 	// Value between 0 - 1
 	float getValue();
-	void setMouseDown(bool state);
 private:
 	Rectangle sliderBounds;
 	bool mouseDown;
