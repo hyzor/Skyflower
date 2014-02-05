@@ -16,6 +16,11 @@
 // Must be included last!
 #include "shared/debug.h"
 
+#define JUMP_SPEED_FACTOR_LEFT 0.0125f
+#define JUMP_SPEED_FACTOR_RIGHT 0.0125f
+#define JUMP_SPEED_FACTOR_FORWARD 0.0005f
+#define JUMP_SPEED_FACTOR_BACKWARD 0.025f
+
 static const char *fallingSounds[] = {
 	"player/falling1.wav"
 };
@@ -32,6 +37,7 @@ Movement::Movement(float speed) : Component("Movement")
 	this->targetRot = 0.0f;
 	this->walkAngle = 0.0f;
 	this->timeFalling = 0.0f;
+	this->mInitialJumpDir = None;
 }
 
 Movement::~Movement()
@@ -159,8 +165,22 @@ void Movement::update(float deltaTime)
 			}
 			else
 				walkAngle = targetRot;
+
 			p->GetStates()->isMoving = true;
-			p->MoveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, targetRot);
+			float totalSpeed = this->speed;
+
+			if (this->p->GetStates()->isJumping || this->isInAir)
+			{
+				DoJumpStuff(totalSpeed);
+				p->RotateRelativeVec3(rot, this->camLook, targetRot);
+				p->Walk(pos, totalSpeed, true);
+			}
+			else if (!this->p->GetStates()->isJumping && !this->isInAir && this->p->GetVelocity().Y <= 0.0f)
+			{
+				p->RotateRelativeVec3(rot, this->camLook, targetRot);
+				p->Walk(pos, totalSpeed * deltaTime);
+			}
+
 
 			// If the player is moving, rotate it to match the camera's direction.
 			if (getOwnerId() == 1)
@@ -194,6 +214,8 @@ void Movement::update(float deltaTime)
 			}
 		}
 	}
+
+	this->p->ApplyVelocityToPos(pos);
 
 	updateEntityPos(pos);
 	updateEntityRot(rot);
@@ -286,6 +308,7 @@ void Movement::notInAir(Message const& msg)
 {
 	this->timeFalling = 0.0f;
 	this->isInAir = false;
+	this->mInitialJumpDir = None;
 }
 
 void Movement::Jump(Message const& msg)
@@ -295,8 +318,27 @@ void Movement::Jump(Message const& msg)
 
 	Vec3 pos = getEntityPos();
 
-	if (p->Jump(pos))
+	float forwardJumpSpeed = 0.0f;
+
+	if (this->isMovingBackward || this->isMovingForward || this->isMovingLeft || this->isMovingRight)
 	{
+		forwardJumpSpeed = this->speed;
+	}
+
+	if (p->Jump(pos, forwardJumpSpeed))
+	{
+		//Remember the direction faced when starting the jump
+		if (this->isMovingForward)
+			this->mInitialJumpDir = Forward;
+		else if (this->isMovingBackward)
+			this->mInitialJumpDir = Backward;
+		else if (this->isMovingLeft)
+			this->mInitialJumpDir = Left;
+		else if (this->isMovingRight)
+			this->mInitialJumpDir = Right;
+		else
+			this->mInitialJumpDir = None;
+
 		updateEntityPos(pos);
 
 		Entity *owner = getOwner();
@@ -315,4 +357,90 @@ void Movement::Jump(Message const& msg)
 void Movement::StopJump(Message const& msg)
 {
 	this->timeUntilGravityEnable = 0.0f;
+}
+
+
+void Movement::DoJumpStuff(float &jSpeed)
+{
+	switch (this->mInitialJumpDir)
+	{
+	case None:
+		jSpeed *= 0.01f;
+		break;
+	case Forward:
+		if (this->isMovingForward)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_FORWARD;
+		}
+		else if (this->isMovingBackward)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_BACKWARD;
+		}
+		else if (this->isMovingLeft)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_LEFT;
+		}
+		else if (this->isMovingRight)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_RIGHT;
+		}
+		break;
+
+	case Backward:
+		if (this->isMovingForward)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_BACKWARD;
+		}
+		else if (this->isMovingBackward)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_FORWARD;
+		}
+		else if (this->isMovingLeft)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_RIGHT;
+		}
+		else if (this->isMovingRight)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_LEFT;
+		}
+		break;
+
+	case Left:
+		if (this->isMovingForward)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_RIGHT;
+		}
+		else if (this->isMovingBackward)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_LEFT;
+		}
+		else if (this->isMovingLeft)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_FORWARD;
+		}
+		else if (this->isMovingRight)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_BACKWARD;
+		}
+		break;
+
+	case Right:
+		if (this->isMovingForward)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_LEFT;
+		}
+		else if (this->isMovingBackward)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_RIGHT;
+		}
+		else if (this->isMovingLeft)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_BACKWARD;
+		}
+		else if (this->isMovingRight)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_FORWARD;
+		}
+		break;
+	}
 }

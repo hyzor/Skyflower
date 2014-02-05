@@ -166,6 +166,8 @@ void Entity::update(float deltaTime)
 {
 	std::list<Component *> *componentList;
 
+	//this->mPhysicsEntity->ApplyVelocityToPos(this->pos);
+
 	for (auto nameIter = fComponents.begin(); nameIter != fComponents.end(); nameIter++)
 	{
 		componentList = &nameIter->second;
@@ -386,7 +388,6 @@ CollisionInstance* Entity::returnCollision()
 void Entity::updatePos(Vec3 pos)
 {
 	this->pos = pos;
-
 	if (!ground)
 		this->pos = pos;
 	else

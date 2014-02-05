@@ -45,58 +45,58 @@ public:
 	void Update(float dt);
 
 	//perform a jump on the given vector that represents a position by increasing velocity in Y-axis
-	bool Jump(Vec3 &pos); 
+	bool Jump(Vec3 &pos, float forwardSpeed = MOVEMENTSPEED_DEFAULT);
+
+	//Apply the velocity that has been accumulated during previous frames to the position
+	void ApplyVelocityToPos(Vec3 &pos);
 
 	// Dessa gör mer än att bara applicera gravitationen, utan att kalla på någon av dessa
 	// funktioner fungerar ingen velocity alls, alltså kan man inte hoppa om man inte kallar
 	// någon av dessa funktion. Därav den dumma addGravity boolen.
 	//apply gravity the given vector that represents a position
-	void AddGravityCalc(Vec3 &pos, Vec3 &velocity, bool addGravity); 
-	void AddGravityCalc(Vec3 &pos, bool addGravity);
+	void AddGravityCalc(Vec3 &pos);
 
-	//to be used for projectile calculations
+	//Fire a projectile in a given direction
 	bool FireProjectile(Vec3 &pos, Vec3 direction);
+
+	//Fire a projectile towards a specific target
 	bool FireProjectileAt(Vec3 &pos, Vec3 target);
 
 	//walk along the look vector kept in Orientation
-	void Walk(Vec3 &pos, float speed);
-	void Walk(Vec3 &pos);
+	void Walk(Vec3 &pos, float speed = MOVEMENTSPEED_DEFAULT, bool useVelocity = false);
 
 	//walk along the right vector kept in Orientation
-	void Strafe(Vec3 &pos, float speed);
-	void Strafe(Vec3 &pos);
+	void Strafe(Vec3 &pos, float speed = MOVEMENTSPEED_DEFAULT, bool useVelocity = false);
 
 	void MoveUp(Vec3 &pos);
 	void MoveDown(Vec3 &pos);
-
 	Vec3 MovePushed(Vec3 pos);
 
-	//rotate in relation to given vector plus an offset (angle) and move
-	void MoveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, Vec3 &rot, float angleY);
-	void MoveRelativeVec3(Vec3 &pos, Vec3 &relativeVec, float speed,Vec3 &rot, float angleY);
+	//Rotate in relation to given vector plus an offset (angle)
+	void RotateRelativeVec3(Vec3 &rot, Vec3 relativeVec, float angleY);
 	
-	//rotate the different vectors in Orientation
+	//Rotate the different vectors in Orientation
 	void RotateX(Vec3 &rot, float angleX);
 	void RotateY(Vec3 &rot, float angleY);
 	void RotateZ(Vec3 &rot, float angleZ);
 	void ResetRot(Vec3 &rot);
 
-	//set parameters of calculations, achieveing different effects. And other setfunctions
-	void SetGravity(Vec3 gravity); 
-	void SetMass(float mass); 
-	void SetVelocity(Vec3 vel);
-	void SetOrientation(Vec3 look, Vec3 right, Vec3 up);
-	void SetPushDirection(Vec3 direction);
+	//Set parameters of calculations, achieveing different effects. And other setfunctions
+	void SetGravity(Vec3 gravity)						{ this->mGravity = gravity; }
+	void SetMass(float mass)							{ this->mMass = mass; }
+	void SetVelocity(Vec3 vel)							{ this->mVelocity = vel; }
+	void SetOrientation(Vec3 look, Vec3 right, Vec3 up) { this->mOrient.SetOrientation(look, right, up); }
+	void SetPushDirection(Vec3 direction)				{ this->mPushDirection = direction; }
 
-	//Standard getfunctions.
-	float GetMass() const;
-	Vec3 GetGravity() const;
-	PhysicsEntityStates* GetStates() { return &this->mStates; } //Not constant,
-	Orientation GetOrientation() const { return this->mOrient; }
-	Vec3 GetVelocity() const; //Fetched from EntityManager (used for checking if you can push something)
+	//Standard getfunctions
+	float GetMass() const				{ return this->mMass; }
+	Vec3 GetGravity() const				{ return this->mGravity; }
+	PhysicsEntityStates* GetStates()	{ return &this->mStates; } 
+	Orientation GetOrientation() const	{ return this->mOrient; }
+	Vec3 GetVelocity() const			{ return this->mVelocity; }//Fetched from EntityManager (used for checking if you can push something)
 
 	//Set gravity that should affect all the entities
-	static void SetGlobalGravity(Vec3 gravity);
+	static void SetGlobalGravity(Vec3 gravity) { PhysicsEntityImpl::mGlobalGravity = gravity; }
 
 private:
 	float Lerp(float a, float b, float amount);
