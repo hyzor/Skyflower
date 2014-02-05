@@ -21,9 +21,7 @@ public:
 	void SetPosition(XMFLOAT3 pos);
 	void RotateXYZ(XMFLOAT3 rot, float yaw, XMVECTOR Up);
 
-	void SetKeyFrameInterval(UINT frameStart, UINT frameEnd) { mInstance.frameStart = frameStart; mInstance.frameEnd = frameEnd; }
-	void PlayAnimationForwards() { mInstance.playAnimForward = true; }
-	void PlayAnimationBackwards() { mInstance.playAnimForward = false; }
+	void SetAnimation(UINT index, bool loop);
 
 	XMFLOAT3 Position;
 	XMFLOAT3 Scale;

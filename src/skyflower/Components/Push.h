@@ -31,6 +31,8 @@ public:
 	//push all entites in range
 	void pushAll();
 
+	bool isPushingBox();
+
 private:
 	void stopPush(Message const& msg);
 

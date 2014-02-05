@@ -107,7 +107,7 @@ Entity::Entity(const Modules *modules, EntityId id, EntityId relativeid, string 
 				keyFramesFile.close();
 			}
 
-			this->AnimInst->SetAnimation(0);
+			this->AnimInst->SetAnimation(0, true);
 		}
 	}
 	

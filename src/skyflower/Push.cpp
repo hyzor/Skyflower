@@ -84,7 +84,7 @@ void Push::update(float dt)
 
 			if (pusherId == 1 && pusher->getAnimatedInstance())
 			{
-				pusher->getAnimatedInstance()->SetAnimation(3);
+				pusher->getAnimatedInstance()->SetAnimation(3, true);
 			}
 		}
 	}
@@ -136,4 +136,9 @@ void Push::pushAll()
 {
 	for (int j = 0; j < getEntityManager()->getNrOfEntities(); j++)
 		push(getEntityManager()->getEntityByIndex(j));
+}
+
+bool Push::isPushingBox()
+{
+	return m_isPushingBox;
 }

@@ -668,8 +668,7 @@ void GraphicsEngineImpl::UpdateScene(float dt, float gameTime)
 	// Update skinned instances
 	for (size_t i = 0; i < mAnimatedInstances.size(); i++)
 	{
-		mAnimatedInstances[i]->model->SetKeyFrameInterval(mAnimatedInstances[i]->model->mAnimations[mAnimatedInstances[i]->model->mCurAnim].FrameStart, mAnimatedInstances[i]->model->mAnimations[mAnimatedInstances[i]->model->mCurAnim].FrameEnd);
-		mAnimatedInstances[i]->model->Update(dt);
+		mAnimatedInstances[i]->Update(dt);
 	}
 
 	// Morph testing

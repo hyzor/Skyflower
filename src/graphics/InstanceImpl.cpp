@@ -225,7 +225,7 @@ Vec3 AnimatedInstanceImpl::GetScale()
 	return scale;
 }
 
-int AnimatedInstanceImpl::GetAnimation()
+UINT AnimatedInstanceImpl::GetAnimation()
 {
 	return model->mCurAnim;
 }
@@ -246,15 +246,9 @@ void AnimatedInstanceImpl::CreateAnimation(int id, int start, int frames, bool p
 	model->mAnimations.push_back(AnimatedEntity::Animation(id, start, frames, playForwards));
 }
 
-void AnimatedInstanceImpl::SetAnimation(int id)
+void AnimatedInstanceImpl::SetAnimation(UINT id, bool loop)
 {
-	model->mCurAnim = id;
-
-	if (model->mAnimations[id].playForwards)
-		model->PlayAnimationForwards();
-	else
-		model->PlayAnimationBackwards();
-	
+	model->SetAnimation(id, loop);
 }
 
 void AnimatedInstanceImpl::SetPrevWorld(XMMATRIX& prevWorld)
@@ -265,4 +259,9 @@ void AnimatedInstanceImpl::SetPrevWorld(XMMATRIX& prevWorld)
 DirectX::XMMATRIX AnimatedInstanceImpl::GetPrevWorld()
 {
 	return XMLoadFloat4x4(&mPrevWorld);
+}
+
+void AnimatedInstanceImpl::Update(float deltaTime)
+{
+	model->Update(deltaTime);
 }

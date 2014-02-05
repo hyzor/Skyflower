@@ -176,19 +176,21 @@ void Movement::update(float deltaTime)
 
 	if (getOwnerId() == 1 && getOwner()->getAnimatedInstance())
 	{
+		Push *pushComponent = getOwner()->getComponent<Push *>("Push");
+
 		if ((this->isInAir && timeFalling > 0.3f) || p->GetStates()->isJumping)
 		{
-			getOwner()->getAnimatedInstance()->SetAnimation(1);
+			getOwner()->getAnimatedInstance()->SetAnimation(1, false);
 		}
-		else
+		else if (pushComponent && !pushComponent->isPushingBox())
 		{
 			if (p->GetStates()->isMoving)
 			{
-				getOwner()->getAnimatedInstance()->SetAnimation(0);
+				getOwner()->getAnimatedInstance()->SetAnimation(0, true);
 			}
 			else
 			{
-				getOwner()->getAnimatedInstance()->SetAnimation(4);
+				getOwner()->getAnimatedInstance()->SetAnimation(4, true);
 			}
 		}
 	}

@@ -109,6 +109,24 @@ void AnimatedEntity::RotateXYZ(XMFLOAT3 rot, float yaw, XMVECTOR Up)
 	XMStoreFloat4x4(&mInstance.world, modelScale*modelRot*modelOffset);
 }
 
+void AnimatedEntity::SetAnimation(UINT index, bool loop)
+{
+	if (index == mCurAnim)
+		return;
+
+	mInstance.TimePos = 0.0f;
+	mInstance.frameStart = mAnimations[index].FrameStart;
+	mInstance.frameEnd = mAnimations[index].FrameEnd;
+	mInstance.loop = loop;
+
+	if (mAnimations[index].playForwards)
+		mInstance.playAnimForward = true;
+	else
+		mInstance.playAnimForward = false;
+	
+	mCurAnim = index;
+}
+
 void AnimatedEntity::Draw(ID3D11DeviceContext* dc, Camera* cam, NormalMappedSkinned* shader, XMMATRIX &world)
 {
 	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
