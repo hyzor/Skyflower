@@ -16,10 +16,10 @@
 // Must be included last!
 #include "shared/debug.h"
 
-#define JUMP_SPEED_FACTOR_LEFT 0.0125f
-#define JUMP_SPEED_FACTOR_RIGHT 0.0125f
+#define JUMP_SPEED_FACTOR_LEFT 0.00625f
+#define JUMP_SPEED_FACTOR_RIGHT 0.00625f
 #define JUMP_SPEED_FACTOR_FORWARD 0.0005f
-#define JUMP_SPEED_FACTOR_BACKWARD 0.025f
+#define JUMP_SPEED_FACTOR_BACKWARD 0.0125f
 
 static const char *fallingSounds[] = {
 	"player/falling1.wav"
@@ -169,18 +169,17 @@ void Movement::update(float deltaTime)
 			p->GetStates()->isMoving = true;
 			float totalSpeed = this->speed;
 
-			if (this->p->GetStates()->isJumping || this->isInAir)
+			if (this->p->GetStates()->isJumping && this->isInAir)
 			{
 				DoJumpStuff(totalSpeed);
 				p->RotateRelativeVec3(rot, this->camLook, targetRot);
 				p->Walk(pos, totalSpeed, true);
 			}
-			else if (!this->p->GetStates()->isJumping && !this->isInAir && this->p->GetVelocity().Y <= 0.0f)
+			if (!this->p->GetStates()->isJumping /*&& !this->isInAir*/ && this->p->GetVelocity().Y <= 0.0f)
 			{
 				p->RotateRelativeVec3(rot, this->camLook, targetRot);
 				p->Walk(pos, totalSpeed * deltaTime);
 			}
-
 
 			// If the player is moving, rotate it to match the camera's direction.
 			if (getOwnerId() == 1)
