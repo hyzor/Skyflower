@@ -3,6 +3,16 @@
 // Must be included last!
 #include "shared/debug.h"
 
+Field::Field(float Weight, float Size,Vec3 center, Vec3 Pos, Box safe)
+{
+	this->Weight = Weight;
+	this->Pos = Pos;
+	this->Center = center;
+	this->Size = Size;
+	this->Safe = safe;
+	this->Active = true;
+}
+
 Field::Field(float Weight, float Size, Vec3 Pos, Box safe)
 {
 	this->Weight = Weight;
@@ -27,7 +37,7 @@ float Field::GetWeight(Vec3 pos)
 	if (!Active)
 		return 0;
 
-	float dist = (Pos - pos).Length();
+	float dist = ((Pos+Center) - pos).Length();
 
 	if (dist > Size)
 		return 0;

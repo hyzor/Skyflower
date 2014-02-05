@@ -8,6 +8,7 @@ class Field
 {
 	public:
 		Field(float Weight, float Size, Vec3 Pos, Box safe);
+		Field(float Weight, float Size,Vec3 center, Vec3 Pos, Box safe);
 
 		void Move(Vec3 Pos);
 		void ChangeWeight(float Weight);
@@ -22,6 +23,7 @@ class Field
 		float Size;
 		Vec3 Pos;
 		Box Safe;
+		Vec3 Center;
 };
 
 

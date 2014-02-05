@@ -86,6 +86,11 @@ Box CollisionModel::GetBox()
 	return bounds;
 }
 
+Sphere CollisionModel::GetSphere()
+{
+	return sphere;
+}
+
 Triangle* CollisionModel::GetTriangle(int index)
 {
 	return &triangles[index];

@@ -7,6 +7,8 @@
 #include "Ray.h"
 #include "Triangle.h"
 
+class Sphere;
+
 class CollisionInstance
 {
 public:
@@ -21,6 +23,7 @@ public:
 	virtual bool Test(CollisionInstance* ci) = 0;
 
 	virtual Box GetBox() = 0;
+	virtual Sphere GetSphere() = 0;
 	virtual Vec3 GetPosition() = 0;
 
 	virtual bool isActive() = 0;

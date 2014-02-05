@@ -30,18 +30,16 @@ void AI::update(float dt)
 	Vec3 pos = getOwner()->returnPos();
 	Ray r = Ray(pos + Vec3(0, 15, 0), Vec3(0, -30, 0));
 
-	////find target
-	//Entity* p = getEntityManager()->getEntity(1); //player id = 0
 
-	
+	/*getEntityManager()->getEntity(8)->field->Active = false;
+	getEntityManager()->getEntity(15)->field->Active = false;
+	getEntityManager()->getEntity(16)->field->Active = false;
+	getEntityManager()->getEntity(12)->field->Active = false;
+	getEntityManager()->getEntity(13)->field->Active = false;*/
 
 	//set fields to deactivate
 	getOwner()->ActiveteField(false);
-	/*if (getOwner()->ground)
-	{
-		if (getOwner()->ground->field)
-			getOwner()->ground->field->Active = false;
-	}*/
+	
 
 	Field* targetField = nullptr;
 	Field* targetcenter = nullptr;
@@ -51,12 +49,6 @@ void AI::update(float dt)
 		targetField = getEntityManager()->modules->potentialField->CreateField(-1000, 1000, target->returnPos()); // set target
 		targetcenter = getEntityManager()->modules->potentialField->CreateField(1000, centerradius, this->target->returnPos());
 
-		/*if (target->field)
-			target->field->Active = false;
-
-		if (target->ground)
-			if (target->ground->field)
-				target->ground->field->Active = false;*/
 	}
 
 	//find direction to target
@@ -66,24 +58,13 @@ void AI::update(float dt)
 	//re activate after use
 	getOwner()->ActiveteField(true);
 	if (target)
+	{
 		target->ActiveteField(true);
-	/*if (getOwner()->ground)
-	{
-		if (getOwner()->ground->field)
-			getOwner()->ground->field->Active = true;
-	}*/
-	if (target)
-	{
+
 		getEntityManager()->modules->potentialField->DeleteField(targetField);
 		getEntityManager()->modules->potentialField->DeleteField(targetcenter);
-
-		/*if (target->field)
-			target->field->Active = true;
-
-		if (target->ground)
-			if (target->ground->field)
-				target->ground->field->Active = true;*/
 	}
+
 
 
 	//check if direction is safe

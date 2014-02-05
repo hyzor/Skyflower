@@ -116,7 +116,7 @@ Entity::Entity(const Modules *modules, EntityId id, EntityId relativeid, string 
 		collInst = modules->collision->CreateCollisionInstance(model, pos);
 		collInst->SetScale(scale);
 		collInst->SetRotation(rot);
-		field = this->modules->potentialField->CreateField(collInst, pos);
+		field = this->modules->potentialField->CreateField(collInst, pos, scale.X);
 	}
 	else
 	{

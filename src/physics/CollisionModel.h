@@ -21,6 +21,7 @@ class CollisionModel
 		void Load(std::string file);
 
 		Box GetBox();
+		Sphere GetSphere();
 		Triangle* GetTriangle(int index);
 		ModelTreeParent* GetTree();
 		int Triangles();

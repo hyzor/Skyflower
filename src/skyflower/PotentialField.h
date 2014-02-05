@@ -17,7 +17,7 @@ class PotentialField
 		~PotentialField();
 
 		Field* CreateField(float weight, float size, Vec3 pos);
-		Field* CreateField(CollisionInstance* collinst, Vec3 pos);
+		Field* CreateField(CollisionInstance* collinst, Vec3 pos, float scale);
 		void DeleteField(Field* f);
 
 		Vec3 GetDir(Vec3 pos);

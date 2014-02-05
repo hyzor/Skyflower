@@ -3,6 +3,8 @@
 // Must be included last!
 #include "shared/debug.h"
 
+#include "Physics/Sphere.h"
+
 PotentialField::PotentialField()
 {
 }
@@ -20,7 +22,7 @@ Field* PotentialField::CreateField(float weight, float size, Vec3 pos)
 	return f;
 }
 
-Field* PotentialField::CreateField(CollisionInstance* collinst, Vec3 pos)
+Field* PotentialField::CreateField(CollisionInstance* collinst, Vec3 pos, float scale)
 {
 	/*//load obj
 	std::stringstream ss;
@@ -72,14 +74,25 @@ Field* PotentialField::CreateField(CollisionInstance* collinst, Vec3 pos)
 	if (bounds.Size.Y <= 2)
 		size = 0;
 
-	Field* f = new Field(size, radius*1.5f, pos + center, bounds);
+	Field* f = new Field(size, radius*1.5f, pos + center, bounds);*/
+
+	Sphere s = collinst->GetSphere();
+	s.Position -= collinst->GetPosition();
+	Box b = collinst->GetBox();
+	b.Position -= collinst->GetPosition();
+
+	s.Radius *= scale;
+	s.Position *= scale;
+	b.Size *= scale;
+	b.Position *= scale;
+
+	float size = s.Radius*1.5f;
+	if (b.Size.Y <= 2 || b.Size.X > 50 || b.Size.Z > 50) //platformarna räknas inte in
+		size = 0;
+	Field* f = new Field(size, s.Radius*1.5f, s.Position, pos, b);
 	fields.push_back(f);
 
-
-	
-	return f;*/
-
-	return nullptr;
+	return f;
 }
 
 void PotentialField::DeleteField(Field* f)
