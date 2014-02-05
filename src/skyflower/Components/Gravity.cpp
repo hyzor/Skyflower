@@ -77,7 +77,7 @@ float GravityComponent::testMove(Ray r, Entity* e, Entity* &out)
 
 	//test collision for other collidible entitis
 	float col = 0;
-	for (size_t j = 0; j < getEntityManager()->getNrOfEntities(); j++)
+	for (int j = 0; j < getEntityManager()->getNrOfEntities(); j++)
 	{
 		Entity* EntiJ = getEntityManager()->getEntityByIndex(j);
 		if (EntiJ->collInst && EntiJ != e)
