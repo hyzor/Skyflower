@@ -25,13 +25,17 @@ void CollisionModel::Load(std::string file)
 		std::vector<Vec3> positions;
 		std::ifstream infile(ss.str());
 		std::string line;
+		Vec3 center;
 		while (std::getline(infile, line))
 		{
 			std::vector<std::string> elements = split(line);
 			if (elements.size() > 0)
 			{
 				if (elements.at(0) == "v")
+				{
 					positions.push_back(Vec3((float)atof(elements.at(1).c_str()), (float)atof(elements.at(2).c_str()), (float)atof(elements.at(3).c_str())));
+					center += positions[positions.size() - 1];
+				}
 				else if (elements.at(0) == "f" && elements.size() > 6)
 				{
 					Triangle t;
@@ -43,23 +47,30 @@ void CollisionModel::Load(std::string file)
 			}
 		}
 		infile.close();
+		center /= (int)positions.size();
 
-		//calculate bounds
+		//calculate bounds and sphere
 		Vec3 vMin = Vec3::Max();
 		Vec3 vMax = Vec3::Min();
+		float radius = 0;
 		for (unsigned int i = 0; i < positions.size(); i++)
 		{
-			Vec3 pos = positions[i];
+			//calculate box
+			vMin = Vec3::Min(vMin, positions[i]);
+			vMax = Vec3::Max(vMax, positions[i]);
 
-			vMin = Vec3::Min(vMin, pos);
-			vMax = Vec3::Max(vMax, pos);
+
+			//calculate sphere
+			Vec3 p = positions[i];
+			p.Y = center.Y; // skipp height
+			float len = (p - center).Length();
+			if (len > radius)
+				radius = len;
 		}
 		bounds = Box(vMin, vMax - vMin);
+		sphere = Sphere(center, radius);
 
-
-
-		//calculate sphere
-
+		
 
 		//create tree
 		tree = new ModelTreeParent(vMin, vMax);
@@ -115,6 +126,7 @@ void CollisionModel::SaveTree(std::string file)
 	std::fstream outfile(file, std::ios::out | std::ios::binary);
 	
 	outfile.write((char*)&bounds, sizeof(Box));
+	outfile.write((char*)&sphere, sizeof(Sphere));
 
 	size_t tCount = triangles.size();
 	outfile.write((char*)&tCount, 4);
@@ -134,6 +146,7 @@ bool CollisionModel::LoadTree(std::string file)
 	if (infile)
 	{
 		infile.read((char*)&bounds, sizeof(Box));
+		infile.read((char*)&sphere, sizeof(Sphere));
 
 		int tCount;
 		infile.read((char*)&tCount, 4);
