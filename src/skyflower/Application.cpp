@@ -18,7 +18,7 @@ using namespace tinyxml2;
 using namespace Cistron;
 
 // Evil global variable until we have some kind of configuration system.
-static bool g_quakeSounds = true;
+static bool g_quakeSounds = false;
 
 Application::Application()
 {
