@@ -236,10 +236,3 @@ float Slider::getValue()
 	float value = (sliderBounds._position.X - bounds._position.X) / width;
 	return value;
 }
-
-void Slider::setMouseDown(bool state)
-{
-	mouseDown = state;
-	if (!state)
-		wasClicked = false;
-}

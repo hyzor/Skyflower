@@ -35,7 +35,7 @@
 	
     <Entity entityName="plattform3" model="Models\Worlds\Subworld 1\plattform3" id="8" isVisible="1" isCollidible="1" isAnimated="0" xPos="309.001247671" yPos="58.9019072742" zPos="155.286195192" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.8655369642" yScale="1.8655369642" zScale="1.8655369642"/>
     <Entity entityName="plattform3Cloud" model="Models\Worlds\Subworld 1\plattform3Cloud" id="9" isVisible="1" isCollidible="0" isAnimated="0" xPos="309.001247671" yPos="58.0351253485" zPos="155.286195192" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.8655369642" yScale="1.8655369642" zScale="1.8655369642"/>
-    <Entity entityName="ropeBallonPlattform" model="Models\Worlds\Subworld 1\ropeBallonPlattform" id="11" isVisible="1" isCollidible="1" isAnimated="0" xPos="0.0" yPos="0.0" zPos="-0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
+    <Entity entityName="ropeBallonPlattform" model="Models\Worlds\Subworld 1\ropeBallonPlattform" id="11" isVisible="1" isCollidible="0" isAnimated="0" xPos="0.0" yPos="0.0" zPos="-0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
 			<MoveTarget targetPosX="0" targetPosY="10" targetPosZ="0" duration="5" easingPower="2" continuous="1" />
     </Entity>
 	<Entity entityName="Rock" model="Models\Worlds\Subworld 1\Rock" id="12" isVisible="1" isCollidible="1" isAnimated="0" xPos="326.041811054" yPos="83.32834014" zPos="149.181274461" xRot="1.73764218889" yRot="-0.192779884652" zRot="-0.0324277093744" xScale="6.76847965241" yScale="6.76847965241" zScale="6.76847965241"/>

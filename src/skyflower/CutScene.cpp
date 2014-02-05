@@ -68,9 +68,9 @@ void CutScene::update(float dt)
 		if (!done)
 		{
 			Vec3 position = mCameraPtr->GetPosition();
-			position = Lerp(position, target._position, dt / target._time);
-			mCurrentYaw = Lerp(mCurrentYaw, target._yaw, dt / target._time);
-			mCurrentPitch = Lerp(mCurrentPitch, target._pitch, dt / target._time);
+			position = Lerp(position, target._position, dt * target._time);
+			mCurrentYaw = Lerp(mCurrentYaw, target._yaw, dt * target._time);
+			mCurrentPitch = Lerp(mCurrentPitch, target._pitch, dt*  target._time);
 
 			mCameraPtr->SetPosition(position);
 			mCameraPtr->Rotate(mCurrentYaw, mCurrentPitch);
@@ -80,8 +80,29 @@ void CutScene::update(float dt)
 		done = true;
 }
 
-void CutScene::quit()
+void CutScene::stop()
 {
 	this->done = true;
+	mCurrentPitch = 0.0f;
+	mCurrentYaw = 0.0f;
+	mCurrentWP = 0;
+	mWaypoints.clear();
+}
+
+int CutScene::SetCamera(lua_State *L)
+{
+	Vec3 pos;
+	float yaw = 0.0f;
+	float pitch = 0.0f;
+	int n = lua_gettop(L);
+
+	pos = Vec3(lua_tonumber(L, 1), lua_tonumber(L, 2), lua_tonumber(L, 3));
+	yaw = (float)(lua_tonumber(L, 4) * (3.14 / 180));
+	pitch = (float)(lua_tonumber(L, 5) * (3.14 / 180));
+
+	self->mCameraPtr->SetPosition(pos);
+	self->mCameraPtr->Rotate(yaw, pitch);
+
+	return 0;
 }
 
