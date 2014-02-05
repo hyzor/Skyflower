@@ -63,7 +63,7 @@ rush = true
 rushtime = 0
 scaredtime = 0
 function update_aiPush(id, dt)
-	if IsTouching(id, 16) or IsTouching(id, 12) or IsTouching(id, 13) then
+	if IsTouching(id, 16) then
 		Jump(id)
 	end
 

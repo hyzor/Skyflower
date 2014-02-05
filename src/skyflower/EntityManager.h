@@ -44,6 +44,7 @@ class EntityManager {
 
 		// destroy Entity
 		void destroyEntity(EntityId);
+		void removeEntity(Entity* e);
 
 		// destroy a component
 		void destroyComponent(Component*);
@@ -181,6 +182,7 @@ class EntityManager {
 		int getNrOfEntities();
 		EntityId getEntityId(int index);
 		Entity* getEntityByIndex(int index);
+
 
 		void updateEntityPos(Vec3 pos, EntityId id);
 		void updateEntityRot(Vec3 rot, EntityId id);

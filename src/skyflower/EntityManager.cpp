@@ -509,9 +509,33 @@ void EntityManager::destroyEntity(EntityId id) {
 		fEntitys.erase(fEntitys.begin() + index);
 		//fIdCounter--;
 	}
+}
+
+
+void EntityManager::removeEntity(Entity* e) {
 
 	
+	int index = -1;
+	for (int i = 0; i < (int)fEntitys.size(); i++)
+	{
+		if (fEntitys[i] == e)
+		{
+			index = i;
+			break;
+		}
+	}
+
+	list<Component*> comps = e->getComponents();
+	for (list<Component*>::iterator it = comps.begin(); it != comps.end(); ++it)
+		destroyComponent(*it);
+
+	if(index != -1)
+		fEntitys.erase(fEntitys.begin() + index);
+
 }
+
+
+
 
 
 
@@ -1160,6 +1184,7 @@ Entity* EntityManager::getEntityByIndex(int index)
 {
 	return fEntitys[index];
 }
+
 
 
 

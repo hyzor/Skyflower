@@ -104,14 +104,15 @@ void LevelHandler::loadQueued(int id)
 {
 	queued = false;
 	printf("Thread started\n");
+
+	std::vector<Entity*> old;
+
 	int nrEntities = _entityManager->getNrOfEntities();
-	for (int i = 0,j = 0; i < nrEntities; i++, j++)
+	for (int i = 0; i < nrEntities; i++)
 	{
-		int eid = _entityManager->getEntityId(j);
-
-		_entityManager->destroyEntity(eid);
-		j--;
-
+		Entity* remove = _entityManager->getEntityByIndex(0);
+		old.push_back(remove);
+		_entityManager->removeEntity(remove);
 	}
 
 	std::string xmlfile = _levels.at(queueID)._path;
@@ -119,6 +120,8 @@ void LevelHandler::loadQueued(int id)
 	_entityManager->loadXML(xmlfile);
 	_current = queueID;
 
+	for (unsigned int i = 0; i < old.size(); i++)
+		delete old[i];
 
 	std::string luafile = _levels.at(queueID)._path;
 	luafile += ".lua";
