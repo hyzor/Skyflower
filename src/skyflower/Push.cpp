@@ -107,7 +107,6 @@ bool Push::canPush(Entity* target)
 
 void Push::push(Entity* target)
 {
-
 	//collision and pushing between two entities
 	Entity* e = target;
 	if (getOwner() != e)
@@ -126,6 +125,9 @@ void Push::push(Entity* target)
 				{
 					e->getPhysics()->SetPushDirection(dir * 10);
 					getEntityManager()->sendMessageToEntity("beingPushed", e->fId);
+
+					Vec3 position = e->returnPos();
+					e->getModules()->sound->PlaySound("push.wav", 1.0f, &position.X);
 				}
 			}
 		}
