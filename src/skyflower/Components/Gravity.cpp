@@ -9,17 +9,14 @@
 void GravityComponent::update(float dt)
 {
 	Vec3 pos = getEntityPos();
-	this->p->AddGravityCalc(pos, this->enabled);
+	
+	if (this->enabled)
+	{
+		this->p->AddGravityCalc(pos);
+	}
 
 	updateEntityPos(pos);
 
-
-
-
-
-
-
-	
 	getOwner()->wall = nullptr;
 	Entity *ground = nullptr;
 
@@ -31,7 +28,11 @@ void GravityComponent::update(float dt)
 		{
 			Vec3 vel = getOwner()->mPhysicsEntity->GetVelocity();
 			if (vel.Y < 0)
+			{
+				vel.X = 0;
 				vel.Y = 0;
+				vel.Z = 0;
+			}
 
 			getOwner()->mPhysicsEntity->SetVelocity(vel);
 			getOwner()->mPhysicsEntity->GetStates()->isJumping = false;
