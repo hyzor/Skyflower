@@ -98,7 +98,7 @@ void Application::Start()
 	levelHandler->init(m_entityManager);
 
 	// Load Hub Level
-	levelHandler->queue(4);
+	levelHandler->queue(0);
 	levelHandler->LoadQueued();
 
 	m_entityManager->sendMessageToEntity("ActivateListener", "player");
@@ -221,13 +221,14 @@ void Application::Start()
 
 		if (levelHandler->hasQueuedLevel() && !levelHandler->isLoading())
 		{
-			// Basically a hax \\ 
+			// Basically a hax \\
 			m_GUI->GetGUIElement(loadingScreen)->SetVisible(true);
 			m_GUI->Draw();
 			m_graphicsEngine->Present();
-			// Dont do this at home \\
-
+			// Dont do this at home 
+			float time = GetTime();
 			levelHandler->LoadQueued();
+			time = GetTime() - time;
 			m_graphicsEngine->Clear();
 			m_graphicsEngine->UpdateSceneData();
 			m_oldTime = GetTime();
