@@ -1,5 +1,9 @@
 player = 1 --player id
 
+function loaded()
+	Print("Lua script loaded")
+end
+
 
 --Intro script--
 ----------------

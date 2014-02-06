@@ -74,7 +74,7 @@ void AI::update(float dt)
 
 	for (size_t i = 0; i < collisionInstances.size(); i++)
 	{
-		Vec3 p = pos + dir * 5;
+		Vec3 p = pos + dir * 10;
 		if (collisionInstances[i]->Test(Ray(p + Vec3(0, 15, 0), Vec3(0, -30, 0))) > 0.0f)
 		{
 			safe = true;
@@ -86,7 +86,7 @@ void AI::update(float dt)
 		if (unsafe[unsafeIndex] != nullptr)
 			getEntityManager()->modules->potentialField->DeleteField(unsafe[unsafeIndex]);
 
-		unsafe[unsafeIndex] = getEntityManager()->modules->potentialField->CreateField(5, 5, pos);
+		unsafe[unsafeIndex] = getEntityManager()->modules->potentialField->CreateField(20, 10, pos);
 		unsafeIndex++;
 		unsafeIndex %= 5;
 	}

@@ -98,7 +98,7 @@ void Application::Start()
 	levelHandler->init(m_entityManager);
 
 	// Load Hub Level
-	levelHandler->queue(0);
+	levelHandler->queue(4);
 	levelHandler->LoadQueued();
 
 	//m_entityManager->sendMessageToEntity("ActivateListener", "player");
@@ -233,9 +233,7 @@ void Application::Start()
 			m_GUI->Draw();
 			m_graphicsEngine->Present();
 
-			//float time = GetTime();
 			levelHandler->LoadQueued();
-			//time = GetTime() - time;
 			m_graphicsEngine->Clear();
 			m_graphicsEngine->UpdateSceneData();
 			m_oldTime = GetTime();

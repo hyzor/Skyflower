@@ -94,8 +94,8 @@ void LevelHandler::loadQueued(int id)
 	queued = false;
 	printf("Thread started\n");
 
+	//get all entities to remove later
 	std::vector<Entity*> old;
-
 	int nrEntities = _entityManager->getNrOfEntities();
 	for (int i = 0; i < nrEntities; i++)
 	{
@@ -104,17 +104,26 @@ void LevelHandler::loadQueued(int id)
 		_entityManager->removeEntity(remove);
 	}
 
+	//load new entities
 	std::string xmlfile = _levels.at(queueID)._path;
 	xmlfile += ".xml";
 	_entityManager->loadXML(xmlfile);
 	_current = queueID;
 
+	//remove old entities
 	for (unsigned int i = 0; i < old.size(); i++)
 		delete old[i];
 
+	//load lua file
 	std::string luafile = _levels.at(queueID)._path;
 	luafile += ".lua";
 	_entityManager->modules->script->Run(luafile);
+
+	//run loaded function
+	Event::entityManager = _entityManager;
+	lua_getglobal(_entityManager->modules->script->L, "loaded");
+	lua_pcall(_entityManager->modules->script->L, 0, 0, 0);
+
 
 	loading = false;
 }
