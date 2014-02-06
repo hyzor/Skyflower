@@ -5,6 +5,7 @@
 
 #include "shared/Vec3.h"
 #include "physics/PhysicsEngine.h"
+#include "graphics/ParticleSystem.h"
 
 #include "Cistron.h"
 #include "Component.h"
@@ -72,6 +73,7 @@ private:
 	float walkAngle;
 	float timeFalling;
 	JumpDirection mInitialJumpDir;
+	ParticleSystem *mParticleSystem;
 
 	void DoJumpStuff(float &speed);
 };

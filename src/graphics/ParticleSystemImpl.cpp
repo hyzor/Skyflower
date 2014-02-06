@@ -18,6 +18,7 @@ UINT GeoStreamOutDesc::ParticleStride = sizeof(Vertex::Particle);
 ParticleSystemImpl::ParticleSystemImpl()
 : mInitVB(0), mDrawVB(0), mStreamOutVB(0), mTexArraySRV(0), mRandomTexSRV(0)
 {
+	mActive = true;
 	mFirstRun = true;
 	mGameTime = 0.0f;
 	mTimeStep = 0.0f;
@@ -37,6 +38,16 @@ ParticleSystemImpl::~ParticleSystemImpl()
 	ReleaseCOM(mInitVB);
 	ReleaseCOM(mDrawVB);
 	ReleaseCOM(mStreamOutVB);
+}
+
+void ParticleSystemImpl::SetActive(bool active)
+{
+	mActive = active;
+}
+
+bool ParticleSystemImpl::IsActive() const
+{
+	return mActive;
 }
 
 float ParticleSystemImpl::GetAge() const
@@ -105,6 +116,7 @@ void ParticleSystemImpl::Draw(ID3D11DeviceContext* dc, const Camera& cam)
 	mShader->SetAccelConstant(mConstantAccelW);
 	mShader->SetParticleProperties(mParticleAgeLimit, mEmitFrequency);
 	mShader->SetParticleType(mParticleType);
+	mShader->SetEmitParticles(mActive);
 
 	mShader->ActivateStreamShaders(dc);
 	mShader->UpdateStreamOutShaders(dc);

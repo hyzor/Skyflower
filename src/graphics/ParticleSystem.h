@@ -20,6 +20,9 @@ class ParticleSystem
 public:
 	virtual ~ParticleSystem() {}
 
+	virtual void SetActive(bool active) = 0;
+	virtual bool IsActive() const = 0;
+
 	virtual void SetEmitPos(const XMFLOAT3& emitPosW) = 0;
 	virtual void SetEmitDir(const XMFLOAT3& emitDirW) = 0;
 

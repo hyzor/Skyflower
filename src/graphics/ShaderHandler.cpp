@@ -2772,3 +2772,8 @@ void ParticleSystemShader::SetParticleType(UINT particleType)
 {
 	mBufferCache.streamOutGSPerFrameBuffer.particleType = particleType;
 }
+
+void ParticleSystemShader::SetEmitParticles(bool emitParticles)
+{
+	mBufferCache.streamOutGSPerFrameBuffer.emitParticles = (emitParticles? 1 : 0);
+}

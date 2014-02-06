@@ -22,6 +22,9 @@ public:
 	ParticleSystemImpl();
 	virtual ~ParticleSystemImpl();
 
+	void SetActive(bool active);
+	bool IsActive() const;
+
 	float GetAge() const;
 
 	void SetEyePos(const XMFLOAT3& eyePosW);
@@ -49,6 +52,8 @@ private:
 	void BuildVB(ID3D11Device* device);
 	
 private:
+	bool mActive;
+
 	UINT mMaxParticles;
 	bool mFirstRun;
 

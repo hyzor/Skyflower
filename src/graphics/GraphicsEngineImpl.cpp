@@ -679,7 +679,7 @@ void GraphicsEngineImpl::UpdateScene(float dt, float gameTime)
 	for (UINT i = 0; i < mParticleSystems.size(); ++i)
 	{
 		mParticleSystems[i]->Update(dt, gameTime);
-		mParticleSystems[i]->SetParticleType((ParticleType)((rand() % ParticleType::NROFTYPES - 1) + 1));
+		//mParticleSystems[i]->SetParticleType((ParticleType)((rand() % ParticleType::NROFTYPES - 1) + 1));
 	}
 
 	mCamera->Update();
