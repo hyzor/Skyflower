@@ -22,6 +22,7 @@ public:
 		bool _isFullscreen;
 		bool _mouseInverted;
 		float _soundVolume;
+		float _mouseSense;
 	};
 public:
 	Menu();

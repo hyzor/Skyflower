@@ -101,7 +101,7 @@ private:
 class Slider : public MenuItem
 {
 public:
-	Slider(GUI *gui, Vec3 position, int width, int height, string textureBack, string textureSlider);
+	Slider(GUI *gui, Vec3 position, int width, int height);
 	void setVisible(bool state);
 	void onMouseClick(Vec3 mousePos);
 	void onMouseDown(Vec3 mousePos);

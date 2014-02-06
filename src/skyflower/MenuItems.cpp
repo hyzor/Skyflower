@@ -175,7 +175,7 @@ bool CheckBox::isChecked()
 
 /* Slider */
 
-Slider::Slider(GUI *gui, Vec3 position, int width, int height, string textureBack, string textureSlider)
+Slider::Slider(GUI *gui, Vec3 position, int width, int height)
 :MenuItem(gui, position, width, height)
 {
 	mouseDown = false;
@@ -185,8 +185,8 @@ Slider::Slider(GUI *gui, Vec3 position, int width, int height, string textureBac
 	sliderBounds._width = 20;
 	sliderBounds._height = 50;
 
-	textureIDs.push_back(gui->CreateGUIElementAndBindTexture(position, "Menygrafik\\" + textureBack));
-	textureIDs.push_back(gui->CreateGUIElementAndBindTexture(sliderBounds._position, "Menygrafik\\" + textureSlider));
+	textureIDs.push_back(gui->CreateGUIElementAndBindTexture(position, "Menygrafik\\slider_back.png"));
+	textureIDs.push_back(gui->CreateGUIElementAndBindTexture(sliderBounds._position, "Menygrafik\\slider.png"));
 	gui->GetGUIElement(textureIDs[0])->SetVisible(false);
 	gui->GetGUIElement(textureIDs[1])->SetVisible(false);
 }

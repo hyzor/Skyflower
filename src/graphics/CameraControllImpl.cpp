@@ -24,7 +24,7 @@ CameraControllImpl::CameraControllImpl(Camera *c)
 	targetY = 0.0f;
 
 	targetY = 0.0f;
-
+	mouseSense = 0.3f+2*0.5f;
 	inverted = false;
 	targetZoom = offset;
 	camera->LookAt(Vec3::Zero());
@@ -42,8 +42,8 @@ void CameraControllImpl::Update(float dt)
 		o.Z = sin(yaw)*cos(pitch);
 		o = o.Normalize();
 
-		pitch = Lerp(pitch, targetPitch, dt * 5);
-		yaw = Lerp(yaw, targetYaw, dt * 5);
+		pitch = Lerp(pitch, targetPitch, dt * 5*mouseSense);
+		yaw = Lerp(yaw, targetYaw, dt * 5*mouseSense);
 
 		
 		if (std::abs(targetY - target.Y) > MAX_CAMERA_DISTANCE)
@@ -135,11 +135,11 @@ void CameraControllImpl::onMouseMove(float mouseX, float mouseY)
 	if (targetYaw - yaw < 1 && targetYaw - yaw > -1)
 	{
 		if (inverted)
-			targetPitch -= mouseY / 250;
+			targetPitch -= (mouseY / 250)*mouseSense;
 		else
-			targetPitch += mouseY / 250;
+			targetPitch += (mouseY / 250)*mouseSense;
 
-		targetYaw -= mouseX / 350;
+		targetYaw -= (mouseX / 350)*mouseSense;
 
 	}
 	if (targetPitch > 1)
@@ -163,5 +163,20 @@ void CameraControllImpl::Rotate(float yaw, float pitch)
 void CameraControllImpl::SetInverted(bool invert)
 {
 	inverted = invert;
+}
+
+bool CameraControllImpl::GetInverted() const
+{
+	return inverted;
+}
+
+void CameraControllImpl::SetMouseSense(float sensitivity)
+{
+	this->mouseSense = sensitivity;
+}
+
+float CameraControllImpl::GetMouseSense()const
+{
+	return mouseSense;
 }
 

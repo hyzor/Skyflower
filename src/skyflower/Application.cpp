@@ -290,6 +290,9 @@ void Application::updateMenu(float dt)
 		m_oldTime = GetTime();
 	}
 
+	if (m_camera->GetMouseSense() != m_menu->getSettings()._mouseSense)
+		m_camera->SetMouseSense(m_menu->getSettings()._mouseSense);
+
 	m_menu->draw();
 
 	switch (m_menu->getStatus())

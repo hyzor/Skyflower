@@ -11,6 +11,7 @@ Menu::Menu()
 	settings._isFullscreen = false;
 	settings._mouseInverted = false;
 	settings._soundVolume = 1.0f;
+	settings._mouseSense = 1.0f;
 }
 
 Menu::~Menu()
@@ -69,8 +70,11 @@ void Menu::init(GUI *g, int screenWidth, int screeenHeight, SoundEngine *sound)
 	CheckBox *mouseInverted = new CheckBox(g, Vec3(430, 420), 20, 20, "checkbox_unchecked.png", "checkbox_checked.png");
 	m_checkboxes.push_back(mouseInverted);
 
-	Slider *volume = new Slider(g, Vec3(430, 350), 150, 40, "slider_back.png", "slider.png");
+	Slider *volume = new Slider(g, Vec3(430, 350), 150, 40);
 	m_sliders.push_back(volume);
+
+	Slider *mouseSense = new Slider(g, Vec3(430, 280), 150, 40);
+	m_sliders.push_back(mouseSense);
 }
 
 bool Menu::isActive()
@@ -95,6 +99,9 @@ void Menu::draw()
 
 	Vec3 soundVolumePos = m_sliders.at(0)->getPosition();
 	guiPtr->printText(L"Sound Volume", (int)(soundVolumePos.X + 160 * scaleX), (int)soundVolumePos.Y+ 10, Vec3(1.0f, 1.0f, 1.0f), scaleX);
+
+	Vec3 mouseSensePos = m_sliders.at(1)->getPosition();
+	guiPtr->printText(L"Mouse sense", (int)(mouseSensePos.X + 160 * scaleX), (int)mouseSensePos.Y + 10, Vec3(1.0f, 1.0f, 1.0f), scaleX);
 }
 
 void Menu::keyPressed(unsigned short key)
@@ -235,4 +242,5 @@ void Menu::onMouseDown(Vec3 mousePos)
 		(*it)->onMouseDown(mousePos);
 	}
 	settings._soundVolume = m_sliders[0]->getValue();
+	settings._mouseSense = m_sliders[1]->getValue()*2 + 0.3; // mouse sense ranges from 0.2 - 2.3
 }
