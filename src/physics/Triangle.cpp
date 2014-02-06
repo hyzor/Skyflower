@@ -86,3 +86,8 @@ Box Triangle::GetBox()
 	Box bounds = Box(min, max - min);
 	return bounds;
 }
+
+Vec3 Triangle::GetNormal()
+{
+	return (P2 - P1).Cross(P3 - P1).Normalize();
+}

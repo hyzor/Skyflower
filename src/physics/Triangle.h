@@ -21,6 +21,8 @@ class DLL_API Triangle
 		static bool Test(Triangle &t1, Triangle &t2);
 
 		Box GetBox();
+
+		Vec3 GetNormal();
 	private:
 };
 

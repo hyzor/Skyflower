@@ -22,6 +22,7 @@
     <ClCompile Include="src\skyflower\Application.cpp" />
     <ClCompile Include="src\skyflower\Component.cpp" />
     <ClCompile Include="src\skyflower\Components\AI.cpp" />
+    <ClCompile Include="src\skyflower\Components\BoxComp.cpp" />
     <ClCompile Include="src\skyflower\Components\Button.cpp" />
     <ClCompile Include="src\skyflower\Components\Checkpoint.cpp" />
     <ClCompile Include="src\skyflower\Components\Event.cpp" />

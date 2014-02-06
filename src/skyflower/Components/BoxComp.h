@@ -26,17 +26,14 @@ class BoxComp : public Component
 
 		void addedToEntity()
 		{
-			//getComponents<GravityComponent>("Gravity");
+
 		}
 
 		void removeFromEntity()
 		{
 		}
 
-		void update(float deltaTime)
-		{
-			
-		}
+		void update(float deltaTime);
 
 		float GetSpeed()
 		{
@@ -45,6 +42,8 @@ class BoxComp : public Component
 	private:
 
 		float speed;
+
+		Triangle getGroundTriangle(Entity* e, Entity* ground);
 };
 
 

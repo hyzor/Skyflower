@@ -58,6 +58,7 @@ private:
 
 	float testMove(Ray r, Entity* e, Entity* &out);
 
+
 	void createRays();
 };
 

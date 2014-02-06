@@ -78,6 +78,14 @@ class Entity {
 		EntityId fId;
 
 		void ActiveteField(bool b);
+		Vec3 returnRot();
+		Vec3 returnScale();
+		bool returnVisible();
+		bool getIsActive();
+		CollisionInstance* returnCollision();
+		void updateScale(Vec3 scale);
+		void updateVisible(bool isVisible);
+		void setIsActive(bool status);
 
 	private:
 
@@ -156,14 +164,7 @@ class Entity {
 
 		EntityId getEntityId();
 
-		Vec3 returnRot();
-		Vec3 returnScale();
-		bool returnVisible();
-		bool getIsActive();
-		CollisionInstance* returnCollision();
-		void updateScale(Vec3 scale);
-		void updateVisible(bool isVisible);
-		void setIsActive(bool status);
+		
 
 		const Modules *modules;
 };
