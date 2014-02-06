@@ -57,7 +57,7 @@ SamplerState samPoint : register(s3);
 
 struct PixelOut
 {
-	float4 LitColor : SV_Target4;
+	float4 LitColor : SV_Target0;
 };
 
 PixelOut main(VertexOut pIn)

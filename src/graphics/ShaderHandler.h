@@ -927,6 +927,8 @@ public:
 	void SetTexArray(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* texArray);
 	void SetRandomTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* randomTex);
 
+	void SetLitSceneTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* litSceneTex);
+
 	void SetEyePosW(XMFLOAT3 eyePosW);
 	void SetEmitProperties(XMFLOAT3 emitPosW, XMFLOAT3 emitDirW);
 	void SetParticleProperties(float particleAgeLimit, float emitFrequency);
@@ -1014,6 +1016,8 @@ private:
 	// Shared data
 	ID3D11ShaderResourceView* mTexArray;
 	ID3D11ShaderResourceView* mRandomTex;
+
+	ID3D11ShaderResourceView* mLitSceneTex;
 };
 #pragma endregion ParticleSystemShader
 

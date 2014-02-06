@@ -2,6 +2,8 @@
 
 Texture2DArray gTexArray : register(t0);
 
+Texture2D gLitScene : register(t1);
+
 SamplerState samLinear : register(s0);
 
 struct PixelOut
@@ -17,9 +19,18 @@ PixelOut main(GeoOut pIn)
 
 	// Clip pixels that are alpha 0.15f or lower
 	// The z-component in float3 represents the texture index in the texture array
-	clip((gTexArray.Sample(samLinear, float3(pIn.Tex, pIn.TexIndex)) * pIn.Color).a - 0.15f);
+	float alpha = gTexArray.Sample(samLinear, float3(pIn.Tex, pIn.TexIndex) * pIn.Color).a;
+
+	clip(alpha - 0.15f);
+
+	float4 sceneColor = gLitScene.Sample(samLinear, pIn.Tex);
+
 
 	pOut.Color = gTexArray.Sample(samLinear, float3(pIn.Tex, pIn.TexIndex)) * pIn.Color;
+
+	float3 colorOut = lerp(pOut.Color.xyz, sceneColor.xyz, pOut.Color.w);
+
+	pOut.Color.xyz = colorOut.xyz;
 
 	// No shadow cast on it
 	pOut.Color.w = 1.0f;

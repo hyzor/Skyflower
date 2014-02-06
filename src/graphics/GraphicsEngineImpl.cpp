@@ -649,9 +649,8 @@ void GraphicsEngineImpl::DrawScene()
 	//XMFLOAT4 test = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
 	XMVECTORF32 Green = { 0.000000000f, 1.000000000f, 0.000000000f, 1.000000000f };
 	mSpriteBatch->Begin();
-	mSpriteBatch->Draw(mD3D->GetDepthStencilSRView(), XMFLOAT2(0.0f, 0.0f), nullptr, Green, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
-	mSpriteBatch->Draw(mDeferredBuffers->GetSRV(DeferredBuffersIndex::LitScene), XMFLOAT2(0.0f, 200.0f), nullptr, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
-
+	mSpriteBatch->Draw(mD3D->GetDepthStencilSRView(), XMFLOAT2(0.0f, 0.0f), nullptr, Colors::Red, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
+	mSpriteBatch->Draw(mDeferredBuffers->GetLitSceneSRV(), XMFLOAT2(0.0f, 200.0f), nullptr, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
 	mSpriteBatch->End();
 
 	//-------------------------------------------------------------------------------------
@@ -906,6 +905,7 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
 
 	mDeferredBuffers->ClearRenderTargets(mD3D->GetImmediateContext(), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f), mD3D->GetDepthStencilView());
+	mD3D->GetImmediateContext()->ClearRenderTargetView(mDeferredBuffers->GetLitSceneRTV(), Colors::Black);
 
 	//mShaderHandler->mSkyDeferredShader->SetActive(mD3D->GetImmediateContext());
 	mSky->Draw(mD3D->GetImmediateContext(), *mCamera, mShaderHandler->mSkyDeferredShader);
@@ -915,9 +915,13 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(0, 0);
 	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
 
-	// Enable stencil and depth tests
+	// Clear stencil buffer
+	mD3D->GetImmediateContext()->ClearDepthStencilView(mD3D->GetDepthStencilView(), D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	// Enable stencil testing (subsequent draw calls will set stencil bits)
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDepthStencilEnabledDSS, 0);
 
+	// Now begin drawing all the opaque objects...
 	//---------------------------------------------------------------------------------------
 	// Static opaque objects
 	//---------------------------------------------------------------------------------------
@@ -968,7 +972,7 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	}
 
 	//---------------------------------------------------------------------------------------
-	// Skinned
+	// Skinned opaque objects
 	//---------------------------------------------------------------------------------------
 	mShaderHandler->mBasicDeferredSkinnedShader->SetActive(mD3D->GetImmediateContext());
 
@@ -987,7 +991,7 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	}
 
 	//---------------------------------------------------------------------------------------
-	// Morphed objects
+	// Morphed opaque objects
 	//---------------------------------------------------------------------------------------
 	mShaderHandler->mDeferredMorphShader->SetActive(mD3D->GetImmediateContext());
 	mShaderHandler->mDeferredMorphShader->SetShadowMapTexture(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
@@ -1020,11 +1024,19 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 		}
 	}
 
-	ID3D11RenderTargetView* renderTargets[1] = { mD3D->GetRenderTargetView() };
-	mD3D->GetImmediateContext()->OMSetRenderTargets(1, renderTargets, mD3D->GetDepthStencilView());
+	//ID3D11RenderTargetView* renderTargets[1] = { mD3D->GetRenderTargetView() };
+	//mD3D->GetImmediateContext()->OMSetRenderTargets(1, renderTargets, mD3D->GetDepthStencilView());
+
+	// TODO: Make use of mIntermediateTexture instead of LitScene in DeferredBuffers
+	ID3D11RenderTargetView* renderTargetsLitScene[1] = { mDeferredBuffers->GetLitSceneRTV() };
+	mD3D->GetImmediateContext()->OMSetRenderTargets(1, renderTargetsLitScene, NULL);
+	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDisabledDSS, 0);
+
+	// Clear lit scene buffer with black color (with previous stencil information)
+	mD3D->GetImmediateContext()->ClearRenderTargetView(renderTargetsLitScene[0], Colors::Black);
 
 	//---------------------------------------------------------------------------------------
-	// Draw first lit scene layer (opaque objects)
+	// Opaque objects lighting
 	//---------------------------------------------------------------------------------------
 	mShaderHandler->mLightDeferredToTextureShader->SetActive(mD3D->GetImmediateContext());
 	mShaderHandler->mLightDeferredToTextureShader->SetEyePosW(mCamera->GetPosition());
@@ -1046,7 +1058,7 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	//ID3D11RenderTargetView* renderTargets[1] = { mD3D->GetRenderTargetView() };
 	//mD3D->GetImmediateContext()->OMSetRenderTargets(1, renderTargets, mD3D->GetDepthStencilView());
 
-	mShaderHandler->mLightDeferredToTextureShader->SetDiffuseTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Diffuse));
+ 	mShaderHandler->mLightDeferredToTextureShader->SetDiffuseTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Diffuse));
 	mShaderHandler->mLightDeferredToTextureShader->SetNormalTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Normal));
 	mShaderHandler->mLightDeferredToTextureShader->SetSpecularTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Specular));
 	mShaderHandler->mLightDeferredToTextureShader->SetVelocityTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Velocity));
@@ -1058,7 +1070,8 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	mShaderHandler->mLightDeferredToTextureShader->SetWorldViewProj(XMMatrixIdentity(), mCamera->GetBaseViewMatrix(), mCamera->GetOrthoMatrix());
 	mShaderHandler->mLightDeferredToTextureShader->UpdatePerObj(mD3D->GetImmediateContext());
 
-	mDeferredBuffers->SetRenderTargets(mD3D->GetImmediateContext(), mD3D->GetDepthStencilView());
+	//mDeferredBuffers->SetRenderTargets(mD3D->GetImmediateContext(), mD3D->GetDepthStencilView());
+	//mD3D->GetImmediateContext()->OMSetRenderTargets(1, renderTargetsLitScene, mD3D->GetDepthStencilView());
 
 	// Now render the window
 	mOrthoWindow->Render(mD3D->GetImmediateContext());
@@ -1071,32 +1084,68 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	mShaderHandler->mLightDeferredToTextureShader->SetDiffuseTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mLightDeferredToTextureShader->SetNormalTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mLightDeferredToTextureShader->SetSpecularTexture(mD3D->GetImmediateContext(), NULL);
-	//mShaderHandler->mLightDeferredShader->SetPositionTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mLightDeferredToTextureShader->SetSSAOTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mLightDeferredToTextureShader->SetDepthTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mLightDeferredToTextureShader->SetVelocityTexture(mD3D->GetImmediateContext(), NULL);
 
-	// First layer of lit scene should be done by now, begin drawing transparent objects
+	// First layer of lit scene (opaque objects) should be done by now, begin drawing transparent objects
 	
 	//---------------------------------------------------------------------------------------
 	// Transparent objects
 	//---------------------------------------------------------------------------------------
+	mD3D->GetImmediateContext()->OMSetBlendState(RenderStates::mAdditiveBS, NULL, 0xffffffff);
 
-	//---------------------------------------------------------------------------------------
-	// Particles
-	//---------------------------------------------------------------------------------------
-	//mD3D->GetImmediateContext()->RSSetState(0);
+	// Clear stencil buffer
+	mD3D->GetImmediateContext()->ClearDepthStencilView(mD3D->GetDepthStencilView(), D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	// Set render targets to G-buffers
+	mDeferredBuffers->SetRenderTargets(mD3D->GetImmediateContext(), mD3D->GetDepthStencilView());
+
+	// Set previously drawn lit scene as a texture to use in particle shader
+	mShaderHandler->mParticleSystemShader->SetLitSceneTex(mD3D->GetImmediateContext(), mDeferredBuffers->GetLitSceneSRV());
+
+	// Now draw transparent particles (stencil still enabled)...
 	for (UINT i = 0; i < mParticleSystems.size(); ++i)
 	{
 		mParticleSystems[i]->SetEyePos(mCamera->GetPosition());
 		mParticleSystems[i]->Draw(mD3D->GetImmediateContext(), *mCamera);
 	}
 
+	// Unbind lit scene texture from particle shader
+	mShaderHandler->mParticleSystemShader->SetLitSceneTex(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mParticleSystemShader->ActivateDrawShaders(mD3D->GetImmediateContext());
+	mShaderHandler->mParticleSystemShader->UpdateDrawShaders(mD3D->GetImmediateContext());
+
 	// Restore to not using a geometry shader
 	mD3D->GetImmediateContext()->GSSetShader(nullptr, nullptr, 0);
 
+	// Now render the window
+	mShaderHandler->mLightDeferredToTextureShader->SetActive(mD3D->GetImmediateContext());
+	mShaderHandler->mLightDeferredToTextureShader->UpdatePerFrame(mD3D->GetImmediateContext());
+	mShaderHandler->mLightDeferredToTextureShader->UpdatePerObj(mD3D->GetImmediateContext());
+
+	mD3D->GetImmediateContext()->OMSetRenderTargets(1, renderTargetsLitScene, NULL);
+
+	mShaderHandler->mLightDeferredToTextureShader->SetDiffuseTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Diffuse));
+	mShaderHandler->mLightDeferredToTextureShader->SetNormalTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Normal));
+	mShaderHandler->mLightDeferredToTextureShader->SetSpecularTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Specular));
+	mShaderHandler->mLightDeferredToTextureShader->SetVelocityTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Velocity));
+	mShaderHandler->mLightDeferredToTextureShader->SetSSAOTexture(mD3D->GetImmediateContext(), mSSAOTexture->GetShaderResourceView());
+	mShaderHandler->mLightDeferredToTextureShader->SetDepthTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
+
+	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDisabledDSS, 0);
+
+	mOrthoWindow->Render(mD3D->GetImmediateContext());
+
+	mShaderHandler->mLightDeferredToTextureShader->SetDiffuseTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mLightDeferredToTextureShader->SetNormalTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mLightDeferredToTextureShader->SetSpecularTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mLightDeferredToTextureShader->SetSSAOTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mLightDeferredToTextureShader->SetDepthTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mLightDeferredToTextureShader->SetVelocityTexture(mD3D->GetImmediateContext(), NULL);
+
 	// Reset the render target back to the original back buffer and not the render buffers
-	//ID3D11RenderTargetView* renderTargets[1] = { mD3D->GetRenderTargetView() };
+	ID3D11RenderTargetView* renderTargets[1] = { mD3D->GetRenderTargetView() };
 	mD3D->GetImmediateContext()->OMSetRenderTargets(1, renderTargets, mD3D->GetDepthStencilView());
 
 	// Reset viewport

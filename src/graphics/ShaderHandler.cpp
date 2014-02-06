@@ -2709,6 +2709,7 @@ void ParticleSystemShader::UpdateDrawShaders(ID3D11DeviceContext* dc)
 	dc->VSGetConstantBuffers(0, 1, &draw_VS_InitBuffer);
 
 	dc->PSSetShaderResources(0, 1, &mTexArray);
+	dc->PSSetShaderResources(1, 1, &mLitSceneTex);
 }
 
 void ParticleSystemShader::UpdateStreamOutShaders(ID3D11DeviceContext* dc)
@@ -2773,4 +2774,9 @@ void ParticleSystemShader::SetTextureIndex(UINT textureIndex)
 void ParticleSystemShader::SetParticleType(UINT particleType)
 {
 	mBufferCache.streamOutGSPerFrameBuffer.particleType = particleType;
+}
+
+void ParticleSystemShader::SetLitSceneTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* litSceneTex)
+{
+	mLitSceneTex = litSceneTex;
 }
