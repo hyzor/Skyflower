@@ -171,9 +171,9 @@ void Movement::update(float deltaTime)
 
 			if (this->p->GetStates()->isJumping && this->isInAir)
 			{
-				DoJumpStuff(totalSpeed);
+				//DoJumpStuff(totalSpeed);
 				p->RotateRelativeVec3(rot, this->camLook, targetRot);
-				p->Walk(pos, totalSpeed, true);
+				p->Walk(pos, totalSpeed * deltaTime);
 			}
 			if (!this->p->GetStates()->isJumping /*&& !this->isInAir*/ && this->p->GetVelocity().Y <= 0.0f)
 			{

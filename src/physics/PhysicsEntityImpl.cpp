@@ -70,8 +70,8 @@ bool PhysicsEntityImpl::Jump(Vec3 &pos, float forwardSpeed)
 	if (!this->mStates.isJumping)
 	{
 		this->mStates.isJumping = true;
-		this->mVelocity += this->mOrient.GetLook() * forwardSpeed;
-		this->mVelocity.Y -= this->mOrient.GetLook().Y * forwardSpeed;
+		//this->mVelocity += this->mOrient.GetLook() * forwardSpeed;
+		//this->mVelocity.Y -= this->mOrient.GetLook().Y * forwardSpeed;
 		this->mVelocity.Y += JUMP_VELOCITY_DEFAULT;
 
 		return true;

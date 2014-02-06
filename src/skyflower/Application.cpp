@@ -98,7 +98,7 @@ void Application::Start()
 	levelHandler->init(m_entityManager);
 
 	// Load Hub Level
-	levelHandler->queue(4);
+	levelHandler->queue(0);
 	levelHandler->LoadQueued();
 
 	m_entityManager->sendMessageToEntity("ActivateListener", "player");
