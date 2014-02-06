@@ -101,7 +101,7 @@ void Application::Start()
 	levelHandler->queue(0);
 	levelHandler->LoadQueued();
 
-	m_entityManager->sendMessageToEntity("ActivateListener", "player");
+	//m_entityManager->sendMessageToEntity("ActivateListener", "player");
 	m_graphicsEngine->UpdateSceneData();
 	m_entityManager->loadXML("subWorld1Lights.XML");
 	

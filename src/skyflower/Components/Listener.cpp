@@ -49,6 +49,9 @@ void ListenerComponent::addedToEntity()
 	m_listener = owner->getModules()->sound->CreateListener();
 
 	requestMessage("ActivateListener", &ListenerComponent::activateListener);
+
+	// :(
+	owner->getModules()->sound->SetActiveListener(m_listener);
 }
 
 void ListenerComponent::removeFromEntity()
