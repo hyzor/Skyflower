@@ -101,9 +101,9 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mTextureMgr = new TextureManager();
 	mTextureMgr->Init(mD3D->GetDevice(), mD3D->GetImmediateContext());
 
+	/*
 	mMorphModels.push_back(new MorphModel(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Models/Morphtest/Block/", "WoodBlock.morph"));
 	
-	/*
 	mMorphInstances.push_back(new MorphModelInstance());
 	XMMATRIX scaling = XMMatrixScaling(1.0f, 1.0f, 1.0f);
 	XMMATRIX rotation = XMMatrixRotationY(0.0f);
@@ -181,7 +181,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\BasicDeferredMorphPS.cso", "BasicDeferredMorphPS", mD3D->GetDevice());
 
 	// Lit scene to texture
-	//mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\LightDeferredPS_ToTexture.cso", "LightDeferredPS_ToTexture", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\LightDeferredPS_ToTexture.cso", "LightDeferredPS_ToTexture", mD3D->GetDevice());
 
 	// Post-processing shaders
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\FullscreenQuadVS.cso", "FullscreenQuadVS", mD3D->GetDevice());
@@ -252,6 +252,10 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 		mShaderHandler->GetVertexShader("BasicDeferredMorphVS"),
 		mShaderHandler->GetPixelShader("BasicDeferredMorphPS"));
 
+	mShaderHandler->mLightDeferredToTextureShader->BindShaders(
+		mShaderHandler->GetVertexShader("LightDeferredVS"),
+		mShaderHandler->GetPixelShader("LightDeferredPS_ToTexture"));
+
 	// Shadow mapping
 	mShaderHandler->mShadowShader->BindShaders(
 		mShaderHandler->GetVertexShader("ShadowBuildVS"),
@@ -302,6 +306,8 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mDeferredMorphShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTargets4);
 	mShaderHandler->mShadowMorphShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTargets4);
 	mShaderHandler->mParticleSystemShader->Init(mD3D->GetDevice(), mInputLayouts->Particle);
+
+	mShaderHandler->mLightDeferredToTextureShader->Init(mD3D->GetDevice(), mInputLayouts->PosTex);
 
 	std::string fontPath = mResourceDir + "myfile.spritefont";
 	std::wstring fontPathW(fontPath.begin(), fontPath.end());
@@ -482,7 +488,7 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mLightDeferredShader->SetLightWorldViewProj(mShadowMap->GetLightWorld(), mShadowMap->GetLightView(), mShadowMap->GetLightProj());
 	
 	// TODO: Instead of hard coding these properties, get them from some modifiable settings collection
-	mShaderHandler->mLightDeferredShader->SetFogProperties(1, 0.0075f, -150.0f, 0.005f, XMFLOAT4(0.86f, 0.86f, 0.9f, 1.0f));//XMFLOAT4(0.85f, 0.85f, 0.85f, 1.0f));
+	mShaderHandler->mLightDeferredShader->SetFogProperties(0, 0.0075f, -150.0f, 0.005f, XMFLOAT4(0.86f, 0.86f, 0.9f, 1.0f));//XMFLOAT4(0.85f, 0.85f, 0.85f, 1.0f));
 	mShaderHandler->mLightDeferredShader->SetMotionBlurProperties(1);
 	mShaderHandler->mLightDeferredShader->SetFpsValues(mCurFPS, mTargetFPS);
 
@@ -639,6 +645,14 @@ void GraphicsEngineImpl::DrawScene()
 			mMorphInstances[i]->prevWorld = mMorphInstances[i]->world;
 		}
 	}
+
+	//XMFLOAT4 test = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	XMVECTORF32 Green = { 0.000000000f, 1.000000000f, 0.000000000f, 1.000000000f };
+	mSpriteBatch->Begin();
+	mSpriteBatch->Draw(mD3D->GetDepthStencilSRView(), XMFLOAT2(0.0f, 0.0f), nullptr, Green, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
+	mSpriteBatch->Draw(mDeferredBuffers->GetSRV(DeferredBuffersIndex::LitScene), XMFLOAT2(0.0f, 200.0f), nullptr, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
+
+	mSpriteBatch->End();
 
 	//-------------------------------------------------------------------------------------
 	// Restore defaults
@@ -1006,6 +1020,68 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 		}
 	}
 
+	ID3D11RenderTargetView* renderTargets[1] = { mD3D->GetRenderTargetView() };
+	mD3D->GetImmediateContext()->OMSetRenderTargets(1, renderTargets, mD3D->GetDepthStencilView());
+
+	//---------------------------------------------------------------------------------------
+	// Draw first lit scene layer (opaque objects)
+	//---------------------------------------------------------------------------------------
+	mShaderHandler->mLightDeferredToTextureShader->SetActive(mD3D->GetImmediateContext());
+	mShaderHandler->mLightDeferredToTextureShader->SetEyePosW(mCamera->GetPosition());
+	mShaderHandler->mLightDeferredToTextureShader->SetPointLights(mD3D->GetImmediateContext(), (UINT)mPointLights.size(), mPointLights.data());
+	mShaderHandler->mLightDeferredToTextureShader->SetDirLights(mD3D->GetImmediateContext(), (UINT)mDirLights.size(), mDirLights.data());
+	mShaderHandler->mLightDeferredToTextureShader->SetSpotLights(mD3D->GetImmediateContext(), (UINT)mSpotLights.size(), mSpotLights.data());
+	mShaderHandler->mLightDeferredToTextureShader->SetShadowTransform(mShadowMap->GetShadowTransform());
+	mShaderHandler->mLightDeferredToTextureShader->SetCameraViewProjMatrix(mCamera->GetViewMatrix(), mCamera->GetProjMatrix());
+	mShaderHandler->mLightDeferredToTextureShader->SetLightWorldViewProj(mShadowMap->GetLightWorld(), mShadowMap->GetLightView(), mShadowMap->GetLightProj());
+
+	// TODO: Instead of hard coding these properties, get them from some modifiable settings collection
+	mShaderHandler->mLightDeferredToTextureShader->SetFogProperties(0, 0.0075f, -150.0f, 0.005f, XMFLOAT4(0.86f, 0.86f, 0.9f, 1.0f));//XMFLOAT4(0.85f, 0.85f, 0.85f, 1.0f));
+	mShaderHandler->mLightDeferredToTextureShader->SetMotionBlurProperties(1);
+	mShaderHandler->mLightDeferredToTextureShader->SetFpsValues(mCurFPS, mTargetFPS);
+
+	mShaderHandler->mLightDeferredToTextureShader->UpdatePerFrame(mD3D->GetImmediateContext());
+
+	// Reset the render target back to the original back buffer and not the render buffers
+	//ID3D11RenderTargetView* renderTargets[1] = { mD3D->GetRenderTargetView() };
+	//mD3D->GetImmediateContext()->OMSetRenderTargets(1, renderTargets, mD3D->GetDepthStencilView());
+
+	mShaderHandler->mLightDeferredToTextureShader->SetDiffuseTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Diffuse));
+	mShaderHandler->mLightDeferredToTextureShader->SetNormalTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Normal));
+	mShaderHandler->mLightDeferredToTextureShader->SetSpecularTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Specular));
+	mShaderHandler->mLightDeferredToTextureShader->SetVelocityTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Velocity));
+	mShaderHandler->mLightDeferredToTextureShader->SetSSAOTexture(mD3D->GetImmediateContext(), mSSAOTexture->GetShaderResourceView());
+	mShaderHandler->mLightDeferredToTextureShader->SetDepthTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
+
+	//mDeferredBuffers->SetRenderTargets(mD3D->GetImmediateContext(), mD3D->GetDepthStencilView());
+
+	mShaderHandler->mLightDeferredToTextureShader->SetWorldViewProj(XMMatrixIdentity(), mCamera->GetBaseViewMatrix(), mCamera->GetOrthoMatrix());
+	mShaderHandler->mLightDeferredToTextureShader->UpdatePerObj(mD3D->GetImmediateContext());
+
+	mDeferredBuffers->SetRenderTargets(mD3D->GetImmediateContext(), mD3D->GetDepthStencilView());
+
+	// Now render the window
+	mOrthoWindow->Render(mD3D->GetImmediateContext());
+
+	// Reset the render target back to the original back buffer and not the render buffers
+	//ID3D11RenderTargetView* renderTargets[1] = { mD3D->GetRenderTargetView() };
+	//mD3D->GetImmediateContext()->OMSetRenderTargets(1, renderTargets, mD3D->GetDepthStencilView());
+
+	// Lastly, clear (unbind) the textures (otherwise D3D11 WARNING)
+	mShaderHandler->mLightDeferredToTextureShader->SetDiffuseTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mLightDeferredToTextureShader->SetNormalTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mLightDeferredToTextureShader->SetSpecularTexture(mD3D->GetImmediateContext(), NULL);
+	//mShaderHandler->mLightDeferredShader->SetPositionTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mLightDeferredToTextureShader->SetSSAOTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mLightDeferredToTextureShader->SetDepthTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mLightDeferredToTextureShader->SetVelocityTexture(mD3D->GetImmediateContext(), NULL);
+
+	// First layer of lit scene should be done by now, begin drawing transparent objects
+	
+	//---------------------------------------------------------------------------------------
+	// Transparent objects
+	//---------------------------------------------------------------------------------------
+
 	//---------------------------------------------------------------------------------------
 	// Particles
 	//---------------------------------------------------------------------------------------
@@ -1020,7 +1096,7 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	mD3D->GetImmediateContext()->GSSetShader(nullptr, nullptr, 0);
 
 	// Reset the render target back to the original back buffer and not the render buffers
-	ID3D11RenderTargetView* renderTargets[1] = { mD3D->GetRenderTargetView() };
+	//ID3D11RenderTargetView* renderTargets[1] = { mD3D->GetRenderTargetView() };
 	mD3D->GetImmediateContext()->OMSetRenderTargets(1, renderTargets, mD3D->GetDepthStencilView());
 
 	// Reset viewport

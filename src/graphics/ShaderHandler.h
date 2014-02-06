@@ -1091,6 +1091,7 @@ public:
 	BasicDeferredMorphShader* mDeferredMorphShader;
 	ShadowMorphShader* mShadowMorphShader;
 	ParticleSystemShader* mParticleSystemShader;
+	LightDeferredShader* mLightDeferredToTextureShader;
 
 private:
 

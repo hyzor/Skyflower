@@ -237,13 +237,13 @@ void RenderStates::InitAll(ID3D11Device* device)
 	depthStencilEnabledDSSdesc.StencilEnable = TRUE;
 	depthStencilEnabledDSSdesc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
 	depthStencilEnabledDSSdesc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
-	depthStencilEnabledDSSdesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depthStencilEnabledDSSdesc.FrontFace.StencilFunc = D3D11_COMPARISON_LESS_EQUAL;
 	depthStencilEnabledDSSdesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 	depthStencilEnabledDSSdesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
 	depthStencilEnabledDSSdesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
 	depthStencilEnabledDSSdesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 	depthStencilEnabledDSSdesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilEnabledDSSdesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilEnabledDSSdesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_ZERO;
 	depthStencilEnabledDSSdesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
 
 	device->CreateDepthStencilState(&depthStencilEnabledDSSdesc, &mDepthStencilEnabledDSS);
