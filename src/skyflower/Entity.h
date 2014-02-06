@@ -87,6 +87,8 @@ class Entity {
 		void updateVisible(bool isVisible);
 		void setIsActive(bool status);
 
+
+
 	private:
 
 		string type;
@@ -164,7 +166,7 @@ class Entity {
 
 		EntityId getEntityId();
 
-		
+
 
 		const Modules *modules;
 };

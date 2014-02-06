@@ -20,6 +20,9 @@ void Push::addedToEntity()
 
 	//requestMessage("inAir", &Push::stopPush);
 	requestMessage("Wall", &Push::stopPush);
+
+	Vec3 temp = getEntityPos();
+	this->getOwner()->sphere = new Sphere(temp.X, temp.Y, temp.Z, 5);
 }
 
 void Push::removeFromEntity()

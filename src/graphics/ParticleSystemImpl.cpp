@@ -1,4 +1,4 @@
-#include "ParticleSystem.h"
+#include "ParticleSystemImpl.h"
 
 // Must be included last!
 #include "shared/debug.h"
@@ -15,9 +15,10 @@ D3D11_SO_DECLARATION_ENTRY GeoStreamOutDesc::ParticleSoDesc[5] =
 
 UINT GeoStreamOutDesc::ParticleStride = sizeof(Vertex::Particle);
 
-ParticleSystem::ParticleSystem()
+ParticleSystemImpl::ParticleSystemImpl()
 : mInitVB(0), mDrawVB(0), mStreamOutVB(0), mTexArraySRV(0), mRandomTexSRV(0)
 {
+	mActive = true;
 	mFirstRun = true;
 	mGameTime = 0.0f;
 	mTimeStep = 0.0f;
@@ -32,34 +33,44 @@ ParticleSystem::ParticleSystem()
 	mParticleType = ParticleType::PT_FLARE0;
 }
 
-ParticleSystem::~ParticleSystem()
+ParticleSystemImpl::~ParticleSystemImpl()
 {
 	ReleaseCOM(mInitVB);
 	ReleaseCOM(mDrawVB);
 	ReleaseCOM(mStreamOutVB);
 }
 
-float ParticleSystem::GetAge() const
+void ParticleSystemImpl::SetActive(bool active)
+{
+	mActive = active;
+}
+
+bool ParticleSystemImpl::IsActive() const
+{
+	return mActive;
+}
+
+float ParticleSystemImpl::GetAge() const
 {
 	return mAge;
 }
 
-void ParticleSystem::SetEyePos(const XMFLOAT3& eyePosW)
+void ParticleSystemImpl::SetEyePos(const XMFLOAT3& eyePosW)
 {
 	mEyePosW = eyePosW;
 }
 
-void ParticleSystem::SetEmitPos(const XMFLOAT3& emitPosW)
+void ParticleSystemImpl::SetEmitPos(const XMFLOAT3& emitPosW)
 {
 	mEmitPosW = emitPosW;
 }
 
-void ParticleSystem::SetEmitDir(const XMFLOAT3& emitDirW)
+void ParticleSystemImpl::SetEmitDir(const XMFLOAT3& emitDirW)
 {
 	mEmitDirW = emitDirW;
 }
 
-void ParticleSystem::Init(ID3D11Device* device,
+void ParticleSystemImpl::Init(ID3D11Device* device,
 	ParticleSystemShader* shader,
 	ID3D11ShaderResourceView* texArraySRV,
 	ID3D11ShaderResourceView* randomTexSRV,
@@ -73,13 +84,13 @@ void ParticleSystem::Init(ID3D11Device* device,
 	BuildVB(device);
 }
 
-void ParticleSystem::Reset()
+void ParticleSystemImpl::Reset()
 {
 	mFirstRun = true;
 	mAge = 0.0f;
 }
 
-void ParticleSystem::Update(float dt, float gameTime)
+void ParticleSystemImpl::Update(float dt, float gameTime)
 {
 	mTimeStep = dt;
 	mGameTime = gameTime;
@@ -87,7 +98,7 @@ void ParticleSystem::Update(float dt, float gameTime)
 	mAge += dt;
 }
 
-void ParticleSystem::Draw(ID3D11DeviceContext* dc, const Camera& cam)
+void ParticleSystemImpl::Draw(ID3D11DeviceContext* dc, const Camera& cam)
 {
 	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
@@ -105,6 +116,7 @@ void ParticleSystem::Draw(ID3D11DeviceContext* dc, const Camera& cam)
 	mShader->SetAccelConstant(mConstantAccelW);
 	mShader->SetParticleProperties(mParticleAgeLimit, mEmitFrequency);
 	mShader->SetParticleType(mParticleType);
+	mShader->SetEmitParticles(mActive);
 
 	mShader->ActivateStreamShaders(dc);
 	mShader->UpdateStreamOutShaders(dc);
@@ -152,7 +164,7 @@ void ParticleSystem::Draw(ID3D11DeviceContext* dc, const Camera& cam)
 	dc->DrawAuto();
 }
 
-void ParticleSystem::BuildVB(ID3D11Device* device)
+void ParticleSystemImpl::BuildVB(ID3D11Device* device)
 {
 	D3D11_BUFFER_DESC vbd;
 	vbd.Usage = D3D11_USAGE_DEFAULT;
@@ -184,22 +196,22 @@ void ParticleSystem::BuildVB(ID3D11Device* device)
 	HR(device->CreateBuffer(&vbd, 0, &mStreamOutVB));
 }
 
-void ParticleSystem::SetConstantAccel(XMFLOAT3 accelW)
+void ParticleSystemImpl::SetConstantAccel(XMFLOAT3 accelW)
 {
 	mConstantAccelW = accelW;
 }
 
-void ParticleSystem::SetEmitFrequency(float emitFrequency)
+void ParticleSystemImpl::SetEmitFrequency(float emitFrequency)
 {
 	mEmitFrequency = emitFrequency;
 }
 
-void ParticleSystem::SetParticleAgeLimit(float particleAgeLimit)
+void ParticleSystemImpl::SetParticleAgeLimit(float particleAgeLimit)
 {
 	mParticleAgeLimit = particleAgeLimit;
 }
 
-void ParticleSystem::SetParticleType(UINT particleType)
+void ParticleSystemImpl::SetParticleType(ParticleType particleType)
 {
 	if (particleType < ParticleType::NROFTYPES)
 		mParticleType = particleType;

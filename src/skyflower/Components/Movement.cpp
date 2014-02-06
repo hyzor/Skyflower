@@ -38,6 +38,7 @@ Movement::Movement(float speed) : Component("Movement")
 	this->walkAngle = 0.0f;
 	this->timeFalling = 0.0f;
 	this->mInitialJumpDir = None;
+	this->mParticleSystem = NULL;
 }
 
 Movement::~Movement()
@@ -46,6 +47,11 @@ Movement::~Movement()
 
 void Movement::addedToEntity() {
 	this->p = getOwner()->getPhysics();
+
+	this->mParticleSystem = getOwner()->getModules()->graphics->CreateParticleSystem();
+	this->mParticleSystem->SetParticleType(ParticleType::PT_PARTICLE);
+	this->mParticleSystem->SetParticleAgeLimit(0.25f);
+	this->mParticleSystem->SetEmitFrequency(1.0f / 100.0f);
 
 	requestMessage("StartMoveForward", &Movement::startMoveForward);
 	requestMessage("StartMoveBackward", &Movement::startMoveBackward);
@@ -70,6 +76,9 @@ void Movement::addedToEntity() {
 void Movement::removeFromEntity()
 {
 	this->p = NULL;
+
+	getOwner()->getModules()->graphics->DeleteParticleSystem(this->mParticleSystem);
+	this->mParticleSystem = NULL;
 }
 
 void Movement::update(float deltaTime)
@@ -215,6 +224,15 @@ void Movement::update(float deltaTime)
 	}
 
 	this->p->ApplyVelocityToPos(pos);
+
+	// Update particle system
+	Vec3 emitDirection = Vec3(cosf(-rot.Y + 3.14f / 2), 0, sinf(-rot.Y + 3.14f / 2)).Normalize();
+	float particleAcceleration = 10.0f;
+
+	this->mParticleSystem->SetActive(!(this->isInAir || !p->GetStates()->isMoving));
+	this->mParticleSystem->SetEmitPos(XMFLOAT3(pos.X, pos.Y, pos.Z));
+	this->mParticleSystem->SetEmitDir(XMFLOAT3(emitDirection.X, emitDirection.Y, emitDirection.Z));
+	this->mParticleSystem->SetConstantAccel(XMFLOAT3(emitDirection.X * particleAcceleration, emitDirection.Y * particleAcceleration, emitDirection.Z * particleAcceleration));
 
 	updateEntityPos(pos);
 	updateEntityRot(rot);

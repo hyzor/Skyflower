@@ -1,19 +1,9 @@
 #ifndef PARTICLESYSTEM_H_
 #define PARTICLESYSTEM_H_
 
-#include "ShaderHandler.h"
-#include "Camera.h"
-#include "Vertex.h"
+#include <DirectXMath.h>
 
 using namespace DirectX;
-
-// Geometry shader stream-out declaration entries
-class GeoStreamOutDesc
-{
-public:
-	static D3D11_SO_DECLARATION_ENTRY ParticleSoDesc[5];
-	static UINT ParticleStride;
-};
 
 // Must be mirrored with "ParticleSystemShared.hlsli"
 static const enum ParticleType
@@ -28,64 +18,20 @@ static const enum ParticleType
 class ParticleSystem
 {
 public:
-	ParticleSystem();
-	~ParticleSystem();
+	virtual ~ParticleSystem() {}
 
-	float GetAge() const;
+	virtual void SetActive(bool active) = 0;
+	virtual bool IsActive() const = 0;
 
-	void SetEyePos(const XMFLOAT3& eyePosW);
-	void SetEmitPos(const XMFLOAT3& emitPosW);
-	void SetEmitDir(const XMFLOAT3& emitDirW);
+	virtual void SetEmitPos(const XMFLOAT3& emitPosW) = 0;
+	virtual void SetEmitDir(const XMFLOAT3& emitDirW) = 0;
 
-	void SetConstantAccel(XMFLOAT3 accelW);
+	virtual void SetConstantAccel(XMFLOAT3 accelW) = 0;
 
-	void SetEmitFrequency(float emitFrequency);
-	void SetParticleAgeLimit(float particleAgeLimit);
+	virtual void SetEmitFrequency(float emitFrequency) = 0;
+	virtual void SetParticleAgeLimit(float particleAgeLimit) = 0;
 
-	void SetParticleType(UINT particleType);
-
-	void Init(ID3D11Device* device,
-		ParticleSystemShader* shader,
-		ID3D11ShaderResourceView* texArraySRV,
-		ID3D11ShaderResourceView* randomTexSRV,
-		UINT maxParticles);
-
-	void Reset();
-	void Update(float dt, float gameTime);
-	void Draw(ID3D11DeviceContext* dc, const Camera& cam);
-
-private:
-	void BuildVB(ID3D11Device* device);
-	
-private:
-	UINT mMaxParticles;
-	bool mFirstRun;
-
-	float mTimeStep;
-	float mGameTime;
-	float mAge;
-
-	XMFLOAT3 mEyePosW;
-	XMFLOAT3 mEmitPosW;
-	XMFLOAT3 mEmitDirW;
-
-	XMFLOAT3 mConstantAccelW;
-
-	ParticleSystemShader* mShader;
-
-	ID3D11Buffer* mInitVB;
-	ID3D11Buffer* mDrawVB;
-	ID3D11Buffer* mStreamOutVB;
-
-	ID3D11ShaderResourceView* mTexArraySRV;
-	ID3D11ShaderResourceView* mRandomTexSRV;
-
-	UINT mNrOfTextures;
-
-	float mParticleAgeLimit;
-	float mEmitFrequency;
-
-	UINT mParticleType;
+	virtual void SetParticleType(ParticleType particleType) = 0;
 };
 
 #endif

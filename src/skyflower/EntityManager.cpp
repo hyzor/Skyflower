@@ -1003,6 +1003,16 @@ bool EntityManager::loadXML(string xmlFile)
 					Goal *g = new Goal();
 					this->addComponent(entity, g);
 				}
+				else if (componentName == "Throw")
+				{
+					Throw *t = new Throw();
+					this->addComponent(entity, t);
+				}
+				else if (componentName == "Throwable")
+				{
+					Throwable *t = new Throwable();
+					this->addComponent(entity, t);
+				}
 				else
 				{
 					cout << xmlFile << ": Unknown component with name " << componentName << " in entity " << entityName << endl;
@@ -1189,12 +1199,24 @@ Entity* EntityManager::getEntityByIndex(int index)
 
 
 
-void EntityManager::activateEntity(int entityIndex)
+void EntityManager::activateEntity(EntityId entityId)
 {
-	this->fEntitys[entityIndex]->setIsActive(true);
+	for (size_t j = 0; j < fEntitys.size(); j++)
+	{
+		if (this->fEntitys[j]->fId == entityId)
+		{
+			this->fEntitys[j]->setIsActive(true);
+		}
+	}
 }
 
-void EntityManager::deactivateEntity(int entityIndex)
+void EntityManager::deactivateEntity(EntityId entityId)
 {
-	this->fEntitys[entityIndex]->setIsActive(false);
+	for (size_t j = 0; j < fEntitys.size(); j++)
+	{
+		if (this->fEntitys[j]->fId == entityId)
+		{
+			this->fEntitys[j]->setIsActive(false);
+		}
+	}
 }

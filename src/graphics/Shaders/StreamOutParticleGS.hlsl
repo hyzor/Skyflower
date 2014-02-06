@@ -15,7 +15,9 @@ cbuffer cbPerFrame
 
 	float gEmitFrequency;
 	unsigned int gParticleType;
-	float2 padding;
+	
+	bool emitParticles;
+	float padding;
 };
 
 // Random texture used to generate random numbers in shaders.
@@ -43,7 +45,7 @@ void main(point Particle gIn[1], inout PointStream<Particle> ptStream)
 	if (gIn[0].Type == PT_EMITTER)
 	{
 		// Check if time to emit a new particle
-		if (gIn[0].Age > gEmitFrequency)
+		if (emitParticles && gIn[0].Age > gEmitFrequency)
 		{
 			float3 vRandom = RandUnitVec3(0.0f);
 			vRandom.x *= 0.5f;
