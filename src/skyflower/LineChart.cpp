@@ -32,6 +32,7 @@ LineChart::LineChart(size_t maximumDataPoints)
 	m_dataPointEnd = 0;
 
 	m_unit = "";
+	m_label = "";
 }
 
 LineChart::~LineChart()
@@ -61,6 +62,11 @@ void LineChart::SetSize(unsigned int width, unsigned int height)
 void LineChart::SetUnit(const std::string &unit)
 {
 	m_unit = unit;
+}
+
+void LineChart::SetLabel(const std::string &label)
+{
+	m_label = label;
 }
 
 unsigned int LineChart::GetWidth() const
@@ -173,9 +179,11 @@ void LineChart::Draw(double startTime, double endTime, double resolution, double
 
 	// Add some padding to the top and bottom of the chart.
 	double drawMax = std::max(maxValue, targetValue);
-	double drawMin = std::min(minValue, targetValue);
+	//double drawMin = std::min(minValue, targetValue);
+	double drawMin = 0.0;
 	double padding = (drawMax - drawMin) * 0.1;
-	double drawRange = (drawMax + padding) + (drawMin - padding);
+	//double drawRange = (drawMax + padding) + (drawMin - padding);
+	double drawRange = drawMax + padding;
 
 	// Scale the path to fit the canvas.
 	double scale = m_bitmap->height() / drawRange;
@@ -271,10 +279,15 @@ void LineChart::Draw(double startTime, double endTime, double resolution, double
 		textPaint.setTextAlign(SkPaint::kRight_Align);
 
 		// Draw the target label at the end of the chart just above the target line.
-		//m_canvas->drawText(targetValueString.c_str(), targetValueString.length(), (float)m_bitmap->width(), targetLinePosition - (textPadding / 2.0f), textPaint);
+		//m_canvas->drawText(targetValueString.c_str(), targetValueString.length(), (float)m_bitmap->width(), (float)(targetLinePosition - (textPadding / 2.0)), textPaint);
 
+		/*
 		// Draw the high and low values.
 		m_canvas->drawText(highValueString.c_str(), highValueString.length(), (SkScalar)m_bitmap->width(), 9.0f, textPaint);
 		m_canvas->drawText(lowValueString.c_str(), lowValueString.length(), (SkScalar)m_bitmap->width(), m_bitmap->height() - 1.0f, textPaint);
+		*/
+
+		// Draw the label.
+		m_canvas->drawText(m_label.c_str(), m_label.length(), (SkScalar)m_bitmap->width(), 9.0f, textPaint);
 	}
 }

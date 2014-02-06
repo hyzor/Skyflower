@@ -21,6 +21,7 @@ public:
 
 	void SetSize(unsigned int width, unsigned int height);
 	void SetUnit(const std::string &unit);
+	void SetLabel(const std::string &label);
 
 	unsigned int GetWidth() const;
 	unsigned int GetHeight() const;
@@ -41,6 +42,7 @@ private:
 	size_t m_dataPointEnd;
 
 	std::string m_unit;
+	std::string m_label;
 };
 
 #endif

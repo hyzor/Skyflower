@@ -115,6 +115,7 @@ void Application::Start()
 	LineChart frameTimeChart(chartCapacity);
 	frameTimeChart.SetSize(256, 128);
 	frameTimeChart.SetUnit("ms");
+	frameTimeChart.SetLabel("frame time");
 	//Texture2D *frameTimeChartTexture = m_graphicsEngine->CreateTexture2D(frameTimeChart.GetWidth(), frameTimeChart.GetHeight());
 	m_frameChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, 0.0f, 0.0f), 
 		m_GUI->CreateTexture2D(frameTimeChart.GetWidth(), frameTimeChart.GetHeight()));
@@ -122,6 +123,7 @@ void Application::Start()
 	LineChart fpsChart(chartCapacity);
 	fpsChart.SetSize(256, 128);
 	fpsChart.SetUnit("fps");
+	fpsChart.SetLabel("FPS");
 	//Texture2D *fpsChartTexture = m_graphicsEngine->CreateTexture2D(fpsChart.GetWidth(), fpsChart.GetHeight());
 	m_fpsChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, (float)(frameTimeChart.GetHeight() + 6), 0.0f),
 		m_GUI->CreateTexture2D(fpsChart.GetWidth(), fpsChart.GetHeight()));
@@ -129,6 +131,7 @@ void Application::Start()
 	LineChart memoryChart(chartCapacity);
 	memoryChart.SetSize(256, 128);
 	memoryChart.SetUnit("MiB");
+	memoryChart.SetLabel("RAM");
 	//Texture2D *memoryChartTexture = m_graphicsEngine->CreateTexture2D(memoryChart.GetWidth(), memoryChart.GetHeight());
 	m_memChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, (float)((frameTimeChart.GetHeight() + 6) * 2), 0.0f),
 		m_GUI->CreateTexture2D(memoryChart.GetWidth(), memoryChart.GetHeight()));
