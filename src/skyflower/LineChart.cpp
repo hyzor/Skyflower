@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 #include <cstdio>
 #include <string>
 #include <sstream>
@@ -26,18 +27,27 @@ LineChart::LineChart(size_t maximumDataPoints)
 	m_bitmap = NULL;
 	m_canvas = NULL;
 
+	m_timeSpan = 30.0;
+	m_resolution = 1.0 / 60.0;
+	m_targetValue = 0.0;
+
+	m_unit = "";
+	m_label = "";
+
 	m_dataPoints = new struct LineChartDataPoint[maximumDataPoints];
 	m_dataPointCapacity = maximumDataPoints;
 	m_dataPointStart = 0;
 	m_dataPointEnd = 0;
 
-	m_unit = "";
-	m_label = "";
+	m_renderDataPoints = NULL;
 }
 
 LineChart::~LineChart()
 {
 	delete[] m_dataPoints;
+
+	if (m_renderDataPoints)
+		delete[] m_renderDataPoints;
 
 	if (m_canvas)
 		delete m_canvas;
@@ -57,6 +67,31 @@ void LineChart::SetSize(unsigned int width, unsigned int height)
 	m_bitmap->allocPixels();
 
 	m_canvas = new SkCanvas(*m_bitmap);
+}
+
+void LineChart::SetTimeSpan(double timeSpan, double resolution)
+{
+	assert(timeSpan > 0.0);
+	assert(resolution > 0.0);
+
+	m_timeSpan = timeSpan;
+	m_resolution = resolution;
+
+	if (m_renderDataPoints)
+		delete[] m_renderDataPoints;
+
+	size_t size = (size_t)ceil(m_timeSpan / m_resolution);
+	m_renderDataPoints = new struct LineChartDataPoint[size];
+	m_renderDataPointCapacity = size;
+	m_renderDataPointStart = 0;
+	m_renderDataPointEnd = 0;
+
+	// FIXME: Fill m_renderDataPoints!
+}
+
+void LineChart::SetTargetValue(double targetValue)
+{
+	m_targetValue = targetValue;
 }
 
 void LineChart::SetUnit(const std::string &unit)
@@ -83,14 +118,14 @@ unsigned int LineChart::GetHeight() const
 	return (unsigned int)m_bitmap->height();
 }
 
-void *LineChart::GetPixels() const
+const void *LineChart::GetPixels() const
 {
 	assert(m_bitmap);
 
 	return m_bitmap->getPixels();
 }
 
-void LineChart::AddPoint(double timeStamp, double value)
+void LineChart::AddDataPoint(double timeStamp, double value)
 {
 	m_dataPoints[m_dataPointEnd].timeStamp = timeStamp;
 	m_dataPoints[m_dataPointEnd].value = value;
@@ -100,20 +135,33 @@ void LineChart::AddPoint(double timeStamp, double value)
 	if (m_dataPointEnd == m_dataPointStart) {
 		m_dataPointStart = (m_dataPointStart + 1) % m_dataPointCapacity;
 	}
+
+	// FIXME: Add to m_renderDataPoints if needed.
 }
 
-void LineChart::ClearPoints()
+void LineChart::ClearDataPoints()
 {
 	m_dataPointStart = 0;
 	m_dataPointEnd = 0;
+
+	m_renderDataPointStart = 0;
+	m_renderDataPointEnd = 0;
 }
 
-void LineChart::Draw(double startTime, double endTime, double resolution, double targetValue)
+void LineChart::Draw(double time)
 {
 	assert(m_canvas);
 	assert(m_bitmap);
-	assert(endTime > startTime);
-	assert(resolution > 0.0);
+	assert(m_renderDataPoints);
+
+	// FIXME: Render using m_renderDataPoints.
+	// assert(time > lastRenderDataPoint.timeStamp);
+	// FIXME: ignore points with a timeStamp earlier than time - m_timeSpan.
+
+	double endTime = time;
+	double startTime = endTime - m_timeSpan;
+	double resolution = m_resolution;
+	double targetValue = m_targetValue;
 
 	SkPath path;
 	const struct LineChartDataPoint *point;
