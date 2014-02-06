@@ -8,6 +8,31 @@
 
 using namespace std;
 
+class MenuPage
+{
+public:
+	void setVisible(bool visible)
+	{
+		for (unsigned i = 0; i < buttons.size(); i++)
+		{
+			buttons[i]->setVisible(visible);
+		}
+		for (unsigned i = 0; i < checkboxes.size(); i++)
+		{
+			checkboxes[i]->setVisible(visible);
+		}
+		for (unsigned i = 0; i < sliders.size(); i++)
+		{
+			sliders[i]->setVisible(visible);
+		}
+	}
+
+public:
+	std::vector<MenuButton*> buttons;
+	std::vector<CheckBox*> checkboxes;
+	std::vector<Slider*> sliders;
+};
+
 class Menu
 {
 public:
@@ -16,6 +41,12 @@ public:
 		none,
 		resume,
 		exit
+	};
+	enum MenuPages
+	{
+		MenuPageMain = 0,
+		MenuPageSettings,
+		MenuPageCount
 	};
 	struct Settings
 	{
@@ -34,6 +65,8 @@ public:
 
 	// Is the menu active? I don´t know bro. Better ask that mo-fo 
 	 bool isActive();
+
+	 void setActivePage(int page);
 
 	// Draw the menu
 	 void draw();
@@ -57,9 +90,8 @@ private:
 	 int selectedButton;
 	 int m_bg;
 	 int settingsBox;
-	 std::vector<MenuButton*> m_buttons;
-	 std::vector<CheckBox*> m_checkboxes;
-	 std::vector<Slider*> m_sliders;
+	 MenuPage m_pages[MenuPageCount];
+	 int m_activePage;
 	 MenuStatus status;
 	 GUI* guiPtr;
 	 SoundEngine* soundEngine;
@@ -68,9 +100,6 @@ private:
 	 void setVisible(bool visible);
 	 int width, height;
 	 float scaleX, scaleY;
-
-	
-	
 };
 
 #endif
