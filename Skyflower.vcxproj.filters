@@ -108,6 +108,9 @@
     <ClCompile Include="src\skyflower\Components\Gravity.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="src\skyflower\Components\Throwable.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\skyflower\Application.h">
@@ -217,6 +220,12 @@
     </ClInclude>
     <ClInclude Include="src\skyflower\CutScene.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\Components\Throw.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\Components\Throwable.h">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

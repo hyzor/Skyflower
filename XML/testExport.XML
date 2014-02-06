@@ -18,6 +18,7 @@
         <Movement speed="10"/>
 		<Health/>
 		<Box speed="10" />
+		<Throwable />
     </Entity>
     <Light entityName="pointLight1" id="7" isVisible="0" isCollidible="0" Type="pointLight ">
         <pointLight  xPos="9.07378598527" yPos="47.5905159247" zPos="0.0" r="1.0" g="1.0" b="1.0" intensity="1.0"/>

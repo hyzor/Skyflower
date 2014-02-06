@@ -14,6 +14,7 @@
 			<Push />
 			<Pushable />
 			<Health maxHP = "100" />
+			<Throw />
 	</Entity>
 	
 	
@@ -75,9 +76,9 @@
     </Entity>
     <Entity entityName="WoodBlock" model="Models\Worlds\Subworld 1\WoodBlock" id="28" isVisible="1" isCollidible="1" isAnimated="0" xPos="34.172665118" yPos="110.366599976" zPos="-27.3916749358" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <Gravity/>
-        <Box/>
-        <Movement speed="20"/>
         <Health/>
+		<Movement speed="20"/>
+		<Throwable />
     </Entity>
     <Entity entityName="ButtonBase" model="Models\Worlds\Subworld 1\ButtonBase" id="17" relativeid="100" isVisible="1" isCollidible="1" isAnimated="0" xPos="199.034827697" yPos="39.2123622218" zPos="-8.39870949045" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312"/>
     <Entity entityName="Button" model="Models\Worlds\Subworld 1\Button" id="18" relativeid="17" isVisible="1" isCollidible="1" isAnimated="0" xPos="198.949163262" yPos="39.2689358112" zPos="-8.30721064075" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312">

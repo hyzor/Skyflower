@@ -191,8 +191,17 @@ class EntityManager {
 
 		void updateSpheres();
 
-		void activateEntity(int entityIndex);
-		void deactivateEntity(int entityIndex);
+		void activateEntity(EntityId eId);
+		void deactivateEntity(EntityId eId);
+
+		//throw and throwable-functions
+		//void pickUpEntity(EntityId, EntityId);
+		//void throwEntity(EntityId throwingEntity, EntityId throwableEntity);
+		//void putDownEntity(EntityId throwingEntity, EntityId throwableEntity);
+		//void setPickUpOrPutDown(bool state, EntityId id);
+		//void setIsHoldingThrowable(bool state, EntityId id);
+		//void setIsBeingPickedUp(bool state, EntityId id);
+		//void setToThrow(bool state, EntityId id);
 
 		const Modules *modules;
 

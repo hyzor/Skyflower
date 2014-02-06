@@ -52,6 +52,7 @@ class Entity {
 		bool hasComponents(string name);
 
 		Vec3 returnPos();
+		Vec3 returnRot();
 		Vec3 spawnpos;
 		CollisionInstance* collInst;
 		Field* field;
@@ -78,6 +79,8 @@ class Entity {
 		EntityId fId;
 
 		void ActiveteField(bool b);
+
+
 
 	private:
 
@@ -156,7 +159,7 @@ class Entity {
 
 		EntityId getEntityId();
 
-		Vec3 returnRot();
+
 		Vec3 returnScale();
 		bool returnVisible();
 		bool getIsActive();
