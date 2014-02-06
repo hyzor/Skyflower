@@ -66,7 +66,7 @@ void GravityComponent::update(float dt)
 	if (getOwner()->wall)
 		getEntityManager()->sendMessageToEntity("Wall", getOwner()->wall->fId);
 
-
+	
 
 }
 
@@ -196,4 +196,3 @@ void GravityComponent::createRays()
 		wallRays.push_back(Ray(Vec3(-3 * 0.71f, 8.5f, 3 * 0.71f), Vec3(6 * 0.71f, 0, -6 * 0.71f))); // extra test
 	}
 }
-
