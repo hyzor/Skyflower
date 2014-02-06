@@ -66,7 +66,7 @@ void Throwable::update(float deltaTime)
 						Vec3 pos = entity->returnPos();
 						Vec3 rot = entity->returnRot();
 
-						Vec3 o = Vec3(cosf(-rot.Y - 3.14 / 2), 0, sinf(-rot.Y - 3.14 / 2)).Normalize() * 10;
+						Vec3 o = Vec3(cosf(-rot.Y - 3.14f / 2), 0, sinf(-rot.Y - 3.14f / 2)).Normalize() * 10;
 						o.Y = 5;
 
 						getOwner()->updateRot(rot);
