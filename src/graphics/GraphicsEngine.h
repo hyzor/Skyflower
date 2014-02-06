@@ -4,6 +4,7 @@
 #include "CameraController.h"
 #include "Instance.h"
 #include "Texture2D.h"
+#include "ParticleSystem.h"
 #include <string>
 #include "..\shared\Vec3.h"
 #include <DirectXMath.h>
@@ -60,6 +61,9 @@ public:
 	virtual void UpdateSceneData() = 0;
 	virtual Texture2D *CreateTexture2D(unsigned int width, unsigned int height) = 0;
 	virtual void DeleteTexture2D(Texture2D *texture) = 0;
+
+	virtual ParticleSystem *CreateParticleSystem() = 0;
+	virtual void DeleteParticleSystem(ParticleSystem *particleSystem) = 0;
 
 	virtual void printText(wchar_t* text, int x, int y, Vec3 color = Vec3::Zero(), float scale = 1.0f) = 0;
 //	virtual Text2D* CreateText2D() = 0;
