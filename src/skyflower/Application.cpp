@@ -226,14 +226,16 @@ void Application::Start()
 
 		if (levelHandler->hasQueuedLevel() && !levelHandler->isLoading())
 		{
-			// Basically a hax - Dont do this at home 
+			// Basically a hax - Dont do this at home
+			// FIXME: Don't hardcode this!
+			m_GUI->GetGUIElement(loadingScreen)->GetDrawInput()->scale = XMFLOAT2((float)m_window->GetWidth() / 1024, (float)m_window->GetHeight() / 768);
 			m_GUI->GetGUIElement(loadingScreen)->SetVisible(true);
 			m_GUI->Draw();
 			m_graphicsEngine->Present();
 
-			float time = GetTime();
+			//float time = GetTime();
 			levelHandler->LoadQueued();
-			time = GetTime() - time;
+			//time = GetTime() - time;
 			m_graphicsEngine->Clear();
 			m_graphicsEngine->UpdateSceneData();
 			m_oldTime = GetTime();
