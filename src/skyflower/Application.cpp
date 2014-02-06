@@ -105,15 +105,19 @@ void Application::Start()
 	m_graphicsEngine->UpdateSceneData();
 	m_entityManager->loadXML("subWorld1Lights.XML");
 	
-
 	m_showCharts = false;
+	double chartDrawFrequency = 0.1;
+	double nextChartDraw = 0.0;
 
+	double chartTime = 20.0;
 	double chartResolution = 1.0 / 30.0;
 	// Make the charts hold 2 minutes worth of values at 60fps.
 	size_t chartCapacity = 120 * 60;
 
 	LineChart frameTimeChart(chartCapacity);
 	frameTimeChart.SetSize(256, 128);
+	frameTimeChart.SetTimeSpan(chartTime, chartResolution);
+	frameTimeChart.SetTargetValue((1.0 / 60.0) * 1000.0);
 	frameTimeChart.SetUnit("ms");
 	frameTimeChart.SetLabel("frame time");
 	//Texture2D *frameTimeChartTexture = m_graphicsEngine->CreateTexture2D(frameTimeChart.GetWidth(), frameTimeChart.GetHeight());
@@ -122,6 +126,8 @@ void Application::Start()
 	
 	LineChart fpsChart(chartCapacity);
 	fpsChart.SetSize(256, 128);
+	fpsChart.SetTimeSpan(chartTime, chartResolution);
+	fpsChart.SetTargetValue(60.0);
 	fpsChart.SetUnit("fps");
 	fpsChart.SetLabel("FPS");
 	//Texture2D *fpsChartTexture = m_graphicsEngine->CreateTexture2D(fpsChart.GetWidth(), fpsChart.GetHeight());
@@ -130,6 +136,8 @@ void Application::Start()
 
 	LineChart memoryChart(chartCapacity);
 	memoryChart.SetSize(256, 128);
+	memoryChart.SetTimeSpan(chartTime, chartResolution);
+	memoryChart.SetTargetValue(256.0);
 	memoryChart.SetUnit("MiB");
 	memoryChart.SetLabel("RAM");
 	//Texture2D *memoryChartTexture = m_graphicsEngine->CreateTexture2D(memoryChart.GetWidth(), memoryChart.GetHeight());
@@ -138,12 +146,6 @@ void Application::Start()
 
 	// Don't start listening to input events until everything has been initialized.
 	m_inputHandler->AddListener(this);
-
-	thread load;
-
-	double chartUpdateDelay = 0.1;
-	double nextChartUpdate = 0.0;
-	double chartTime = 20.0;
 
 	double time, deltaTime;
 
@@ -169,24 +171,24 @@ void Application::Start()
 
 		mGameTime = time - mStartTime;
 
-		frameTimeChart.AddPoint(time, deltaTime * 1000.0);
+		frameTimeChart.AddDataPoint(time, deltaTime * 1000.0);
 
 		// Make the fps chart more readable by ignoring delta times smaller than half a millisecond.
 		if (deltaTime > 0.0005)
-			fpsChart.AddPoint(time, 1.0 / deltaTime);
+			fpsChart.AddDataPoint(time, 1.0 / deltaTime);
 
-		memoryChart.AddPoint(time, GetMemoryUsage() / (1024.0 * 1024.0));
+		memoryChart.AddDataPoint(time, GetMemoryUsage() / (1024.0 * 1024.0));
 
-		if (m_showCharts && time >= nextChartUpdate) {
-			nextChartUpdate = time + chartUpdateDelay;
+		if (m_showCharts && time >= nextChartDraw) {
+			nextChartDraw = time + chartDrawFrequency;
 
-			frameTimeChart.Draw(time - chartTime, time, chartResolution, (1.0 / 60.0) * 1000.0);
+			frameTimeChart.Draw(time);
 			m_GUI->UploadData(m_frameChartID, frameTimeChart.GetPixels());
 			
-			fpsChart.Draw(time - chartTime, time, chartResolution, 60.0);
+			fpsChart.Draw(time);
 			m_GUI->UploadData(m_fpsChartID, fpsChart.GetPixels());
 
-			memoryChart.Draw(time - chartTime, time, chartResolution, 256.0);
+			memoryChart.Draw(time);
 			m_GUI->UploadData(m_memChartID, memoryChart.GetPixels());
 		}
 
