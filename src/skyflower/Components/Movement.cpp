@@ -111,7 +111,7 @@ void Movement::update(float deltaTime)
 				
 			if (getOwnerId() == 1)
 			{
-				getOwner()->getModules()->sound->PlaySound(GetPlayerSoundFile(fallingSounds[rand()  % ARRAY_SIZE(fallingSounds)]), 0.25f);
+				getOwner()->getModules()->sound->PlaySound(GetPlayerSoundFile(fallingSounds[rand()  % ARRAY_SIZE(fallingSounds)]), 0.05f);
 			}
 		}
 
