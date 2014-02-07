@@ -37,6 +37,7 @@ void GravityComponent::update(float dt)
 			getOwner()->mPhysicsEntity->SetVelocity(vel);
 			getOwner()->mPhysicsEntity->GetStates()->isJumping = false;
 			getOwner()->mPhysicsEntity->GetStates()->isActiveProjectile = false;
+			sendMessageToEntity(getOwnerId(), "StopBeingThrown");
 		}
 		if (t == 1)
 		{
