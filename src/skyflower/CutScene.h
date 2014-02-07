@@ -22,16 +22,22 @@ public:
 	};
 
 	CutScene(ScriptHandler* sh, CameraController* camera);
-	void play();
+	void play(string name);
 
 	static void Register(ScriptHandler* sh)
 	{
 		lua_register(sh->L, "AddPoint", CutScene::AddPoint);
 		lua_register(sh->L, "SetCamera", CutScene::SetCamera);
+		lua_register(sh->L, "CutScenePlay", CutScene::play);
+		lua_register(sh->L, "CutSceneIsPlaying", CutScene::isPlaying);
+		lua_register(sh->L, "GetCameraPos", CutScene::getCameraPos);
+		lua_register(sh->L, "GetYawPitch", CutScene::getYawPitch);
 	};
 
 	void update(float dt);
+	
 	bool isPlaying() const { return !done; }
+	
 	void stop();
 public:
 	static CutScene* self;
@@ -45,10 +51,15 @@ private:
 	float mCurrentYaw;
 	float mCurrentPitch;
 	bool done;
+	void translateYawPitch(float& yaw, float& pitch);
+
 private:
 	static int AddPoint(lua_State* L);
 	static int SetCamera(lua_State* L);
-
+	static int isPlaying(lua_State *L);
+	static int play(lua_State *L);
+	static int getCameraPos(lua_State *L);
+	static int getYawPitch(lua_State *L);
 };
 
 

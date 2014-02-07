@@ -10,7 +10,7 @@ end
 
 function intro()
 -- syntax: AddPoint(x, y, z, yaw, pitch, speed)
-	SetCamera(450, 200, -50, 0, 45)
+	SetCamera(0, 0, 0, 0, 45)
 	AddPoint(0, 100, -130, 0, 45, 1)
 	AddPoint(180, 150, -120, 0, 45, 2)
 	AddPoint(110, 100, 100, 90, 20, 2)
@@ -113,4 +113,30 @@ function update_aiPush(id, dt)
 		end
 	end
 	
+end
+
+function cutscene_Goal()
+	Print("cutscene_goal")
+	x, y, z = GetCameraPos()
+	yaw, pitch = GetYawPitch()
+
+	AddPoint(500, 190, 51.8, 90, 45, 2)
+	AddPoint(545, 140, 51.8, 90, 30, 2)
+end
+
+function update_Goal(id)
+	--Print("update_Goal")
+	if not CutSceneIsPlaying() then
+		ChangeLevel(0)
+	end
+end
+
+
+
+function activated_Goal(id)
+	Print("activated_Goal")
+
+	CutScenePlay("Goal")
+	StartUpdate()
+
 end

@@ -1,6 +1,6 @@
 <root>
 	<Entity entityName="player" id="1"
-		xPos="0.0" yPos="0.0" zPos="0.0" 
+		 xPos="0" yPos="0" zPos="0"
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="1.0" yScale="1.0" zScale="1.0"
 		model="Models/Player/playerAnimated"
@@ -46,6 +46,11 @@
     <Entity entityName="WoodBlock" model="Models\Worlds\Subworld 1\WoodBlock" id="14" isVisible="1" isCollidible="0" isAnimated="0" xPos="290.030637847" yPos="79.7036492634" zPos="152.252250723" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
 		<Messenger />
         <Checkpoint/>
+    </Entity>
+	<Entity entityName="WoodBlock" model="Models\Worlds\Subworld 1\Puncha" id="1411" isVisible="1" isCollidible="0" isAnimated="0" xPos="565.370649948" yPos="116.5956517912" zPos="51.8543727491" xRot="0.0" yRot="1.57" zRot="0.0" xScale="5.0" yScale="5.0" zScale="5.0">
+		<Messenger />
+		<Goal />
+		<Event script="Goal" />
     </Entity>
     <Entity entityName="ButtonBase" model="Models\Worlds\Subworld 1\ButtonBase" id="15" relativeid="8" isVisible="1" isCollidible="1" isAnimated="0" xPos="314.552295649" yPos="78.4037154914" zPos="161.77004996" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312"/>
     <Entity entityName="Button" model="Models\Worlds\Subworld 1\Button" id="16" relativeid="15" isVisible="1" isCollidible="1" isAnimated="0" xPos="314.466631214" yPos="78.4602890807" zPos="161.86154881" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312">

@@ -115,6 +115,9 @@
       <Filter>Source Files\Components</Filter>
     </ClCompile>
     <ClCompile Include="src\skyflower\Components\Health.cpp">
+		<Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\skyflower\Components\Goal.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
   </ItemGroup>

@@ -158,7 +158,6 @@ void Application::Start()
 
 	changeGameState(GameState::cutScene);
 	cs = new CutScene(m_entityManager->modules->script, m_camera);
-	cs->play();
 
 	int loadingScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "Menygrafik\\fyraTreRatio.png");
 	m_GUI->GetGUIElement(loadingScreen)->SetVisible(false);
@@ -241,8 +240,6 @@ void Application::Start()
 			m_oldTime = GetTime();
 			m_GUI->GetGUIElement(loadingScreen)->SetVisible(false);
 			changeGameState(GameState::cutScene);
-
-			cs->play();
 		}
 	}
 	
@@ -343,6 +340,11 @@ void Application::updateGame(float dt, float gameTime)
 	m_graphicsEngine->UpdateScene(dt, gameTime);
 	m_graphicsEngine->DrawScene();
 	m_entityManager->update(dt);
+
+	m_camera->Rotate(m_camera->GetYaw(), m_camera->GetPitch());
+
+	if (cs->isPlaying())
+		changeGameState(GameState::cutScene);
 
 	if (m_menu->isActive())
 		changeGameState(GameState::menu);
@@ -504,11 +506,6 @@ void Application::OnKeyDown(unsigned short key)
 		m_graphicsEngine->clearLights();
 		levelHandler->queue(4);
 		m_entityManager->loadXML("subWorld1Lights.XML");
-		if (!cs->isPlaying())
-		{
-			cs->play();
-			changeGameState(GameState::cutScene);
-		}
 			
 		break;
 	case VK_SPACE:

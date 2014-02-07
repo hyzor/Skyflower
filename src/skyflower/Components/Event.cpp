@@ -14,7 +14,7 @@ void Event::addedToEntity() {
 
 	requestMessage("Activated", &Event::Activated);
 	requestMessage("Deactivated", &Event::Deactivated);
-	requestMessage("Goal", &Event::Goal);
+	//requestMessage("Goal", &Event::Goal);
 
 	
 }
@@ -173,7 +173,6 @@ int Event::Spawn(lua_State* L)
 		spawnEntity->spawnpos = pointEntity->returnPos();
 		entityManager->sendMessageToEntity("Respawn", spawnId);
 	}
-
 
 	return 0;
 }
