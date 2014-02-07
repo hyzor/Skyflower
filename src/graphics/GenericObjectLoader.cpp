@@ -3,6 +3,8 @@
 // Must be included last!
 #include "shared/debug.h"
 
+#define ENABLE_ASSIMP_LOG 1
+
 static std::string GetPathFromFilename(const std::string &filename)
 {
 	size_t location;
@@ -34,9 +36,10 @@ bool GenericObjectLoader::loadSkinnedObject(const std::string& fileName,
 	// Create instance of assimp Importer class
 	Importer importer;
 
+#if ENABLE_ASSIMP_LOG
 	std::string logName = "Logs\\AssimpMeshLoader.log";
-
 	DefaultLogger::create(logName.c_str(), Logger::VERBOSE);
+#endif
 
 	bool isTriangulated = true;
 
@@ -49,9 +52,11 @@ bool GenericObjectLoader::loadSkinnedObject(const std::string& fileName,
 	// Failed reading file
 	if (!scene)
 	{
+#if ENABLE_ASSIMP_LOG
 		// Error logging
 		DefaultLogger::get()->info("Failed reading file!");
 		DefaultLogger::kill();
+#endif
 
 		return false;
 	}
@@ -201,7 +206,9 @@ bool GenericObjectLoader::loadSkinnedObject(const std::string& fileName,
 	} // If scene contains mesh end
 
 	// Clean up after reading file
+#if ENABLE_ASSIMP_LOG
 	DefaultLogger::kill();
+#endif
 
 	return true;
 }
@@ -214,9 +221,10 @@ bool GenericObjectLoader::loadSkinnedObject( const std::string& fileName, std::v
 	// Create instance of assimp Importer class
 	Importer importer;
 
+#if ENABLE_ASSIMP_LOG
 	std::string logName = "Logs\\AssimpMeshLoaderSKINNED.log";
-
 	DefaultLogger::create(logName.c_str(), Logger::VERBOSE);
+#endif
 
 	bool isTriangulated = true;
 
@@ -229,9 +237,11 @@ bool GenericObjectLoader::loadSkinnedObject( const std::string& fileName, std::v
 	// Failed reading file
 	if (!scene)
 	{
+#if ENABLE_ASSIMP_LOG
 		// Error logging
 		DefaultLogger::get()->info("Failed reading file!");
 		DefaultLogger::kill();
+#endif
 
 		return false;
 	}
@@ -477,7 +487,9 @@ bool GenericObjectLoader::loadSkinnedObject( const std::string& fileName, std::v
 	} // If scene contains mesh end
 
 	// Clean up after reading file
+#if ENABLE_ASSIMP_LOG
 	DefaultLogger::kill();
+#endif
 
 	return true;
 }
@@ -782,9 +794,10 @@ bool GenericObjectLoader::loadObject(const std::string& fileName,
 	// Create instance of assimp Importer class
 	Importer importer;
 
+#if ENABLE_ASSIMP_LOG
 	std::string logName = "Logs\\AssimpMeshLoader.log";
-
 	DefaultLogger::create(logName.c_str(), Logger::VERBOSE);
+#endif
 
 	bool isTriangulated = true;
 
@@ -797,9 +810,11 @@ bool GenericObjectLoader::loadObject(const std::string& fileName,
 	// Failed reading file
 	if (!scene)
 	{
+#if ENABLE_ASSIMP_LOG
 		// Error logging
 		DefaultLogger::get()->info("Failed reading file!");
 		DefaultLogger::kill();
+#endif
 
 		return false;
 	}
@@ -931,9 +946,10 @@ bool GenericObjectLoader::loadObject(const std::string& fileName,
 
 	} // If contains mesh end
 
-
 	// Clean up after reading file
+#if ENABLE_ASSIMP_LOG
 	DefaultLogger::kill();
+#endif
 
 	return true;
 }
@@ -952,9 +968,10 @@ bool GenericObjectLoader::LoadMorphObject(const std::string& fileName,
 	// Create instance of assimp Importer class
 	Importer importer;
 
+#if ENABLE_ASSIMP_LOG
 	std::string logName = "Logs\\AssimpMeshLoader.log";
-
 	DefaultLogger::create(logName.c_str(), Logger::VERBOSE);
+#endif
 
 	bool isTriangulated = true;
 
@@ -980,9 +997,11 @@ bool GenericObjectLoader::LoadMorphObject(const std::string& fileName,
 	// Failed reading file
 	if (!scene)
 	{
+#if ENABLE_ASSIMP_LOG
 		// Error logging
 		DefaultLogger::get()->info("Failed reading file!");
 		DefaultLogger::kill();
+#endif
 
 		return false;
 	}
@@ -1114,9 +1133,10 @@ bool GenericObjectLoader::LoadMorphObject(const std::string& fileName,
 
 	} // If contains mesh end
 
-
 	// Clean up after reading file
+#if ENABLE_ASSIMP_LOG
 	DefaultLogger::kill();
+#endif
 
 	return true;
 }
