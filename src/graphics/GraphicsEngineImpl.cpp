@@ -627,6 +627,19 @@ void GraphicsEngineImpl::DrawScene()
 		}
 	}
 
+	mSpriteBatch->Begin();
+
+	mSpriteBatch->Draw(mShadowMap->getDepthMapSRV(), 
+		XMFLOAT2(0.0f, 0.0f), 
+		nullptr, 
+		Colors::White, 
+		0.0f, 
+		XMFLOAT2(0.0f, 0.0f), 
+		XMFLOAT2(0.1f, 0.1f)
+		);
+
+	mSpriteBatch->End();
+
 	//-------------------------------------------------------------------------------------
 	// Restore defaults
 	//-------------------------------------------------------------------------------------
