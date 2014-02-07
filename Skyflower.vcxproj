@@ -28,6 +28,7 @@
     <ClCompile Include="src\skyflower\Components\Event.cpp" />
     <ClCompile Include="src\skyflower\Components\Footsteps.cpp" />
     <ClCompile Include="src\skyflower\Components\Gravity.cpp" />
+    <ClCompile Include="src\skyflower\Components\Health.cpp" />
     <ClCompile Include="src\skyflower\Components\Input.cpp" />
     <ClCompile Include="src\skyflower\Components\Listener.cpp" />
     <ClCompile Include="src\skyflower\Components\Movement.cpp" />

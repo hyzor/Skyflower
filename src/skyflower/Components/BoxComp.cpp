@@ -21,7 +21,8 @@ void BoxComp::update(float dt)
 	else
 		normal = pNormal;
 
-	
+
+	//räkna rotation längs med vectorn
 	Vec3 normalX = normal;
 	normalX.X = 0;
 	normalX.Normalize();

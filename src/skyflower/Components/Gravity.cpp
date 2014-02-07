@@ -28,11 +28,7 @@ void GravityComponent::update(float dt)
 		{
 			Vec3 vel = getOwner()->mPhysicsEntity->GetVelocity();
 			if (vel.Y < 0)
-			{
-				vel.X = 0;
-				vel.Y = 0;
-				vel.Z = 0;
-			}
+				vel = Vec3();
 
 			getOwner()->mPhysicsEntity->SetVelocity(vel);
 			getOwner()->mPhysicsEntity->GetStates()->isJumping = false;

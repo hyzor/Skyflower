@@ -118,8 +118,6 @@ void Movement::update(float deltaTime)
 		if (!health->isAlive())
 		{
 			sendMessageToEntity(this->getOwnerId(), "Respawn");
-			p->SetVelocity(Vec3(0, 0, 0));
-			health->setHealth(100);
 			return;
 		}
 	}
