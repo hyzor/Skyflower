@@ -51,7 +51,7 @@ void Movement::addedToEntity() {
 	this->mParticleSystem = getOwner()->getModules()->graphics->CreateParticleSystem();
 	this->mParticleSystem->SetParticleType(ParticleType::PT_PARTICLE);
 	this->mParticleSystem->SetParticleAgeLimit(0.25f);
-	this->mParticleSystem->SetEmitFrequency(1.0f / 100.0f);
+	this->mParticleSystem->SetEmitFrequency(1.0f / 10.0f);
 
 	requestMessage("StartMoveForward", &Movement::startMoveForward);
 	requestMessage("StartMoveBackward", &Movement::startMoveBackward);
