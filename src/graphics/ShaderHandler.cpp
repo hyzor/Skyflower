@@ -2741,6 +2741,7 @@ void ParticleSystemShader::ActivateDrawShaders(ID3D11DeviceContext* dc)
 	dc->PSSetShader(mDrawParticlePS, nullptr, 0);
 
 	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
+	dc->PSSetSamplers(1, 1, &RenderStates::mPointSS);
 }
 
 void ParticleSystemShader::ActivateStreamShaders(ID3D11DeviceContext* dc)

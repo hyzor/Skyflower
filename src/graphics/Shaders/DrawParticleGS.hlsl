@@ -20,6 +20,8 @@ struct GeoOut
 	float4 Color : COLOR;
 	float2 Tex   : TEXCOORD;
 	unsigned int TexIndex : TEXINDEX;
+	//float2 NDCspace : NDCSPACE;
+	float2 TexSpace : TEXSPACE;
 };
 
 // The draw GS just expands points into camera facing quads.
@@ -58,6 +60,12 @@ void main(point VertexOut gin[1],
 		for (int i = 0; i < 4; ++i)
 		{
 			gout.PosH = mul(v[i], gViewProj);
+			//gout.NDCspace = gout.PosH.xy / gout.PosH.w;
+			float2 NDCspace = gout.PosH.xy / gout.PosH.w;
+
+			gout.TexSpace.x = 0.5f * NDCspace.x + 0.5f;
+			gout.TexSpace.y = -0.5f * NDCspace.y + 0.5f;
+
 			gout.Tex = gQuadTexC[i].xy;
 			gout.Color = gin[0].Color;
 			gout.TexIndex = gin[0].Type - 1;
