@@ -330,42 +330,44 @@ void Movement::Jump(Message const& msg)
 {
 	if (!getOwner()->ground && timeFalling > 0.3f)
 		return;
-
-	Vec3 pos = getEntityPos();
-
-	float forwardJumpSpeed = 0.0f;
-
-	if (this->isMovingBackward || this->isMovingForward || this->isMovingLeft || this->isMovingRight)
+	else if (canMove)
 	{
-		forwardJumpSpeed = this->speed;
-	}
+		Vec3 pos = getEntityPos();
 
-	if (p->Jump(pos, forwardJumpSpeed))
-	{
-		//Remember the direction faced when starting the jump
-		if (this->isMovingForward)
-			this->mInitialJumpDir = Forward;
-		else if (this->isMovingBackward)
-			this->mInitialJumpDir = Backward;
-		else if (this->isMovingLeft)
-			this->mInitialJumpDir = Left;
-		else if (this->isMovingRight)
-			this->mInitialJumpDir = Right;
-		else
-			this->mInitialJumpDir = None;
+		float forwardJumpSpeed = 0.0f;
 
-		updateEntityPos(pos);
-
-		Entity *owner = getOwner();
-		GravityComponent *gravity = owner->getComponent<GravityComponent*>("Gravity");
-
-		if (gravity)
+		if (this->isMovingBackward || this->isMovingForward || this->isMovingLeft || this->isMovingRight)
 		{
-			gravity->setEnabled(false);
-			this->timeUntilGravityEnable = MAX_JUMP_KEY_TIME;
+			forwardJumpSpeed = this->speed;
 		}
 
-		owner->getModules()->sound->PlaySound(GetPlayerSoundFile("player/jump1.wav"), 1.0f, &pos.X);
+		if (p->Jump(pos, forwardJumpSpeed))
+		{
+			//Remember the direction faced when starting the jump
+			if (this->isMovingForward)
+				this->mInitialJumpDir = Forward;
+			else if (this->isMovingBackward)
+				this->mInitialJumpDir = Backward;
+			else if (this->isMovingLeft)
+				this->mInitialJumpDir = Left;
+			else if (this->isMovingRight)
+				this->mInitialJumpDir = Right;
+			else
+				this->mInitialJumpDir = None;
+
+			updateEntityPos(pos);
+
+			Entity *owner = getOwner();
+			GravityComponent *gravity = owner->getComponent<GravityComponent*>("Gravity");
+
+			if (gravity)
+			{
+				gravity->setEnabled(false);
+				this->timeUntilGravityEnable = MAX_JUMP_KEY_TIME;
+			}
+
+			owner->getModules()->sound->PlaySound(GetPlayerSoundFile("player/jump1.wav"), 1.0f, &pos.X);
+		}
 	}
 }
 
