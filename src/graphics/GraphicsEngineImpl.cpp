@@ -83,6 +83,7 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 	delete mDoFBlurTexture1;
 	delete mDoFBlurTexture2;
 
+	mD3D->Shutdown();
 	delete mD3D;
 }
 
