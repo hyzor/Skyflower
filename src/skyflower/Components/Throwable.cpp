@@ -46,6 +46,7 @@ void Throwable::update(float deltaTime)
 
 					entity->getComponent<Throw*>("Throw")->setHoldingEntityId(getOwnerId());
 				}
+				//if the entity is holding throwable
 				else if (entity->getComponent<Throw*>("Throw")->getIsHoldingThrowable() && isBeingPickedUp)
 				{
 					//entity want to throw throwable
@@ -58,9 +59,24 @@ void Throwable::update(float deltaTime)
 						entity->getComponent<Throw*>("Throw")->setToPutDown(false);
 						entity->getComponent<Throw*>("Throw")->setHoldingEntityId(-1);
 
+						//update throwable position
+						Vec3 pos = entity->returnPos();
+						Vec3 rot = entity->returnRot();
+
+						float y = -getOwner()->getModules()->camera->GetPitch();
+
+						//Vec3 o = Vec3(cosf(-rot.Y - 3.14 / 2), sinf(y - 3.14 / 2), sinf(-rot.Y - 3.14 / 2)).Normalize() * 10;
+						Vec3 o = Vec3(cosf(-rot.Y - 3.14 / 2), sinf(-y-1), sinf(-rot.Y - 3.14 / 2)).Normalize() * 10;
+
+						o.Y *= -3;
+						o.X *= o.Y / 2;
+						o.Z *= o.Y / 2;
+
 						//TODO Throwing in Physics!
+						p->FireProjectile(entity->returnPos(), o);
 					}
-					else
+					//if entity did not throw throwable, update throwable postition in front of entity
+					else if (isBeingPickedUp)
 					{
 						//update throwable position
 						Vec3 pos = entity->returnPos();
@@ -71,6 +87,9 @@ void Throwable::update(float deltaTime)
 
 						getOwner()->updateRot(rot);
 
+						Vec3 temp;
+						temp *= 0;
+						p->SetVelocity(temp);
 						updateEntityPos(pos + o);
 					}
 				}

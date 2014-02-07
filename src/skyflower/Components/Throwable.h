@@ -24,6 +24,8 @@ public:
 		requestMessage("beingThrown", &Throwable::beingThrown);
 		requestMessage("stopBeingThrown", &Throwable::stopBeingThrown);
 
+		this->p = getOwner()->getPhysics();
+
 		Vec3 temp = getEntityPos();
 		this->getOwner()->sphere = new Sphere(temp.X, temp.Y, temp.Z, 5);
 	}
@@ -34,6 +36,7 @@ private:
 
 	bool isBeingPickedUp;
 	bool isBeingThrown;
+	PhysicsEntity* p;
 
 	void update(float deltaTime);
 
