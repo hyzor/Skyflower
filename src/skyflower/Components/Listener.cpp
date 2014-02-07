@@ -70,6 +70,9 @@ void ListenerComponent::update(float deltaTime)
 	float forward[3] = {rotationMatrix[2][0], rotationMatrix[2][1], -rotationMatrix[2][2]};
 	float up[3] = {0.0f, 1.0f, 0.0f};
 
+	// Headish height of the player mesh.
+	position.Y += 10.0f;
+
 	m_listener->SetPosition(&position.X);
 	m_listener->SetOrientation(forward, up);
 }
