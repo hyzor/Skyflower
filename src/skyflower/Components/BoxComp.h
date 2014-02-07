@@ -18,6 +18,8 @@ class BoxComp : public Component
 		BoxComp(float speed) : Component("Box")
 		{
 			this->speed = speed;
+
+			pNormal = Vec3(0, 1, 0);
 		}
 
 		virtual ~BoxComp()
@@ -43,7 +45,7 @@ class BoxComp : public Component
 
 		float speed;
 
-		Triangle getGroundTriangle(Entity* e, Entity* ground);
+		Vec3 pNormal;
 };
 
 

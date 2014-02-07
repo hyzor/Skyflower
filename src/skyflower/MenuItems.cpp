@@ -179,7 +179,8 @@ Slider::Slider(GUI *gui, Vec3 position, int width, int height)
 :MenuItem(gui, position, width, height)
 {
 	mouseDown = false;
-	sliderBounds._position.X = position.X + (bounds._width/2);
+	wasClicked = false;
+	sliderBounds._position.X = position.X + (bounds._width*0.5f);
 	sliderBounds._position.Y = position.Y - 5.0f;
 
 	sliderBounds._width = 20;

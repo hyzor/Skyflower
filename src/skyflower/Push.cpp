@@ -85,6 +85,8 @@ void Push::update(float dt)
 
 			EntityId pusherId = getOwnerId();
 
+			getOwner()->updateRot(Vec3(pushedObject->returnRot().X, getOwner()->returnRot().Y, pushedObject->returnRot().Z));
+
 			if (pusherId == 1 && pusher->getAnimatedInstance())
 			{
 				pusher->getAnimatedInstance()->SetAnimation(3, true);

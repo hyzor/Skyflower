@@ -66,7 +66,8 @@ void GravityComponent::update(float dt)
 	if (getOwner()->wall)
 		getEntityManager()->sendMessageToEntity("Wall", getOwner()->wall->fId);
 
-	
+
+	createGroundTriangle(getOwner(), getOwner()->ground);
 
 }
 
@@ -195,4 +196,54 @@ void GravityComponent::createRays()
 		wallRays.push_back(Ray(Vec3(-3 * 0.71f, 8.5f, -3 * 0.71f), Vec3(6 * 0.71f, 0, 6 * 0.71f))); // extra test
 		wallRays.push_back(Ray(Vec3(-3 * 0.71f, 8.5f, 3 * 0.71f), Vec3(6 * 0.71f, 0, -6 * 0.71f))); // extra test
 	}
+}
+
+
+void GravityComponent::createGroundTriangle(Entity* e, Entity* ground)
+{
+
+	Vec3 pos = e->returnPos();
+
+	//rays for each point in the triangle
+	Ray left = Ray(Vec3(-3, 5, 3) + pos, Vec3(0, -10, 0));
+	Ray right = Ray(Vec3(3, 5, 3) + pos, Vec3(0, -10, 0));
+	Ray bottom = Ray(Vec3(0, 5, -3) + pos, Vec3(0, -10, 0));
+
+	if (!ground)
+	{
+		groundt = Triangle();
+		return;
+	}
+
+	//find collision for each ray
+	float tLeft = ground->collInst->Test(left);
+	float tRight = ground->collInst->Test(right);
+	float tBottom = ground->collInst->Test(bottom);
+
+	if (tLeft == 0 || tRight == 0 || tBottom == 0)
+	{
+		groundt = Triangle();
+		return;
+	}
+
+
+	//calculate triangle
+	Vec3 pointL = left.GetDir();
+	pointL *= tLeft;
+	pointL += left.GetPos();
+
+	Vec3 pointR = right.GetDir();
+	pointR *= tRight;
+	pointR += right.GetPos();
+
+	Vec3 pointB = bottom.GetDir();
+	pointB *= tBottom;
+	pointB += bottom.GetPos();
+
+	groundt = Triangle(pointL, pointR, pointB);
+}
+
+Triangle GravityComponent::GetGroundTriangle()
+{
+	return groundt;
 }

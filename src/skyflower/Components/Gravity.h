@@ -49,9 +49,12 @@ public:
 		return this->enabled;
 	}
 
+	Triangle GetGroundTriangle();
+
 private:
 	PhysicsEntity* p;
 	bool enabled;
+	Triangle groundt;
 
 	vector<Ray> groundRays;
 	vector<Ray> wallRays;
@@ -60,6 +63,8 @@ private:
 
 
 	void createRays();
+
+	void createGroundTriangle(Entity* e, Entity* ground);
 };
 
 #endif
