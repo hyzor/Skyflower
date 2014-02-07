@@ -74,6 +74,7 @@ private:
 			this->p->GetStates()->isBeingPushed = true;
 			//stop the entity from moving, except for the push
 			sendMessageToEntity(getOwnerId(), "StopMoving");
+			sendMessageToEntity(getOwnerId(), "DropThrowable");
 		}
 	}
 

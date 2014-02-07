@@ -23,6 +23,7 @@ public:
 	{
 		requestMessage("beingThrown", &Throwable::beingThrown);
 		requestMessage("stopBeingThrown", &Throwable::stopBeingThrown);
+		requestMessage("Dropped", &Throwable::dropped);
 
 		this->p = getOwner()->getPhysics();
 
@@ -48,6 +49,11 @@ private:
 	void stopBeingThrown(Message const & msg)
 	{
 		this->isBeingThrown = false;
+	}
+
+	void dropped(Message const & msg)
+	{
+		this->isBeingPickedUp = false;
 	}
 };
 

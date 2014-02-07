@@ -27,6 +27,7 @@ public:
 		requestMessage("PickUpOrDown", &Throw::pickUpOrDown);
 		requestMessage("Throw", &Throw::Throwing);
 		requestMessage("StopThrow", &Throw::stopThrowing);
+		requestMessage("DropThrowable", &Throw::dropThrowable);
 
 		Vec3 temp = getEntityPos();
 		this->getOwner()->sphere = new Sphere(temp.X, temp.Y, temp.Z, 5);
@@ -127,6 +128,17 @@ private:
 	void stopThrowing(Message const & msg)
 	{
 		setToThrow(false);
+	}
+
+	void dropThrowable(Message const & msg)
+	{
+		if (isHoldingThrowable)
+		{
+			setToPutDown(false);
+			setIsHoldingThrowable(false);
+			setToPickUp(false);
+			sendMessageToEntity(holdingEntityId, "Dropped");
+		}
 	}
 };
 
