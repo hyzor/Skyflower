@@ -299,7 +299,7 @@ void SoundEngineImpl::Update(float deltaTime)
 		// difference contains newly activated sources.
 		for (auto iter = difference.begin(); iter != difference.end(); iter++) {
 			if (m_availableSources.empty()) {
-				printf("We are out of sources to lend!\n");
+				//printf("We are out of sound sources to lend!\n");
 				break;
 			}
 
