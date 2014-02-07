@@ -155,9 +155,9 @@ int CutScene::play(lua_State *L)
 int CutScene::getCameraPos(lua_State *L)
 {
 	Vec3 cameraPos = self->mCameraPtr->GetPosition();
-	lua_pushinteger(L, cameraPos.X);
-	lua_pushinteger(L, cameraPos.Y);
-	lua_pushinteger(L, cameraPos.Z);
+	lua_pushinteger(L, (lua_Integer)cameraPos.X);
+	lua_pushinteger(L, (lua_Integer)cameraPos.Y);
+	lua_pushinteger(L, (lua_Integer)cameraPos.Z);
 	return 3;
 }
 
