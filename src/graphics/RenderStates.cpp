@@ -19,6 +19,7 @@ ID3D11DepthStencilState* RenderStates::mLessEqualDSS = 0;
 ID3D11DepthStencilState* RenderStates::mDefaultDSS = 0;
 ID3D11DepthStencilState* RenderStates::mDisabledDSS = 0;
 ID3D11DepthStencilState* RenderStates::mDepthStencilEnabledDSS = 0;
+ID3D11DepthStencilState* RenderStates::mDepthDisabledStencilEnabledDSS = 0;
 
 ID3D11BlendState* RenderStates::mDefaultBS = 0;
 ID3D11BlendState* RenderStates::mAdditiveBS = 0;
@@ -251,6 +252,11 @@ void RenderStates::InitAll(ID3D11Device* device)
 
 	device->CreateDepthStencilState(&depthStencilEnabledDSSdesc, &mDepthStencilEnabledDSS);
 
+	// Depth disabled, stencil enabled
+	depthStencilEnabledDSSdesc.DepthEnable = FALSE;
+
+	device->CreateDepthStencilState(&depthStencilEnabledDSSdesc, &mDepthDisabledStencilEnabledDSS);
+
 	//-----------------------------------------------------------
 	// Blend states
 	//-----------------------------------------------------------
@@ -300,6 +306,7 @@ void RenderStates::DestroyAll()
 	ReleaseCOM(mDefaultDSS);
 	ReleaseCOM(mDisabledDSS);
 	ReleaseCOM(mDepthStencilEnabledDSS);
+	ReleaseCOM(mDepthDisabledStencilEnabledDSS);
 
 	ReleaseCOM(mDefaultBS);
 	ReleaseCOM(mAdditiveBS);

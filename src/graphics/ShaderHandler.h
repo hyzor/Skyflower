@@ -924,6 +924,7 @@ public:
 	void ActivateStreamShaders(ID3D11DeviceContext* dc);
 
 	void SetViewProj(XMMATRIX& viewProj);
+	void SetPrevViewProj(XMMATRIX& prevViewProj);
 	void SetTexArray(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* texArray);
 	void SetRandomTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* randomTex);
 
@@ -961,6 +962,7 @@ private:
 		float padding;
 
 		XMMATRIX viewProj;
+		XMMATRIX prevViewProj;
 
 		XMFLOAT4 quadTexC[4];
 

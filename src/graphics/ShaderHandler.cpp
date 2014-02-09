@@ -2781,3 +2781,8 @@ void ParticleSystemShader::SetLitSceneTex(ID3D11DeviceContext* dc, ID3D11ShaderR
 {
 	mLitSceneTex = litSceneTex;
 }
+
+void ParticleSystemShader::SetPrevViewProj(XMMATRIX& prevViewProj)
+{
+	mBufferCache.drawGSPerFrameBuffer.prevViewProj = XMMatrixTranspose(prevViewProj);
+}

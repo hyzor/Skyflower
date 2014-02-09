@@ -25,6 +25,7 @@ public:
 	static ID3D11DepthStencilState* mDefaultDSS;
 	static ID3D11DepthStencilState* mDisabledDSS;
 	static ID3D11DepthStencilState* mDepthStencilEnabledDSS;
+	static ID3D11DepthStencilState* mDepthDisabledStencilEnabledDSS;
 
 	static ID3D11BlendState* mDefaultBS;
 	static ID3D11BlendState* mAdditiveBS;

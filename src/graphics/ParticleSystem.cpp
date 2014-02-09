@@ -102,6 +102,7 @@ void ParticleSystem::Draw(ID3D11DeviceContext* dc, const Camera& cam)
 	mShader->SetRandomTex(dc, mRandomTexSRV);
 	mShader->SetTime(mGameTime, mTimeStep);
 	mShader->SetViewProj(cam.GetViewProjMatrix());
+	mShader->SetPrevViewProj(cam.GetPreviousViewProj());
 	mShader->SetAccelConstant(mConstantAccelW);
 	mShader->SetParticleProperties(mParticleAgeLimit, mEmitFrequency);
 	mShader->SetParticleType(mParticleType);

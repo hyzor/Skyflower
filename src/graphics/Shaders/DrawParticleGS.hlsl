@@ -7,6 +7,7 @@ cbuffer cbPerFrame : register(b0)
 	float padding;
 
 	float4x4 gViewProj;
+	float4x4 gPrevViewProj;
 
 	float4 gQuadTexC[4];
 
@@ -22,6 +23,11 @@ struct GeoOut
 	unsigned int TexIndex : TEXINDEX;
 	//float2 NDCspace : NDCSPACE;
 	float2 TexSpace : TEXSPACE;
+
+	float4 CurPosH : CURPOSH;
+	float4 PrevPosH : PREVPOSH;
+
+	float3 NormalW : NORMALW;
 };
 
 // The draw GS just expands points into camera facing quads.
@@ -60,8 +66,14 @@ void main(point VertexOut gin[1],
 		for (int i = 0; i < 4; ++i)
 		{
 			gout.PosH = mul(v[i], gViewProj);
+
+			gout.CurPosH = gout.PosH;
+			gout.PrevPosH = mul(v[i], gPrevViewProj);
+
 			//gout.NDCspace = gout.PosH.xy / gout.PosH.w;
 			float2 NDCspace = gout.PosH.xy / gout.PosH.w;
+
+			gout.NormalW = float3(0.0f, 1.0f, 0.0f);
 
 			gout.TexSpace.x = 0.5f * NDCspace.x + 0.5f;
 			gout.TexSpace.y = -0.5f * NDCspace.y + 0.5f;

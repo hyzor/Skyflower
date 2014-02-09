@@ -12,6 +12,7 @@ struct PixelOut
 	float4 Color : SV_Target0;
 	float4 Normal : SV_Target1;
 	float4 Specular : SV_Target2;
+	float2 Velocity : SV_target3;
 };
 
 PixelOut main(GeoOut pIn)
@@ -43,9 +44,20 @@ PixelOut main(GeoOut pIn)
 	pOut.Color.w = 1.0f;
 
 	// Not affected by lights
-	pOut.Normal = float4(0.0f, 0.0f, 0.0f, 1.0f);
+	//pOut.Normal = float4(0.0f, 1.0f, 0.0f, 0.0f);
+	pOut.Normal.xyz = pIn.NormalW;
+	pOut.Normal.w = 0.0f;
 
-	pOut.Specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	pOut.Specular = float4(0.0f, 0.0f, 0.0f, 1.0f);
+
+	float2 CurPosXY;
+	float2 PrevPosXY;
+
+	CurPosXY = (pIn.CurPosH.xy / pIn.CurPosH.w) * 0.5f + 0.5f;
+	PrevPosXY = (pIn.PrevPosH.xy / pIn.PrevPosH.w) * 0.5f + 0.5f;
+
+	pOut.Velocity = (CurPosXY - PrevPosXY) * 0.5f + 0.5f;
+	pOut.Velocity = pow(pOut.Velocity, 3.0f);
 
 	return pOut;
 }
