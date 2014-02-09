@@ -74,9 +74,20 @@ class Entity {
 
 		void updateRot(Vec3 rot);
 
+		PhysicsEntity* mPhysicsEntity;
 		EntityId fId;
 
 		void ActiveteField(bool b);
+		Vec3 returnRot();
+		Vec3 returnScale();
+		bool returnVisible();
+		bool getIsActive();
+		CollisionInstance* returnCollision();
+		void updateScale(Vec3 scale);
+		void updateVisible(bool isVisible);
+		void setIsActive(bool status);
+
+
 
 	private:
 
@@ -89,7 +100,6 @@ class Entity {
 		bool isActive;
 		ModelInstance* modelInst;
 		AnimatedInstance* AnimInst;
-		PhysicsEntity* mPhysicsEntity;
 		bool isAnimated;
 		bool isCollidible;
 
@@ -156,14 +166,7 @@ class Entity {
 
 		EntityId getEntityId();
 
-		Vec3 returnRot();
-		Vec3 returnScale();
-		bool returnVisible();
-		bool getIsActive();
-		CollisionInstance* returnCollision();
-		void updateScale(Vec3 scale);
-		void updateVisible(bool isVisible);
-		void setIsActive(bool status);
+
 
 		const Modules *modules;
 };

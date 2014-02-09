@@ -39,7 +39,7 @@
     <ClCompile Include="src\graphics\MathHelper.cpp" />
     <ClCompile Include="src\graphics\MorphModel.cpp" />
     <ClCompile Include="src\graphics\OrthoWindow.cpp" />
-    <ClCompile Include="src\graphics\ParticleSystem.cpp" />
+    <ClCompile Include="src\graphics\ParticleSystemImpl.cpp" />
     <ClCompile Include="src\graphics\RenderStates.cpp" />
     <ClCompile Include="src\graphics\ShaderHandler.cpp" />
     <ClCompile Include="src\graphics\Shadowmap.cpp" />
@@ -73,6 +73,7 @@
     <ClInclude Include="src\graphics\MorphModel.h" />
     <ClInclude Include="src\graphics\OrthoWindow.h" />
     <ClInclude Include="src\graphics\ParticleSystem.h" />
+    <ClInclude Include="src\graphics\ParticleSystemImpl.h" />
     <ClInclude Include="src\graphics\RenderStates.h" />
     <ClInclude Include="src\graphics\ShaderHandler.h" />
     <ClInclude Include="src\graphics\Shadowmap.h" />

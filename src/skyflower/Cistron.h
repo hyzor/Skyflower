@@ -12,7 +12,7 @@
 #include "ScriptHandler.h"
 #include "graphics/CameraController.h"
 
-
+class GUI;
 // IMPORTANT!
 // decide below which version you want - a version using boost::any or a version using a simple void pointer
 
@@ -39,7 +39,7 @@ struct Modules
 	Collision *collision;
 	PotentialField* potentialField;
 	ScriptHandler* script;
-	//GUI* gui;
+	GUI* gui;
 };
 
 };

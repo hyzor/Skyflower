@@ -15,6 +15,7 @@ class DLL_API Ray
 
 		void Set(const Vec3& pos, const Vec3& dir);
 		const Vec3& GetPos();
+		void SetPos(const Vec3& pos);
 		const Vec3& GetDir();
 
 		const Box& GetBox();

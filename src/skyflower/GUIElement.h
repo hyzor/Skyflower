@@ -26,6 +26,21 @@ public:
 	GUIElement(const GUIElement& other);
 	~GUIElement();
 
+	void* operator new(size_t size)
+	{
+		void* p = _aligned_malloc(size, 16);
+
+		if (!p)
+			throw std::bad_alloc();
+
+		return p;
+	}
+
+	void operator delete(void* p)
+	{
+		_aligned_free(p);
+	}
+
 	//Destroy GUI element
 	void Destroy(GraphicsEngine* gEngine);
 

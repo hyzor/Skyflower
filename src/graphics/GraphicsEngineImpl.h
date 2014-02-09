@@ -27,7 +27,7 @@
 
 #include "MorphModel.h"
 
-#include "ParticleSystem.h"
+#include "ParticleSystemImpl.h"
 
 const float fovY = 0.785398f; // 0.25f * MathHelper::pi
 const float zNear = 1.0f;
@@ -65,6 +65,10 @@ public:
 
 	Texture2D *CreateTexture2D(unsigned int width, unsigned int height);
 	void DeleteTexture2D(Texture2D *texture);
+
+	ParticleSystem *CreateParticleSystem();
+	void DeleteParticleSystem(ParticleSystem *particleSystem);
+
 	void UpdateSceneData();
 
 	void addDirLight(Vec3 color, Vec3 direction, float intensity);
@@ -146,7 +150,7 @@ private:
 
 	float mGameTime;
 
-	std::vector<ParticleSystem*> mParticleSystems;
+	std::vector<ParticleSystemImpl*> mParticleSystems;
 	ID3D11ShaderResourceView* mRandom1DTexSRV;
 	ID3D11ShaderResourceView* mParticlesTextureArray;
 

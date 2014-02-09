@@ -108,7 +108,7 @@
     <ClCompile Include="src\graphics\SkinnedData.cpp">
       <Filter>Models</Filter>
     </ClCompile>
-    <ClCompile Include="src\graphics\ParticleSystem.cpp">
+    <ClCompile Include="src\graphics\ParticleSystemImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -205,6 +205,9 @@
     </ClInclude>
     <ClInclude Include="src\graphics\SkinnedData.h">
       <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\ParticleSystemImpl.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics\ParticleSystem.h">
       <Filter>Header Files</Filter>

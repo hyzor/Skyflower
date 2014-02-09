@@ -11,13 +11,18 @@
 #include "Entity.h"
 #include "Health.h"
 #include "Gravity.h"
+#include "Application.h"
 
 // Must be included last!
 #include "shared/debug.h"
 
+#define JUMP_SPEED_FACTOR_LEFT 0.00625f
+#define JUMP_SPEED_FACTOR_RIGHT 0.00625f
+#define JUMP_SPEED_FACTOR_FORWARD 0.0005f
+#define JUMP_SPEED_FACTOR_BACKWARD 0.0125f
+
 static const char *fallingSounds[] = {
-	"player/wilhelm_scream.wav",
-	"quake/falling1.wav"
+	"player/falling1.wav"
 };
 
 Movement::Movement(float speed) : Component("Movement")
@@ -31,6 +36,9 @@ Movement::Movement(float speed) : Component("Movement")
 	this->speed = speed;
 	this->targetRot = 0.0f;
 	this->walkAngle = 0.0f;
+	this->timeFalling = 0.0f;
+	this->mInitialJumpDir = None;
+	this->mParticleSystem = NULL;
 }
 
 Movement::~Movement()
@@ -39,6 +47,11 @@ Movement::~Movement()
 
 void Movement::addedToEntity() {
 	this->p = getOwner()->getPhysics();
+
+	this->mParticleSystem = getOwner()->getModules()->graphics->CreateParticleSystem();
+	this->mParticleSystem->SetParticleType(ParticleType::PT_PARTICLE);
+	this->mParticleSystem->SetParticleAgeLimit(0.25f);
+	this->mParticleSystem->SetEmitFrequency(1.0f / 10.0f);
 
 	requestMessage("StartMoveForward", &Movement::startMoveForward);
 	requestMessage("StartMoveBackward", &Movement::startMoveBackward);
@@ -63,6 +76,9 @@ void Movement::addedToEntity() {
 void Movement::removeFromEntity()
 {
 	this->p = NULL;
+
+	getOwner()->getModules()->graphics->DeleteParticleSystem(this->mParticleSystem);
+	this->mParticleSystem = NULL;
 }
 
 void Movement::update(float deltaTime)
@@ -72,6 +88,9 @@ void Movement::update(float deltaTime)
 	p->Update(deltaTime);
 
 	GravityComponent *gravity = getOwner()->getComponent<GravityComponent*>("Gravity");
+
+	if (isInAir)
+		timeFalling += deltaTime;
 
 	if (gravity && !gravity->isEnabled())
 	{
@@ -92,15 +111,13 @@ void Movement::update(float deltaTime)
 				
 			if (getOwnerId() == 1)
 			{
-				getOwner()->getModules()->sound->PlaySound(fallingSounds[rand()  % ARRAY_SIZE(fallingSounds)], 0.25f);
+				getOwner()->getModules()->sound->PlaySound(GetPlayerSoundFile(fallingSounds[rand()  % ARRAY_SIZE(fallingSounds)]), 0.05f);
 			}
 		}
 
 		if (!health->isAlive())
 		{
 			sendMessageToEntity(this->getOwnerId(), "Respawn");
-			p->SetVelocity(Vec3(0, 0, 0));
-			health->setHealth(100);
 			return;
 		}
 	}
@@ -155,8 +172,21 @@ void Movement::update(float deltaTime)
 			}
 			else
 				walkAngle = targetRot;
+
 			p->GetStates()->isMoving = true;
-			p->MoveRelativeVec3(pos, this->camLook, speed * deltaTime, rot, targetRot);
+			float totalSpeed = this->speed;
+
+			if (this->p->GetStates()->isJumping && this->isInAir)
+			{
+				//DoJumpStuff(totalSpeed);
+				p->RotateRelativeVec3(rot, this->camLook, targetRot);
+				p->Walk(pos, totalSpeed * deltaTime);
+			}
+			if (!this->p->GetStates()->isJumping /*&& !this->isInAir*/ && this->p->GetVelocity().Y <= 0.0f)
+			{
+				p->RotateRelativeVec3(rot, this->camLook, targetRot);
+				p->Walk(pos, totalSpeed * deltaTime);
+			}
 
 			// If the player is moving, rotate it to match the camera's direction.
 			if (getOwnerId() == 1)
@@ -172,22 +202,35 @@ void Movement::update(float deltaTime)
 
 	if (getOwnerId() == 1 && getOwner()->getAnimatedInstance())
 	{
-		if (this->isInAir)
+		Push *pushComponent = getOwner()->getComponent<Push *>("Push");
+
+		if ((this->isInAir && timeFalling > 0.3f) || p->GetStates()->isJumping)
 		{
-			getOwner()->getAnimatedInstance()->SetAnimation(1);
+			getOwner()->getAnimatedInstance()->SetAnimation(1, false);
 		}
-		else
+		else if (pushComponent && !pushComponent->isPushingBox())
 		{
 			if (p->GetStates()->isMoving)
 			{
-				getOwner()->getAnimatedInstance()->SetAnimation(0);
+				getOwner()->getAnimatedInstance()->SetAnimation(0, true);
 			}
 			else
 			{
-				getOwner()->getAnimatedInstance()->SetAnimation(4);
+				getOwner()->getAnimatedInstance()->SetAnimation(4, true);
 			}
 		}
 	}
+
+	this->p->ApplyVelocityToPos(pos);
+
+	// Update particle system
+	Vec3 emitDirection = Vec3(cosf(-rot.Y + 3.14f / 2), 0, sinf(-rot.Y + 3.14f / 2)).Normalize();
+	float particleAcceleration = 10.0f;
+
+	this->mParticleSystem->SetActive(!(this->isInAir || !p->GetStates()->isMoving));
+	this->mParticleSystem->SetEmitPos(XMFLOAT3(pos.X, pos.Y, pos.Z));
+	this->mParticleSystem->SetEmitDir(XMFLOAT3(emitDirection.X, emitDirection.Y, emitDirection.Z));
+	this->mParticleSystem->SetConstantAccel(XMFLOAT3(emitDirection.X * particleAcceleration, emitDirection.Y * particleAcceleration, emitDirection.Z * particleAcceleration));
 
 	updateEntityPos(pos);
 	updateEntityRot(rot);
@@ -278,34 +321,143 @@ void Movement::inAir(Message const& msg)
 
 void Movement::notInAir(Message const& msg)
 {
+	this->timeFalling = 0.0f;
 	this->isInAir = false;
+	this->mInitialJumpDir = None;
 }
 
 void Movement::Jump(Message const& msg)
 {
-	if (!getOwner()->ground)
+	if (!getOwner()->ground && timeFalling > 0.3f)
 		return;
-
-	Vec3 pos = getEntityPos();
-
-	if (p->Jump(pos))
+	else if (canMove)
 	{
-		updateEntityPos(pos);
+		Vec3 pos = getEntityPos();
 
-		Entity *owner = getOwner();
-		GravityComponent *gravity = owner->getComponent<GravityComponent*>("Gravity");
+		float forwardJumpSpeed = 0.0f;
 
-		if (gravity)
+		if (this->isMovingBackward || this->isMovingForward || this->isMovingLeft || this->isMovingRight)
 		{
-			gravity->setEnabled(false);
-			this->timeUntilGravityEnable = MAX_JUMP_KEY_TIME;
+			forwardJumpSpeed = this->speed;
 		}
 
-		owner->getModules()->sound->PlaySound("player/jump1.wav", 1.0f, &pos.X);
+		if (p->Jump(pos, forwardJumpSpeed))
+		{
+			//Remember the direction faced when starting the jump
+			if (this->isMovingForward)
+				this->mInitialJumpDir = Forward;
+			else if (this->isMovingBackward)
+				this->mInitialJumpDir = Backward;
+			else if (this->isMovingLeft)
+				this->mInitialJumpDir = Left;
+			else if (this->isMovingRight)
+				this->mInitialJumpDir = Right;
+			else
+				this->mInitialJumpDir = None;
+
+			updateEntityPos(pos);
+
+			Entity *owner = getOwner();
+			GravityComponent *gravity = owner->getComponent<GravityComponent*>("Gravity");
+
+			if (gravity)
+			{
+				gravity->setEnabled(false);
+				this->timeUntilGravityEnable = MAX_JUMP_KEY_TIME;
+			}
+
+			owner->getModules()->sound->PlaySound(GetPlayerSoundFile("player/jump1.wav"), 1.0f, &pos.X);
+		}
 	}
 }
 
 void Movement::StopJump(Message const& msg)
 {
 	this->timeUntilGravityEnable = 0.0f;
+}
+
+
+void Movement::DoJumpStuff(float &jSpeed)
+{
+	switch (this->mInitialJumpDir)
+	{
+	case None:
+		jSpeed *= 0.01f;
+		break;
+	case Forward:
+		if (this->isMovingForward)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_FORWARD;
+		}
+		else if (this->isMovingBackward)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_BACKWARD;
+		}
+		else if (this->isMovingLeft)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_LEFT;
+		}
+		else if (this->isMovingRight)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_RIGHT;
+		}
+		break;
+
+	case Backward:
+		if (this->isMovingForward)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_BACKWARD;
+		}
+		else if (this->isMovingBackward)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_FORWARD;
+		}
+		else if (this->isMovingLeft)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_RIGHT;
+		}
+		else if (this->isMovingRight)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_LEFT;
+		}
+		break;
+
+	case Left:
+		if (this->isMovingForward)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_RIGHT;
+		}
+		else if (this->isMovingBackward)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_LEFT;
+		}
+		else if (this->isMovingLeft)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_FORWARD;
+		}
+		else if (this->isMovingRight)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_BACKWARD;
+		}
+		break;
+
+	case Right:
+		if (this->isMovingForward)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_LEFT;
+		}
+		else if (this->isMovingBackward)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_RIGHT;
+		}
+		else if (this->isMovingLeft)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_BACKWARD;
+		}
+		else if (this->isMovingRight)
+		{
+			jSpeed *= JUMP_SPEED_FACTOR_FORWARD;
+		}
+		break;
+	}
 }

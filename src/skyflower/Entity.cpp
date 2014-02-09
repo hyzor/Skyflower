@@ -107,7 +107,7 @@ Entity::Entity(const Modules *modules, EntityId id, EntityId relativeid, string 
 				keyFramesFile.close();
 			}
 
-			this->AnimInst->SetAnimation(0);
+			this->AnimInst->SetAnimation(0, true);
 		}
 	}
 	
@@ -116,7 +116,7 @@ Entity::Entity(const Modules *modules, EntityId id, EntityId relativeid, string 
 		collInst = modules->collision->CreateCollisionInstance(model, pos);
 		collInst->SetScale(scale);
 		collInst->SetRotation(rot);
-		field = this->modules->potentialField->CreateField(model, pos, scale);
+		field = this->modules->potentialField->CreateField(collInst, pos, scale.X);
 	}
 	else
 	{
@@ -154,6 +154,9 @@ Entity::~Entity() {
 
 	if (field)
 		this->modules->potentialField->DeleteField(field);
+
+	if (collInst)
+		this->modules->collision->DeleteCollisionInstance(collInst);
 	
 	if (mPhysicsEntity)
 		this->modules->physicsEngine->DestroyEntity(mPhysicsEntity);
@@ -162,6 +165,8 @@ Entity::~Entity() {
 void Entity::update(float deltaTime)
 {
 	std::list<Component *> *componentList;
+
+	//this->mPhysicsEntity->ApplyVelocityToPos(this->pos);
 
 	for (auto nameIter = fComponents.begin(); nameIter != fComponents.end(); nameIter++)
 	{
@@ -383,7 +388,6 @@ CollisionInstance* Entity::returnCollision()
 void Entity::updatePos(Vec3 pos)
 {
 	this->pos = pos;
-
 	if (!ground)
 		this->pos = pos;
 	else

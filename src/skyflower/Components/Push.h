@@ -16,23 +16,11 @@ using namespace Cistron;
 class Push : public Component {
 
 public:
-	Push() : Component("Push")
-	{
-	}
+	Push();
+	virtual ~Push();
 
-	virtual ~Push()
-	{
-	}
-
-	void addedToEntity()
-	{
-		//requestMessage("inAir", &Push::stopPush);
-		requestMessage("Wall", &Push::stopPush);
-	}
-
-	void removeFromEntity()
-	{
-	}
+	void addedToEntity();
+	void removeFromEntity();
 
 	void update(float deltaTime);
 
@@ -43,13 +31,14 @@ public:
 	//push all entites in range
 	void pushAll();
 
+	bool isPushingBox();
 
 private:
-
-
 	void stopPush(Message const& msg);
 
-
+private:
+	bool m_isPushingBox;
+	Vec3 m_initialPushDirection;
 };
 
 #endif

@@ -31,7 +31,7 @@ Character::~Character()
 
 void Character::Update(float dt)
 {
-	mAnimEntity->SetKeyFrameInterval(mAnimEntity->mAnimations[mAnimEntity->mCurAnim].FrameStart, mAnimEntity->mAnimations[mAnimEntity->mCurAnim].FrameEnd);
+	//mAnimEntity->SetKeyFrameInterval(mAnimEntity->mAnimations[mAnimEntity->mCurAnim].FrameStart, mAnimEntity->mAnimations[mAnimEntity->mCurAnim].FrameEnd);
 	mAnimEntity->Update(dt);
 }
 

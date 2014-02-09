@@ -17,6 +17,9 @@ using namespace std;
 using namespace tinyxml2;
 using namespace Cistron;
 
+// Evil global variable until we have some kind of configuration system.
+static bool g_quakeSounds = false;
+
 Application::Application()
 {
 	m_oldVolume = 1.0f;
@@ -32,7 +35,6 @@ void Application::Start()
 	m_window->SetListener(this);
 
 	m_inputHandler = m_window->GetInputHandler();
-	m_inputHandler->AddListener(this);
 
 	// Create graphics engine
 	m_graphicsEngine = CreateGraphicsEngine();
@@ -75,8 +77,7 @@ void Application::Start()
 	
 	m_backgroundMusicMenu.push_back("music/ants.opus");
 
-	m_backgroundMusicGame.push_back("music/creepy.opus");
-	//m_backgroundMusicGame.push_back("music/wat.opus");
+	m_backgroundMusicGame.push_back("music/happy_piano.opus");
 
 	m_backgroundMusic = m_soundEngine->CreateSource();
 	m_backgroundMusic->SetRelativeToListener(true);
@@ -92,42 +93,59 @@ void Application::Start()
 	setBackgroundMusicList(m_backgroundMusicMenu);
 
 	m_entityManager = new EntityManager("../../XML/", &modules);
-	m_entityManager->loadXML("player.xml");
+	//m_entityManager->loadXML("player.xml");
 
 	levelHandler->init(m_entityManager);
 
 	// Load Hub Level
-	levelHandler->queue(3);
+	levelHandler->queue(4);
 	levelHandler->LoadQueued();
-	m_entityManager->sendMessageToEntity("ActivateListener", "player");
+
+	//m_entityManager->sendMessageToEntity("ActivateListener", "player");
 	m_graphicsEngine->UpdateSceneData();
 	m_entityManager->loadXML("subWorld1Lights.XML");
-	Movement* playerMove = (Movement*)m_entityManager->getComponent("player", "Movement");
-	ListenerComponent* playerListener = (ListenerComponent*)m_entityManager->getComponent("player", "Listener");
-
+	
 	m_showCharts = false;
+	double chartDrawFrequency = 0.1;
+	double nextChartDraw = 0.0;
 
-	// Make the charts hold 60 seconds worth of values at 60fps.
-	size_t chartCapacity = 60 * 60;
+	double chartTime = 20.0;
+	double chartResolution = 1.0 / 30.0;
+	// Make the charts hold 2 minutes worth of values at 60fps.
+	size_t chartCapacity = 120 * 60;
+
 	LineChart frameTimeChart(chartCapacity);
 	frameTimeChart.SetSize(256, 128);
+	frameTimeChart.SetTimeSpan(chartTime, chartResolution);
+	frameTimeChart.SetTargetValue((1.0 / 60.0) * 1000.0);
 	frameTimeChart.SetUnit("ms");
+	frameTimeChart.SetLabel("frame time");
 	//Texture2D *frameTimeChartTexture = m_graphicsEngine->CreateTexture2D(frameTimeChart.GetWidth(), frameTimeChart.GetHeight());
 	m_frameChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, 0.0f, 0.0f), 
 		m_GUI->CreateTexture2D(frameTimeChart.GetWidth(), frameTimeChart.GetHeight()));
+	
+	LineChart fpsChart(chartCapacity);
+	fpsChart.SetSize(256, 128);
+	fpsChart.SetTimeSpan(chartTime, chartResolution);
+	fpsChart.SetTargetValue(60.0);
+	fpsChart.SetUnit("fps");
+	fpsChart.SetLabel("FPS");
+	//Texture2D *fpsChartTexture = m_graphicsEngine->CreateTexture2D(fpsChart.GetWidth(), fpsChart.GetHeight());
+	m_fpsChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, (float)(frameTimeChart.GetHeight() + 6), 0.0f),
+		m_GUI->CreateTexture2D(fpsChart.GetWidth(), fpsChart.GetHeight()));
 
 	LineChart memoryChart(chartCapacity);
 	memoryChart.SetSize(256, 128);
+	memoryChart.SetTimeSpan(chartTime, chartResolution);
+	memoryChart.SetTargetValue(256.0);
 	memoryChart.SetUnit("MiB");
+	memoryChart.SetLabel("RAM");
 	//Texture2D *memoryChartTexture = m_graphicsEngine->CreateTexture2D(memoryChart.GetWidth(), memoryChart.GetHeight());
-	m_memChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, (float)(frameTimeChart.GetHeight() + 6), 0.0f),
+	m_memChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, (float)((frameTimeChart.GetHeight() + 6) * 2), 0.0f),
 		m_GUI->CreateTexture2D(memoryChart.GetWidth(), memoryChart.GetHeight()));
 
-	thread load;
-
-	double chartUpdateDelay = 0.1;
-	double nextChartUpdate = 0.0;
-	double chartTime = 30.0;
+	// Don't start listening to input events until everything has been initialized.
+	m_inputHandler->AddListener(this);
 
 	double time, deltaTime;
 
@@ -140,7 +158,9 @@ void Application::Start()
 
 	changeGameState(GameState::cutScene);
 	cs = new CutScene(m_entityManager->modules->script, m_camera);
-	cs->play();
+
+	int loadingScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "Menygrafik\\fyraTreRatio.png");
+	m_GUI->GetGUIElement(loadingScreen)->SetVisible(false);
 
 	while(!m_quit)
 	{
@@ -150,32 +170,32 @@ void Application::Start()
 
 		mGameTime = time - mStartTime;
 
-		frameTimeChart.AddPoint(time, deltaTime * 1000.0);
-		memoryChart.AddPoint(time, GetMemoryUsage() / (1024.0 * 1024.0));
+		frameTimeChart.AddDataPoint(time, deltaTime * 1000.0);
 
-		if (m_showCharts && time >= nextChartUpdate) {
-			nextChartUpdate = time + chartUpdateDelay;
+		// Make the fps chart more readable by ignoring delta times smaller than half a millisecond.
+		if (deltaTime > 0.0005)
+			fpsChart.AddDataPoint(time, 1.0 / deltaTime);
 
-			frameTimeChart.Draw(time - chartTime, time, 1.0 / 60.0, (1.0 / 60.0) * 1000.0);
+		memoryChart.AddDataPoint(time, GetMemoryUsage() / (1024.0 * 1024.0));
+
+		if (m_showCharts && time >= nextChartDraw) {
+			nextChartDraw = time + chartDrawFrequency;
+
+			frameTimeChart.Draw(time);
 			m_GUI->UploadData(m_frameChartID, frameTimeChart.GetPixels());
+			
+			fpsChart.Draw(time);
+			m_GUI->UploadData(m_fpsChartID, fpsChart.GetPixels());
 
-			memoryChart.Draw(time - chartTime, time, 1.0 / 100.0, 256.0);
+			memoryChart.Draw(time);
 			m_GUI->UploadData(m_memChartID, memoryChart.GetPixels());
-		}
-
-		if (levelHandler->hasQueuedLevel() && !levelHandler->isLoading())
-		{
-			if (load.joinable())
-				load.join();
-
-			load = thread(&LevelHandler::LoadQueued, levelHandler);
-			changeGameState(GameState::loading);
 		}
 
 		float volume = m_menu->getSettings()._soundVolume;
 
 		if (m_oldVolume != volume)
 		{
+			ListenerComponent* playerListener = (ListenerComponent*)m_entityManager->getComponent("player", "Listener");
 			playerListener->setVolume(volume);
 			m_oldVolume = volume;
 		}
@@ -183,7 +203,7 @@ void Application::Start()
 		switch (gameState)
 		{
 		case GameState::game:
-			updateGame((float)deltaTime, (float)mGameTime, playerMove);
+			updateGame((float)deltaTime, (float)mGameTime);
 			break;
 		case GameState::loading:
 			updateLoading((float)deltaTime);
@@ -200,8 +220,27 @@ void Application::Start()
 
 		m_graphicsEngine->Present();
 
+		m_physicsEngine->Update((float)deltaTime);
+
 		m_soundEngine->Update((float)deltaTime);
 		m_window->PumpMessages();
+
+		if (levelHandler->hasQueuedLevel() && !levelHandler->isLoading())
+		{
+			// Basically a hax - Dont do this at home
+			// FIXME: Don't hardcode this!
+			m_GUI->GetGUIElement(loadingScreen)->GetDrawInput()->scale = XMFLOAT2((float)m_window->GetWidth() / 1024, (float)m_window->GetHeight() / 768);
+			m_GUI->GetGUIElement(loadingScreen)->SetVisible(true);
+			m_GUI->Draw();
+			m_graphicsEngine->Present();
+
+			levelHandler->LoadQueued();
+			m_graphicsEngine->Clear();
+			m_graphicsEngine->UpdateSceneData();
+			m_oldTime = GetTime();
+			m_GUI->GetGUIElement(loadingScreen)->SetVisible(false);
+			changeGameState(GameState::cutScene);
+		}
 	}
 	
 	//m_graphicsEngine->DeleteTexture2D(memoryChartTexture);
@@ -236,27 +275,37 @@ void Application::updateMenu(float dt)
 		m_inputHandler->GetMousePosition(x, y);
 		m_menu->onMouseDown(Vec3(x, y));
 	}
+
+	if (m_menu->getSettings()._isFullscreen && !m_graphicsEngine->isFullscreen())
+	{
+		m_graphicsEngine->SetFullscreen(true);
+		this->OnWindowResized(1920, 1080);
+		m_oldTime = GetTime();
+	}
+	else if (!m_menu->getSettings()._isFullscreen && m_graphicsEngine->isFullscreen())
+	{
+		m_graphicsEngine->SetFullscreen(false);
+		this->OnWindowResized(1024, 768);
+		m_oldTime = GetTime();
+	}
+
+	if (m_camera->GetMouseSense() != m_menu->getSettings()._mouseSense)
+		m_camera->SetMouseSense(m_menu->getSettings()._mouseSense);
+
 	m_menu->draw();
 
 	switch (m_menu->getStatus())
 	{
 	case Menu::resume:
-		if (m_menu->getSettings()._isFullscreen && !m_graphicsEngine->isFullscreen())
-		{
-			m_graphicsEngine->SetFullscreen(true);
-			this->OnWindowResized(1920, 1080);
-		}
-		else if (!m_menu->getSettings()._isFullscreen && m_graphicsEngine->isFullscreen())
-		{
-			m_graphicsEngine->SetFullscreen(false);
-			this->OnWindowResized(1024, 768);
-		}
 
 		m_menu->setActive(false);
 
 		// Set if mouse is inverted based on if it's been checked in menu
 		m_camera->SetInverted(m_menu->getSettings()._mouseInverted);
-		changeGameState(GameState::game);
+		if (cs->isPlaying())
+			changeGameState(GameState::cutScene);
+		else
+			changeGameState(GameState::game);
 		break;
 	case Menu::exit:
 		m_quit = true;
@@ -273,15 +322,17 @@ void Application::updateCutScene(float dt)
 
 	if (m_menu->isActive())
 		changeGameState(GameState::menu);
-	if (cs->isDone())
+	if (!cs->isPlaying())
 	{
 		changeGameState(GameState::game);
 	}
 }
 
-void Application::updateGame(float dt, float gameTime, Movement* playerMove)
+void Application::updateGame(float dt, float gameTime)
 {
 	m_camera->Follow(m_entityManager->getEntityPos("player"));
+
+	Movement* playerMove = m_entityManager->getEntity(1)->getComponent<Movement*>("Movement");
 	playerMove->setCamera(m_camera->GetLook(), m_camera->GetRight(), m_camera->GetUp());
 	playerMove->setYaw(m_camera->GetYaw());
 	m_camera->Update(dt);
@@ -289,6 +340,11 @@ void Application::updateGame(float dt, float gameTime, Movement* playerMove)
 	m_graphicsEngine->UpdateScene(dt, gameTime);
 	m_graphicsEngine->DrawScene();
 	m_entityManager->update(dt);
+
+	m_camera->Rotate(m_camera->GetYaw(), m_camera->GetPitch());
+
+	if (cs->isPlaying())
+		changeGameState(GameState::cutScene);
 
 	if (m_menu->isActive())
 		changeGameState(GameState::menu);
@@ -299,10 +355,6 @@ void Application::updateLoading(float dt)
 	Draw2DInput input;
 	input.pos.x = 0.0f;
 	input.pos.y = 0.0f;
-
-	m_graphicsEngine->Begin2D();
-	m_graphicsEngine->Draw2DTextureFile("..\\..\\content\\Textures\\Menygrafik\\fyraTreRatio.png", &input);
-	m_graphicsEngine->End2D();
 
 	if (!levelHandler->isLoading())
 		changeGameState(GameState::game);
@@ -362,6 +414,7 @@ void Application::OnWindowResized(unsigned int width, unsigned int height)
 {
 	m_graphicsEngine->OnResize(width, height);
 	m_menu->onResize(width, height);
+	m_oldTime = GetTime();
 }
 
 void Application::OnWindowResizeEnd()
@@ -434,20 +487,6 @@ void Application::OnKeyDown(unsigned short key)
 	switch (key)
 	{
 	case VK_ESCAPE:
-		m_inputHandler->SetMouseCapture(false);
-		m_window->SetCursorVisibility(true);
-		break;
-	case 'Z':
-		m_showCharts = !m_showCharts;
-
-		m_GUI->GetGUIElement(m_frameChartID)->SetVisible(m_showCharts);
-		m_GUI->GetGUIElement(m_memChartID)->SetVisible(m_showCharts);
-		break;
-	case 'R':
-		m_graphicsEngine->clearLights();
-		m_entityManager->loadXML("subWorld1Lights.XML");
-		break;
-	case 'M':
 		if (m_menu->isActive())
 			m_menu->setActive(false);
 		else
@@ -456,15 +495,29 @@ void Application::OnKeyDown(unsigned short key)
 			m_menu->setActive(true);
 		}
 		break;
+	case 'Z':
+		m_showCharts = !m_showCharts;
+
+		m_GUI->GetGUIElement(m_frameChartID)->SetVisible(m_showCharts);
+		m_GUI->GetGUIElement(m_fpsChartID)->SetVisible(m_showCharts);
+		m_GUI->GetGUIElement(m_memChartID)->SetVisible(m_showCharts);
+		break;
+	case 'R':
+		m_graphicsEngine->clearLights();
+		levelHandler->queue(4);
+		m_entityManager->loadXML("subWorld1Lights.XML");
+			
+		break;
 	case VK_SPACE:
-		if (!cs->isDone())
-			cs->quit(); 
+		if (cs->isPlaying())
+			cs->stop(); 
 	case 'P':
 		m_graphicsEngine->SetPostProcessingEffects(m_graphicsEngine->GetPostProcessingEffects() ^ POST_PROCESSING_SSAO);
 		break;
 	case 'O':
 		m_graphicsEngine->SetPostProcessingEffects(m_graphicsEngine->GetPostProcessingEffects() ^ POST_PROCESSING_DOF);
 		break;
+#if 0
 	case 'Y':
 		m_SSAOradius += 0.1f;
 		m_graphicsEngine->SetSSAOParameters(m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
@@ -526,7 +579,26 @@ void Application::OnKeyDown(unsigned short key)
 
 		printf("radius=%.1f, projection factor=%.1f, bias=%.2f, contrast=%.1f, sigma=%.1f\n", m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);
 		break;
+#endif
 	default:
 		break;
 	}
+}
+
+std::string GetPlayerSoundFile(const std::string &file)
+{
+	if (!g_quakeSounds)
+		return file;
+
+	size_t pos = file.find_last_of('/');
+	std::string result;
+
+	if (pos != std::string::npos) {
+		result = file.substr(0, pos) + "/quake" + file.substr(pos, std::string::npos);
+	}
+	else {
+		result = file;
+	}
+
+	return result;
 }

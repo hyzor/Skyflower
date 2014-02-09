@@ -14,7 +14,6 @@ public:
 	virtual void SetPosition(Vec3 pos) = 0;
 	virtual void SetDirection(Vec3 dir) = 0;
 	virtual void SetOffset(float offset) = 0; // Set the offset from the player.
-	//virtual void SetRotation(float x, float z) = 0;
 	virtual void Update(float dt) = 0;
 	virtual void Follow(Vec3 target) = 0; // Set target for the camera to look at and follow
 	virtual Vec3 GetPosition() const = 0;
@@ -27,6 +26,9 @@ public:
 	virtual void Rotate(float yaw, float pitch) = 0;
 	virtual void Zoom(float, float speed) = 0; // Lowers/Increases the offset to the player
 	virtual void SetInverted(bool invert) = 0;
+	virtual bool GetInverted() const = 0;
+	virtual void SetMouseSense(float sensitivity) = 0;
+	virtual float GetMouseSense() const = 0;
 };
 
 DLL_API void DestroyCameraController(CameraController* cameraController); // Clean up

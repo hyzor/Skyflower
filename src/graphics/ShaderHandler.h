@@ -942,6 +942,8 @@ public:
 
 	void SetParticleType(UINT particleType);
 
+	void SetEmitParticles(bool emitParticles);
+
 	//void UpdatePerParticleSystem(ID3D11DeviceContext* dc);
 
 	void UpdateDrawShaders(ID3D11DeviceContext* dc);
@@ -983,7 +985,9 @@ private:
 
 		float emitFrequency;
 		UINT particleType;
-		XMFLOAT2 padding;
+
+		UINT emitParticles;
+		float padding;
 	};
 
 	struct BUFFERCACHE

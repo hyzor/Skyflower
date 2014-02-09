@@ -33,7 +33,7 @@ public:
 	virtual Vec3 GetPosition() = 0;
 	virtual Vec3 GetRotation() = 0;
 	virtual Vec3 GetScale() = 0;
-	virtual int GetAnimation() = 0;
+	virtual UINT GetAnimation() = 0;
 
 	virtual void SetPosition(Vec3 pos) = 0;
 	virtual void SetRotation(Vec3 rot) = 0;
@@ -43,7 +43,7 @@ public:
 
 	virtual void CreateAnimation(int id, int start, int frames) = 0;
 	virtual void CreateAnimation(int id, int start, int frames, bool playForwards) = 0;
-	virtual void SetAnimation(int id) = 0;
+	virtual void SetAnimation(UINT id, bool loop) = 0;
 
 };
 

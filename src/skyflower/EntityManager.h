@@ -44,6 +44,7 @@ class EntityManager {
 
 		// destroy Entity
 		void destroyEntity(EntityId);
+		void removeEntity(Entity* e);
 
 		// destroy a component
 		void destroyComponent(Component*);
@@ -178,19 +179,29 @@ class EntityManager {
 		CollisionInstance* getEntityCollision(EntityId ownerId);
 		Component* getComponent(string EntityName, string Componenet);
 		Entity *getEntity(EntityId id);
-		EntityId getNrOfEntities();
+		int getNrOfEntities();
 		EntityId getEntityId(int index);
+		Entity* getEntityByIndex(int index);
+
 
 		void updateEntityPos(Vec3 pos, EntityId id);
 		void updateEntityRot(Vec3 rot, EntityId id);
 		void updateEntityScale(Vec3 scale, EntityId id);
 		void updateEntityVisibility(bool isVisible, EntityId id);
 
-		void handleCollision();
 		void updateSpheres();
 
-		void activateEntity(int entityIndex);
-		void deactivateEntity(int entityIndex);
+		void activateEntity(EntityId eId);
+		void deactivateEntity(EntityId eId);
+
+		//throw and throwable-functions
+		//void pickUpEntity(EntityId, EntityId);
+		//void throwEntity(EntityId throwingEntity, EntityId throwableEntity);
+		//void putDownEntity(EntityId throwingEntity, EntityId throwableEntity);
+		//void setPickUpOrPutDown(bool state, EntityId id);
+		//void setIsHoldingThrowable(bool state, EntityId id);
+		//void setIsBeingPickedUp(bool state, EntityId id);
+		//void setToThrow(bool state, EntityId id);
 
 		const Modules *modules;
 
@@ -269,8 +280,6 @@ class EntityManager {
 		std::tr1::unordered_map<ComponentId, list<ComponentRequest> > fRequestsByComponentId;
 
 
-		float testMove(Ray r, Entity* e);
-		float testMove(Ray r, Entity* e, Entity* &out);
 
 
 		/**

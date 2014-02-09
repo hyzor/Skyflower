@@ -18,6 +18,8 @@ class BoxComp : public Component
 		BoxComp(float speed) : Component("Box")
 		{
 			this->speed = speed;
+
+			pNormal = Vec3(0, 1, 0);
 		}
 
 		virtual ~BoxComp()
@@ -26,17 +28,14 @@ class BoxComp : public Component
 
 		void addedToEntity()
 		{
-			//getComponents<GravityComponent>("Gravity");
+
 		}
 
 		void removeFromEntity()
 		{
 		}
 
-		void update(float deltaTime)
-		{
-			
-		}
+		void update(float deltaTime);
 
 		float GetSpeed()
 		{
@@ -45,6 +44,8 @@ class BoxComp : public Component
 	private:
 
 		float speed;
+
+		Vec3 pNormal;
 };
 
 

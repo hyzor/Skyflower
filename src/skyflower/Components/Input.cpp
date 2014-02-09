@@ -39,6 +39,12 @@ void Input::OnKeyDown(unsigned short key)
 	case 'D':
 		sendMessageToEntity(this->getOwnerId(), "StartMoveRight");
 		break;
+	case 'T':
+		sendMessageToEntity(this->getOwnerId(), "Throw");
+		break;
+	case 'Y':
+		sendMessageToEntity(this->getOwnerId(), "PickUpOrDown");
+		break;
 	case VK_SPACE:
 		sendMessageToEntity(this->getOwnerId(), "Jump");
 		break;
@@ -62,6 +68,9 @@ void Input::OnKeyUp(unsigned short key)
 		break;
 	case 'D':
 		sendMessageToEntity(this->getOwnerId(), "StopMoveRight");
+		break;
+	case 'T':
+		sendMessageToEntity(this->getOwnerId(), "StopThrow");
 		break;
 	case VK_SPACE:
 		sendMessageToEntity(this->getOwnerId(), "StopJump");

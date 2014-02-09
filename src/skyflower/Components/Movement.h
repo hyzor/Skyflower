@@ -5,6 +5,7 @@
 
 #include "shared/Vec3.h"
 #include "physics/PhysicsEngine.h"
+#include "graphics/ParticleSystem.h"
 
 #include "Cistron.h"
 #include "Component.h"
@@ -12,6 +13,15 @@
 using namespace Cistron;
 
 #define MAX_JUMP_KEY_TIME 0.4f
+
+enum JumpDirection
+{
+	None,
+	Forward,
+	Backward,
+	Left,
+	Right
+};
 
 class Movement : public Component
 {
@@ -61,6 +71,11 @@ private:
 	float yaw;
 	float targetRot;
 	float walkAngle;
+	float timeFalling;
+	JumpDirection mInitialJumpDir;
+	ParticleSystem *mParticleSystem;
+
+	void DoJumpStuff(float &speed);
 };
 
 #endif

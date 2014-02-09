@@ -11,25 +11,25 @@ Menu::Menu()
 	settings._isFullscreen = false;
 	settings._mouseInverted = false;
 	settings._soundVolume = 1.0f;
+	settings._mouseSense = 1.0f;
 }
 
 Menu::~Menu()
 {
-	for (unsigned i = 0; i < m_buttons.size(); i++)
+	for (size_t i = 0; i < MenuPageCount; i++)
 	{
-		if (m_buttons.at(i))
-			delete m_buttons.at(i);
-	}
-	for (unsigned i = 0; i < m_checkboxes.size(); i++)
-	{
-		if (m_checkboxes.at(i))
-			delete m_checkboxes.at(i);
-	}
-
-	for (unsigned i = 0; i < m_sliders.size(); i++)
-	{
-		if (m_sliders.at(i))
-			delete m_sliders.at(i);
+		for (unsigned j = 0; j < m_pages[i].buttons.size(); j++)
+		{
+			delete m_pages[i].buttons[j];
+		}
+		for (unsigned j = 0; j < m_pages[i].checkboxes.size(); j++)
+		{
+			delete m_pages[i].checkboxes[j];
+		}
+		for (unsigned j = 0; j < m_pages[i].sliders.size(); j++)
+		{
+			delete m_pages[i].sliders[j];
+		}
 	}
 }
 
@@ -52,25 +52,37 @@ void Menu::init(GUI *g, int screenWidth, int screeenHeight, SoundEngine *sound)
 	g->GetGUIElement(settingsBox)->GetDrawInput()->scale = XMFLOAT2(40, 40);
 	g->GetGUIElement(settingsBox)->SetVisible(false);
 
+	// Main page
 	MenuButton *resume = new MenuButton(g, Vec3(30, 100), 240, 100, "button_resume.png", "button_resume_hover.png");
 	resume->setOnClick([this]() {buttonResumeClicked();});
-	m_buttons.push_back(resume);
-
-	MenuButton *fillout = new MenuButton(g, Vec3(30, 250), 240, 100, "button_resume.png", "button_resume_hover.png");
-	m_buttons.push_back(fillout);
+	m_pages[MenuPageMain].buttons.push_back(resume);
+	
+	MenuButton *settings = new MenuButton(g, Vec3(30, 250), 240, 100, "button_settings.png", "button_settings_hover.png");
+	settings->setOnClick([this]() { setActivePage(MenuPageSettings); });
+	m_pages[MenuPageMain].buttons.push_back(settings);
 
 	MenuButton *exit = new MenuButton(g, Vec3(30, 400), 240, 100, "button_exit.png", "button_exit_hover.png");
 	exit->setOnClick([this]() {buttonExitClicked(); });
-	m_buttons.push_back(exit);
+	m_pages[MenuPageMain].buttons.push_back(exit);
+
+	// Settings page
+	MenuButton *back = new MenuButton(g, Vec3(30, 100), 240, 100, "button_back.png", "button_back_hover.png");
+	back->setOnClick([this]() { setActivePage(MenuPageMain); });
+	m_pages[MenuPageSettings].buttons.push_back(back);
 
 	CheckBox *fullScreen = new CheckBox(g, Vec3(430, 450), 20, 20, "checkbox_unchecked.png", "checkbox_checked.png");
-	m_checkboxes.push_back(fullScreen);
+	m_pages[MenuPageSettings].checkboxes.push_back(fullScreen);
 
 	CheckBox *mouseInverted = new CheckBox(g, Vec3(430, 420), 20, 20, "checkbox_unchecked.png", "checkbox_checked.png");
-	m_checkboxes.push_back(mouseInverted);
+	m_pages[MenuPageSettings].checkboxes.push_back(mouseInverted);
 
-	Slider *volume = new Slider(g, Vec3(430, 350), 150, 40, "slider_back.png", "slider.png");
-	m_sliders.push_back(volume);
+	Slider *volume = new Slider(g, Vec3(430, 350), 150, 40);
+	m_pages[MenuPageSettings].sliders.push_back(volume);
+
+	Slider *mouseSense = new Slider(g, Vec3(430, 280), 150, 40);
+	m_pages[MenuPageSettings].sliders.push_back(mouseSense);
+
+	m_activePage = MenuPageMain;
 }
 
 bool Menu::isActive()
@@ -85,13 +97,30 @@ void Menu::setActive(bool active)
 	setVisible(active);
 }
 
+void Menu::setActivePage(int page)
+{
+	m_activePage = page;
+
+	if (m_active)
+		setVisible(true);
+}
+
 void Menu::draw()
 {
-	Vec3 fullScreenPos = m_checkboxes.at(0)->getPosition();
-	guiPtr->printText(L"Fullscreen", (int)(fullScreenPos.X + (30 * scaleX)), (int)(fullScreenPos.Y), Vec3(1.0f, 1.0f, 1.0f), scaleX);
+	if (m_activePage == MenuPageSettings)
+	{
+		Vec3 fullScreenPos = m_pages[MenuPageSettings].checkboxes.at(0)->getPosition();
+		guiPtr->printText(L"Fullscreen", (int)(fullScreenPos.X + (30 * scaleX)), (int)fullScreenPos.Y, Vec3(1.0f, 1.0f, 1.0f), scaleX);
 
-	Vec3 mouseInvertPos = m_checkboxes.at(1)->getPosition();
-	guiPtr->printText(L"Invert Camera", (int)(mouseInvertPos.X + 30 * scaleX), (int)mouseInvertPos.Y, Vec3(1.0f, 1.0f, 1.0f), scaleX);
+		Vec3 mouseInvertPos = m_pages[MenuPageSettings].checkboxes.at(1)->getPosition();
+		guiPtr->printText(L"Invert Camera", (int)(mouseInvertPos.X + 30 * scaleX), (int)mouseInvertPos.Y, Vec3(1.0f, 1.0f, 1.0f), scaleX);
+
+		Vec3 soundVolumePos = m_pages[MenuPageSettings].sliders.at(0)->getPosition();
+		guiPtr->printText(L"Sound Volume", (int)(soundVolumePos.X + 160 * scaleX), (int)soundVolumePos.Y+ 10, Vec3(1.0f, 1.0f, 1.0f), scaleX);
+
+		Vec3 mouseSensePos = m_pages[MenuPageSettings].sliders.at(1)->getPosition();
+		guiPtr->printText(L"Mouse sense", (int)(mouseSensePos.X + 160 * scaleX), (int)mouseSensePos.Y + 10, Vec3(1.0f, 1.0f, 1.0f), scaleX);
+	}
 }
 
 void Menu::keyPressed(unsigned short key)
@@ -111,19 +140,17 @@ void Menu::keyPressed(unsigned short key)
 		enter = true;
 		break;
 	}
-	if (selectedButton == m_buttons.size())
-		selectedButton = 0;
-	else if (selectedButton < 0)
-		selectedButton = m_buttons.size() - 1;
+
+	selectedButton = (selectedButton + m_pages[m_activePage].buttons.size()) % m_pages[m_activePage].buttons.size();
 
 	if (enter)
 	{
-		m_buttons.at(selectedButton)->pressed();
+		m_pages[m_activePage].buttons.at(selectedButton)->pressed();
 	}
 	if (lastSelected != selectedButton)
 	{
-		m_buttons.at(lastSelected)->setHighlighted(false);
-		m_buttons.at(selectedButton)->setHighlighted(true);
+		m_pages[m_activePage].buttons.at(lastSelected)->setHighlighted(false);
+		m_pages[m_activePage].buttons.at(selectedButton)->setHighlighted(true);
 
 		soundEngine->PlaySound("menu/button.wav", 0.5f);
 	}
@@ -131,21 +158,24 @@ void Menu::keyPressed(unsigned short key)
 
 void Menu::mousePressed(Vec3 pos)
 {
-	for (auto it = m_buttons.begin(); it != m_buttons.end(); ++it)
+	int page = m_activePage;
+
+	for (auto it = m_pages[page].buttons.begin(); it != m_pages[page].buttons.end(); ++it)
 	{
 		(*it)->onMouseClick(pos);
 	}
-	for (auto it = m_checkboxes.begin(); it != m_checkboxes.end(); ++it)
+	for (auto it = m_pages[page].checkboxes.begin(); it != m_pages[page].checkboxes.end(); ++it)
 	{
 		(*it)->onMouseClick(pos);
 	}
-	for (auto it = m_sliders.begin(); it != m_sliders.end(); ++it)
+	for (auto it = m_pages[page].sliders.begin(); it != m_pages[page].sliders.end(); ++it)
 	{
 		(*it)->onMouseClick(pos);
 	}
-	settings._isFullscreen = m_checkboxes[0]->isChecked();
-	settings._mouseInverted = m_checkboxes[1]->isChecked();
-	settings._soundVolume = m_sliders[0]->getValue();
+
+	settings._isFullscreen = m_pages[MenuPageSettings].checkboxes[0]->isChecked();
+	settings._mouseInverted = m_pages[MenuPageSettings].checkboxes[1]->isChecked();
+	settings._soundVolume = m_pages[MenuPageSettings].sliders[0]->getValue();
 }
 
 int Menu::getStatus()
@@ -156,23 +186,24 @@ int Menu::getStatus()
 void Menu::setVisible(bool visible)
 {
 	guiPtr->GetGUIElement(m_bg)->SetVisible(visible);
-	guiPtr->GetGUIElement(settingsBox)->SetVisible(visible);
-	for (unsigned i = 0; i < m_buttons.size(); i++)
+
+	if (visible && m_activePage == MenuPageSettings)
+		guiPtr->GetGUIElement(settingsBox)->SetVisible(true);
+	else
+		guiPtr->GetGUIElement(settingsBox)->SetVisible(false);
+
+	for (int i = 0; i < MenuPageCount; i++)
 	{
-		m_buttons.at(i)->setVisible(visible);
-	}
-	for (unsigned i = 0; i < m_checkboxes.size(); i++)
-	{
-		m_checkboxes.at(i)->setVisible(visible);
-	}
-	for (unsigned i = 0; i < m_sliders.size(); i++)
-	{
-		m_sliders.at(i)->setVisible(visible);
+		if (visible && i == m_activePage)
+			m_pages[i].setVisible(true);
+		else
+			m_pages[i].setVisible(false);
 	}
 
+	selectedButton = 0;
 
 	// Highlight the selected button
-	guiPtr->GetGUIElement(m_buttons.at(selectedButton)->getTextureIDs().at(0))->SetVisible(visible);
+	//guiPtr->GetGUIElement(m_pages[m_activePage].buttons.at(selectedButton)->getTextureIDs().at(0))->SetVisible(visible);
 }
 
 void Menu::buttonExitClicked()
@@ -194,17 +225,20 @@ void Menu::onResize(unsigned int width, unsigned int height)
 	scaleX = ((float)width / 1024);
 	scaleY = ((float)height / 768);
 
-	for (unsigned i = 0; i < m_buttons.size(); i++)
+	for (size_t i = 0; i < MenuPageCount; i++)
 	{
-		m_buttons.at(i)->updateScreenRes(width, height);
-	}
-	for (unsigned i = 0; i < m_checkboxes.size(); i++)
-	{
-		m_checkboxes.at(i)->updateScreenRes(width, height);
-	}
-	for (unsigned i = 0; i < m_sliders.size(); i++)
-	{
-		m_sliders.at(i)->updateScreenRes(width, height);
+		for (unsigned j = 0; j < m_pages[i].buttons.size(); j++)
+		{
+			m_pages[i].buttons[j]->updateScreenRes(width, height);
+		}
+		for (unsigned j = 0; j < m_pages[i].checkboxes.size(); j++)
+		{
+			m_pages[i].checkboxes[j]->updateScreenRes(width, height);
+		}
+		for (unsigned j = 0; j < m_pages[i].sliders.size(); j++)
+		{
+			m_pages[i].sliders[j]->updateScreenRes(width, height);
+		}
 	}
 
 	guiPtr->GetGUIElement(m_bg)->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
@@ -218,7 +252,7 @@ void Menu::onResize(unsigned int width, unsigned int height)
 
 void Menu::onMouseMove(Vec3 mousePos)
 {
-	for (auto it = m_buttons.begin(); it != m_buttons.end(); ++it)
+	for (auto it = m_pages[m_activePage].buttons.begin(); it != m_pages[m_activePage].buttons.end(); ++it)
 	{
 		bool oldHighlighted = (*it)->isHighlighted();
 		(*it)->onMouseMove(mousePos);
@@ -229,9 +263,11 @@ void Menu::onMouseMove(Vec3 mousePos)
 }
 void Menu::onMouseDown(Vec3 mousePos)
 {
-	for (auto it = m_sliders.begin(); it != m_sliders.end(); ++it)
+	for (auto it = m_pages[m_activePage].sliders.begin(); it != m_pages[m_activePage].sliders.end(); ++it)
 	{
 		(*it)->onMouseDown(mousePos);
 	}
-	settings._soundVolume = m_sliders[0]->getValue();
+
+	settings._soundVolume = m_pages[MenuPageSettings].sliders[0]->getValue();
+	settings._mouseSense = m_pages[MenuPageSettings].sliders[1]->getValue()*2 + 0.3f; // mouse sense ranges from 0.2 - 2.3
 }

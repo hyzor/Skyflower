@@ -6,13 +6,14 @@
 #include "shared/debug.h"
 
 char* levels[] = {
+	"hubWorld",
 	"testWorld",
 	"testWorld2",
 	"testExport",
 	"subWorld1"
 };
 
-#define LEVEL_COUNT 4
+#define LEVEL_COUNT 5
 
 LevelHandler *LevelHandler::instance = nullptr;
 
@@ -45,17 +46,6 @@ LevelHandler* LevelHandler::GetInstance()
 }
 void LevelHandler::queue(int id)
 {
-	/*
-	// Removes all entities except for the player
-	for (int i = 0; _entityManager->getNrOfEntities() != 1; i++) 
-	{
-		if (_entityManager->getEntity(i)->getType() != "Player")
-			_entityManager->destroyEntity(i);
-	}
-	_entityManager->loadXML(_levels.at(id)._path);
-	_current = id;
-	*/
-
 	queued = true;
 	queueID = id;
 }
@@ -103,33 +93,44 @@ void LevelHandler::loadQueued(int id)
 {
 	queued = false;
 	printf("Thread started\n");
+
+	//get all entities to remove later
+	std::vector<Entity*> old;
 	int nrEntities = _entityManager->getNrOfEntities();
-	for (int i = 0,j = 0; i < nrEntities; i++, j++)
+	for (int i = 0; i < nrEntities; i++)
 	{
-		int eid = _entityManager->getEntityId(j);
-		if (_entityManager->getEntity(eid)->getType() != "player")
-		{
-			_entityManager->destroyEntity(eid);
-			j--;
-		}
+		Entity* remove = _entityManager->getEntityByIndex(0);
+		old.push_back(remove);
+		_entityManager->removeEntity(remove);
 	}
 
+	//load new entities
 	std::string xmlfile = _levels.at(queueID)._path;
 	xmlfile += ".xml";
 	_entityManager->loadXML(xmlfile);
 	_current = queueID;
 
+	//remove old entities
+	for (unsigned int i = 0; i < old.size(); i++)
+		delete old[i];
 
+	//load lua file
 	std::string luafile = _levels.at(queueID)._path;
 	luafile += ".lua";
 	_entityManager->modules->script->Run(luafile);
+
+	//run loaded function
+	Event::entityManager = _entityManager;
+	lua_getglobal(_entityManager->modules->script->L, "loaded");
+	lua_pcall(_entityManager->modules->script->L, 0, 0, 0);
+
 
 	loading = false;
 }
 
 bool LevelHandler::hasQueuedLevel()
 {
-	return queued || (loading == true);
+	return queued;
 }
 
 bool LevelHandler::isLoading()

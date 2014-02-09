@@ -18,5 +18,7 @@
 #include "Components/BoxComp.h"
 #include "Components/Goal.h"
 #include "Components/MoveTarget.h"
+#include "Components/Throw.h"
+#include "Components/Throwable.h"
 
 #endif

@@ -6,18 +6,65 @@
 // Must be included last!
 #include "shared/debug.h"
 
+Push::Push() : Component("Push")
+{
+}
+
+Push::~Push()
+{
+}
+
+void Push::addedToEntity()
+{
+	m_isPushingBox = false;
+
+	//requestMessage("inAir", &Push::stopPush);
+	requestMessage("Wall", &Push::stopPush);
+
+	Vec3 temp = getEntityPos();
+	this->getOwner()->sphere = new Sphere(temp.X, temp.Y, temp.Z, 5);
+}
+
+void Push::removeFromEntity()
+{
+}
+
 void Push::update(float dt)
 {
 	//push box
 	Entity *pusher = getOwner();
 	Entity *pushedObject = pusher->wall;
+	bool isPushingBox = false;
 
 	if (pushedObject != nullptr)
 	{
 		if (pushedObject->hasComponents("Box"))
 		{
+			isPushingBox = true;
+
 			Vec3 pushedObjectPos = pushedObject->returnPos();
-			Vec3 dir = pushedObjectPos - pusher->returnPos();
+			Vec3 pusherPos = pusher->returnPos();
+			Vec3 dir = pushedObjectPos - pusherPos;
+
+			if (!m_isPushingBox)
+			{
+				// Entity just started pushing box.
+				m_initialPushDirection = dir;
+				m_initialPushDirection.Y = 0.0f;
+				m_initialPushDirection.Normalize();
+			}
+
+			// Make the entity "stick" to the box it is pushing.
+			Vec3 tempDir = dir;
+			tempDir.Y = 0;
+
+			float oldPusherY = pusherPos.Y;
+			pusherPos = pushedObjectPos - m_initialPushDirection * tempDir.Length();
+			pusherPos.Y = oldPusherY;
+
+			pusher->updatePos(pusherPos);
+
+			// Rotate the entity to make it perpendicular to the box it is pushing.
 			Vec3 rotation = Vec3(0.0f, 0.0f, 0.0f);
 
 			if (abs(dir.X) > abs(dir.Z))
@@ -38,16 +85,18 @@ void Push::update(float dt)
 
 			EntityId pusherId = getOwnerId();
 
+			getOwner()->updateRot(Vec3(pushedObject->returnRot().X, getOwner()->returnRot().Y, pushedObject->returnRot().Z));
+
 			if (pusherId == 1 && pusher->getAnimatedInstance())
 			{
-				pusher->getAnimatedInstance()->SetAnimation(3);
+				pusher->getAnimatedInstance()->SetAnimation(3, true);
 			}
 		}
 	}
 
+	m_isPushingBox = isPushingBox;
 
 	//pushAll();
-	
 }
 
 void Push::stopPush(Message const& msg)
@@ -63,7 +112,6 @@ bool Push::canPush(Entity* target)
 
 void Push::push(Entity* target)
 {
-
 	//collision and pushing between two entities
 	Entity* e = target;
 	if (getOwner() != e)
@@ -82,6 +130,9 @@ void Push::push(Entity* target)
 				{
 					e->getPhysics()->SetPushDirection(dir * 10);
 					getEntityManager()->sendMessageToEntity("beingPushed", e->fId);
+
+					Vec3 position = e->returnPos();
+					e->getModules()->sound->PlaySound("push.wav", 1.0f, &position.X);
 				}
 			}
 		}
@@ -91,5 +142,10 @@ void Push::push(Entity* target)
 void Push::pushAll()
 {
 	for (int j = 0; j < getEntityManager()->getNrOfEntities(); j++)
-		push(getEntityManager()->getEntity(getEntityManager()->getEntityId(j)));
+		push(getEntityManager()->getEntityByIndex(j));
+}
+
+bool Push::isPushingBox()
+{
+	return m_isPushingBox;
 }

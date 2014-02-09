@@ -34,7 +34,7 @@ public:
 
 private:
 
-	void updateGame(float dt, float gameTime, Movement* playerMove);
+	void updateGame(float dt, float gameTime);
 	void updateMenu(float dt);
 	void updateLoading(float dt);
 	void updateCutScene(float dt);
@@ -83,6 +83,7 @@ private:
 
 	bool m_showCharts;
 	int m_frameChartID;
+	int m_fpsChartID;
 	int m_memChartID;
 
 	std::vector<std::string> m_backgroundMusicMenu;
@@ -100,5 +101,7 @@ private:
 
 	float m_oldVolume;
 };
+
+std::string GetPlayerSoundFile(const std::string &file);
 
 #endif

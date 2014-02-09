@@ -208,6 +208,15 @@ Box CollisionInstanceImpl::GetBox()
 	return bounds;
 }
 
+
+Sphere CollisionInstanceImpl::GetSphere()
+{
+	Sphere sphere = Model->GetSphere();
+	sphere.Position += this->Position;
+
+	return sphere;
+}
+
 Vec3 CollisionInstanceImpl::GetPosition()
 {
 	return this->Position;

@@ -7,6 +7,7 @@
 
 #include "Footsteps.h"
 #include "Entity.h"
+#include "Application.h"
 
 // Must be included last!
 #include "shared/debug.h"
@@ -58,7 +59,7 @@ void FootstepsComponent::update(float deltaTime)
 
 		if (owner) {
 			// FIXME: Project the sound's position onto the ground.
-			owner->getModules()->sound->PlaySound(footstepSounds[rand() % ARRAY_SIZE(footstepSounds)], 0.5f, &originalPosition.X);
+			owner->getModules()->sound->PlaySound(GetPlayerSoundFile(footstepSounds[rand() % ARRAY_SIZE(footstepSounds)]), 1.0f, &originalPosition.X);
 		}
 	}
 }

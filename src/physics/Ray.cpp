@@ -41,6 +41,13 @@ const Vec3& Ray::GetPos()
 	return this->Pos;
 }
 
+void Ray::SetPos(const Vec3& pos)
+{
+	Vec3 dif = this->Pos - this->rayBounds.Position;
+	this->Pos = pos;
+	this->rayBounds.Position = dif+pos;
+}
+
 const Vec3& Ray::GetDir()
 {
 	return this->Dir;

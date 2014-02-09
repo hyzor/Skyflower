@@ -2786,3 +2786,8 @@ void ParticleSystemShader::SetPrevViewProj(XMMATRIX& prevViewProj)
 {
 	mBufferCache.drawGSPerFrameBuffer.prevViewProj = XMMatrixTranspose(prevViewProj);
 }
+
+void ParticleSystemShader::SetEmitParticles(bool emitParticles)
+{
+	mBufferCache.streamOutGSPerFrameBuffer.emitParticles = (emitParticles? 1 : 0);
+}

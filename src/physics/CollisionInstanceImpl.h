@@ -21,6 +21,7 @@ class CollisionInstanceImpl : public CollisionInstance
 
 		CollisionModel *GetModel();
 		Box GetBox();
+		Sphere GetSphere();
 		Vec3 GetPosition();
 
 		bool isActive();

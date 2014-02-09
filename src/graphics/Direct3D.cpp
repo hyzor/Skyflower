@@ -389,9 +389,23 @@ void Direct3D::Shutdown()
 	ReleaseCOM(mDepthStencilBuffer);
 
 	if (md3dImmediateContext)
+	{
 		md3dImmediateContext->ClearState();
+		md3dImmediateContext->Flush();
+	}
 
 	ReleaseCOM(md3dImmediateContext);
+
+#if defined(DEBUG) || defined(_DEBUG)
+	ID3D11Debug *d3dDebug;
+
+	if (SUCCEEDED(md3dDevice->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&d3dDebug))))
+	{
+		d3dDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+		d3dDebug->Release();
+	}
+#endif
+
 	ReleaseCOM(md3dDevice);
 }
 

@@ -23,13 +23,15 @@ public:
 	 void Rotate(float yaw, float pitch);
 	 void Zoom(float d, float speed);
 	 Vec3 GetPosition() const; 
-	 Vec3 GetDirection() const;
 	 Vec3 GetLook(); // Look vector
 	 Vec3 GetRight() const; // Right vector
 	 Vec3 GetUp() const; // Up vector
 	 float GetYaw() const;
 	 float GetPitch() const;
 	 void SetInverted(bool inverted);
+	 bool GetInverted() const;
+	 void SetMouseSense(float sensitivity);
+	 float GetMouseSense() const;
 
 private:
 	Camera* camera;
@@ -44,6 +46,7 @@ private:
 	float targetY; // The Y-pos of the target. Used for Lerp.
 	float targetZoom; 
 	bool inverted;
+	float mouseSense;
 };
 
 DLL_API CameraController* CreateCameraControll(Camera *c);

@@ -175,20 +175,19 @@ bool CheckBox::isChecked()
 
 /* Slider */
 
-Slider::Slider(GUI *gui, Vec3 position, int width, int height, string textureBack, string textureSlider)
+Slider::Slider(GUI *gui, Vec3 position, int width, int height)
 :MenuItem(gui, position, width, height)
 {
 	mouseDown = false;
-	sliderBounds._position.X = position.X + (bounds._width/2);
+	wasClicked = false;
+	sliderBounds._position.X = position.X + (bounds._width*0.5f);
 	sliderBounds._position.Y = position.Y - 5.0f;
 
 	sliderBounds._width = 20;
 	sliderBounds._height = 50;
 
-
-
-	textureIDs.push_back(gui->CreateGUIElementAndBindTexture(position, "Menygrafik\\" + textureBack));
-	textureIDs.push_back(gui->CreateGUIElementAndBindTexture(sliderBounds._position, "Menygrafik\\" + textureSlider));
+	textureIDs.push_back(gui->CreateGUIElementAndBindTexture(position, "Menygrafik\\slider_back.png"));
+	textureIDs.push_back(gui->CreateGUIElementAndBindTexture(sliderBounds._position, "Menygrafik\\slider.png"));
 	gui->GetGUIElement(textureIDs[0])->SetVisible(false);
 	gui->GetGUIElement(textureIDs[1])->SetVisible(false);
 }
@@ -201,14 +200,16 @@ void Slider::setVisible(bool state)
 
 void Slider::onMouseClick(Vec3 mousePos)
 {
-	if (bounds._isInside(mousePos))
+	if (bounds._isInside(mousePos) || sliderBounds._isInside(mousePos))
 	{
 		sliderBounds._position.X = mousePos.X - sliderBounds._width / 2;
-		guiPtr->GetGUIElement(textureIDs[1])->GetDrawInput()->pos.x = mousePos.X - sliderBounds._width / 2;
+		guiPtr->GetGUIElement(textureIDs[1])->GetDrawInput()->pos.x = mousePos.X;
+
 		if (sliderBounds._isInside(mousePos))
 			wasClicked = true;
 		else
 			wasClicked = false;
+
 	}
 	else
 		wasClicked = false;
@@ -227,20 +228,45 @@ void Slider::onMouseDown(Vec3 mousePos)
 		{
 			sliderBounds._position.X = bounds._position.X;
 		} 
-
-		guiPtr->GetGUIElement(textureIDs[1])->GetDrawInput()->pos.x = sliderBounds._position.X - 10;
+		guiPtr->GetGUIElement(textureIDs[1])->GetDrawInput()->pos.x = sliderBounds._position.X - (sliderBounds._width / 2);
 	}
 }
 
 float Slider::getValue()
 {
 	float value = (sliderBounds._position.X - bounds._position.X) / width;
+	if (value < 0.0f)
+		value = 0.0f;
+	else if (value > 1.0f)
+		value = 1.0f;
 	return value;
 }
 
-void Slider::setMouseDown(bool state)
+void Slider::updateScreenRes(unsigned int x, unsigned int y)
 {
-	mouseDown = state;
-	if (!state)
-		wasClicked = false;
+	float scaleY, scaleX;
+
+	scaleX = (float)x / origScreenWidth;
+	scaleY = (float)y / origScreenHeigh;
+
+	this->bounds._width = (int)(originalWidth * scaleX);
+	this->bounds._height = (int)(originalHeight * scaleY);
+
+	this->position.X = origPos.X * scaleX;
+	this->position.Y = origPos.Y * scaleY;
+	this->bounds._position = position;
+
+	this->sliderBounds._width = (int)(20 * scaleX);
+	this->sliderBounds._height = (int)(50 * scaleY);
+
+	Vec3 sliderPos = Vec3(origPos.X + width / 2, origPos.Y-5.0f);
+
+	this->sliderBounds._position.X = sliderPos.X * scaleX;
+	this->sliderBounds._position.Y = sliderPos.Y * scaleY;
+
+	guiPtr->GetGUIElement(textureIDs[0])->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
+	guiPtr->GetGUIElement(textureIDs[0])->GetDrawInput()->pos = XMFLOAT2(position.X, position.Y);
+
+	guiPtr->GetGUIElement(textureIDs[1])->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
+	guiPtr->GetGUIElement(textureIDs[1])->GetDrawInput()->pos = XMFLOAT2(sliderBounds._position.X, sliderBounds._position.Y);
 }

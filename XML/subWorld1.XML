@@ -1,4 +1,28 @@
 <root>
+	<Entity entityName="player" id="1"
+		 xPos="0" yPos="0" zPos="0"
+		xRot="0.0" yRot="0.0" zRot="0.0" 
+		xScale="1.0" yScale="1.0" zScale="1.0"
+		model="Models/Player/playerAnimated"
+		isVisible="1" isCollidible="1" isAnimated="1">
+			<Input />
+			<Movement speed="50" />
+			<Gravity />
+			<Listener />
+			<Footsteps />
+			<Messenger />
+			<Push />
+			<Pushable />
+			<Health maxHP = "100" />
+			<Throw />
+	</Entity>
+	
+	
+	
+    <Entity entityName="ballonPlattform" model="Models\Worlds\Subworld 1\ballonPlattform" id="24" isVisible="1" isCollidible="1" isAnimated="0" xPos="199.477652486" yPos="39.1736969453" zPos="116.23238288" xRot="0.0" yRot="-1.57145119464" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
+        <MoveTarget targetPosX="294" targetPosY="79" targetPosZ="125" duration="5" easingPower="3" continuous="0" />
+    </Entity>
+	
     <Entity entityName="plattform1" model="Models\Worlds\Subworld 1\plattform1" id="100" isVisible="1" isCollidible="1" isAnimated="0" xPos="0.0" yPos="0.0" zPos="-0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity entityName="plattform1Cloud" model="Models\Worlds\Subworld 1\plattform1Cloud" id="2" isVisible="1" isCollidible="0" isAnimated="0" xPos="0.0" yPos="0.0" zPos="-0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity entityName="plattform2" model="Models\Worlds\Subworld 1\plattform2" id="3" isVisible="1" isCollidible="1" isAnimated="0" xPos="0.0" yPos="0.0" zPos="-0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
@@ -11,32 +35,35 @@
     <Entity entityName="plattform3Cloud" model="Models\Worlds\Subworld 1\plattform3Cloud" id="7" isVisible="1" isCollidible="0" isAnimated="0" xPos="565.370649948" yPos="96.5956517912" zPos="41.8543727491" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.8655369642" yScale="1.8655369642" zScale="1.8655369642"/>
 	
     <Entity entityName="plattform3" model="Models\Worlds\Subworld 1\plattform3" id="8" isVisible="1" isCollidible="1" isAnimated="0" xPos="309.001247671" yPos="58.9019072742" zPos="155.286195192" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.8655369642" yScale="1.8655369642" zScale="1.8655369642"/>
-    <Entity entityName="plattform3Cloud" model="Models\Worlds\Subworld 1\plattform3Cloud" id="9" isVisible="1" isCollidible="0" isAnimated="0" xPos="309.001247671" yPos="58.0351253485" zPos="155.286195192" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.8655369642" yScale="1.8655369642" zScale="1.8655369642"/>
-    <Entity entityName="ropeBallonPlattform" model="Models\Worlds\Subworld 1\ropeBallonPlattform" id="11" isVisible="1" isCollidible="1" isAnimated="0" xPos="0.0" yPos="0.0" zPos="-0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
+    <Entity entityName="cloud2" model="Models\Worlds\Subworld 1\plattform3Cloud" id="9" isVisible="1" isCollidible="0" isAnimated="0" xPos="309.001247671" yPos="58.0351253485" zPos="155.286195192" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.8655369642" yScale="1.8655369642" zScale="1.8655369642"/>
+    
+	<Entity entityName="ropeBallonPlattform" model="Models\Worlds\Subworld 1\ropeBallonPlattform" id="11" isVisible="1" isCollidible="0" isAnimated="0" xPos="0.0" yPos="0.0" zPos="-0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
 			<MoveTarget targetPosX="0" targetPosY="10" targetPosZ="0" duration="5" easingPower="2" continuous="1" />
     </Entity>
+	
 	<Entity entityName="Rock" model="Models\Worlds\Subworld 1\Rock" id="12" isVisible="1" isCollidible="1" isAnimated="0" xPos="326.041811054" yPos="83.32834014" zPos="149.181274461" xRot="1.73764218889" yRot="-0.192779884652" zRot="-0.0324277093744" xScale="6.76847965241" yScale="6.76847965241" zScale="6.76847965241"/>
     <Entity entityName="Rock" model="Models\Worlds\Subworld 1\Rock" id="13" isVisible="1" isCollidible="1" isAnimated="0" xPos="301.101785755" yPos="77.6491530009" zPos="176.172195801" xRot="-0.169338101103" yRot="0.0" zRot="0.0" xScale="6.76847965241" yScale="6.76847965241" zScale="6.76847965241"/>
     <Entity entityName="WoodBlock" model="Models\Worlds\Subworld 1\WoodBlock" id="14" isVisible="1" isCollidible="0" isAnimated="0" xPos="290.030637847" yPos="79.7036492634" zPos="152.252250723" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
 		<Messenger />
         <Checkpoint/>
     </Entity>
+	<Entity entityName="WoodBlock" model="Models\Worlds\Subworld 1\Puncha_static" id="1411" isVisible="1" isCollidible="0" isAnimated="0" xPos="565.370649948" yPos="116.5956517912" zPos="51.8543727491" xRot="0.0" yRot="1.57" zRot="0.0" xScale="5.0" yScale="5.0" zScale="5.0">
+		<Messenger />
+		<Goal />
+		<Event script="Goal" />
+    </Entity>
     <Entity entityName="ButtonBase" model="Models\Worlds\Subworld 1\ButtonBase" id="15" relativeid="8" isVisible="1" isCollidible="1" isAnimated="0" xPos="314.552295649" yPos="78.4037154914" zPos="161.77004996" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312"/>
     <Entity entityName="Button" model="Models\Worlds\Subworld 1\Button" id="16" relativeid="15" isVisible="1" isCollidible="1" isAnimated="0" xPos="314.466631214" yPos="78.4602890807" zPos="161.86154881" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312">
 		<Messenger />
         <Button/>
         <Event script="btnStair"/> 
-		<Movement speed="20" />
     </Entity>
     
-    <Entity entityName="ballonPlattform" model="Models\Worlds\Subworld 1\ballonPlattform" id="24" isVisible="1" isCollidible="1" isAnimated="0" xPos="199.477652486" yPos="39.1736969453" zPos="116.23238288" xRot="0.0" yRot="-1.57145119464" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
-        <MoveTarget targetPosX="294" targetPosY="79" targetPosZ="125" duration="5" easingPower="3" continuous="0" />
-    </Entity>
     <Entity entityName="ballonPlattform" model="Models\Worlds\Subworld 1\ballonPlattform" id="25" isVisible="1" isCollidible="1" isAnimated="0" xPos="60.4980955585" yPos="110.0318066" zPos="-24.19353389" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <MoveTarget targetPosX="60" targetPosY="6" targetPosZ="-24" duration="5" easingPower = "3" continuous = "1" />
     </Entity>
-    <Entity entityName="Puncha" model="Models\Worlds\Subworld 1\Puncha" id="27" isVisible="1" isCollidible="0" isAnimated="0" xPos="334.311318695" yPos="78.4862951289" zPos="171.906910353" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
-        <!--Health/-->
+	
+    <Entity entityName="Puncha" model="Models\Worlds\Subworld 1\Puncha" id="27" isVisible="1" isCollidible="0" isAnimated="1" xPos="334.311318695" yPos="78.4862951289" zPos="171.906910353" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <Gravity/>
 		<Messenger />
         <AI />
@@ -45,18 +72,27 @@
         <Movement speed="10"/>
 		<Event script="aiPush" />
     </Entity>
+	
     <Entity entityName="WoodBlock" model="Models\Worlds\Subworld 1\WoodBlock" id="19" isVisible="1" isCollidible="1" isAnimated="0" xPos="472.770895471" yPos="120.251395515" zPos="122.055509702" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <Gravity/>
         <Box/>
         <Movement speed="20"/>
         <Health/>
     </Entity>
-    <Entity entityName="WoodBlock" model="Models\Worlds\Subworld 1\WoodBlock" id="28" isVisible="1" isCollidible="1" isAnimated="0" xPos="34.172665118" yPos="110.366599976" zPos="-27.3916749358" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
+    <Entity entityName="WoodBlock" model="Models\Worlds\Subworld 1\WoodBlock" id="28" isVisible="1" isCollidible="1" isAnimated="0" xPos="34.172665118" yPos="150.366599976" zPos="-27.3916749358" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <Gravity/>
-        <Box/>
-        <Movement speed="20"/>
         <Health/>
+		<Movement speed="20"/>
+		<Box />
     </Entity>
+	
+	<Entity entityName="Ball" model="Models\Throwable\Ball" id="98713" isVisible="1" isCollidible="0" isAnimated="0" xPos="10.0" yPos="20.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
+        <Gravity/>
+        <Health/>
+		<Movement speed="20"/>
+		<Throwable />
+    </Entity>
+	
     <Entity entityName="ButtonBase" model="Models\Worlds\Subworld 1\ButtonBase" id="17" relativeid="100" isVisible="1" isCollidible="1" isAnimated="0" xPos="199.034827697" yPos="39.2123622218" zPos="-8.39870949045" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312"/>
     <Entity entityName="Button" model="Models\Worlds\Subworld 1\Button" id="18" relativeid="17" isVisible="1" isCollidible="1" isAnimated="0" xPos="198.949163262" yPos="39.2689358112" zPos="-8.30721064075" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312">
         <Button/>
@@ -79,4 +115,5 @@
     <Entity entityName="movingPlattform" model="Models\Worlds\Subworld 1\movingPlattform" id="10" isVisible="1" isCollidible="1" isAnimated="0" xPos="465.780807633" yPos="-254.173788996" zPos="175.670885517" xRot="0.0" yRot="1.5681321154" zRot="0.0" xScale="1.37679221438" yScale="1.37679221438" zScale="1.37679221438">
         <MoveTarget targetPosX="436" targetPosY="93" targetPosZ="165" duration="3" easingPower="3" continuous="0" />
     </Entity>
+	
 </root>

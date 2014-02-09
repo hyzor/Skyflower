@@ -240,6 +240,14 @@ AnimEvaluator::AnimEvaluator(const aiAnimation* anim)
 	mLastPositions.resize(anim->mNumChannels, std::make_tuple(0, 0, 0));
 }
 
+float AnimEvaluator::GetDuration(UINT frameStart, UINT frameEnd)
+{
+	UINT nrOfFrames = (frameEnd - frameStart) + 1;
+	float framesDuration = (float)nrOfFrames * (mDuration / static_cast<float>(Transforms.size()));
+
+	return framesDuration;
+}
+
 UINT AnimEvaluator::GetFrameIndexAt(float time)
 {
 	time *= mTicksPerSecond;
@@ -511,4 +519,9 @@ UINT SkinnedData::GetAnimationIndex( const std::string& name )
 		animIndex = itr->second;
 
 	return animIndex;
+}
+
+float SkinnedData::GetAnimationDuration(UINT animationIndex, UINT frameStart, UINT frameEnd)
+{
+	return Animations[animationIndex].GetDuration(frameStart, frameEnd);
 }

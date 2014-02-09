@@ -91,11 +91,11 @@ private:
 
 	void Deactivated(Message const& msg);
 
-	void Goal(Message const& msg)
+	/*void Goal(Message const& msg)
 	{
 		//TO DO
 		//cout << "GOAL" << endl;
-	}
+	}*/
 
 	static int PlaySound(lua_State* L);
 	static int Jump(lua_State* L);

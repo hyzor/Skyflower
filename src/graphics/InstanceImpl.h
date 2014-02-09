@@ -58,7 +58,7 @@ public:
 	Vec3 GetPosition();
 	Vec3 GetRotation();
 	Vec3 GetScale();
-	int GetAnimation();
+	UINT GetAnimation();
 
 	void SetVisibility(bool visible);
 	void SetPosition(Vec3 pos);
@@ -71,9 +71,11 @@ public:
 
 	void CreateAnimation(int id, int start, int frames);
 	void CreateAnimation(int id, int start, int frames, bool playForwards);
-	void SetAnimation(int id);
+	void SetAnimation(UINT id, bool loop);
 
 	XMMATRIX GetWorld();
+
+	void Update(float deltaTime);
 
 	AnimatedEntity* model;
 

@@ -33,12 +33,18 @@ void Button::update(float dt)
 		{
 			act = true;
 			getEntityManager()->sendMessageToEntity("Activated", getOwnerId());
+
+			Vec3 position = getOwner()->returnPos();
+			getOwner()->getModules()->sound->PlaySound("button/activate.wav", 1.0f, &position.X);
 		}
 	}
 	else if (act)
 	{
 		act = false;
 		getEntityManager()->sendMessageToEntity("Deactivated", getOwnerId());
+
+		Vec3 position = getOwner()->returnPos();
+		getOwner()->getModules()->sound->PlaySound("button/activate.wav", 1.0f, &position.X);
 	}
 
 	//move button animation

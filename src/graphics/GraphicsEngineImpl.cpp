@@ -83,6 +83,7 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 	delete mDoFBlurTexture1;
 	delete mDoFBlurTexture2;
 
+	mD3D->Shutdown();
 	delete mD3D;
 }
 
@@ -327,6 +328,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 
 	LoadParticles(mResourceDir + "Textures/Particles/", "Particles.particlelist");
 
+	/*
 	ParticleSystem* testSystem1 = new ParticleSystem();
 	testSystem1->Init(
 		mD3D->GetDevice(),
@@ -339,6 +341,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	testSystem1->SetParticleType(ParticleType::PT_FLARE1);
 	testSystem1->SetParticleAgeLimit(2.0f);
 	mParticleSystems.push_back(testSystem1);
+	*/
 
 	mCurFPS = 0.0f;
 	mTargetFPS = 60.0f;
@@ -993,7 +996,7 @@ void GraphicsEngineImpl::UpdateScene(float dt, float gameTime)
 	// Update skinned instances
 	for (size_t i = 0; i < mAnimatedInstances.size(); i++)
 	{
-		mAnimatedInstances[i]->model->SetKeyFrameInterval(mAnimatedInstances[i]->model->mAnimations[mAnimatedInstances[i]->model->mCurAnim].FrameStart, mAnimatedInstances[i]->model->mAnimations[mAnimatedInstances[i]->model->mCurAnim].FrameEnd);
+		//mAnimatedInstances[i]->model->SetKeyFrameInterval(mAnimatedInstances[i]->model->mAnimations[mAnimatedInstances[i]->model->mCurAnim].FrameStart, mAnimatedInstances[i]->model->mAnimations[mAnimatedInstances[i]->model->mCurAnim].FrameEnd);
 		mAnimatedInstances[i]->model->Update(dt);
 	}
 
@@ -1015,7 +1018,7 @@ void GraphicsEngineImpl::UpdateScene(float dt, float gameTime)
 	for (UINT i = 0; i < mParticleSystems.size(); ++i)
 	{
 		mParticleSystems[i]->Update(dt, gameTime);
-		mParticleSystems[i]->SetParticleType((rand() % ParticleType::NROFTYPES - 1) + 1);
+		//mParticleSystems[i]->SetParticleType((rand() % ParticleType::NROFTYPES - 1) + 1);
 	}
 
 	mCamera->Update();
@@ -1038,6 +1041,41 @@ void GraphicsEngineImpl::OnResize(UINT width, UINT height)
 	mDoFCoCTexture->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
 	mDoFBlurTexture1->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
 	mDoFBlurTexture2->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
+}
+
+ParticleSystem *GraphicsEngineImpl::CreateParticleSystem()
+{
+	ParticleSystemImpl* particleSystem = new ParticleSystemImpl();
+	particleSystem->Init(mD3D->GetDevice(),
+		mShaderHandler->mParticleSystemShader,
+		mParticlesTextureArray,
+		mRandom1DTexSRV,
+		1000);
+
+	// Set some default values.
+	particleSystem->SetEmitPos(XMFLOAT3(0.0f, 15.0f, 0.0f));
+	particleSystem->SetConstantAccel(XMFLOAT3(0.0f, 7.8f, 0.0f));
+	particleSystem->SetParticleType(ParticleType::PT_FLARE1);
+
+	mParticleSystems.push_back(particleSystem);
+
+	return (ParticleSystem *)particleSystem;
+}
+
+void GraphicsEngineImpl::DeleteParticleSystem(ParticleSystem *particleSystem)
+{
+	ParticleSystemImpl* particleSystemImpl = (ParticleSystemImpl *)particleSystem;
+
+	for (auto iter = mParticleSystems.begin(); iter != mParticleSystems.end(); iter++)
+	{
+		if ((*iter) == particleSystemImpl)
+		{
+			mParticleSystems.erase(iter);
+			break;
+		}
+	}
+
+	delete particleSystemImpl;
 }
 
 void GraphicsEngineImpl::addDirLight(Vec3 color, Vec3 direction, float intensity)

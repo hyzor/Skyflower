@@ -101,14 +101,14 @@ private:
 class Slider : public MenuItem
 {
 public:
-	Slider(GUI *gui, Vec3 position, int width, int height, string textureBack, string textureSlider);
+	Slider(GUI *gui, Vec3 position, int width, int height);
 	void setVisible(bool state);
 	void onMouseClick(Vec3 mousePos);
 	void onMouseDown(Vec3 mousePos);
+	void updateScreenRes(unsigned int x, unsigned int y);
 
 	// Value between 0 - 1
 	float getValue();
-	void setMouseDown(bool state);
 private:
 	Rectangle sliderBounds;
 	bool mouseDown;
