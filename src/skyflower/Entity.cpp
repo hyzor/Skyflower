@@ -126,12 +126,6 @@ Entity::Entity(const Modules *modules, EntityId id, EntityId relativeid, string 
 
 	this->sphere = new Sphere(pos, 1.5f);
 
-	/*if (this->type == "player" || this->type == "AI") //fungerar inte
-	{
-		cout << "creating sphere!" << this->type << endl;
-		this->sphere = new Sphere(pos.X, pos.Y, pos.Z, 4);
-	}*/
-
 }
 Entity::~Entity() {
 

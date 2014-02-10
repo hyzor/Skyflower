@@ -28,9 +28,6 @@ public:
 		requestMessage("Throw", &Throw::Throwing);
 		requestMessage("StopThrow", &Throw::stopThrowing);
 		requestMessage("DropThrowable", &Throw::dropThrowable);
-
-		Vec3 temp = getEntityPos();
-		this->getOwner()->sphere = new Sphere(temp.X, temp.Y, temp.Z, 5);
 	}
 
 	//for throw and throwing

@@ -26,9 +26,6 @@ public:
 		requestMessage("Dropped", &Throwable::dropped);
 
 		this->p = getOwner()->getPhysics();
-
-		Vec3 temp = getEntityPos();
-		this->getOwner()->sphere = new Sphere(temp.X, temp.Y, temp.Z, 5);
 	}
 
 	void setIsBeingThrown(bool state);
