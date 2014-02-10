@@ -12,6 +12,7 @@ static const enum ParticleType
 	PT_FLARE0,
 	PT_FLARE1,
 	PT_PARTICLE,
+	PT_BIRD,
 	NROFTYPES
 };
 
