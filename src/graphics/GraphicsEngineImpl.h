@@ -29,6 +29,8 @@
 
 #include "ParticleSystemImpl.h"
 
+#include "GenericSkinnedModelSorted.h"
+
 const float fovY = 0.785398f; // 0.25f * MathHelper::pi
 const float zNear = 1.0f;
 const float zFar = 10000.0f;
@@ -164,6 +166,11 @@ private:
 
 	float mCurFPS;
 	float mTargetFPS;
+
+	// Skinned model with upper body and lower body test
+	GenericSkinnedModelSortedInstance* mSkinnedSortedTestInstance;
+
+	GenericSkinnedModelSorted* mTestSortedModel;
 };
 
 #endif

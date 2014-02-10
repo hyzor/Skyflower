@@ -12,6 +12,9 @@ GraphicsEngineImpl::GraphicsEngineImpl()
 
 GraphicsEngineImpl::~GraphicsEngineImpl()
 {
+	delete mSkinnedSortedTestInstance;
+	delete mTestSortedModel;
+
 	ReleaseCOM(mRandom1DTexSRV);
 	ReleaseCOM(mParticlesTextureArray);
 
@@ -344,6 +347,14 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	testSystem1->SetBlendingMethod(BlendingMethods::ALPHA_BLENDING);
 	mParticleSystems.push_back(testSystem1);
 	*/
+
+	// Sorted skinned model test
+	std::string testPath = mResourceDir + "Models/Player/playerAnimated.dae";
+	mTestSortedModel = new GenericSkinnedModelSorted(mD3D->GetDevice(),
+		mTextureMgr,
+		testPath);
+
+	mSkinnedSortedTestInstance = new GenericSkinnedModelSortedInstance();
 
 	mCurFPS = 0.0f;
 	mTargetFPS = 60.0f;
