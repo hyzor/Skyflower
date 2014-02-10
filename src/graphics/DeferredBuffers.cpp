@@ -30,6 +30,7 @@ bool DeferredBuffers::Init(ID3D11Device* device, UINT width, UINT height)
 	formats[DeferredBuffersIndex::Normal] = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	formats[DeferredBuffersIndex::Specular] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	formats[DeferredBuffersIndex::Velocity] = DXGI_FORMAT_R8G8_UNORM;
+	//formats[DeferredBuffersIndex::LitScene] = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 	// Setup render target texture description
 	ZeroMemory(&textureDesc, sizeof(D3D11_TEXTURE2D_DESC));
@@ -82,6 +83,26 @@ bool DeferredBuffers::Init(ID3D11Device* device, UINT width, UINT height)
 		if (FAILED(hr))
 			return false;
 	}
+
+	/*
+	// Lit scene buffer
+	DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+	textureDesc.Format = format;
+	hr = device->CreateTexture2D(&textureDesc, NULL, &mLitSceneTexture);
+	if (FAILED(hr))
+		return false;
+
+	renderTargetViewDesc.Format = format;
+	hr = device->CreateRenderTargetView(mLitSceneTexture, &renderTargetViewDesc, &mLitSceneRenderTargetView);
+	if (FAILED(hr))
+		return false;
+
+	shaderResourceViewDesc.Format = format;
+	hr = device->CreateShaderResourceView(mLitSceneTexture, &shaderResourceViewDesc, &mLitSceneShaderResourceView);
+	if (FAILED(hr))
+		return false;
+	*/
 
 	return true;
 }
@@ -142,3 +163,20 @@ void DeferredBuffers::Shutdown()
 		}
 	}
 }
+
+ID3D11RenderTargetView* DeferredBuffers::GetRenderTarget(UINT bufferIndex)
+{
+	return mRenderTargetViewArray[bufferIndex];
+}
+
+/*
+ID3D11RenderTargetView* DeferredBuffers::GetLitSceneRTV()
+{
+	return mLitSceneRenderTargetView;
+}
+
+ID3D11ShaderResourceView* DeferredBuffers::GetLitSceneSRV()
+{
+	return mLitSceneShaderResourceView;
+}
+*/

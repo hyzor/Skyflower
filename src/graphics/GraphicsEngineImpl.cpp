@@ -102,9 +102,10 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mTextureMgr = new TextureManager();
 	mTextureMgr->Init(mD3D->GetDevice(), mD3D->GetImmediateContext());
 
-	mMorphModels.push_back(new MorphModel(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Models/Morphtest/Block/", "WoodBlock.morph"));
-	
 	/*
+	//mMorphModels.push_back(new MorphModel(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Models/Morphtest/Block/", "WoodBlock.morph"));
+	mMorphModels.push_back(new MorphModel(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Models/skyflower meshar/Skyflower_Final/", "skyflower.morph"));
+
 	mMorphInstances.push_back(new MorphModelInstance());
 	XMMATRIX scaling = XMMatrixScaling(1.0f, 1.0f, 1.0f);
 	XMMATRIX rotation = XMMatrixRotationY(0.0f);
@@ -181,6 +182,9 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\BasicDeferredMorphVS.cso", "BasicDeferredMorphVS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\BasicDeferredMorphPS.cso", "BasicDeferredMorphPS", mD3D->GetDevice());
 
+	// Lit scene to texture
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\LightDeferredPS_ToTexture.cso", "LightDeferredPS_ToTexture", mD3D->GetDevice());
+
 	// Post-processing shaders
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\FullscreenQuadVS.cso", "FullscreenQuadVS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\AmbientOcclusionPS.cso", "AmbientOcclusionPS", mD3D->GetDevice());
@@ -250,6 +254,10 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 		mShaderHandler->GetVertexShader("BasicDeferredMorphVS"),
 		mShaderHandler->GetPixelShader("BasicDeferredMorphPS"));
 
+	mShaderHandler->mLightDeferredToTextureShader->BindShaders(
+		mShaderHandler->GetVertexShader("LightDeferredVS"),
+		mShaderHandler->GetPixelShader("LightDeferredPS_ToTexture"));
+
 	// Shadow mapping
 	mShaderHandler->mShadowShader->BindShaders(
 		mShaderHandler->GetVertexShader("ShadowBuildVS"),
@@ -301,6 +309,8 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mShadowMorphShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTargets4);
 	mShaderHandler->mParticleSystemShader->Init(mD3D->GetDevice(), mInputLayouts->Particle);
 
+	mShaderHandler->mLightDeferredToTextureShader->Init(mD3D->GetDevice(), mInputLayouts->PosTex);
+
 	std::string fontPath = mResourceDir + "myfile.spritefont";
 	std::wstring fontPathW(fontPath.begin(), fontPath.end());
 
@@ -317,6 +327,23 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mRandom1DTexSRV = d3dHelper::CreateRandomTexture1DSRV(mD3D->GetDevice());
 
 	LoadParticles(mResourceDir + "Textures/Particles/", "Particles.particlelist");
+
+	/*
+	ParticleSystemImpl* testSystem1 = new ParticleSystemImpl();
+	testSystem1->Init(
+		mD3D->GetDevice(),
+		mShaderHandler->mParticleSystemShader,
+		mParticlesTextureArray,
+		mRandom1DTexSRV,
+		1000);
+	testSystem1->SetEmitPos(XMFLOAT3(0.0f, 15.0f, 0.0f));
+	testSystem1->SetConstantAccel(XMFLOAT3(0.0f, 17.8f, 0.0f));
+	testSystem1->SetParticleType(ParticleType::PT_FLARE1);
+	testSystem1->SetParticleAgeLimit(4.0f);
+	testSystem1->SetParticleFadeTime(4.0f);
+	testSystem1->SetBlendingMethod(BlendingMethods::ALPHA_BLENDING);
+	mParticleSystems.push_back(testSystem1);
+	*/
 
 	mCurFPS = 0.0f;
 	mTargetFPS = 60.0f;
@@ -371,7 +398,7 @@ void GraphicsEngineImpl::DrawScene()
 	RenderSceneToTexture();
 
 	// Turn off Z-buffer to begin 2D-drawing
-	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDisabledDSS, 1);
+	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDisabledDSS, 0);
 
 	ID3D11RenderTargetView* renderTarget;
 
@@ -454,8 +481,10 @@ void GraphicsEngineImpl::DrawScene()
 		mD3D->GetImmediateContext()->ClearRenderTargetView(mSSAOTexture->GetRenderTargetView(), clearColor);
 	}
 
+	/*
 	renderTarget = mIntermediateTexture->GetRenderTargetView();
 	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
+
  	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
 
 	mShaderHandler->mLightDeferredShader->SetActive(mD3D->GetImmediateContext());
@@ -468,7 +497,7 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mLightDeferredShader->SetLightWorldViewProj(mShadowMap->GetLightWorld(), mShadowMap->GetLightView(), mShadowMap->GetLightProj());
 	
 	// TODO: Instead of hard coding these properties, get them from some modifiable settings collection
-	mShaderHandler->mLightDeferredShader->SetFogProperties(1, 0.0075f, -150.0f, 0.005f, XMFLOAT4(0.86f, 0.86f, 0.9f, 1.0f));//XMFLOAT4(0.85f, 0.85f, 0.85f, 1.0f));
+	mShaderHandler->mLightDeferredShader->SetFogProperties(0, 0.0075f, -150.0f, 0.005f, XMFLOAT4(0.86f, 0.86f, 0.9f, 1.0f));//XMFLOAT4(0.85f, 0.85f, 0.85f, 1.0f));
 	mShaderHandler->mLightDeferredShader->SetMotionBlurProperties(1);
 	mShaderHandler->mLightDeferredShader->SetFpsValues(mCurFPS, mTargetFPS);
 
@@ -495,6 +524,7 @@ void GraphicsEngineImpl::DrawScene()
 	mShaderHandler->mLightDeferredShader->SetSSAOTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mLightDeferredShader->SetDepthTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mLightDeferredShader->SetVelocityTexture(mD3D->GetImmediateContext(), NULL);
+	*/
 
 	if (mPostProcessingEffects & POST_PROCESSING_DOF)
 	{
@@ -608,7 +638,6 @@ void GraphicsEngineImpl::DrawScene()
 		{
 			mInstances[i]->SetPrevWorld(mInstances[i]->GetWorld());
 		}
-
 	}
 
 	for (UINT i = 0; i < mAnimatedInstances.size(); ++i)
@@ -626,6 +655,16 @@ void GraphicsEngineImpl::DrawScene()
 			mMorphInstances[i]->prevWorld = mMorphInstances[i]->world;
 		}
 	}
+
+	//XMFLOAT4 test = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	/*
+	XMVECTORF32 Green = { 0.000000000f, 1.000000000f, 0.000000000f, 1.000000000f };
+	mSpriteBatch->Begin();
+	mSpriteBatch->Draw(mD3D->GetDepthStencilSRView(), XMFLOAT2(0.0f, 0.0f), nullptr, Colors::Red, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
+	mSpriteBatch->Draw(mDeferredBuffers->GetLitSceneSRV(), XMFLOAT2(0.0f, 400.0f), nullptr, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
+	mSpriteBatch->Draw(mD3D->GetDepthStencilSRView(), XMFLOAT2(0.0f, 200.0f), nullptr, Green, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
+	mSpriteBatch->End();
+	*/
 
 	//-------------------------------------------------------------------------------------
 	// Restore defaults
@@ -648,6 +687,308 @@ void GraphicsEngineImpl::DrawScene()
 	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
 }
 
+void GraphicsEngineImpl::RenderSceneToTexture()
+{
+	mDeferredBuffers->SetRenderTargets(mD3D->GetImmediateContext(), mD3D->GetDepthStencilView());
+	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
+
+	mDeferredBuffers->ClearRenderTargets(mD3D->GetImmediateContext(), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), mD3D->GetDepthStencilView());
+	//mD3D->GetImmediateContext()->ClearRenderTargetView(mDeferredBuffers->GetLitSceneRTV(), reinterpret_cast<const float*>(&Colors::Black));
+	mD3D->GetImmediateContext()->ClearRenderTargetView(mIntermediateTexture->GetRenderTargetView(), reinterpret_cast<const float*>(&Colors::Black));
+
+	// Draw sky first of all
+	mSky->Draw(mD3D->GetImmediateContext(), *mCamera, mShaderHandler->mSkyDeferredShader);
+
+	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	mD3D->GetImmediateContext()->RSSetState(0);
+	mD3D->GetImmediateContext()->OMSetDepthStencilState(0, 0);
+	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
+
+	// Clear stencil buffer
+	mD3D->GetImmediateContext()->ClearDepthStencilView(mD3D->GetDepthStencilView(), D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	// Enable stencil testing (subsequent draw calls will set stencil bits)
+	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDepthStencilEnabledDSS, 1);
+
+	// Now begin drawing all the opaque objects...
+	//---------------------------------------------------------------------------------------
+	// Static opaque objects
+	//---------------------------------------------------------------------------------------
+	mShaderHandler->mBasicDeferredShader->SetActive(mD3D->GetImmediateContext());
+
+	// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
+	XMMATRIX toTexSpace(
+		0.5f, 0.0f, 0.0f, 0.0f,
+		0.0f, -0.5f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.5f, 0.5f, 0.0f, 1.0f);
+
+	mShaderHandler->mBasicDeferredShader->SetShadowMap(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
+
+	for (UINT i = 0; i < mInstances.size(); ++i)
+	{
+		if (mInstances[i]->IsVisible())
+		{
+			mShaderHandler->mBasicDeferredShader->SetType(mInstances[i]->GetType());
+
+
+			mShaderHandler->mBasicDeferredShader->SetWorldViewProjTex(mInstances[i]->GetWorld(),
+				mCamera->GetViewProjMatrix(),
+				toTexSpace);
+
+			mShaderHandler->mBasicDeferredShader->SetPrevWorldViewProj(mInstances[i]->GetPrevWorld(),
+				mCamera->GetPreviousViewProj());
+
+			mShaderHandler->mBasicDeferredShader->SetShadowTransformLightViewProj(
+				XMMatrixMultiply(mInstances[i]->GetWorld(), mShadowMap->GetShadowTransform()),
+				mShadowMap->GetLightView(),
+				mShadowMap->GetLightProj());
+
+			for (UINT j = 0; j < mInstances[i]->model->meshCount; ++j)
+			{
+				UINT matIndex = mInstances[i]->model->meshes[j].MaterialIndex;
+
+				mShaderHandler->mBasicDeferredShader->SetMaterial(mInstances[i]->model->mat[matIndex]);
+				mShaderHandler->mBasicDeferredShader->SetDiffuseMap(mD3D->GetImmediateContext(), mInstances[i]->model->diffuseMapSRV[matIndex]);
+				mShaderHandler->mBasicDeferredShader->UpdatePerObj(mD3D->GetImmediateContext());
+				mD3D->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+				mInstances[i]->model->meshes[j].Draw(mD3D->GetImmediateContext());
+			}
+		}
+	}
+
+	//---------------------------------------------------------------------------------------
+	// Skinned opaque objects
+	//---------------------------------------------------------------------------------------
+	mShaderHandler->mBasicDeferredSkinnedShader->SetActive(mD3D->GetImmediateContext());
+
+	mShaderHandler->mBasicDeferredSkinnedShader->SetShadowMapTexture(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
+
+	// Loop through all model instances
+	for (UINT i = 0; i < mAnimatedInstances.size(); ++i)
+	{
+		mShaderHandler->mBasicDeferredSkinnedShader->SetShadowTransform(
+						XMMatrixMultiply(mAnimatedInstances[i]->GetWorld(), mShadowMap->GetShadowTransform()));
+		if (mAnimatedInstances[i]->IsVisible())
+		{
+			mShaderHandler->mBasicDeferredSkinnedShader->SetPrevWorldViewProj(mAnimatedInstances[i]->GetPrevWorld(), mCamera->GetPreviousViewProj());
+			mAnimatedInstances[i]->model->Draw(mD3D->GetImmediateContext(), mCamera, mShaderHandler->mBasicDeferredSkinnedShader, mAnimatedInstances[i]->GetWorld());
+		}
+	}
+
+	//---------------------------------------------------------------------------------------
+	// Morphed opaque objects
+	//---------------------------------------------------------------------------------------
+	mShaderHandler->mDeferredMorphShader->SetActive(mD3D->GetImmediateContext());
+	mShaderHandler->mDeferredMorphShader->SetShadowMapTexture(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
+
+	for (UINT i = 0; i < mMorphInstances.size(); ++i)
+	{
+		if (mMorphInstances[i]->isVisible)
+		{
+			mShaderHandler->mDeferredMorphShader->SetShadowTransform(
+				XMMatrixMultiply(XMLoadFloat4x4(&mMorphInstances[i]->world), mShadowMap->GetShadowTransform()));
+
+			mShaderHandler->mDeferredMorphShader->SetWorldViewProjTex(XMLoadFloat4x4(&mMorphInstances[i]->world),
+				mCamera->GetViewProjMatrix(),
+				toTexSpace);
+
+			mShaderHandler->mDeferredMorphShader->SetPrevWorldViewProj(XMLoadFloat4x4(&mMorphInstances[i]->prevWorld), mCamera->GetPreviousViewProj());
+
+			mShaderHandler->mDeferredMorphShader->SetWeights(mMorphInstances[i]->weights);
+			mD3D->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+			for (UINT j = 0; j < mMorphInstances[i]->model->mTargetModels.begin()->nrOfMeshes; ++j)
+			{
+				UINT matIndex = mMorphInstances[i]->model->mTargetModels.begin()->meshes[j].MaterialIndex;
+				mShaderHandler->mDeferredMorphShader->SetMaterial(mMorphInstances[i]->model->mat[matIndex]);
+				mShaderHandler->mDeferredMorphShader->SetDiffuseMap(mD3D->GetImmediateContext(), mMorphInstances[i]->model->diffuseMapSRV[matIndex]);
+				mShaderHandler->mDeferredMorphShader->UpdatePerObj(mD3D->GetImmediateContext());
+
+				mMorphInstances[i]->model->Draw(mD3D->GetImmediateContext());
+			}
+		}
+	}
+
+	//ID3D11RenderTargetView* renderTargetsLitScene[1] = { mDeferredBuffers->GetLitSceneRTV() };
+	ID3D11RenderTargetView* renderTargetsLitScene[1] = { mIntermediateTexture->GetRenderTargetView() };
+	//mD3D->GetImmediateContext()->OMSetRenderTargets(1, renderTargetsLitScene, NULL);
+	mD3D->GetImmediateContext()->OMSetRenderTargets(1, renderTargetsLitScene, NULL);
+	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDepthDisabledStencilEnabledDSS, 0);
+
+	// Clear lit scene buffer with black color (with previous stencil information)
+	//mD3D->GetImmediateContext()->ClearRenderTargetView(mDeferredBuffers->GetLitSceneRTV(), reinterpret_cast<const float*>(&Colors::Black));
+
+	//---------------------------------------------------------------------------------------
+	// Opaque objects lighting
+	//---------------------------------------------------------------------------------------
+	mShaderHandler->mLightDeferredToTextureShader->SetActive(mD3D->GetImmediateContext());
+	mShaderHandler->mLightDeferredToTextureShader->SetEyePosW(mCamera->GetPosition());
+	mShaderHandler->mLightDeferredToTextureShader->SetPointLights(mD3D->GetImmediateContext(), (UINT)mPointLights.size(), mPointLights.data());
+	mShaderHandler->mLightDeferredToTextureShader->SetDirLights(mD3D->GetImmediateContext(), (UINT)mDirLights.size(), mDirLights.data());
+	mShaderHandler->mLightDeferredToTextureShader->SetSpotLights(mD3D->GetImmediateContext(), (UINT)mSpotLights.size(), mSpotLights.data());
+	mShaderHandler->mLightDeferredToTextureShader->SetShadowTransform(mShadowMap->GetShadowTransform());
+	mShaderHandler->mLightDeferredToTextureShader->SetCameraViewProjMatrix(mCamera->GetViewMatrix(), mCamera->GetProjMatrix());
+	mShaderHandler->mLightDeferredToTextureShader->SetLightWorldViewProj(mShadowMap->GetLightWorld(), mShadowMap->GetLightView(), mShadowMap->GetLightProj());
+
+	// TODO: Instead of hard coding these properties, get them from some modifiable settings collection
+	mShaderHandler->mLightDeferredToTextureShader->SetFogProperties(1, 0.0095f, -75.0f, 0.0105f, XMFLOAT4(0.86f, 0.86f, 0.9f, 1.0f));//XMFLOAT4(0.85f, 0.85f, 0.85f, 1.0f));
+	mShaderHandler->mLightDeferredToTextureShader->SetMotionBlurProperties(1);
+	mShaderHandler->mLightDeferredToTextureShader->SetFpsValues(mCurFPS, mTargetFPS);
+
+	mShaderHandler->mLightDeferredToTextureShader->UpdatePerFrame(mD3D->GetImmediateContext());
+	
+ 	mShaderHandler->mLightDeferredToTextureShader->SetDiffuseTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Diffuse));
+	mShaderHandler->mLightDeferredToTextureShader->SetNormalTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Normal));
+	mShaderHandler->mLightDeferredToTextureShader->SetSpecularTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Specular));
+	mShaderHandler->mLightDeferredToTextureShader->SetVelocityTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Velocity));
+	mShaderHandler->mLightDeferredToTextureShader->SetSSAOTexture(mD3D->GetImmediateContext(), mSSAOTexture->GetShaderResourceView());
+	mShaderHandler->mLightDeferredToTextureShader->SetDepthTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
+
+	mShaderHandler->mLightDeferredToTextureShader->SetWorldViewProj(XMMatrixIdentity(), mCamera->GetBaseViewMatrix(), mCamera->GetOrthoMatrix());
+	mShaderHandler->mLightDeferredToTextureShader->UpdatePerObj(mD3D->GetImmediateContext());
+
+	// Now render the window
+	mOrthoWindow->Render(mD3D->GetImmediateContext());
+
+	// Clear lit scene buffer with black color (with previous stencil information)
+	//mD3D->GetImmediateContext()->ClearRenderTargetView(mDeferredBuffers->GetLitSceneRTV(), reinterpret_cast<const float*>(&Colors::Black));
+
+	// Lastly, clear (unbind) the textures (otherwise D3D11 WARNING)
+	mShaderHandler->mLightDeferredToTextureShader->SetDiffuseTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mLightDeferredToTextureShader->SetNormalTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mLightDeferredToTextureShader->SetSpecularTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mLightDeferredToTextureShader->SetSSAOTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mLightDeferredToTextureShader->SetDepthTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mLightDeferredToTextureShader->SetVelocityTexture(mD3D->GetImmediateContext(), NULL);
+
+	// First layer of lit scene (opaque objects) should be done by now, begin drawing transparent objects
+	
+	//---------------------------------------------------------------------------------------
+	// Transparent objects
+	//---------------------------------------------------------------------------------------
+	//mD3D->GetImmediateContext()->OMSetBlendState(RenderStates::mAdditiveBS, NULL, 0xffffffff);
+
+	// Clear stencil buffer
+	mD3D->GetImmediateContext()->ClearDepthStencilView(mD3D->GetDepthStencilView(), D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDepthStencilEnabledDSS, 1);
+
+	// Set render targets to G-buffers
+	mDeferredBuffers->SetRenderTargets(mD3D->GetImmediateContext(), mD3D->GetDepthStencilView());
+	//mDeferredBuffers->ClearRenderTargets(mD3D->GetImmediateContext(), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), mD3D->GetDepthStencilView());
+
+	// Set previously drawn lit scene as a texture to use in particle shader
+	//mShaderHandler->mParticleSystemShader->SetLitSceneTex(mD3D->GetImmediateContext(), mDeferredBuffers->GetLitSceneSRV());
+	mShaderHandler->mParticleSystemShader->SetLitSceneTex(mD3D->GetImmediateContext(), mIntermediateTexture->GetShaderResourceView());
+
+	// Now draw transparent particles (stencil still enabled)...
+	for (UINT i = 0; i < mParticleSystems.size(); ++i)
+	{
+		mParticleSystems[i]->SetEyePos(mCamera->GetPosition());
+		mParticleSystems[i]->Draw(mD3D->GetImmediateContext(), *mCamera);
+	}
+
+	// Unbind lit scene texture from particle shader
+	mShaderHandler->mParticleSystemShader->SetLitSceneTex(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mParticleSystemShader->ActivateDrawShaders(mD3D->GetImmediateContext());
+	mShaderHandler->mParticleSystemShader->UpdateDrawShaders(mD3D->GetImmediateContext());
+
+	// Clear lit scene buffer to black (using stencil buffer as a mask)
+	//mD3D->GetImmediateContext()->ClearRenderTargetView(mDeferredBuffers->GetLitSceneRTV(), reinterpret_cast<const float*>(&Colors::Black));
+
+	// Restore to not using a geometry shader
+	mD3D->GetImmediateContext()->GSSetShader(nullptr, nullptr, 0);
+
+	//---------------------------------------------------------------------------------------
+	// Transparent objects lighting
+	//---------------------------------------------------------------------------------------
+
+	// *****
+	// TODO
+	// *****
+	// Stencil masking isn't properly working, which means the whole scene is lit again, this means the opaque objects gets lit twice.
+
+	mD3D->GetImmediateContext()->OMSetRenderTargets(1, renderTargetsLitScene, NULL);
+
+	mShaderHandler->mLightDeferredToTextureShader->SetActive(mD3D->GetImmediateContext());
+	mShaderHandler->mLightDeferredToTextureShader->UpdatePerFrame(mD3D->GetImmediateContext());
+	mShaderHandler->mLightDeferredToTextureShader->UpdatePerObj(mD3D->GetImmediateContext());
+
+	mShaderHandler->mLightDeferredToTextureShader->SetDiffuseTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Diffuse));
+	mShaderHandler->mLightDeferredToTextureShader->SetNormalTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Normal));
+	mShaderHandler->mLightDeferredToTextureShader->SetSpecularTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Specular));
+	mShaderHandler->mLightDeferredToTextureShader->SetVelocityTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Velocity));
+	mShaderHandler->mLightDeferredToTextureShader->SetSSAOTexture(mD3D->GetImmediateContext(), mSSAOTexture->GetShaderResourceView());
+	mShaderHandler->mLightDeferredToTextureShader->SetDepthTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
+
+	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDepthDisabledStencilEnabledDSS, 0);
+
+	// Now render the window
+	mOrthoWindow->Render(mD3D->GetImmediateContext());
+
+	mShaderHandler->mLightDeferredToTextureShader->SetDiffuseTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mLightDeferredToTextureShader->SetNormalTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mLightDeferredToTextureShader->SetSpecularTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mLightDeferredToTextureShader->SetSSAOTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mLightDeferredToTextureShader->SetDepthTexture(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mLightDeferredToTextureShader->SetVelocityTexture(mD3D->GetImmediateContext(), NULL);
+
+	// Reset the render target back to the original back buffer and not the render buffers
+	ID3D11RenderTargetView* renderTargets[1] = { mD3D->GetRenderTargetView() };
+	mD3D->GetImmediateContext()->OMSetRenderTargets(1, renderTargets, mD3D->GetDepthStencilView());
+
+	// Reset viewport
+	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
+}
+
+void GraphicsEngineImpl::UpdateSceneData()
+{
+	//--------------------------------------------------------
+	// Compute scene bounding box
+	//--------------------------------------------------------
+	    XMFLOAT3 minPt(+MathHelper::infinity, +MathHelper::infinity, +MathHelper::infinity);
+	    XMFLOAT3 maxPt(-MathHelper::infinity, -MathHelper::infinity, -MathHelper::infinity);
+	 
+	    // Get vertex positions from all models
+	    for (UINT i = 0; i < mInstances.size(); ++i)
+	    {
+			for (UINT j = 0; j < mInstances[i]->model->meshes.size(); ++j)
+	            {
+
+					for (UINT k = 0; k < mInstances[i]->model->meshes.at(j).vertices.size(); ++k)
+					{
+						XMFLOAT3 vPos = mInstances[i]->model->meshes.at(j).vertices.at(k).position;
+						vPos.x += mInstances[i]->GetPosition().X;
+						vPos.y += mInstances[i]->GetPosition().Y;
+						vPos.z += mInstances[i]->GetPosition().Z;
+
+						minPt.x = MathHelper::getMin(minPt.x, vPos.x);
+						minPt.y = MathHelper::getMin(minPt.y, vPos.y);
+						minPt.z = MathHelper::getMin(minPt.z, vPos.z);
+
+						maxPt.x = MathHelper::getMax(maxPt.x, vPos.x);
+						maxPt.y = MathHelper::getMax(maxPt.y, vPos.y);
+						maxPt.z = MathHelper::getMax(maxPt.z, vPos.z);
+					}
+	            }
+	    }
+	 
+	    // Sphere center is at half of these new dimensions
+	    mSceneBounds.Center = XMFLOAT3(
+				0.5f*(minPt.x + maxPt.x),
+	            0.5f*(minPt.y + maxPt.y),
+	            0.5f*(minPt.z + maxPt.z));
+	 
+	    // Calculate the sphere radius
+	    XMFLOAT3 extent(
+				0.5f*(maxPt.x - minPt.x),
+	            0.5f*(maxPt.y - minPt.y),
+	            0.5f*(maxPt.z - minPt.z));
+	 
+	    mSceneBounds.Radius = sqrtf(extent.x*extent.x + extent.y*extent.y + extent.z*extent.z);
+}
+
 void GraphicsEngineImpl::UpdateScene(float dt, float gameTime)
 {
 	mGameTime = gameTime;
@@ -657,33 +998,136 @@ void GraphicsEngineImpl::UpdateScene(float dt, float gameTime)
 	// Update skinned instances
 	for (size_t i = 0; i < mAnimatedInstances.size(); i++)
 	{
-		mAnimatedInstances[i]->Update(dt);
+		//mAnimatedInstances[i]->model->SetKeyFrameInterval(mAnimatedInstances[i]->model->mAnimations[mAnimatedInstances[i]->model->mCurAnim].FrameStart, mAnimatedInstances[i]->model->mAnimations[mAnimatedInstances[i]->model->mCurAnim].FrameEnd);
+		mAnimatedInstances[i]->model->Update(dt);
 	}
 
 	// Morph testing
-	/*
 	if (mMorphInstances.size() >= 1)
 	{
-		if (mMorphInstances.front()->weights.x >= 1.0f)
-			morphIncrease = false;
+	if (mMorphInstances.front()->weights.x >= 1.0f)
+	morphIncrease = false;
 
-		if (mMorphInstances.front()->weights.x <= 0.0f)
-			morphIncrease = true;
+	if (mMorphInstances.front()->weights.x <= 0.0f)
+	morphIncrease = true;
 
-		if (morphIncrease)
-			mMorphInstances.front()->weights.x += 2.0f * dt;
-		else
-			mMorphInstances.front()->weights.x -= 2.0f * dt;
+	if (morphIncrease)
+	mMorphInstances.front()->weights.x += 2.0f * dt;
+	else
+	mMorphInstances.front()->weights.x -= 2.0f * dt;
 	}
-	*/
 
 	for (UINT i = 0; i < mParticleSystems.size(); ++i)
 	{
 		mParticleSystems[i]->Update(dt, gameTime);
-		//mParticleSystems[i]->SetParticleType((ParticleType)((rand() % ParticleType::NROFTYPES - 1) + 1));
+		//mParticleSystems[i]->SetParticleType((ParticleType)((rand() % ParticleType::NROFTYPES - 2) + 1));
 	}
 
 	mCamera->Update();
+}
+
+void GraphicsEngineImpl::OnResize(UINT width, UINT height)
+{
+	mD3D->OnResize(width, height);
+	mDeferredBuffers->OnResize(mD3D->GetDevice(), width, height);
+	mCamera->SetLens(fovY, (float)width / height, zNear, zFar);
+	mCamera->UpdateOrthoMatrix(static_cast<float>(width), static_cast<float>(height), zNear, zFar);
+	mOrthoWindow->OnResize(mD3D->GetDevice(), width, height);
+
+	// Resize Post-processing textures
+	mIntermediateTexture->Resize(mD3D->GetDevice(), width, height);
+
+	mSSAOTexture->Resize(mD3D->GetDevice(), (UINT)(width * mSSAOScale), (UINT)(height * mSSAOScale));
+	mSSAOBlurTexture->Resize(mD3D->GetDevice(), (UINT)(width * mSSAOScale), (UINT)(height * mSSAOScale));
+
+	mDoFCoCTexture->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
+	mDoFBlurTexture1->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
+	mDoFBlurTexture2->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
+}
+
+ParticleSystem *GraphicsEngineImpl::CreateParticleSystem()
+{
+	ParticleSystemImpl* particleSystem = new ParticleSystemImpl();
+	particleSystem->Init(mD3D->GetDevice(),
+		mShaderHandler->mParticleSystemShader,
+		mParticlesTextureArray,
+		mRandom1DTexSRV,
+		1000);
+
+	// Set some default values.
+	particleSystem->SetEmitPos(XMFLOAT3(0.0f, 15.0f, 0.0f));
+	particleSystem->SetConstantAccel(XMFLOAT3(0.0f, 7.8f, 0.0f));
+	particleSystem->SetParticleType(ParticleType::PT_FLARE1);
+
+	mParticleSystems.push_back(particleSystem);
+
+	return (ParticleSystem *)particleSystem;
+}
+
+void GraphicsEngineImpl::DeleteParticleSystem(ParticleSystem *particleSystem)
+{
+	ParticleSystemImpl* particleSystemImpl = (ParticleSystemImpl *)particleSystem;
+
+	for (auto iter = mParticleSystems.begin(); iter != mParticleSystems.end(); iter++)
+	{
+		if ((*iter) == particleSystemImpl)
+		{
+			mParticleSystems.erase(iter);
+			break;
+		}
+	}
+
+	delete particleSystemImpl;
+}
+
+void GraphicsEngineImpl::addDirLight(Vec3 color, Vec3 direction, float intensity)
+{
+	DirectionalLight dirLight;
+	ZeroMemory(&dirLight, sizeof(DirectionalLight));
+
+	dirLight.Ambient = XMFLOAT4(intensity / 10.0f, intensity / 10.0f, intensity / 10.0f, 1.0f);
+	dirLight.Diffuse = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
+	dirLight.Direction = XMFLOAT3(direction.X, direction.Y, direction.Z);
+	dirLight.Specular = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
+
+	mDirLights.push_back(dirLight);
+}
+
+void GraphicsEngineImpl::addPointLight(Vec3 color, Vec3 position, float intensity)
+{
+	PointLight pointLight;
+	ZeroMemory(&pointLight, sizeof(PointLight));
+
+	pointLight.Position = XMFLOAT3(position.X, position.Y, position.Z);
+	pointLight.Ambient = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
+	pointLight.Specular = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
+	pointLight.Diffuse = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
+	pointLight.Attenuation = XMFLOAT3(intensity / 100.0f, intensity / 100.0f, intensity / 100.0f);
+	pointLight.Range = 1000.0f;
+	mPointLights.push_back(pointLight);
+}
+
+void GraphicsEngineImpl::addSpotLight(Vec3 color, Vec3 direction, Vec3 position, float angle)
+{
+	SpotLight spotLight;
+	ZeroMemory(&spotLight, sizeof(SpotLight));
+
+	spotLight.Ambient = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	spotLight.Diffuse = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
+	spotLight.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	spotLight.Attenuation = XMFLOAT3(1.0f, 0.0f, 0.0f);
+	spotLight.Spot = angle;
+	spotLight.Range = 1000.0f;
+	spotLight.Position = XMFLOAT3(position.X, position.Y, position.Z);
+	spotLight.Direction = XMFLOAT3(direction.X, direction.Y, direction.Z);
+	mSpotLights.push_back(spotLight);
+}
+
+void GraphicsEngineImpl::clearLights()
+{
+	mSpotLights.clear();
+	mDirLights.clear();
+	mPointLights.clear();
 }
 
 void GraphicsEngineImpl::Present()
@@ -710,8 +1154,8 @@ void GraphicsEngineImpl::Draw2DTextureFile(const std::string file, const Draw2DI
 		input->pos,
 		0,
 		input->color,
-		input->rot, 
-		input->origin,
+		0.0f,
+		XMFLOAT2(0.0f, 0.0f),
 		input->scale,
 		SpriteEffects::SpriteEffects_None,
 		input->layerDepth);
@@ -721,14 +1165,14 @@ void GraphicsEngineImpl::Draw2DTexture(Texture2D *texture, const Draw2DInput* in
 {
 	Texture2DImpl *textureImpl = (Texture2DImpl *)texture;
 	mSpriteBatch->Draw(
-		textureImpl->GetShaderResourceView(), 
-		input->pos, 
-		0, 
-		D3dColors::White, 
+		textureImpl->GetShaderResourceView(),
+		input->pos,
+		0,
+		D3dColors::White,
 		0.0f,
-		XMFLOAT2(0.0f,0.0f),
+		XMFLOAT2(0.0f, 0.0f),
 		input->scale,
-		SpriteEffects::SpriteEffects_None, 
+		SpriteEffects::SpriteEffects_None,
 		input->layerDepth);
 }
 
@@ -842,7 +1286,7 @@ void GraphicsEngineImpl::DeleteInstance(AnimatedInstance* ai)
 Texture2D *GraphicsEngineImpl::CreateTexture2D(unsigned int width, unsigned int height)
 {
 	Texture2DImpl *texture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8G8B8A8_UNORM, false);
- 
+
 	return (Texture2D *)texture;
 }
 
@@ -851,294 +1295,6 @@ void GraphicsEngineImpl::DeleteTexture2D(Texture2D *texture)
 	Texture2DImpl *textureImpl = (Texture2DImpl *)texture;
 
 	delete textureImpl;
-}
-
-ParticleSystem *GraphicsEngineImpl::CreateParticleSystem()
-{
-	ParticleSystemImpl* particleSystem = new ParticleSystemImpl();
-	particleSystem->Init(mD3D->GetDevice(),
-		mShaderHandler->mParticleSystemShader,
-		mParticlesTextureArray,
-		mRandom1DTexSRV,
-		1000);
-
-	// Set some default values.
-	particleSystem->SetEmitPos(XMFLOAT3(0.0f, 15.0f, 0.0f));
-	particleSystem->SetConstantAccel(XMFLOAT3(0.0f, 7.8f, 0.0f));
-	particleSystem->SetParticleType(ParticleType::PT_FLARE1);
-
-	mParticleSystems.push_back(particleSystem);
-
-	return (ParticleSystem *)particleSystem;
-}
-
-void GraphicsEngineImpl::DeleteParticleSystem(ParticleSystem *particleSystem)
-{
-	ParticleSystemImpl* particleSystemImpl = (ParticleSystemImpl *)particleSystem;
-
-	for (auto iter = mParticleSystems.begin(); iter != mParticleSystems.end(); iter++)
-	{
-		if ((*iter) == particleSystemImpl)
-		{
-			mParticleSystems.erase(iter);
-			break;
-		}
-	}
-
-	delete particleSystemImpl;
-}
-
-void GraphicsEngineImpl::OnResize(UINT width, UINT height)
-{
-	mD3D->OnResize(width, height);
-	mDeferredBuffers->OnResize(mD3D->GetDevice(), width, height);
-	mCamera->SetLens(fovY, (float)width / height, zNear, zFar);
-	mCamera->UpdateOrthoMatrix(static_cast<float>(width), static_cast<float>(height), zNear, zFar);
-	mOrthoWindow->OnResize(mD3D->GetDevice(), width, height);
-
-	// Resize Post-processing textures
-	mIntermediateTexture->Resize(mD3D->GetDevice(), width, height);
-
-	mSSAOTexture->Resize(mD3D->GetDevice(), (UINT)(width * mSSAOScale), (UINT)(height * mSSAOScale));
-	mSSAOBlurTexture->Resize(mD3D->GetDevice(), (UINT)(width * mSSAOScale), (UINT)(height * mSSAOScale));
-
-	mDoFCoCTexture->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
-	mDoFBlurTexture1->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
-	mDoFBlurTexture2->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
-}
-
-void GraphicsEngineImpl::RenderSceneToTexture()
-{
-	mDeferredBuffers->SetRenderTargets(mD3D->GetImmediateContext(), mD3D->GetDepthStencilView());
-	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
-
-	mDeferredBuffers->ClearRenderTargets(mD3D->GetImmediateContext(), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f), mD3D->GetDepthStencilView());
-
-	//mShaderHandler->mSkyDeferredShader->SetActive(mD3D->GetImmediateContext());
-	mSky->Draw(mD3D->GetImmediateContext(), *mCamera, mShaderHandler->mSkyDeferredShader);
-
-	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	mD3D->GetImmediateContext()->RSSetState(0);
-	mD3D->GetImmediateContext()->OMSetDepthStencilState(0, 0);
-	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
-
-	//---------------------------------------------------------------------------------------
-	// Static opaque objects
-	//---------------------------------------------------------------------------------------
-	mShaderHandler->mBasicDeferredShader->SetActive(mD3D->GetImmediateContext());
-
-	// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
-	XMMATRIX toTexSpace(
-		0.5f, 0.0f, 0.0f, 0.0f,
-		0.0f, -0.5f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, 0.0f, 1.0f);
-
-	mShaderHandler->mBasicDeferredShader->SetShadowMap(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
-	//mShaderHandler->mBasicDeferredShader->SetViewProjMatrices(mCamera->GetViewProjMatrix(), XMLoadFloat4x4(&
-	//));
-
-	// Loop through all model instances
-	for (UINT i = 0; i < mInstances.size(); ++i)
-	{
-		if (mInstances[i]->IsVisible())
-		{
-			mShaderHandler->mBasicDeferredShader->SetType(mInstances[i]->GetType());
-
-
-			mShaderHandler->mBasicDeferredShader->SetWorldViewProjTex(mInstances[i]->GetWorld(),
-				mCamera->GetViewProjMatrix(),
-				toTexSpace);
-
-			mShaderHandler->mBasicDeferredShader->SetPrevWorldViewProj(mInstances[i]->GetPrevWorld(),
-				mCamera->GetPreviousViewProj());
-
-			mShaderHandler->mBasicDeferredShader->SetShadowTransformLightViewProj(
-				XMMatrixMultiply(mInstances[i]->GetWorld(), mShadowMap->GetShadowTransform()),
-				mShadowMap->GetLightView(),
-				mShadowMap->GetLightProj());
-
-			for (UINT j = 0; j < mInstances[i]->model->meshCount; ++j)
-			{
-				UINT matIndex = mInstances[i]->model->meshes[j].MaterialIndex;
-
-				mShaderHandler->mBasicDeferredShader->SetMaterial(mInstances[i]->model->mat[matIndex]);
-				mShaderHandler->mBasicDeferredShader->SetDiffuseMap(mD3D->GetImmediateContext(), mInstances[i]->model->diffuseMapSRV[matIndex]);
-				mShaderHandler->mBasicDeferredShader->UpdatePerObj(mD3D->GetImmediateContext());
-				mD3D->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-				mInstances[i]->model->meshes[j].Draw(mD3D->GetImmediateContext());
-			}
-		}
-	}
-
-	//---------------------------------------------------------------------------------------
-	// Skinned
-	//---------------------------------------------------------------------------------------
-	mShaderHandler->mBasicDeferredSkinnedShader->SetActive(mD3D->GetImmediateContext());
-
-	mShaderHandler->mBasicDeferredSkinnedShader->SetShadowMapTexture(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
-
-	// Loop through all model instances
-	for (UINT i = 0; i < mAnimatedInstances.size(); ++i)
-	{
-		mShaderHandler->mBasicDeferredSkinnedShader->SetShadowTransform(
-						XMMatrixMultiply(mAnimatedInstances[i]->GetWorld(), mShadowMap->GetShadowTransform()));
-		if (mAnimatedInstances[i]->IsVisible())
-		{
-			mShaderHandler->mBasicDeferredSkinnedShader->SetPrevWorldViewProj(mAnimatedInstances[i]->GetPrevWorld(), mCamera->GetPreviousViewProj());
-			mAnimatedInstances[i]->model->Draw(mD3D->GetImmediateContext(), mCamera, mShaderHandler->mBasicDeferredSkinnedShader, mAnimatedInstances[i]->GetWorld());
-		}
-	}
-
-	//---------------------------------------------------------------------------------------
-	// Morphed objects
-	//---------------------------------------------------------------------------------------
-	mShaderHandler->mDeferredMorphShader->SetActive(mD3D->GetImmediateContext());
-	mShaderHandler->mDeferredMorphShader->SetShadowMapTexture(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
-
-	for (UINT i = 0; i < mMorphInstances.size(); ++i)
-	{
-		if (mMorphInstances[i]->isVisible)
-		{
-			mShaderHandler->mDeferredMorphShader->SetShadowTransform(
-				XMMatrixMultiply(XMLoadFloat4x4(&mMorphInstances[i]->world), mShadowMap->GetShadowTransform()));
-
-			mShaderHandler->mDeferredMorphShader->SetWorldViewProjTex(XMLoadFloat4x4(&mMorphInstances[i]->world),
-				mCamera->GetViewProjMatrix(),
-				toTexSpace);
-
-			mShaderHandler->mDeferredMorphShader->SetPrevWorldViewProj(XMLoadFloat4x4(&mMorphInstances[i]->prevWorld), mCamera->GetPreviousViewProj());
-
-			mShaderHandler->mDeferredMorphShader->SetWeights(mMorphInstances[i]->weights);
-			mD3D->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-			for (UINT j = 0; j < mMorphInstances[i]->model->mTargetModels.begin()->nrOfMeshes; ++j)
-			{
-				UINT matIndex = mMorphInstances[i]->model->mTargetModels.begin()->meshes[j].MaterialIndex;
-				mShaderHandler->mDeferredMorphShader->SetMaterial(mMorphInstances[i]->model->mat[matIndex]);
-				mShaderHandler->mDeferredMorphShader->SetDiffuseMap(mD3D->GetImmediateContext(), mMorphInstances[i]->model->diffuseMapSRV[matIndex]);
-				mShaderHandler->mDeferredMorphShader->UpdatePerObj(mD3D->GetImmediateContext());
-
-				mMorphInstances[i]->model->Draw(mD3D->GetImmediateContext());
-			}
-		}
-	}
-
-	//---------------------------------------------------------------------------------------
-	// Particles
-	//---------------------------------------------------------------------------------------
-	//mD3D->GetImmediateContext()->RSSetState(0);
-	for (UINT i = 0; i < mParticleSystems.size(); ++i)
-	{
-		mParticleSystems[i]->SetEyePos(mCamera->GetPosition());
-		mParticleSystems[i]->Draw(mD3D->GetImmediateContext(), *mCamera);
-	}
-
-	// Restore to not using a geometry shader
-	mD3D->GetImmediateContext()->GSSetShader(nullptr, nullptr, 0);
-
-	// Reset the render target back to the original back buffer and not the render buffers
-	ID3D11RenderTargetView* renderTargets[1] = { mD3D->GetRenderTargetView() };
-	mD3D->GetImmediateContext()->OMSetRenderTargets(1, renderTargets, mD3D->GetDepthStencilView());
-
-	// Reset viewport
-	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
-}
-void GraphicsEngineImpl::UpdateSceneData()
-{
-	//--------------------------------------------------------
-	// Compute scene bounding box
-	//--------------------------------------------------------
-	    XMFLOAT3 minPt(+MathHelper::infinity, +MathHelper::infinity, +MathHelper::infinity);
-	    XMFLOAT3 maxPt(-MathHelper::infinity, -MathHelper::infinity, -MathHelper::infinity);
-	 
-	    // Get vertex positions from all models
-	    for (UINT i = 0; i < mInstances.size(); ++i)
-	    {
-			for (UINT j = 0; j < mInstances[i]->model->meshes.size(); ++j)
-	            {
-
-					for (UINT k = 0; k < mInstances[i]->model->meshes.at(j).vertices.size(); ++k)
-					{
-						XMFLOAT3 vPos = mInstances[i]->model->meshes.at(j).vertices.at(k).position;
-						vPos.x += mInstances[i]->GetPosition().X;
-						vPos.y += mInstances[i]->GetPosition().Y;
-						vPos.z += mInstances[i]->GetPosition().Z;
-
-						minPt.x = MathHelper::getMin(minPt.x, vPos.x);
-						minPt.y = MathHelper::getMin(minPt.y, vPos.y);
-						minPt.z = MathHelper::getMin(minPt.z, vPos.z);
-
-						maxPt.x = MathHelper::getMax(maxPt.x, vPos.x);
-						maxPt.y = MathHelper::getMax(maxPt.y, vPos.y);
-						maxPt.z = MathHelper::getMax(maxPt.z, vPos.z);
-					}
-	            }
-	    }
-	 
-	    // Sphere center is at half of these new dimensions
-	    mSceneBounds.Center = XMFLOAT3(
-				0.5f*(minPt.x + maxPt.x),
-	            0.5f*(minPt.y + maxPt.y),
-	            0.5f*(minPt.z + maxPt.z));
-	 
-	    // Calculate the sphere radius
-	    XMFLOAT3 extent(
-				0.5f*(maxPt.x - minPt.x),
-	            0.5f*(maxPt.y - minPt.y),
-	            0.5f*(maxPt.z - minPt.z));
-	 
-	    mSceneBounds.Radius = sqrtf(extent.x*extent.x + extent.y*extent.y + extent.z*extent.z);
-}
-
-void GraphicsEngineImpl::addDirLight(Vec3 color, Vec3 direction, float intensity)
-{
-	DirectionalLight dirLight;
-	ZeroMemory(&dirLight, sizeof(DirectionalLight));
-
-	dirLight.Ambient = XMFLOAT4(intensity / 10.0f, intensity / 10.0f, intensity / 10.0f, 1.0f);
-	dirLight.Diffuse = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
-	dirLight.Direction = XMFLOAT3(direction.X, direction.Y, direction.Z);
-	dirLight.Specular = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
-
-	mDirLights.push_back(dirLight);
-}
-
-void GraphicsEngineImpl::addPointLight(Vec3 color, Vec3 position, float intensity)
-{
-	PointLight pointLight;
-	ZeroMemory(&pointLight, sizeof(PointLight));
-
-	pointLight.Position = XMFLOAT3(position.X, position.Y, position.Z);
-	pointLight.Ambient = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
-	pointLight.Specular = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
-	pointLight.Diffuse = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
-	pointLight.Attenuation = XMFLOAT3(intensity / 100.0f, intensity / 100.0f, intensity / 100.0f);
-	pointLight.Range = 1000.0f;
-	mPointLights.push_back(pointLight);
-}
-
-void GraphicsEngineImpl::addSpotLight(Vec3 color, Vec3 direction, Vec3 position, float angle)
-{
-	SpotLight spotLight;
-	ZeroMemory(&spotLight, sizeof(SpotLight));
-
-	spotLight.Ambient = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-	spotLight.Diffuse = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
-	spotLight.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	spotLight.Attenuation = XMFLOAT3(1.0f, 0.0f, 0.0f);
-	spotLight.Spot = angle;
-	spotLight.Range = 1000.0f;
-	spotLight.Position = XMFLOAT3(position.X, position.Y, position.Z);
-	spotLight.Direction = XMFLOAT3(direction.X, direction.Y, direction.Z);
-	mSpotLights.push_back(spotLight);
-}
-
-void GraphicsEngineImpl::clearLights()
-{
-	mSpotLights.clear();
-	mDirLights.clear();
-	mPointLights.clear();
 }
 
 void GraphicsEngineImpl::printText(wchar_t* text, int x, int y, Vec3 color, float scale)

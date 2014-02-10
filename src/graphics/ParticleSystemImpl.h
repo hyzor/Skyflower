@@ -33,8 +33,12 @@ public:
 
 	void SetConstantAccel(XMFLOAT3 accelW);
 
+	void SetParticleFadeTime(float fadeTime);
+
 	void SetEmitFrequency(float emitFrequency);
 	void SetParticleAgeLimit(float particleAgeLimit);
+
+	void SetBlendingMethod(unsigned int blendingMethod);
 
 	void SetParticleType(ParticleType particleType);
 
@@ -66,6 +70,10 @@ private:
 	XMFLOAT3 mEmitDirW;
 
 	XMFLOAT3 mConstantAccelW;
+
+	float mFadeTime;
+
+	UINT mBlendingMethod;
 
 	ParticleSystemShader* mShader;
 

@@ -334,6 +334,12 @@
     <FxCompile Include="src\graphics\Shaders\DrawParticleGS.hlsl">
       <Filter>Shaders\Particle System</Filter>
     </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\DrawParticlePS_Forward.hlsl">
+      <Filter>Shaders\Particle System</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\LightDeferredPS_ToTexture.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\graphics\Shaders\LightDef.hlsli">
@@ -344,6 +350,9 @@
     </None>
     <None Include="src\graphics\Shaders\ParticleSystemShared.hlsli">
       <Filter>Shaders\Particle System</Filter>
+    </None>
+    <None Include="src\graphics\Shaders\Shared.hlsli">
+      <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

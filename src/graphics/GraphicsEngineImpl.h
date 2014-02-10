@@ -33,6 +33,12 @@ const float fovY = 0.785398f; // 0.25f * MathHelper::pi
 const float zNear = 1.0f;
 const float zFar = 10000.0f;
 
+static const enum BlendingMethods
+{
+	ALPHA_BLENDING = 0,
+	ADDITIVE_BLENDING
+};
+
 class GraphicsEngineImpl : public GraphicsEngine
 {
 public:

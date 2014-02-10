@@ -1,0 +1,2 @@
+#define ALPHA_BLENDING 0
+#define ADDITIVE_BLENDING 1

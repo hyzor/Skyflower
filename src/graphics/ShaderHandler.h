@@ -924,14 +924,21 @@ public:
 	void ActivateStreamShaders(ID3D11DeviceContext* dc);
 
 	void SetViewProj(XMMATRIX& viewProj);
+	void SetPrevViewProj(XMMATRIX& prevViewProj);
 	void SetTexArray(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* texArray);
 	void SetRandomTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* randomTex);
+
+	void SetLitSceneTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* litSceneTex);
 
 	void SetEyePosW(XMFLOAT3 eyePosW);
 	void SetEmitProperties(XMFLOAT3 emitPosW, XMFLOAT3 emitDirW);
 	void SetParticleProperties(float particleAgeLimit, float emitFrequency);
 
 	void SetTime(float gameTime, float dt);
+
+	void SetParticleFadeTime(float fadeTime);
+
+	void SetBlendingMethod(UINT blendingMethod);
 
 	void SetAccelConstant(XMFLOAT3 accelConstant);
 
@@ -953,6 +960,10 @@ private:
 	{
 		XMFLOAT3 accelW;
 		float padding1;
+
+		float fadeTime;
+		float timeStep;
+		XMFLOAT2 fadeTimePadding;
 	};
 
 	struct DRAW_GS_PERFRAMEBUFFER
@@ -961,11 +972,13 @@ private:
 		float padding;
 
 		XMMATRIX viewProj;
+		XMMATRIX prevViewProj;
 
 		XMFLOAT4 quadTexC[4];
 
 		UINT textureIndex;
-		XMFLOAT3 paddingTex;
+		UINT blendingMethod;
+		XMFLOAT2 paddingTex;
 	};
 
 	struct STREAMOUT_GS_PERFRAMEBUFFER
@@ -1018,6 +1031,8 @@ private:
 	// Shared data
 	ID3D11ShaderResourceView* mTexArray;
 	ID3D11ShaderResourceView* mRandomTex;
+
+	ID3D11ShaderResourceView* mLitSceneTex;
 };
 #pragma endregion ParticleSystemShader
 
@@ -1095,6 +1110,7 @@ public:
 	BasicDeferredMorphShader* mDeferredMorphShader;
 	ShadowMorphShader* mShadowMorphShader;
 	ParticleSystemShader* mParticleSystemShader;
+	LightDeferredShader* mLightDeferredToTextureShader;
 
 private:
 

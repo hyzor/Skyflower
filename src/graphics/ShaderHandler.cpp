@@ -25,6 +25,7 @@ ShaderHandler::ShaderHandler()
 	mDeferredMorphShader = new BasicDeferredMorphShader();
 	mShadowMorphShader = new ShadowMorphShader();
 	mParticleSystemShader = new ParticleSystemShader();
+	mLightDeferredToTextureShader = new LightDeferredShader();
 }
 
 ShaderHandler::~ShaderHandler()
@@ -75,6 +76,7 @@ ShaderHandler::~ShaderHandler()
 	delete mDeferredMorphShader;
 	delete mShadowMorphShader;
 	delete mParticleSystemShader;
+	delete mLightDeferredToTextureShader;
 }
 
 void ShaderHandler::LoadCompiledVertexShader(LPCWSTR fileName, char* name, ID3D11Device* device)
@@ -2679,6 +2681,8 @@ void ParticleSystemShader::SetTime(float gameTime, float dt)
 {
 	mBufferCache.streamOutGSPerFrameBuffer.gameTime = gameTime;
 	mBufferCache.streamOutGSPerFrameBuffer.timeStep = dt;
+
+	mBufferCache.drawVSInitBuffer.timeStep = dt;
 }
 
 void ParticleSystemShader::UpdateDrawShaders(ID3D11DeviceContext* dc)
@@ -2707,6 +2711,7 @@ void ParticleSystemShader::UpdateDrawShaders(ID3D11DeviceContext* dc)
 	dc->VSGetConstantBuffers(0, 1, &draw_VS_InitBuffer);
 
 	dc->PSSetShaderResources(0, 1, &mTexArray);
+	dc->PSSetShaderResources(1, 1, &mLitSceneTex);
 }
 
 void ParticleSystemShader::UpdateStreamOutShaders(ID3D11DeviceContext* dc)
@@ -2738,6 +2743,7 @@ void ParticleSystemShader::ActivateDrawShaders(ID3D11DeviceContext* dc)
 	dc->PSSetShader(mDrawParticlePS, nullptr, 0);
 
 	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
+	dc->PSSetSamplers(1, 1, &RenderStates::mPointSS);
 }
 
 void ParticleSystemShader::ActivateStreamShaders(ID3D11DeviceContext* dc)
@@ -2773,7 +2779,27 @@ void ParticleSystemShader::SetParticleType(UINT particleType)
 	mBufferCache.streamOutGSPerFrameBuffer.particleType = particleType;
 }
 
+void ParticleSystemShader::SetLitSceneTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* litSceneTex)
+{
+	mLitSceneTex = litSceneTex;
+}
+
+void ParticleSystemShader::SetPrevViewProj(XMMATRIX& prevViewProj)
+{
+	mBufferCache.drawGSPerFrameBuffer.prevViewProj = XMMatrixTranspose(prevViewProj);
+}
+
 void ParticleSystemShader::SetEmitParticles(bool emitParticles)
 {
 	mBufferCache.streamOutGSPerFrameBuffer.emitParticles = (emitParticles? 1 : 0);
+}
+
+void ParticleSystemShader::SetParticleFadeTime(float fadeTime)
+{
+	mBufferCache.drawVSInitBuffer.fadeTime = fadeTime;
+}
+
+void ParticleSystemShader::SetBlendingMethod(UINT blendingMethod)
+{
+	mBufferCache.drawGSPerFrameBuffer.blendingMethod = blendingMethod;
 }
