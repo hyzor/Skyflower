@@ -49,18 +49,8 @@ class EntityManager {
 		// destroy a component
 		void destroyComponent(Component*);
 
-		// finalize an Entity, resolving the required components
-		void finalizeEntity(EntityId);
-
-
-		// register a unique name for an Entity
-		void registerName(Component*, string name);
-		void unregisterName(Component*, string name);
-
 		// get the id based on the unique name identified
 		list<Component*> getComponentsByName(string name);
-
-
 
 		/**
 		 * REQUEST MESSAGES
@@ -193,15 +183,6 @@ class EntityManager {
 
 		void activateEntity(EntityId eId);
 		void deactivateEntity(EntityId eId);
-
-		//throw and throwable-functions
-		//void pickUpEntity(EntityId, EntityId);
-		//void throwEntity(EntityId throwingEntity, EntityId throwableEntity);
-		//void putDownEntity(EntityId throwingEntity, EntityId throwableEntity);
-		//void setPickUpOrPutDown(bool state, EntityId id);
-		//void setIsHoldingThrowable(bool state, EntityId id);
-		//void setIsBeingPickedUp(bool state, EntityId id);
-		//void setToThrow(bool state, EntityId id);
 
 		const Modules *modules;
 

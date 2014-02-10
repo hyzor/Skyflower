@@ -90,41 +90,6 @@ string Component::getName() {
 	return fName;
 }
 
-
-/**
- * Entity/COMPONENT MODIFICATION FUNCTIONS
- */
-
-
-// add another component to this Entity
-void Component::addLocalComponent(Component *c) {
-	fEntityManager->addComponent(getOwnerId(), c);
-}
-
-
-// add another component to another Entity
-void Component::addComponent(EntityId objId, Component *c) {
-	fEntityManager->addComponent(objId, c);
-}
-
-
-// create an Entity
-EntityId Component::createEntity(string type) {
-	return fEntityManager->createEntity(type, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, "", false, false, false);
-}
-
-// finalize an Entity
-void Component::finalizeEntity(EntityId objId) {
-	fEntityManager->finalizeEntity(objId);
-}
-
-// destroy Entity
-void Component::destroyEntity(EntityId objId) {
-	fEntityManager->destroyEntity(objId);
-}
-
-
-
 /**
  * REQUEST FUNCTIONS
  */
@@ -147,66 +112,6 @@ void Component::requestMessage(string message, MessageFunction f) {
 	// forward to Entity manager
 	fEntityManager->registerGlobalRequest(req, reg);
 }
-
-// require a component in this Entity
-void Component::requireComponent(string name, MessageFunction f) {
-
-	// construct registered component
-	RegisteredComponent reg;
-	reg.callback = f;
-	reg.required = true;
-	reg.component = this;
-	reg.trackMe = false;
-
-	// construct component request
-	ComponentRequest req;
-	req.type = REQ_COMPONENT;
-	req.name = name;
-
-	// forward to Entity manager
-	fEntityManager->registerLocalRequest(req, reg);
-}
-
-// register a component request
-void Component::requestComponent(string name, MessageFunction f, bool local) {
-
-	// construct registered component
-	RegisteredComponent reg;
-	reg.callback = f;
-	reg.required = false;
-	reg.component = this;
-	reg.trackMe = false;
-
-	// construct component request
-	ComponentRequest req;
-	req.type = REQ_COMPONENT;
-	req.name = name;
-
-	// forward to Entity manager
-	if (local) fEntityManager->registerLocalRequest(req, reg);
-	else fEntityManager->registerGlobalRequest(req, reg);
-}
-
-// request all components of one type
-void Component::requestAllExistingComponents(string name, MessageFunction f) {
-
-	// construct registered component
-	RegisteredComponent reg;
-	reg.callback = f;
-	reg.required = false;
-	reg.component = this;
-	reg.trackMe = false;
-
-	// construct component request
-	ComponentRequest req;
-	req.type = REQ_ALLCOMPONENTS;
-	req.name = name;
-
-	// forward to Entity manager
-	fEntityManager->registerGlobalRequest(req, reg);
-}
-
-
 
 // get a request id
 RequestId Component::getMessageRequestId(string name) {
@@ -268,13 +173,6 @@ void Component::update(float deltaTime)
 	// does nothing by default
 }
 
-// register a unique name
-void Component::registerName(string s) {
-	fEntityManager->registerName(this, s);
-}
-void Component::unregisterName(string s) {
-	fEntityManager->unregisterName(this, s);
-}
 list<Component*> Component::getComponentsByName(string name) {
 	return fEntityManager->getComponentsByName(name);
 }

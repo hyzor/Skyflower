@@ -98,33 +98,8 @@ class Component {
 		virtual void removeFromEntity();
 		virtual void update(float deltaTime);
 
-		// register a unique name for the Entity
-		void registerName(string s);
-		void unregisterName(string s);
-
 		// get components
 		list<Component*> getComponentsByName(string name);
-
-
-		/**
-		 * Entity/COMPONENT MODIFICATION FUNCTIONS
-		 */
-
-		// add another component to this Entity
-		void addLocalComponent(Component*);
-
-		// add a component to another Entity
-		void addComponent(EntityId, Component*);
-
-		// create an Entity
-		EntityId createEntity(string type);
-
-		// finalize an Entity
-		void finalizeEntity(EntityId);
-
-		// destroy Entity
-		void destroyEntity(EntityId);
-
 
 		/**
 		 * REQUEST FUNCTIONS
@@ -155,18 +130,6 @@ class Component {
 		// message request function
 		template<class T>
 		void requestMessage(string message, void (T::*f)(Message const &));
-
-		// require a component in this Entity
-		template<class T>
-		void requireComponent(string name, void (T::*f)(Message const &));
-
-		// register a component request
-		template<class T>
-		void requestComponent(string name, void (T::*f)(Message const &), bool local = false);
-
-		// request all components of one type
-		template<class T>
-		void requestAllExistingComponents(string name, void (T::*f)(Message const &));
 
 		// request all components of a given type and dynamic_cast to a particular class
 		template<class T>
@@ -291,25 +254,6 @@ template<class T>
 void Component::requestMessage(string message, void (T::*f)(Message const &)) {
 	requestMessage(message, std::tr1::bind(f, (T*)(this), _1));
 }
-
-// require a component in this Entity
-template<class T>
-void Component::requireComponent(string name, void (T::*f)(Message const &)) {
-	requireComponent(name, std::tr1::bind(f, (T*)(this), _1));
-}
-
-// register a component request
-template<class T>
-void Component::requestComponent(string name, void (T::*f)(Message const &), bool local) {
-	requestComponent(name, std::tr1::bind(f, (T*)(this), _1), local);
-}
-
-// request all components of one type
-template<class T>
-void Component::requestAllExistingComponents(string name, void (T::*f)(Message const &)) {
-	requestAllExistingComponents(name, std::tr1::bind(f, (T*)(this), _1));
-}
-
 
 };
 
