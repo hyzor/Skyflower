@@ -113,8 +113,6 @@ void Throwable::update(float deltaTime)
 
 						entity->getComponent<Throw*>("Throw")->setHoldingEntityId(-1);
 
-						entity->getComponent<Throw*>("Throw")->setHoldingEntityId(getOwnerId());
-
 						throwerId = -1;
 					}
 					//if the entity is holding throwable
