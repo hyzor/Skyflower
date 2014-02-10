@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "Cascade.h"
+#include "Camera.h"
 
 #define CASCADES_MAX 3
 
@@ -28,6 +29,8 @@ public:
 	bool AddCascade(ID3D11Device* device, UINT width, UINT height);
 
 	void SetSplitMethod(FrustumSplitMethod splitMethod);
+	void CalcSMSplitDepths(const Camera cam);
+	void CreateLightFrustums(const DirectionalLight& light, const DirectX::BoundingSphere& sceneBounds, const Camera* cam);
 
 };
 

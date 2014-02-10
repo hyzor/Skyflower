@@ -44,6 +44,16 @@ void Cascade::SetResolution(ID3D11Device* device, UINT width, UINT height)
 	CreateCascade(device, width, height);
 }
 
+void Cascade::SetSplitDepthNear(float zNear)
+{
+	this->zNearSplit = zNear;
+}
+
+void Cascade::SetSplitDepthNear(float zFar)
+{
+	this->zFarSplit = zFar;
+}
+
 bool Cascade::CreateCascade(ID3D11Device* device, UINT width, UINT height)
 {
 	// Set new dimensions
@@ -145,51 +155,63 @@ UINT Cascade::GetHeight() const
 	return mHeight;
 }
 
-void Cascade::BuildShadowTransform(const DirectionalLight& light, const DirectX::BoundingSphere& sceneBounds)
+float Cascade::GetSplitDepthNear() const
 {
-	// Only first "main" light casts a shadow
-	// So get light direction and position from first light
-	XMVECTOR lightDir = XMLoadFloat3(&light.Direction);
-	XMVECTOR lightPos = -2.0f*sceneBounds.Radius*lightDir;
-	XMVECTOR targetPos = XMLoadFloat3(&sceneBounds.Center);
-	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	return this->zNearSplit;
+}
 
-	XMMATRIX V = XMMatrixLookAtLH(lightPos, targetPos, up);
+float Cascade::GetSplitDepthFar() const
+{
+	return this->zFarSplit;
+}
 
-	// Transform bounding sphere to light space
-	XMFLOAT3 sphereCenterLS;
-	XMStoreFloat3(&sphereCenterLS, XMVector3TransformCoord(targetPos, V));
+void Cascade::BuildShadowTransform(const DirectionalLight& light, XMMATRIX lightView, XMMATRIX proj)
+{
 
-	// Orthogonal frustum in light space encloses scene
-	float l = sphereCenterLS.x - sceneBounds.Radius;
-	float b = sphereCenterLS.y - sceneBounds.Radius;
-	float n = sphereCenterLS.z - sceneBounds.Radius;
-	float r = sphereCenterLS.x + sceneBounds.Radius;
-	float t = sphereCenterLS.y + sceneBounds.Radius;
-	float f = sphereCenterLS.z + sceneBounds.Radius;
-	XMMATRIX P = XMMatrixOrthographicOffCenterLH(l, r, b, t, n, f);
 
-	// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
-	XMMATRIX T(
-		0.5f, 0.0f, 0.0f, 0.0f,
-		0.0f, -0.5f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, 0.0f, 1.0f);
+	//// Only first "main" light casts a shadow
+	//// So get light direction and position from first light
+	//XMVECTOR lightDir = XMLoadFloat3(&light.Direction);
+	//XMVECTOR lightPos = -2.0f*sceneBounds.Radius*lightDir;
+	//XMVECTOR targetPos = XMLoadFloat3(&sceneBounds.Center);
+	//XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
-	XMMATRIX S = V*P*T;
+	//XMMATRIX V = XMMatrixLookAtLH(lightPos, targetPos, up);
 
-	XMMATRIX offset = XMMatrixTranslationFromVector(lightPos);
-	XMMATRIX mrot = XMMatrixRotationX(0.0f);
-	mrot *= XMMatrixRotationY(0.0f);
-	mrot *= XMMatrixRotationZ(0.0f);
-	XMMATRIX mscale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
+	//// Transform bounding sphere to light space
+	//XMFLOAT3 sphereCenterLS;
+	//XMStoreFloat3(&sphereCenterLS, XMVector3TransformCoord(targetPos, V));
 
-	XMMATRIX world = mscale*mrot*offset;
+	//// Orthogonal frustum in light space encloses scene
+	//float l = sphereCenterLS.x - sceneBounds.Radius;
+	//float b = sphereCenterLS.y - sceneBounds.Radius;
+	//float n = sphereCenterLS.z - sceneBounds.Radius;
+	//float r = sphereCenterLS.x + sceneBounds.Radius;
+	//float t = sphereCenterLS.y + sceneBounds.Radius;
+	//float f = sphereCenterLS.z + sceneBounds.Radius;
+	//XMMATRIX P = XMMatrixOrthographicOffCenterLH(l, r, b, t, n, f);
 
-	XMStoreFloat4x4(&mLightWorld, world);
-	XMStoreFloat4x4(&mLightView, V);
-	XMStoreFloat4x4(&mLightProj, P);
-	XMStoreFloat4x4(&mShadowTransform, S);
+	//// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
+	//XMMATRIX T(
+	//	0.5f, 0.0f, 0.0f, 0.0f,
+	//	0.0f, -0.5f, 0.0f, 0.0f,
+	//	0.0f, 0.0f, 1.0f, 0.0f,
+	//	0.5f, 0.5f, 0.0f, 1.0f);
+
+	//XMMATRIX S = V*P*T;
+
+	//XMMATRIX offset = XMMatrixTranslationFromVector(lightPos);
+	//XMMATRIX mrot = XMMatrixRotationX(0.0f);
+	//mrot *= XMMatrixRotationY(0.0f);
+	//mrot *= XMMatrixRotationZ(0.0f);
+	//XMMATRIX mscale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
+
+	//XMMATRIX world = mscale*mrot*offset;
+
+	//XMStoreFloat4x4(&mLightWorld, world);
+	//XMStoreFloat4x4(&mLightView, V);
+	//XMStoreFloat4x4(&mLightProj, P);
+	//XMStoreFloat4x4(&mShadowTransform, S);
 }
 
 void Cascade::DrawSceneToShadowMap(

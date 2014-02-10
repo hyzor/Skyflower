@@ -17,16 +17,20 @@ public:
 
 	void BindDsvAndSetNullRenderTarget(ID3D11DeviceContext* dc);
 	void SetResolution(ID3D11Device* device, UINT width, UINT height);
+	void SetSplitDepthNear(float zNear);
+	void SetSplitDepthFar(float zFar);
 
 	UINT GetWidth() const;
 	UINT GetHeight() const;
+	float GetSplitDepthNear() const;
+	float GetSplitDepthFar() const;
 	XMMATRIX GetShadowTransform() const;
 	XMMATRIX GetLightViewProj() const;
 	XMMATRIX GetLightWorld() const;
 	XMMATRIX GetLightView() const;
 	XMMATRIX GetLightProj() const;
 
-	void BuildShadowTransform(const DirectionalLight& light, const DirectX::BoundingSphere& sceneBounds);
+	void BuildShadowTransform(const DirectionalLight& light, XMMATRIX lightView, XMMATRIX proj);
 
 	void DrawSceneToShadowMap(
 		const std::vector<ModelInstanceImpl*>& modelInstances,
@@ -45,6 +49,9 @@ public:
 		ShadowMorphShader* shadowMorphShader);
 
 private:
+	float zNearSplit;
+	float zFarSplit;
+
 	UINT mWidth;
 	UINT mHeight;
 
