@@ -329,7 +329,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	LoadParticles(mResourceDir + "Textures/Particles/", "Particles.particlelist");
 
 	/*
-	ParticleSystem* testSystem1 = new ParticleSystem();
+	ParticleSystemImpl* testSystem1 = new ParticleSystemImpl();
 	testSystem1->Init(
 		mD3D->GetDevice(),
 		mShaderHandler->mParticleSystemShader,
@@ -337,9 +337,11 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 		mRandom1DTexSRV,
 		1000);
 	testSystem1->SetEmitPos(XMFLOAT3(0.0f, 15.0f, 0.0f));
-	testSystem1->SetConstantAccel(XMFLOAT3(0.0f, 7.8f, 0.0f));
+	testSystem1->SetConstantAccel(XMFLOAT3(0.0f, 17.8f, 0.0f));
 	testSystem1->SetParticleType(ParticleType::PT_FLARE1);
-	testSystem1->SetParticleAgeLimit(2.0f);
+	testSystem1->SetParticleAgeLimit(4.0f);
+	testSystem1->SetParticleFadeTime(4.0f);
+	testSystem1->SetBlendingMethod(BlendingMethods::ALPHA_BLENDING);
 	mParticleSystems.push_back(testSystem1);
 	*/
 
@@ -1018,7 +1020,7 @@ void GraphicsEngineImpl::UpdateScene(float dt, float gameTime)
 	for (UINT i = 0; i < mParticleSystems.size(); ++i)
 	{
 		mParticleSystems[i]->Update(dt, gameTime);
-		//mParticleSystems[i]->SetParticleType((rand() % ParticleType::NROFTYPES - 1) + 1);
+		//mParticleSystems[i]->SetParticleType((ParticleType)((rand() % ParticleType::NROFTYPES - 2) + 1));
 	}
 
 	mCamera->Update();

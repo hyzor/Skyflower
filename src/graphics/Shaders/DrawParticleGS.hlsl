@@ -12,6 +12,7 @@ cbuffer cbPerFrame : register(b0)
 	float4 gQuadTexC[4];
 
 	unsigned int gTextureIndex;
+	unsigned int gBlendingMethod;
 	float3 paddingTex;
 };
 
@@ -28,6 +29,8 @@ struct GeoOut
 	float4 PrevPosH : PREVPOSH;
 
 	float3 NormalW : NORMALW;
+
+	unsigned int BlendingMethod : BLENDINGMETHOD;
 };
 
 // The draw GS just expands points into camera facing quads.
@@ -57,6 +60,13 @@ void main(point VertexOut gin[1],
 		v[2] = float4(gin[0].PosW - halfWidth*right - halfHeight*up, 1.0f);
 		v[3] = float4(gin[0].PosW - halfWidth*right + halfHeight*up, 1.0f);
 
+		// Previous frame positions
+		float4 vPrev[4];
+		vPrev[0] = float4(gin[0].PrevPosW + halfWidth*right - halfHeight*up, 1.0f);
+		vPrev[1] = float4(gin[0].PrevPosW + halfWidth*right + halfHeight*up, 1.0f);
+		vPrev[2] = float4(gin[0].PrevPosW - halfWidth*right - halfHeight*up, 1.0f);
+		vPrev[3] = float4(gin[0].PrevPosW - halfWidth*right + halfHeight*up, 1.0f);
+
 		//
 		// Transform quad vertices to world space and output 
 		// them as a triangle strip.
@@ -68,7 +78,7 @@ void main(point VertexOut gin[1],
 			gout.PosH = mul(v[i], gViewProj);
 
 			gout.CurPosH = gout.PosH;
-			gout.PrevPosH = mul(v[i], gPrevViewProj);
+			gout.PrevPosH = mul(vPrev[i], gPrevViewProj);
 
 			//gout.NDCspace = gout.PosH.xy / gout.PosH.w;
 			float2 NDCspace = gout.PosH.xy / gout.PosH.w;
@@ -81,6 +91,9 @@ void main(point VertexOut gin[1],
 			gout.Tex = gQuadTexC[i].xy;
 			gout.Color = gin[0].Color;
 			gout.TexIndex = gin[0].Type - 1;
+
+			gout.BlendingMethod = gBlendingMethod;
+
 			triStream.Append(gout);
 		}
 	}

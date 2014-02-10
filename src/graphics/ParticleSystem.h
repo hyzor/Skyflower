@@ -27,6 +27,9 @@ public:
 	virtual void SetEmitDir(const XMFLOAT3& emitDirW) = 0;
 
 	virtual void SetConstantAccel(XMFLOAT3 accelW) = 0;
+	virtual void SetParticleFadeTime(float fadeTime) = 0;
+
+	virtual void SetBlendingMethod(unsigned int blendingMethod) = 0;
 
 	virtual void SetEmitFrequency(float emitFrequency) = 0;
 	virtual void SetParticleAgeLimit(float particleAgeLimit) = 0;

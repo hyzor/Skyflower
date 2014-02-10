@@ -2681,6 +2681,8 @@ void ParticleSystemShader::SetTime(float gameTime, float dt)
 {
 	mBufferCache.streamOutGSPerFrameBuffer.gameTime = gameTime;
 	mBufferCache.streamOutGSPerFrameBuffer.timeStep = dt;
+
+	mBufferCache.drawVSInitBuffer.timeStep = dt;
 }
 
 void ParticleSystemShader::UpdateDrawShaders(ID3D11DeviceContext* dc)
@@ -2790,4 +2792,14 @@ void ParticleSystemShader::SetPrevViewProj(XMMATRIX& prevViewProj)
 void ParticleSystemShader::SetEmitParticles(bool emitParticles)
 {
 	mBufferCache.streamOutGSPerFrameBuffer.emitParticles = (emitParticles? 1 : 0);
+}
+
+void ParticleSystemShader::SetParticleFadeTime(float fadeTime)
+{
+	mBufferCache.drawVSInitBuffer.fadeTime = fadeTime;
+}
+
+void ParticleSystemShader::SetBlendingMethod(UINT blendingMethod)
+{
+	mBufferCache.drawGSPerFrameBuffer.blendingMethod = blendingMethod;
 }

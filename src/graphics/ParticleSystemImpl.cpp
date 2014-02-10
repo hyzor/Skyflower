@@ -31,6 +31,9 @@ ParticleSystemImpl::ParticleSystemImpl()
 	mEmitFrequency = 0.005f;
 	mParticleAgeLimit = 1.0f;
 	mParticleType = ParticleType::PT_FLARE0;
+
+	mFadeTime = 1.0f;
+	mBlendingMethod = 0;
 }
 
 ParticleSystemImpl::~ParticleSystemImpl()
@@ -118,6 +121,9 @@ void ParticleSystemImpl::Draw(ID3D11DeviceContext* dc, const Camera& cam)
 	mShader->SetParticleProperties(mParticleAgeLimit, mEmitFrequency);
 	mShader->SetParticleType(mParticleType);
 	mShader->SetEmitParticles(mActive);
+	mShader->SetParticleFadeTime(mFadeTime);
+
+	mShader->SetBlendingMethod(mBlendingMethod);
 
 	mShader->ActivateStreamShaders(dc);
 	mShader->UpdateStreamOutShaders(dc);
@@ -218,4 +224,14 @@ void ParticleSystemImpl::SetParticleType(ParticleType particleType)
 		mParticleType = particleType;
 	else
 		particleType = ParticleType::PT_FLARE0;
+}
+
+void ParticleSystemImpl::SetParticleFadeTime(float fadeTime)
+{
+	mFadeTime = fadeTime;
+}
+
+void ParticleSystemImpl::SetBlendingMethod(unsigned int blendingMethod)
+{
+	mBlendingMethod = blendingMethod;
 }

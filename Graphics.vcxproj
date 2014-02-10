@@ -340,6 +340,7 @@
       <FileType>Document</FileType>
     </None>
     <None Include="src\graphics\Shaders\ParticleSystemShared.hlsli" />
+    <None Include="src\graphics\Shaders\Shared.hlsli" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9B38121D-8D9E-45A3-AEE4-483D762F930F}</ProjectGuid>

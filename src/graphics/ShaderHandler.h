@@ -936,6 +936,10 @@ public:
 
 	void SetTime(float gameTime, float dt);
 
+	void SetParticleFadeTime(float fadeTime);
+
+	void SetBlendingMethod(UINT blendingMethod);
+
 	void SetAccelConstant(XMFLOAT3 accelConstant);
 
 	void SetTextureIndex(UINT textureIndex);
@@ -956,6 +960,10 @@ private:
 	{
 		XMFLOAT3 accelW;
 		float padding1;
+
+		float fadeTime;
+		float timeStep;
+		XMFLOAT2 fadeTimePadding;
 	};
 
 	struct DRAW_GS_PERFRAMEBUFFER
@@ -969,7 +977,8 @@ private:
 		XMFLOAT4 quadTexC[4];
 
 		UINT textureIndex;
-		XMFLOAT3 paddingTex;
+		UINT blendingMethod;
+		XMFLOAT2 paddingTex;
 	};
 
 	struct STREAMOUT_GS_PERFRAMEBUFFER
