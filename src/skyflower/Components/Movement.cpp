@@ -39,6 +39,8 @@ Movement::Movement(float speed) : Component("Movement")
 	this->timeFalling = 0.0f;
 	this->mInitialJumpDir = None;
 	this->mParticleSystem = NULL;
+	this->dizzyMaxTimer = 2.0f;
+	this->isDizzy = false;
 }
 
 Movement::~Movement()
@@ -71,6 +73,8 @@ void Movement::addedToEntity() {
 
 	requestMessage("Jump", &Movement::Jump);
 	requestMessage("StopJump", &Movement::StopJump);
+
+	requestMessage("isDizzy", &Movement::setIsDizzy);
 }
 
 void Movement::removeFromEntity()
@@ -123,8 +127,11 @@ void Movement::update(float deltaTime)
 	}
 
 	//float walkAngle = 0.0f;
-
-	if (canMove)
+	if (isDizzy)
+	{
+		dizzyTimer(deltaTime);
+	}
+	else if (canMove)
 	{
 		if (this->isMovingForward) {
 			if (this->isMovingLeft) {
@@ -199,6 +206,7 @@ void Movement::update(float deltaTime)
 			p->GetStates()->isMoving = false;
 		}
 	}
+
 
 	if (getOwnerId() == 1 && getOwner()->getAnimatedInstance())
 	{
@@ -460,4 +468,21 @@ void Movement::DoJumpStuff(float &jSpeed)
 		}
 		break;
 	}
+}
+
+void Movement::dizzyTimer(float deltaTime)
+{
+	this->dizzyCounter += deltaTime;
+	if (this->dizzyCounter >= this->dizzyMaxTimer)
+	{
+		this->canMove = true;
+		this->isDizzy = false;
+	}
+}
+
+void Movement::setIsDizzy(Message const &msg)
+{
+	this->isDizzy = true;
+	this->dizzyCounter = 0;
+	this->canMove = false;
 }

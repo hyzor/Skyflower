@@ -16,6 +16,7 @@ public:
 	{
 		this->isBeingPickedUp = false;
 		this->isBeingThrown = false;
+		this->throwerId = -1;
 	}
 	virtual ~Throwable() {};
 
@@ -29,11 +30,13 @@ public:
 	}
 
 	void setIsBeingThrown(bool state);
+	
 
 private:
 
 	bool isBeingPickedUp;
 	bool isBeingThrown;
+	EntityId throwerId;
 	PhysicsEntity* p;
 
 	void update(float deltaTime);

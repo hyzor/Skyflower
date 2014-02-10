@@ -56,6 +56,8 @@ private:
 	void notInAir(Message const& msg);
 	void Jump(Message const& msg);
 	void StopJump(Message const& msg);
+	void setIsDizzy(Message const& msg);
+	void dizzyTimer(float deltaTime);
 
 private:
 	PhysicsEntity* p;
@@ -74,6 +76,9 @@ private:
 	float timeFalling;
 	JumpDirection mInitialJumpDir;
 	ParticleSystem *mParticleSystem;
+	float dizzyMaxTimer;
+	float dizzyCounter;
+	bool isDizzy;
 
 	void DoJumpStuff(float &speed);
 };
