@@ -65,8 +65,8 @@ void Throwable::update(float deltaTime)
 
 						float y = -getOwner()->getModules()->camera->GetPitch();
 
-						//Vec3 o = Vec3(cosf(-rot.Y - 3.14 / 2), sinf(y - 3.14 / 2), sinf(-rot.Y - 3.14 / 2)).Normalize() * 10;
-						Vec3 o = Vec3(cosf(-rot.Y - 3.14 / 2), sinf(-y-1), sinf(-rot.Y - 3.14 / 2)).Normalize() * 10;
+						//Vec3 o = Vec3(cosf(-rot.Y - 3.14f / 2), sinf(y - 3.14f / 2), sinf(-rot.Y - 3.14f / 2)).Normalize() * 10;
+						Vec3 o = Vec3(cosf(-rot.Y - 3.14f / 2), sinf(-y-1), sinf(-rot.Y - 3.14f / 2)).Normalize() * 10;
 
 						o.Y *= -3;
 						o.X *= o.Y / 2;
