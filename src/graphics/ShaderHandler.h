@@ -603,6 +603,91 @@ private:
 };
 #pragma endregion BasicDeferredSkinnedShader
 
+#pragma region BasicDeferredSkinnedSortedShader
+class BasicDeferredSkinnedSortedShader : public IShader
+{
+public:
+	BasicDeferredSkinnedSortedShader();
+	~BasicDeferredSkinnedSortedShader();
+
+	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
+	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+	bool SetActive(ID3D11DeviceContext* dc);
+
+	void SetWorldViewProjTex(XMMATRIX& world,
+		XMMATRIX& viewProj,
+		XMMATRIX& tex);
+
+	void SetPrevWorldViewProj(XMMATRIX& prevWorld, XMMATRIX& prevViewProj);
+
+	void SetMaterial(const Material& mat);
+	void SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+
+	void SetBoneTransforms(const XMFLOAT4X4 lowerBodyTransforms[], UINT numLowerBodyTransforms, const XMFLOAT4X4 upperBodyTransforms[], UINT numUpperBodyTransforms);
+
+	void SetRootBoneIndex(UINT rootBoneIndex);
+
+	void UpdatePerObj(ID3D11DeviceContext* dc);
+
+	void SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetShadowTransform(XMMATRIX& shadowTransform);
+
+private:
+	void Update(ID3D11DeviceContext* dc) { ; }
+
+	struct VS_CPEROBJBUFFER
+	{
+		XMMATRIX world;
+		XMMATRIX worldInvTranspose;
+		XMMATRIX worldViewProj;
+		//XMMATRIX worldViewProjTex;
+		XMMATRIX texTransform;
+		XMMATRIX shadowTransform;
+
+		XMMATRIX prevWorldViewProj;
+	};
+
+	struct VS_CSKINNEDBUFFER
+	{
+		XMMATRIX upperBodyTransforms[64];
+		UINT numUpperBodyBoneTransforms;
+
+		UINT rootBoneIndex;
+		XMFLOAT2 padding123;
+
+		XMMATRIX lowerBodyTransforms[64];
+		UINT numLowerBodyBoneTransforms;
+		XMFLOAT3 padding124;
+	};
+
+	struct PS_CPEROBJBUFFER
+	{
+		Material mat;
+	};
+
+	struct BUFFERCACHE
+	{
+		VS_CPEROBJBUFFER vsPerObjBuffer;
+		VS_CSKINNEDBUFFER vsSkinnedBuffer;
+		PS_CPEROBJBUFFER psPerObjBuffer;
+	};
+
+	struct BUFFERCACHE mBufferCache;
+
+	// VS - per object
+	ID3D11Buffer* vs_cPerObjBuffer;
+	VS_CPEROBJBUFFER vs_cPerObjBufferVariables;
+
+	// VS - skinned data
+	ID3D11Buffer* vs_cSkinnedBuffer;
+	VS_CSKINNEDBUFFER vs_cSkinnedBufferVariables;
+
+	// PS - per obj
+	ID3D11Buffer* ps_cPerObjBuffer;
+	PS_CPEROBJBUFFER ps_cPerObjBufferVariables;
+};
+#pragma endregion BasicDeferredSkinnedSortedShader
+
 #pragma region LightDeferredShader
 class LightDeferredShader : public IShader
 {
@@ -1111,6 +1196,7 @@ public:
 	ShadowMorphShader* mShadowMorphShader;
 	ParticleSystemShader* mParticleSystemShader;
 	LightDeferredShader* mLightDeferredToTextureShader;
+	BasicDeferredSkinnedSortedShader* mBasicDeferredSkinnedSortedShader;
 
 private:
 

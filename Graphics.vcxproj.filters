@@ -355,6 +355,9 @@
     <FxCompile Include="src\graphics\Shaders\LightDeferredPS_ToTexture.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\BasicDeferredSkinnedSortedVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\graphics\Shaders\LightDef.hlsli">

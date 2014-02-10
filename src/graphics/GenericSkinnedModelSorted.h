@@ -43,15 +43,25 @@ struct GenericSkinnedModelSortedInstance
 	GenericSkinnedModelSorted* model;
 	XMFLOAT4X4 world;
 	bool isVisible;
-	std::vector<XMFLOAT4X4> FinalTransforms;
+
+	XMFLOAT4X4 prevWorld;
+
+	//std::vector<XMFLOAT4X4> FinalTransforms;
+
+	std::vector<XMFLOAT4X4> FinalLowerBodyTransforms;
+	std::vector<XMFLOAT4X4> FinalUpperBodyTransforms;
 
 	std::string AnimationName;
 	UINT AnimationIndex;
 	float TimePos;
 
-	UINT frameStart, frameEnd;
-	bool playAnimForward;
-	bool loop;
+	UINT lowerBodyFrameStart, lowerBodyFrameEnd;
+	bool playLowerBodyAnimForward;
+	bool loopLowerBodyAnim;
+
+	UINT upperBodyFrameStart, upperBodyFrameEnd;
+	bool playUpperBodyAnimForward;
+	bool loopUpperbodyAnim;
 
 	void Update(float dt);
 };

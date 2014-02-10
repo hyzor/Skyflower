@@ -168,7 +168,8 @@ private:
 	float mTargetFPS;
 
 	// Skinned model with upper body and lower body test
-	GenericSkinnedModelSortedInstance* mSkinnedSortedTestInstance;
+	//GenericSkinnedModelSortedInstance* mSkinnedSortedTestInstance;
+	std::vector<GenericSkinnedModelSortedInstance*> mSkinnedSortedInstances;
 
 	GenericSkinnedModelSorted* mTestSortedModel;
 };

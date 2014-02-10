@@ -83,8 +83,11 @@ void GenericSkinnedModelSortedInstance::Update(float dt)
 {
 	TimePos += dt;
 
-	if (!loop)
-		TimePos = min(TimePos, model->skinnedData.GetAnimationDuration(AnimationIndex, frameStart, frameEnd));
+	//if (!loop)
+		//TimePos = min(TimePos, model->skinnedData.GetAnimationDuration(AnimationIndex, frameStart, frameEnd));
 
-	FinalTransforms = model->skinnedData.GetTransforms(TimePos, AnimationIndex, frameStart, frameEnd, playAnimForward);
+	//FinalTransforms = model->skinnedData.GetTransforms(TimePos, AnimationIndex, frameStart, frameEnd, playAnimForward);
+
+	FinalLowerBodyTransforms = model->skinnedData.GetLowerBodyTransforms(TimePos, AnimationIndex, lowerBodyFrameStart, lowerBodyFrameEnd, playLowerBodyAnimForward);
+	FinalUpperBodyTransforms = model->skinnedData.GetUpperBodyTransforms(TimePos, AnimationIndex, upperBodyFrameStart, upperBodyFrameEnd, playUpperBodyAnimForward);
 }

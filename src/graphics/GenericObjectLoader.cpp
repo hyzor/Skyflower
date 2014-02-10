@@ -770,6 +770,12 @@ bool GenericObjectLoader::LoadSkinnedObjectSorted(
 				{
 					skinnedData.UpperBodyBones.push_back(skinnedData.Bones[i]);
 				}
+
+				// Root bone found (usually hip), save this index
+				else
+				{
+					skinnedData.RootBoneIndex = i;
+				}
 			}
 		}
 
@@ -816,22 +822,43 @@ bool GenericObjectLoader::LoadSkinnedObjectSorted(
 
 					trans.push_back(rotationMat4x4);
 
-					// Find if this is a upper body bone
-					for (UINT k = 0; k < skinnedData.UpperBodyBones.size(); ++k)
+					bool isRootBone = true;
+
+					// As long as it's not the root bone...
+					if (j != skinnedData.RootBoneIndex)
 					{
-						if (curBoneName == skinnedData.UpperBodyBones[k]->Name)
+						// Find if this is a upper body bone
+						for (UINT k = 0; k < skinnedData.UpperBodyBones.size(); ++k)
 						{
-							upperBodyTrans.push_back(rotationMat4x4);
+							if (curBoneName == skinnedData.UpperBodyBones[k]->Name)
+							{
+								XMFLOAT4X4 identity4x4;
+								XMStoreFloat4x4(&identity4x4, XMMatrixIdentity());
+
+								upperBodyTrans.push_back(rotationMat4x4);
+								lowerBodyTrans.push_back(identity4x4); // Lower body here should do nothing
+							}
+						}
+
+						// Find if this is a lower body bone
+						for (UINT k = 0; k < skinnedData.LowerBodyBones.size(); ++k)
+						{
+							if (curBoneName == skinnedData.LowerBodyBones[k]->Name)
+							{
+								XMFLOAT4X4 identity4x4;
+								XMStoreFloat4x4(&identity4x4, XMMatrixIdentity());
+
+								lowerBodyTrans.push_back(rotationMat4x4);
+								upperBodyTrans.push_back(identity4x4); // Upper body here should do nothing
+							}
 						}
 					}
 
-					// Find if this is a lower body bone
-					for (UINT k = 0; k < skinnedData.LowerBodyBones.size(); ++k)
+					// The bone is a root bone (for example the hip bone)
+					else
 					{
-						if (curBoneName == skinnedData.LowerBodyBones[k]->Name)
-						{
-							lowerBodyTrans.push_back(rotationMat4x4);
-						}
+						upperBodyTrans.push_back(rotationMat4x4);
+						lowerBodyTrans.push_back(rotationMat4x4);
 					}
 				}
 			}

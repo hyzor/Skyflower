@@ -29,6 +29,18 @@ public:
 	std::vector<XMFLOAT4X4>& GetTransforms(float dt, UINT frameStart, UINT frameEnd, bool playAnimForward)
 	{ return Transforms[GetFrameIndexAt(dt, frameStart, frameEnd, playAnimForward)]; }
 
+	// Lower body transforms
+	std::vector<XMFLOAT4X4>& GetLowerBodyTransforms(float dt, UINT frameStart, UINT frameEnd, bool playAnimForward)
+	{
+		return LowerBodyTransforms[GetFrameIndexAt(dt, frameStart, frameEnd, playAnimForward)];
+	}
+
+	// Upper body transforms
+	std::vector<XMFLOAT4X4>& GetUpperBodyTransforms(float dt, UINT frameStart, UINT frameEnd, bool playAnimForward)
+	{
+		return UpperBodyTransforms[GetFrameIndexAt(dt, frameStart, frameEnd, playAnimForward)];
+	}
+
 	std::string Name;
 
 	// If the animation has no name, it's name will be
@@ -70,6 +82,16 @@ public:
 	std::vector<XMFLOAT4X4>& GetTransforms(float dt, UINT animIndex, UINT frameStart, UINT frameEnd, bool playAnimForward) 
 	{ return Animations[animIndex].GetTransforms(dt, frameStart, frameEnd, playAnimForward); }
 
+	std::vector<XMFLOAT4X4>& GetLowerBodyTransforms(float dt, UINT animIndex, UINT frameStart, UINT frameEnd, bool playAnimForward)
+	{
+		return Animations[animIndex].GetLowerBodyTransforms(dt, frameStart, frameEnd, playAnimForward);
+	}
+
+	std::vector<XMFLOAT4X4>& GetUpperBodyTransforms(float dt, UINT animIndex, UINT frameStart, UINT frameEnd, bool playAnimForward)
+	{
+		return Animations[animIndex].GetUpperBodyTransforms(dt, frameStart, frameEnd, playAnimForward);
+	}
+
 	UINT GetAnimationIndex() const { return CurrentAnimIndex; }
 	UINT GetAnimationIndex(const std::string& name);
 
@@ -93,6 +115,8 @@ public:
 
 	std::vector<AnimEvaluatorSorted> Animations;
 	UINT CurrentAnimIndex;
+
+	UINT RootBoneIndex;
 };
 
 #endif
