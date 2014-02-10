@@ -6,6 +6,67 @@ void Throwable::update(float deltaTime)
 	for (int j = 0; j < getEntityManager()->getNrOfEntities(); j++)
 	{
 		Entity* entity = getEntityManager()->getEntity(getEntityManager()->getEntityId(j));
+
+
+		if (isBeingThrown)
+		{
+			//check if colliding with player or AI
+			if (entity->sphere != NULL && getOwner()->sphere != NULL && entity->sphere->Test(*getOwner()->sphere))
+			{
+				//cout << "TRÄFFAR AI" << endl;
+				//isBeingThrown = false;
+
+				//Vec3 temp;
+				//temp *= 0;
+				//p->SetVelocity(temp);
+			}
+			else
+			{
+				//get throwable position
+				Vec3 pos = getOwner()->returnPos();
+				Vec3 rot = getOwner()->returnRot();
+
+				Vec3 o = Vec3(cosf(-rot.Y - 3.14f / 2), 0, sinf(-rot.Y - 3.14f / 2)).Normalize() * 10;
+
+				//prevent ball from flying through stuff.
+				Collision *collision = getOwner()->getModules()->collision;
+				const std::vector<CollisionInstance *> &collisionInstances = collision->GetCollisionInstances();
+
+				int x, z;
+				if (o.X > 0)
+				{
+					x = 4;
+				}
+				else
+				{
+					x = -4;
+				}
+
+				if (o.Z)
+				{
+					z = 4;
+				}
+				else
+				{
+					x = -4;
+				}
+
+				for (size_t i = 0; i < collisionInstances.size(); i++)
+				{
+					Vec3 p = pos + o;
+					if (collisionInstances[i]->Test(Ray(p + Vec3(0, 0, 0), Vec3(x, -1, z))) > 0.0f)
+					{
+						cout << "BOLLEN KOLLIDERAR!" << endl;
+						cout << o.X << " " << o.Z << endl;
+
+						getOwner()->getPhysics()->SetVelocity(Vec3());
+						isBeingThrown = false;
+						break;
+					}
+				}
+			}
+		}
+		
 		if (entity->hasComponents("Throw"))
 		{
 			//if the entities are colliding and if the other entity have the component Throw
@@ -85,11 +146,44 @@ void Throwable::update(float deltaTime)
 						Vec3 o = Vec3(cosf(-rot.Y - 3.14f / 2), 0, sinf(-rot.Y - 3.14f / 2)).Normalize() * 10;
 						o.Y = 5;
 
-						getOwner()->updateRot(rot);
+						////prevent ball from flying through stuff.
+						//Collision *collision = getOwner()->getModules()->collision;
+						//const std::vector<CollisionInstance *> &collisionInstances = collision->GetCollisionInstances();
 
-						Vec3 temp;
-						temp *= 0;
-						p->SetVelocity(temp);
+						//int x, z;
+						//if (o.X > 0)
+						//{
+						//	x = 4;
+						//}
+						//else
+						//{
+						//	x = -4;
+						//}
+
+						//if (o.Z)
+						//{
+						//	z = 4;
+						//}
+						//else
+						//{
+						//	x = -4;
+						//}
+
+						//for (size_t i = 0; i < collisionInstances.size(); i++)
+						//{
+						//	Vec3 p = pos + o;
+						//	if (collisionInstances[i]->Test(Ray(p + Vec3(0, 0, 0), Vec3(x, -2, z))) > 0.0f)
+						//	{
+						//		isBeingPickedUp = false;
+
+						//		getOwner()->getPhysics()->SetVelocity(Vec3());
+						//		break;
+						//	}
+						//}
+
+
+
+						getOwner()->getPhysics()->SetVelocity(Vec3());
 						updateEntityPos(pos + o);
 					}
 				}
