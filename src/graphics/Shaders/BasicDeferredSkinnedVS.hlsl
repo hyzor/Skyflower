@@ -83,7 +83,7 @@ VertexOut main(VertexIn vIn)
 	vOut.CurPosH = vOut.PosH;
 	//vOut.CurPosH.xy /= vOut.CurPosH.w;
 
-	vOut.PrevPosH = mul(float4(vIn.PosL, 1.0f), gPrevWorldViewProj);
+	vOut.PrevPosH = mul(float4(posL, 1.0f), gPrevWorldViewProj);
 	//vOut.PrevPosH.xy /= vOut.PrevPosH.w;
 
 	return vOut;
