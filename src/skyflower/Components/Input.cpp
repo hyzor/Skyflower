@@ -39,12 +39,6 @@ void Input::OnKeyDown(unsigned short key)
 	case 'D':
 		sendMessageToEntity(this->getOwnerId(), "StartMoveRight");
 		break;
-	case 'T':
-		sendMessageToEntity(this->getOwnerId(), "Throw");
-		break;
-	case 'Y':
-		sendMessageToEntity(this->getOwnerId(), "PickUpOrDown");
-		break;
 	case VK_SPACE:
 		sendMessageToEntity(this->getOwnerId(), "Jump");
 		break;
@@ -69,11 +63,35 @@ void Input::OnKeyUp(unsigned short key)
 	case 'D':
 		sendMessageToEntity(this->getOwnerId(), "StopMoveRight");
 		break;
-	case 'T':
-		sendMessageToEntity(this->getOwnerId(), "StopThrow");
-		break;
 	case VK_SPACE:
 		sendMessageToEntity(this->getOwnerId(), "StopJump");
+		break;
+	default:
+		break;
+	}
+}
+
+void Input::OnMouseButtonDown(enum MouseButton button)
+{
+	switch (button)
+	{
+	case MouseButtonLeft:
+		sendMessageToEntity(this->getOwnerId(), "Throw");
+		break;
+	case MouseButtonRight:
+		sendMessageToEntity(this->getOwnerId(), "PickUpOrDown");
+		break;
+	default:
+		break;
+	}
+}
+
+void Input::OnMouseButtonUp(enum MouseButton button)
+{
+	switch (button)
+	{
+	case MouseButtonLeft:
+		sendMessageToEntity(this->getOwnerId(), "StopThrow");
 		break;
 	default:
 		break;
