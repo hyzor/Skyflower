@@ -50,6 +50,9 @@ public:
 	virtual AnimatedInstance* CreateAnimatedInstance(std::string file) = 0;
 	virtual void DeleteInstance(AnimatedInstance* ai) = 0;
 
+	virtual MorphModelInstance* CreateMorphAnimatedInstance(std::string path, std::string file, Vec3 pos) = 0;
+	//virtual void DeleteInstance(MorphModelInstance* mmi) = 0;
+
 	virtual void addDirLight(Vec3 color, Vec3 direction, float intensity) = 0;
 	virtual void addPointLight(Vec3 color, Vec3 Position, float intensity) = 0;
 	virtual void addSpotLight(Vec3 color, Vec3 direction, Vec3 Position, float angle) = 0;
@@ -77,6 +80,8 @@ public:
 	virtual void SetPostProcessingEffects(unsigned int effects) = 0;
 	virtual void SetDepthOfFieldFocusPlanes(float nearBlurryPlane, float nearSharpPlane, float farSharpPlane, float farBlurryPlane) = 0;
 	virtual void SetSSAOParameters(float radius, float projection_factor, float bias, float contrast, float sigma) = 0;
+	virtual void SetMorphAnimWeigth(unsigned index, Vec3 weight) = 0;
+	virtual Vec3 GetMorphAnimWeigth(unsigned index) = 0;
 };
 
 DLL_API GraphicsEngine* CreateGraphicsEngine();

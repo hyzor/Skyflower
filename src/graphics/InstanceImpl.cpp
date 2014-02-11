@@ -265,3 +265,98 @@ void AnimatedInstanceImpl::Update(float deltaTime)
 {
 	model->Update(deltaTime);
 }
+
+
+void MorphModelInstanceImpl::SetPosition(Vec3 pos)
+{
+	this->pos = pos;
+
+	XMMATRIX offset = XMMatrixTranslation(pos.X, pos.Y, pos.Z);
+	XMMATRIX rotation = XMMatrixRotationY(this->rot.Y);
+	XMMATRIX scaling = XMMatrixScaling(scale.X, scale.Y, scale.Z);
+
+	XMMATRIX w = scaling*rotation*offset;
+
+	XMStoreFloat4x4(&world, w);
+}
+
+void MorphModelInstanceImpl::SetRotation(Vec3 rot)
+{
+	this->rot = rot;
+
+	XMMATRIX offset = XMMatrixTranslation(pos.X, pos.Y, pos.Z);
+	XMMATRIX scaling = XMMatrixScaling(scale.X, scale.Y, scale.Z);
+
+	XMMATRIX mrot = XMMatrixRotationX(rot.X);
+	mrot *= XMMatrixRotationY(rot.Y);
+	mrot *= XMMatrixRotationZ(rot.Z);
+
+	XMMATRIX w = scaling*mrot*offset;
+
+	XMStoreFloat4x4(&world, w);
+}
+
+void MorphModelInstanceImpl::SetScale(Vec3 scale)
+{
+	this->scale = scale;
+
+	XMMATRIX offset = XMMatrixTranslation(pos.X, pos.Y, pos.Z);
+	XMMATRIX rotation = XMMatrixRotationY(this->rot.Y);
+	XMMATRIX mscale = XMMatrixScaling(scale.X, scale.Y, scale.Z);
+
+	XMMATRIX w = mscale*rotation*offset;
+
+	XMStoreFloat4x4(&world, w);
+}
+
+void MorphModelInstanceImpl::SetVisibility(bool visible)
+{
+	isVisible = visible;
+}
+
+void MorphModelInstanceImpl::SetWeights(Vec3 weights)
+{
+	this->weights.x = weights.X;
+	this->weights.y = weights.Y;
+	this->weights.z = weights.Z;
+}
+
+bool MorphModelInstanceImpl::IsVisible() const
+{
+	return isVisible;
+}
+Vec3 MorphModelInstanceImpl::GetPosition() const
+{
+	return pos;
+}
+Vec3 MorphModelInstanceImpl::GetRotation() const
+{
+	return rot;
+}
+Vec3 MorphModelInstanceImpl::GetScale() const
+{
+	return scale;
+}
+
+Vec3 MorphModelInstanceImpl::GetWeights() const
+{
+	return Vec3(weights.x, weights.y, weights.z);
+}
+
+void MorphModelInstanceImpl::Set(Vec3 pos, Vec3 rot, Vec3 scale, Vec3 weights)
+{
+	this->pos = pos;
+	this->rot = rot;
+	this->scale = scale;
+	this->weights = XMFLOAT4(weights.X, weights.Y, weights.Z, 0.0f);
+
+	XMMATRIX offset = XMMatrixTranslation(pos.X, pos.Y, pos.Z);
+	XMMATRIX mrot = XMMatrixRotationX(rot.X);
+	mrot *= XMMatrixRotationY(rot.Y);
+	mrot *= XMMatrixRotationZ(rot.Z);
+	XMMATRIX mscale = XMMatrixScaling(scale.X, scale.Y, scale.Z);
+
+	XMMATRIX w = mscale*mrot*offset;
+
+	XMStoreFloat4x4(&world, w);
+}

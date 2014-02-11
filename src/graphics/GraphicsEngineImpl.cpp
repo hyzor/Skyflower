@@ -700,7 +700,7 @@ void GraphicsEngineImpl::DrawScene()
 
 	for (UINT i = 0; i < mMorphInstances.size(); ++i)
 	{
-		if (mMorphInstances[i]->isVisible)
+		if (mMorphInstances[i]->IsVisible())
 		{
 			mMorphInstances[i]->prevWorld = mMorphInstances[i]->world;
 		}
@@ -743,6 +743,279 @@ void GraphicsEngineImpl::DrawScene()
 	mD3D->GetImmediateContext()->RSSetState(0);
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(0, 0);
 	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
+}
+
+void GraphicsEngineImpl::UpdateScene(float dt, float gameTime)
+{
+	mGameTime = gameTime;
+	mCurFPS = 1000.0f / dt;
+	mCurFPS = mCurFPS / 1000.0f;
+
+	// Update skinned instances
+	for (size_t i = 0; i < mAnimatedInstances.size(); i++)
+	{
+		mAnimatedInstances[i]->Update(dt);
+	}
+
+	// Morph testing
+	/*
+	if (mMorphInstances.size() >= 1)
+	{
+		if (mMorphInstances.front()->weights.x >= 1.0f)
+			morphIncrease = false;
+
+		if (mMorphInstances.front()->weights.x <= 0.0f)
+			morphIncrease = true;
+
+		if (morphIncrease)
+			mMorphInstances.front()->weights.x += 2.0f * dt;
+		else
+			mMorphInstances.front()->weights.x -= 2.0f * dt;
+	}
+	*/
+
+	for (UINT i = 0; i < mParticleSystems.size(); ++i)
+	{
+		mParticleSystems[i]->Update(dt, gameTime);
+		//mParticleSystems[i]->SetParticleType((ParticleType)((rand() % ParticleType::NROFTYPES - 1) + 1));
+	}
+
+	mCamera->Update();
+}
+
+void GraphicsEngineImpl::Present()
+{
+	// Present the back buffer to front buffer
+	// Set SyncInterval to 1 if you want to limit the FPS to the monitors refresh rate
+	HR(mD3D->GetSwapChain()->Present(0, 0));
+}
+
+void GraphicsEngineImpl::Begin2D()
+{
+	mSpriteBatch->Begin();
+}
+
+void GraphicsEngineImpl::End2D()
+{
+	mSpriteBatch->End();
+}
+
+void GraphicsEngineImpl::Draw2DTextureFile(const std::string file, const Draw2DInput* input)
+{
+	mSpriteBatch->Draw(
+		mTextureMgr->CreateTexture(file),
+		input->pos,
+		0,
+		input->color,
+		input->rot, 
+		input->origin,
+		input->scale,
+		SpriteEffects::SpriteEffects_None,
+		input->layerDepth);
+}
+
+void GraphicsEngineImpl::Draw2DTexture(Texture2D *texture, const Draw2DInput* input)
+{
+	Texture2DImpl *textureImpl = (Texture2DImpl *)texture;
+	mSpriteBatch->Draw(
+		textureImpl->GetShaderResourceView(), 
+		input->pos, 
+		0, 
+		D3dColors::White, 
+		0.0f,
+		XMFLOAT2(0.0f,0.0f),
+		input->scale,
+		SpriteEffects::SpriteEffects_None, 
+		input->layerDepth);
+}
+
+ModelInstance* GraphicsEngineImpl::CreateInstance(std::string file)
+{
+	return CreateInstance(file, Vec3());
+}
+ModelInstance* GraphicsEngineImpl::CreateInstance(std::string file, Vec3 pos)
+{
+	if (mModels.find(file) == mModels.end())
+	{
+		std::stringstream ss;
+		ss << file << ".obj";
+
+		mModels[file] = new GenericModel(mD3D->GetDevice(),
+			mTextureMgr,
+			mResourceDir + ss.str());
+	}
+
+	ModelInstanceImpl* mi = new ModelInstanceImpl(pos, Vec3(0.0f, 0.0f, 0.0f), Vec3(1, 1, 1));
+	mi->model = mModels[file];
+
+	mInstances.push_back(mi);
+	return mi;
+}
+
+void GraphicsEngineImpl::DeleteInstance(ModelInstance* m)
+{
+	ModelInstanceImpl* mi = (ModelInstanceImpl*)m;
+
+	bool found = false;
+	int index = -1;
+	for (unsigned int i = 0; i < mInstances.size(); i++)
+	{
+		if (mi == mInstances[i])
+			index = i;
+		else if (mi->model == mInstances[i]->model)
+			found = true;
+	}
+
+	if (index != -1)
+		mInstances.erase(mInstances.begin() + index);
+
+	if (!found) //delete model if no other instance uses it
+	{
+		for (std::map<std::string, GenericModel*>::iterator it = mModels.begin(); it != mModels.end(); it++)
+		{
+			if (it->second == mi->model)
+			{
+				mModels.erase(it);
+				break;
+			}
+		}
+		delete mi->model;
+	}
+
+	delete mi;
+}
+
+AnimatedInstance* GraphicsEngineImpl::CreateAnimatedInstance(std::string file)
+{
+	if (mModels.find(file) == mModels.end())
+	{
+		std::stringstream ss;
+		ss << file << ".dae";
+		mSkinnedModels[file] = new GenericSkinnedModel(mD3D->GetDevice(),
+			mTextureMgr,
+			mResourceDir + ss.str());
+	}
+
+	AnimatedInstanceImpl* mi = new AnimatedInstanceImpl(Vec3(), Vec3(), Vec3(1, 1, 1));
+	mi->model = new AnimatedEntity(mSkinnedModels[file], XMFLOAT3(0, 0, 0));
+
+	mAnimatedInstances.push_back(mi);
+	return mi;
+}
+void GraphicsEngineImpl::DeleteInstance(AnimatedInstance* ai)
+{
+	AnimatedInstanceImpl* mi = (AnimatedInstanceImpl*)ai;
+
+	bool found = false;
+	int index = -1;
+	for (unsigned int i = 0; i < mAnimatedInstances.size(); i++)
+	{
+		if (mi == mAnimatedInstances[i])
+			index = i;
+		else if (mi->model->mInstance.model == mAnimatedInstances[i]->model->mInstance.model)
+			found = true;
+	}
+
+	if (index != -1)
+		mAnimatedInstances.erase(mAnimatedInstances.begin() + index);
+
+	if (!found) //delete model if no other instance uses it
+	{
+		for (std::map<std::string, GenericSkinnedModel*>::iterator it = mSkinnedModels.begin(); it != mSkinnedModels.end(); it++)
+		{
+			if (it->second == mi->model->mInstance.model)
+			{
+				mSkinnedModels.erase(it);
+				break;
+			}
+		}
+		delete mi->model->mInstance.model;
+		delete mi->model;
+	}
+
+	delete mi;
+}
+
+MorphModelInstance* GraphicsEngineImpl::CreateMorphAnimatedInstance(std::string path, std::string file, Vec3 pos)
+{
+	MorphModel *model = new MorphModel(mD3D->GetDevice(), mTextureMgr, mResourceDir + path, file);
+	MorphModelInstanceImpl *m = new MorphModelInstanceImpl();
+
+	m->model = model;
+	m->Set(pos, Vec3(0.0f, 0.0f, 0.0f), Vec3(1.0f, 1.0f, 1.0f), Vec3(0.0f, 0.0f, 0.0f));
+
+	mMorphModels.push_back(model);
+	mMorphInstances.push_back(m);
+
+	return (m);
+}
+ 
+Texture2D *GraphicsEngineImpl::CreateTexture2D(unsigned int width, unsigned int height)
+{
+	Texture2DImpl *texture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8G8B8A8_UNORM, false);
+ 
+	return (Texture2D *)texture;
+}
+
+void GraphicsEngineImpl::DeleteTexture2D(Texture2D *texture)
+{
+	Texture2DImpl *textureImpl = (Texture2DImpl *)texture;
+
+	delete textureImpl;
+}
+
+ParticleSystem *GraphicsEngineImpl::CreateParticleSystem()
+{
+	ParticleSystemImpl* particleSystem = new ParticleSystemImpl();
+	particleSystem->Init(mD3D->GetDevice(),
+		mShaderHandler->mParticleSystemShader,
+		mParticlesTextureArray,
+		mRandom1DTexSRV,
+		1000);
+
+	// Set some default values.
+	particleSystem->SetEmitPos(XMFLOAT3(0.0f, 15.0f, 0.0f));
+	particleSystem->SetConstantAccel(XMFLOAT3(0.0f, 7.8f, 0.0f));
+	particleSystem->SetParticleType(ParticleType::PT_FLARE1);
+
+	mParticleSystems.push_back(particleSystem);
+
+	return (ParticleSystem *)particleSystem;
+}
+
+void GraphicsEngineImpl::DeleteParticleSystem(ParticleSystem *particleSystem)
+{
+	ParticleSystemImpl* particleSystemImpl = (ParticleSystemImpl *)particleSystem;
+
+	for (auto iter = mParticleSystems.begin(); iter != mParticleSystems.end(); iter++)
+	{
+		if ((*iter) == particleSystemImpl)
+		{
+			mParticleSystems.erase(iter);
+			break;
+		}
+	}
+
+	delete particleSystemImpl;
+}
+
+void GraphicsEngineImpl::OnResize(UINT width, UINT height)
+{
+	mD3D->OnResize(width, height);
+	mDeferredBuffers->OnResize(mD3D->GetDevice(), width, height);
+	mCamera->SetLens(fovY, (float)width / height, zNear, zFar);
+	mCamera->UpdateOrthoMatrix(static_cast<float>(width), static_cast<float>(height), zNear, zFar);
+	mOrthoWindow->OnResize(mD3D->GetDevice(), width, height);
+
+	// Resize Post-processing textures
+	mIntermediateTexture->Resize(mD3D->GetDevice(), width, height);
+
+	mSSAOTexture->Resize(mD3D->GetDevice(), (UINT)(width * mSSAOScale), (UINT)(height * mSSAOScale));
+	mSSAOBlurTexture->Resize(mD3D->GetDevice(), (UINT)(width * mSSAOScale), (UINT)(height * mSSAOScale));
+
+	mDoFCoCTexture->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
+	mDoFBlurTexture1->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
+	mDoFBlurTexture2->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
 }
 
 void GraphicsEngineImpl::RenderSceneToTexture()
@@ -839,10 +1112,11 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	//---------------------------------------------------------------------------------------
 	mShaderHandler->mDeferredMorphShader->SetActive(mD3D->GetImmediateContext());
 	mShaderHandler->mDeferredMorphShader->SetShadowMapTexture(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
+	mD3D->GetImmediateContext()->RSSetState(RenderStates::mNoCullRS);
 
 	for (UINT i = 0; i < mMorphInstances.size(); ++i)
 	{
-		if (mMorphInstances[i]->isVisible)
+		if (mMorphInstances[i]->IsVisible())
 		{
 			mShaderHandler->mDeferredMorphShader->SetShadowTransform(
 				XMMatrixMultiply(XMLoadFloat4x4(&mMorphInstances[i]->world), mShadowMap->GetShadowTransform()));
@@ -867,6 +1141,8 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 			}
 		}
 	}
+
+	mD3D->GetImmediateContext()->RSSetState(RenderStates::mDefaultRS);
 
 	//---------------------------------------------------------------------------------------
 	// Skinned opaque objects with separated upper and lower body transformations
@@ -1080,102 +1356,6 @@ void GraphicsEngineImpl::UpdateSceneData()
 	    mSceneBounds.Radius = sqrtf(extent.x*extent.x + extent.y*extent.y + extent.z*extent.z);
 }
 
-void GraphicsEngineImpl::UpdateScene(float dt, float gameTime)
-{
-	mGameTime = gameTime;
-	mCurFPS = 1000.0f / dt;
-	mCurFPS = mCurFPS / 1000.0f;
-
-	// Update skinned instances
-	for (size_t i = 0; i < mAnimatedInstances.size(); i++)
-	{
-		//mAnimatedInstances[i]->model->SetKeyFrameInterval(mAnimatedInstances[i]->model->mAnimations[mAnimatedInstances[i]->model->mCurAnim].FrameStart, mAnimatedInstances[i]->model->mAnimations[mAnimatedInstances[i]->model->mCurAnim].FrameEnd);
-		mAnimatedInstances[i]->model->Update(dt);
-	}
-
-	for (UINT i = 0; i < mSkinnedSortedInstances.size(); ++i)
-	{
-		mSkinnedSortedInstances[i]->Update(dt);
-	}
-
-	// Morph testing
-	if (mMorphInstances.size() >= 1)
-	{
-	if (mMorphInstances.front()->weights.x >= 1.0f)
-	morphIncrease = false;
-
-	if (mMorphInstances.front()->weights.x <= 0.0f)
-	morphIncrease = true;
-
-	if (morphIncrease)
-	mMorphInstances.front()->weights.x += 2.0f * dt;
-	else
-	mMorphInstances.front()->weights.x -= 2.0f * dt;
-	}
-
-	for (UINT i = 0; i < mParticleSystems.size(); ++i)
-	{
-		mParticleSystems[i]->Update(dt, gameTime);
-		//mParticleSystems[i]->SetParticleType((ParticleType)((rand() % ParticleType::NROFTYPES - 2) + 1));
-	}
-
-	mCamera->Update();
-}
-
-void GraphicsEngineImpl::OnResize(UINT width, UINT height)
-{
-	mD3D->OnResize(width, height);
-	mDeferredBuffers->OnResize(mD3D->GetDevice(), width, height);
-	mCamera->SetLens(fovY, (float)width / height, zNear, zFar);
-	mCamera->UpdateOrthoMatrix(static_cast<float>(width), static_cast<float>(height), zNear, zFar);
-	mOrthoWindow->OnResize(mD3D->GetDevice(), width, height);
-
-	// Resize Post-processing textures
-	mIntermediateTexture->Resize(mD3D->GetDevice(), width, height);
-
-	mSSAOTexture->Resize(mD3D->GetDevice(), (UINT)(width * mSSAOScale), (UINT)(height * mSSAOScale));
-	mSSAOBlurTexture->Resize(mD3D->GetDevice(), (UINT)(width * mSSAOScale), (UINT)(height * mSSAOScale));
-
-	mDoFCoCTexture->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
-	mDoFBlurTexture1->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
-	mDoFBlurTexture2->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
-}
-
-ParticleSystem *GraphicsEngineImpl::CreateParticleSystem()
-{
-	ParticleSystemImpl* particleSystem = new ParticleSystemImpl();
-	particleSystem->Init(mD3D->GetDevice(),
-		mShaderHandler->mParticleSystemShader,
-		mParticlesTextureArray,
-		mRandom1DTexSRV,
-		1000);
-
-	// Set some default values.
-	particleSystem->SetEmitPos(XMFLOAT3(0.0f, 15.0f, 0.0f));
-	particleSystem->SetConstantAccel(XMFLOAT3(0.0f, 7.8f, 0.0f));
-	particleSystem->SetParticleType(ParticleType::PT_FLARE1);
-
-	mParticleSystems.push_back(particleSystem);
-
-	return (ParticleSystem *)particleSystem;
-}
-
-void GraphicsEngineImpl::DeleteParticleSystem(ParticleSystem *particleSystem)
-{
-	ParticleSystemImpl* particleSystemImpl = (ParticleSystemImpl *)particleSystem;
-
-	for (auto iter = mParticleSystems.begin(); iter != mParticleSystems.end(); iter++)
-	{
-		if ((*iter) == particleSystemImpl)
-		{
-			mParticleSystems.erase(iter);
-			break;
-		}
-	}
-
-	delete particleSystemImpl;
-}
-
 void GraphicsEngineImpl::addDirLight(Vec3 color, Vec3 direction, float intensity)
 {
 	DirectionalLight dirLight;
@@ -1226,172 +1406,6 @@ void GraphicsEngineImpl::clearLights()
 	mPointLights.clear();
 }
 
-void GraphicsEngineImpl::Present()
-{
-	// Present the back buffer to front buffer
-	// Set SyncInterval to 1 if you want to limit the FPS to the monitors refresh rate
-	HR(mD3D->GetSwapChain()->Present(0, 0));
-}
-
-void GraphicsEngineImpl::Begin2D()
-{
-	mSpriteBatch->Begin();
-}
-
-void GraphicsEngineImpl::End2D()
-{
-	mSpriteBatch->End();
-}
-
-void GraphicsEngineImpl::Draw2DTextureFile(const std::string file, const Draw2DInput* input)
-{
-	mSpriteBatch->Draw(
-		mTextureMgr->CreateTexture(file),
-		input->pos,
-		0,
-		input->color,
-		0.0f,
-		XMFLOAT2(0.0f, 0.0f),
-		input->scale,
-		SpriteEffects::SpriteEffects_None,
-		input->layerDepth);
-}
-
-void GraphicsEngineImpl::Draw2DTexture(Texture2D *texture, const Draw2DInput* input)
-{
-	Texture2DImpl *textureImpl = (Texture2DImpl *)texture;
-	mSpriteBatch->Draw(
-		textureImpl->GetShaderResourceView(),
-		input->pos,
-		0,
-		D3dColors::White,
-		0.0f,
-		XMFLOAT2(0.0f, 0.0f),
-		input->scale,
-		SpriteEffects::SpriteEffects_None,
-		input->layerDepth);
-}
-
-ModelInstance* GraphicsEngineImpl::CreateInstance(std::string file)
-{
-	return CreateInstance(file, Vec3());
-}
-ModelInstance* GraphicsEngineImpl::CreateInstance(std::string file, Vec3 pos)
-{
-	if (mModels.find(file) == mModels.end())
-	{
-		std::stringstream ss;
-		ss << file << ".obj";
-
-		mModels[file] = new GenericModel(mD3D->GetDevice(),
-			mTextureMgr,
-			mResourceDir + ss.str());
-	}
-
-	ModelInstanceImpl* mi = new ModelInstanceImpl(pos, Vec3(0.0f, 0.0f, 0.0f), Vec3(1, 1, 1));
-	mi->model = mModels[file];
-
-	mInstances.push_back(mi);
-	return mi;
-}
-
-void GraphicsEngineImpl::DeleteInstance(ModelInstance* m)
-{
-	ModelInstanceImpl* mi = (ModelInstanceImpl*)m;
-
-	bool found = false;
-	int index = -1;
-	for (unsigned int i = 0; i < mInstances.size(); i++)
-	{
-		if (mi == mInstances[i])
-			index = i;
-		else if (mi->model == mInstances[i]->model)
-			found = true;
-	}
-
-	if (index != -1)
-		mInstances.erase(mInstances.begin() + index);
-
-	if (!found) //delete model if no other instance uses it
-	{
-		for (std::map<std::string, GenericModel*>::iterator it = mModels.begin(); it != mModels.end(); it++)
-		{
-			if (it->second == mi->model)
-			{
-				mModels.erase(it);
-				break;
-			}
-		}
-		delete mi->model;
-	}
-
-	delete mi;
-}
-
-AnimatedInstance* GraphicsEngineImpl::CreateAnimatedInstance(std::string file)
-{
-	if (mModels.find(file) == mModels.end())
-	{
-		std::stringstream ss;
-		ss << file << ".dae";
-		mSkinnedModels[file] = new GenericSkinnedModel(mD3D->GetDevice(),
-			mTextureMgr,
-			mResourceDir + ss.str());
-	}
-
-	AnimatedInstanceImpl* mi = new AnimatedInstanceImpl(Vec3(), Vec3(), Vec3(1, 1, 1));
-	mi->model = new AnimatedEntity(mSkinnedModels[file], XMFLOAT3(0, 0, 0));
-
-	mAnimatedInstances.push_back(mi);
-	return mi;
-}
-void GraphicsEngineImpl::DeleteInstance(AnimatedInstance* ai)
-{
-	AnimatedInstanceImpl* mi = (AnimatedInstanceImpl*)ai;
-
-	bool found = false;
-	int index = -1;
-	for (unsigned int i = 0; i < mAnimatedInstances.size(); i++)
-	{
-		if (mi == mAnimatedInstances[i])
-			index = i;
-		else if (mi->model->mInstance.model == mAnimatedInstances[i]->model->mInstance.model)
-			found = true;
-	}
-
-	if (index != -1)
-		mAnimatedInstances.erase(mAnimatedInstances.begin() + index);
-
-	if (!found) //delete model if no other instance uses it
-	{
-		for (std::map<std::string, GenericSkinnedModel*>::iterator it = mSkinnedModels.begin(); it != mSkinnedModels.end(); it++)
-		{
-			if (it->second == mi->model->mInstance.model)
-			{
-				mSkinnedModels.erase(it);
-				break;
-			}
-		}
-		delete mi->model->mInstance.model;
-		delete mi->model;
-	}
-
-	delete mi;
-}
-
-Texture2D *GraphicsEngineImpl::CreateTexture2D(unsigned int width, unsigned int height)
-{
-	Texture2DImpl *texture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8G8B8A8_UNORM, false);
-
-	return (Texture2D *)texture;
-}
-
-void GraphicsEngineImpl::DeleteTexture2D(Texture2D *texture)
-{
-	Texture2DImpl *textureImpl = (Texture2DImpl *)texture;
-
-	delete textureImpl;
-}
 
 void GraphicsEngineImpl::printText(wchar_t* text, int x, int y, Vec3 color, float scale)
 {
@@ -1479,4 +1493,22 @@ bool GraphicsEngineImpl::isFullscreen()
 	BOOL fullscreen;
 	mD3D->GetSwapChain()->GetFullscreenState(&fullscreen, NULL);
 	return fullscreen == 1;
+}
+
+void GraphicsEngineImpl::SetMorphAnimWeigth(unsigned index, Vec3 weight)
+{
+	if (mMorphInstances.size() > index)
+	{
+		mMorphInstances[index]->SetWeights(weight);
+	}
+}
+
+Vec3 GraphicsEngineImpl::GetMorphAnimWeigth(unsigned index)
+{
+	if (mMorphInstances.size() > index)
+	{
+		return mMorphInstances[index]->GetWeights();
+	}
+	else
+		return Vec3::Zero();
 }

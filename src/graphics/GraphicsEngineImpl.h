@@ -25,8 +25,6 @@
 #include "OrthoWindow.h"
 #include "Texture2DImpl.h"
 
-#include "MorphModel.h"
-
 #include "ParticleSystemImpl.h"
 
 #include "GenericSkinnedModelSorted.h"
@@ -71,11 +69,16 @@ public:
 	AnimatedInstance* CreateAnimatedInstance(std::string file);
 	void DeleteInstance(AnimatedInstance* ai);
 
+	MorphModelInstance* CreateMorphAnimatedInstance(std::string path, std::string file, Vec3 pos);
+	//void DeleteInstance(MorphModelInstance* mmi);
+
 	Texture2D *CreateTexture2D(unsigned int width, unsigned int height);
 	void DeleteTexture2D(Texture2D *texture);
 
 	ParticleSystem *CreateParticleSystem();
 	void DeleteParticleSystem(ParticleSystem *particleSystem);
+
+	//void CreateMorphInstance(std::string file);
 
 	void UpdateSceneData();
 
@@ -95,6 +98,8 @@ public:
 	void SetPostProcessingEffects(unsigned int effects);
 	void SetDepthOfFieldFocusPlanes(float nearBlurryPlane, float nearSharpPlane, float farSharpPlane, float farBlurryPlane);
 	void SetSSAOParameters(float radius, float projection_factor, float bias, float contrast, float sigma);
+	void SetMorphAnimWeigth(unsigned index, Vec3 weight);
+	Vec3 GetMorphAnimWeigth(unsigned index);
 
 private:
 	Direct3D* mD3D;
@@ -114,7 +119,7 @@ private:
 	std::vector<AnimatedInstanceImpl*> mAnimatedInstances;
 
 	std::vector<MorphModel*> mMorphModels;
-	std::vector<MorphModelInstance*> mMorphInstances;
+	std::vector<MorphModelInstanceImpl*> mMorphInstances;
 
 	std::vector<PointLight> mPointLights;
 	std::vector<DirectionalLight> mDirLights;

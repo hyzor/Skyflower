@@ -63,6 +63,7 @@ private:
 	int _current; // Current level id
 	EntityManager *_entityManager; // Pointer to the entities
 	vector<Level> _levels; // Levels
+	MorphModelInstance* skyflower;
 
 };
 
