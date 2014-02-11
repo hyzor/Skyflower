@@ -1,7 +1,6 @@
 #ifndef GRAPHICS_CASCADE_H
 #define GRAPHICS_CASCADE_H
 
-#include <vector>
 #include "ShaderHandler.h"
 #include "InstanceImpl.h"
 #include "MorphModel.h"
@@ -10,6 +9,7 @@ class Cascade
 {
 public:
 	Cascade(ID3D11Device* device, UINT width, UINT height);
+	Cascade(const Cascade& other);
 	~Cascade(void);
 
 	ID3D11ShaderResourceView* getDepthMapSRV();
@@ -30,7 +30,8 @@ public:
 	XMMATRIX GetLightView() const;
 	XMMATRIX GetLightProj() const;
 
-	void BuildShadowTransform(const DirectionalLight& light, XMMATRIX lightView, XMMATRIX proj);
+	//Set world, view, projection and shadowtransform matrices
+	void SetShadowMatrices(const XMMATRIX& lightView, const XMMATRIX& proj, XMVECTOR lightPos);
 
 	void DrawSceneToShadowMap(
 		const std::vector<ModelInstanceImpl*>& modelInstances,

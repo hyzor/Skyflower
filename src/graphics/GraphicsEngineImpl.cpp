@@ -145,6 +145,9 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 
 	mSky = new Sky(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Textures\\SkyBox.dds", 2000.0f);
 	mShadowMap = new ShadowMap(mD3D->GetDevice(), 2048, 2048);
+	mCascadedShadows = new CascadedShadows(mD3D->GetDevice(), 2048, 2048, 3);
+	mCascadedShadows->SetSplitMethod(FIT_TO_CASCADE);
+	mCascadedShadows->SetNearFarFitMethod(FIT_NEARFAR_AABB);
 
 	mGameTime = 0.0f;
 
@@ -347,6 +350,11 @@ void GraphicsEngineImpl::DrawScene()
 	mD3D->GetImmediateContext()->RSSetState(0);
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(0, 0);
 	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
+
+	//Draw scene to cascades
+	mD3D->GetImmediateContext()->RSSetState(RenderStates::mDepthBiasRS);
+	mCascadedShadows->CreateLightFrustums(mDirLights.at(0), mSceneBounds, mSceneBB, mCamera);
+	mCascadedShadows->RenderSceneToCascades(mInstances, mAnimatedInstances, mMorphInstances, mD3D->GetImmediateContext(), mShaderHandler->mShadowShader, mShaderHandler->mSkinnedShadowShader, mShaderHandler->mShadowMorphShader);
 
 	// Draw scene to shadowmap
 	mD3D->GetImmediateContext()->RSSetState(RenderStates::mDepthBiasRS); // This rasterizer state fixes shadow acne
@@ -629,12 +637,43 @@ void GraphicsEngineImpl::DrawScene()
 
 	mSpriteBatch->Begin();
 
-	mSpriteBatch->Draw(mShadowMap->getDepthMapSRV(), 
+	mSpriteBatch->Draw(
+		mShadowMap->getDepthMapSRV(), 
 		XMFLOAT2(0.0f, 0.0f), 
 		nullptr, 
 		Colors::White, 
 		0.0f, 
 		XMFLOAT2(0.0f, 0.0f), 
+		XMFLOAT2(0.1f, 0.1f)
+		);
+
+	mSpriteBatch->Draw(
+		mCascadedShadows->GetCascade(0)->getDepthMapSRV(), 
+		XMFLOAT2(225.0f, 0.0f),
+		nullptr,
+		Colors::Red,
+		0.0f,
+		XMFLOAT2(0.0f, 0.0f),
+		XMFLOAT2(0.1f, 0.1f)
+		);
+
+	mSpriteBatch->Draw(
+		mCascadedShadows->GetCascade(1)->getDepthMapSRV(),
+		XMFLOAT2(450.0f, 0.0f),
+		nullptr,
+		Colors::Red,
+		0.0f,
+		XMFLOAT2(0.0f, 0.0f),
+		XMFLOAT2(0.1f, 0.1f)
+		);
+
+	mSpriteBatch->Draw(
+		mCascadedShadows->GetCascade(2)->getDepthMapSRV(),
+		XMFLOAT2(675.0f, 0.0f),
+		nullptr,
+		Colors::Red,
+		0.0f,
+		XMFLOAT2(0.0f, 0.0f),
 		XMFLOAT2(0.1f, 0.1f)
 		);
 
@@ -1088,7 +1127,10 @@ void GraphicsEngineImpl::UpdateSceneData()
 					}
 	            }
 	    }
-	 
+
+		//Used when creating orthogonal projection matrix for cascades
+		BoundingBox::CreateFromPoints(this->mSceneBB, XMLoadFloat3(&minPt), XMLoadFloat3(&maxPt));
+
 	    // Sphere center is at half of these new dimensions
 	    mSceneBounds.Center = XMFLOAT3(
 				0.5f*(minPt.x + maxPt.x),

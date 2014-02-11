@@ -9,6 +9,17 @@ Cascade::Cascade(ID3D11Device* device, UINT width, UINT height)
 	CreateCascade(device, width, height);
 }
 
+Cascade::Cascade(const Cascade& other)
+: mDepthMapDSV(0), mDepthMapSRV(0)
+{
+	this->mHeight = other.mHeight;
+	this->mWidth = other.mWidth;
+	this->mLightProj = other.mLightProj;
+	this->mLightView = other.mLightView;
+	this->mLightWorld = other.mLightWorld;
+	this->mShadowTransform = other.mShadowTransform;
+	this->mViewport = other.mViewport;
+}
 
 Cascade::~Cascade(void)
 {
@@ -49,7 +60,7 @@ void Cascade::SetSplitDepthNear(float zNear)
 	this->zNearSplit = zNear;
 }
 
-void Cascade::SetSplitDepthNear(float zFar)
+void Cascade::SetSplitDepthFar(float zFar)
 {
 	this->zFarSplit = zFar;
 }
@@ -107,38 +118,6 @@ bool Cascade::CreateCascade(ID3D11Device* device, UINT width, UINT height)
 	// Create SRV
 	res = HR(device->CreateShaderResourceView(depthMap, &srvDesc, &mDepthMapSRV));
 
-// 	// Setup render target texture description
-// 	D3D11_TEXTURE2D_DESC textureDesc;
-// 	textureDesc.Width = width;
-// 	textureDesc.Height = height;
-// 	textureDesc.MipLevels = 1;
-// 	textureDesc.ArraySize = 1;
-// 	textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-// 	textureDesc.SampleDesc.Count = 1;
-// 	textureDesc.Usage = D3D11_USAGE_DEFAULT;
-// 	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-// 	textureDesc.CPUAccessFlags = 0;
-// 	textureDesc.MiscFlags = 0;
-// 
-// 	// Create render target texture
-// 	res = device->CreateTexture2D(&textureDesc, NULL, &mRenderTargetTexture);
-// 
-// 	if (FAILED(res))
-// 		return false;
-// 
-// 	// Render target view description
-// 	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-// 	ZeroMemory(&renderTargetViewDesc, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
-// 	renderTargetViewDesc.Format = textureDesc.Format;
-// 	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-// 	renderTargetViewDesc.Texture2D.MipSlice = 0;
-// 
-// 	// Create render target views
-// 	res = device->CreateRenderTargetView(mRenderTargetTexture, &renderTargetViewDesc, &mRenderTargetView);
-// 
-// 	if (FAILED(res))
-// 		return false;
-
 	// Now release depth map reference because view already saved a reference
 	ReleaseCOM(depthMap);
 
@@ -165,53 +144,30 @@ float Cascade::GetSplitDepthFar() const
 	return this->zFarSplit;
 }
 
-void Cascade::BuildShadowTransform(const DirectionalLight& light, XMMATRIX lightView, XMMATRIX proj)
+void Cascade::SetShadowMatrices(const XMMATRIX& lightView, const XMMATRIX& proj, XMVECTOR lightPos)
 {
+	XMMATRIX V = lightView;
+	XMMATRIX P = proj;
 
+	// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
+	XMMATRIX T(
+		0.5f, 0.0f, 0.0f, 0.0f,
+		0.0f, -0.5f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.5f, 0.5f, 0.0f, 1.0f);
 
-	//// Only first "main" light casts a shadow
-	//// So get light direction and position from first light
-	//XMVECTOR lightDir = XMLoadFloat3(&light.Direction);
-	//XMVECTOR lightPos = -2.0f*sceneBounds.Radius*lightDir;
-	//XMVECTOR targetPos = XMLoadFloat3(&sceneBounds.Center);
-	//XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	XMMATRIX offset = XMMatrixTranslationFromVector(lightPos);
+	XMMATRIX mrot = XMMatrixRotationX(0.0f);
+	mrot *= XMMatrixRotationY(0.0f);
+	mrot *= XMMatrixRotationZ(0.0f);
+	XMMATRIX mscale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
 
-	//XMMATRIX V = XMMatrixLookAtLH(lightPos, targetPos, up);
+	XMMATRIX world = mscale*mrot*offset;
 
-	//// Transform bounding sphere to light space
-	//XMFLOAT3 sphereCenterLS;
-	//XMStoreFloat3(&sphereCenterLS, XMVector3TransformCoord(targetPos, V));
-
-	//// Orthogonal frustum in light space encloses scene
-	//float l = sphereCenterLS.x - sceneBounds.Radius;
-	//float b = sphereCenterLS.y - sceneBounds.Radius;
-	//float n = sphereCenterLS.z - sceneBounds.Radius;
-	//float r = sphereCenterLS.x + sceneBounds.Radius;
-	//float t = sphereCenterLS.y + sceneBounds.Radius;
-	//float f = sphereCenterLS.z + sceneBounds.Radius;
-	//XMMATRIX P = XMMatrixOrthographicOffCenterLH(l, r, b, t, n, f);
-
-	//// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
-	//XMMATRIX T(
-	//	0.5f, 0.0f, 0.0f, 0.0f,
-	//	0.0f, -0.5f, 0.0f, 0.0f,
-	//	0.0f, 0.0f, 1.0f, 0.0f,
-	//	0.5f, 0.5f, 0.0f, 1.0f);
-
-	//XMMATRIX S = V*P*T;
-
-	//XMMATRIX offset = XMMatrixTranslationFromVector(lightPos);
-	//XMMATRIX mrot = XMMatrixRotationX(0.0f);
-	//mrot *= XMMatrixRotationY(0.0f);
-	//mrot *= XMMatrixRotationZ(0.0f);
-	//XMMATRIX mscale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
-
-	//XMMATRIX world = mscale*mrot*offset;
-
-	//XMStoreFloat4x4(&mLightWorld, world);
-	//XMStoreFloat4x4(&mLightView, V);
-	//XMStoreFloat4x4(&mLightProj, P);
-	//XMStoreFloat4x4(&mShadowTransform, S);
+	XMStoreFloat4x4(&this->mLightWorld, world);
+	XMStoreFloat4x4(&this->mLightView, lightView);
+	XMStoreFloat4x4(&this->mLightProj, proj);
+	XMStoreFloat4x4(&this->mShadowTransform, lightView * proj * T );
 }
 
 void Cascade::DrawSceneToShadowMap(

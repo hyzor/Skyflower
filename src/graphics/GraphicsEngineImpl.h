@@ -13,6 +13,7 @@
 #include <string>
 #include "Sky.h"
 #include "Shadowmap.h"
+#include "CascadedShadows.h"
 #include "RenderStates.h"
 #include <SpriteBatch.h>
 #include <SpriteFont.h>
@@ -114,6 +115,7 @@ private:
 
 	Sky* mSky;
 	ShadowMap* mShadowMap;
+	CascadedShadows* mCascadedShadows;
 
 	ShaderHandler* mShaderHandler;
 
@@ -121,6 +123,7 @@ private:
 	SpriteFont* mSpriteFont;
 
 	DirectX::BoundingSphere mSceneBounds;
+	DirectX::BoundingBox mSceneBB;
 
 
 	DeferredBuffers* mDeferredBuffers;
