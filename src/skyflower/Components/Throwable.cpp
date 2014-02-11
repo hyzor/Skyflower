@@ -14,7 +14,6 @@ void Throwable::update(float deltaTime)
 				//check if colliding with player or AI
 				if (entity->sphere != NULL && getOwner()->sphere != NULL && entity->sphere->Test(*getOwner()->sphere))
 				{
-					cout << "TRÄFFAR AI" << endl;
 					isBeingThrown = false;
 					sendMessageToEntity(entity->fId, "isDizzy");
 					Vec3 temp;
@@ -60,9 +59,6 @@ void Throwable::update(float deltaTime)
 						Vec3 p = pos + o;
 						if (collisionInstances[i]->Test(Ray(p + Vec3(0, 0, 0), Vec3(x, -1, z))) > 0.0f)
 						{
-							cout << "BOLLEN KOLLIDERAR!" << endl;
-							cout << o.X << " " << o.Z << endl;
-
 							getOwner()->getPhysics()->SetVelocity(Vec3());
 							throwerId = -1;
 							isBeingThrown = false;

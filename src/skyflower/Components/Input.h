@@ -21,6 +21,8 @@ public:
 public: // InputListener
 	void OnKeyDown(unsigned short key);
 	void OnKeyUp(unsigned short key);
+	void OnMouseButtonDown(enum MouseButton button);
+	void OnMouseButtonUp(enum MouseButton button);
 };
 
 #endif
