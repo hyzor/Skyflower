@@ -17,7 +17,12 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 		delete mSkinnedSortedInstances[i];
 	}
 
-	delete mTestSortedModel;
+	for (auto& it(mSkinnedSortedModels.begin()); it != mSkinnedSortedModels.end(); ++it)
+	{
+		if (it->second)
+			SafeDelete(it->second);
+	}
+	mSkinnedSortedModels.clear();
 
 	ReleaseCOM(mRandom1DTexSRV);
 	ReleaseCOM(mParticlesTextureArray);
@@ -363,24 +368,22 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	*/
 
 	// Sorted skinned model test
-	std::string testPath = mResourceDir + "Models/Character/Character.dae";
-	mTestSortedModel = new GenericSkinnedModelSorted(mD3D->GetDevice(),
-		mTextureMgr,
-		testPath);
+	/*
+	std::string testPath = mResourceDir + "Models/Enemies/Puncher/Puncha.dae";
+	mSkinnedSortedModels["TestSortedModel"] = new GenericSkinnedModelSorted(mD3D->GetDevice(), mTextureMgr, testPath);
 
 	// Skinned model with separated upper and lower body transformations
 	mSkinnedSortedInstances.push_back(new GenericSkinnedModelSortedInstance());
-	//mSkinnedSortedInstances.back() = new GenericSkinnedModelSortedInstance();
-	mSkinnedSortedInstances.back()->model = mTestSortedModel;
+	mSkinnedSortedInstances.back()->model = mSkinnedSortedModels["TestSortedModel"];
 	mSkinnedSortedInstances.back()->loopLowerBodyAnim = true;
 	mSkinnedSortedInstances.back()->loopUpperbodyAnim = true;
 	mSkinnedSortedInstances.back()->isVisible = true;
 	mSkinnedSortedInstances.back()->playLowerBodyAnimForward = true;
 	mSkinnedSortedInstances.back()->playUpperBodyAnimForward = true;
-	mSkinnedSortedInstances.back()->lowerBodyFrameStart = 1;
-	mSkinnedSortedInstances.back()->lowerBodyFrameEnd = 24 - 1;
-	mSkinnedSortedInstances.back()->upperBodyFrameStart = 81; 
-	mSkinnedSortedInstances.back()->upperBodyFrameEnd = 105 - 1;
+	mSkinnedSortedInstances.back()->lowerBodyFrameStart = 2;
+	mSkinnedSortedInstances.back()->lowerBodyFrameEnd = 34 - 1;
+	mSkinnedSortedInstances.back()->upperBodyFrameStart = 72; 
+	mSkinnedSortedInstances.back()->upperBodyFrameEnd = 99 - 1;
 	mSkinnedSortedInstances.back()->AnimationIndex = 0;
 	mSkinnedSortedInstances.back()->TimePos = 0.0f;
 
@@ -390,6 +393,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	XMMATRIX world = mscale*mrot*offset;
 	XMStoreFloat4x4(&mSkinnedSortedInstances.back()->world, world);
 	XMStoreFloat4x4(&mSkinnedSortedInstances.back()->prevWorld, world);
+	*/
 
 	mCurFPS = 0.0f;
 	mTargetFPS = 60.0f;

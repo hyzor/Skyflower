@@ -170,8 +170,9 @@ private:
 	// Skinned model with upper body and lower body test
 	//GenericSkinnedModelSortedInstance* mSkinnedSortedTestInstance;
 	std::vector<GenericSkinnedModelSortedInstance*> mSkinnedSortedInstances;
+	std::map<std::string, GenericSkinnedModelSorted*> mSkinnedSortedModels;
 
-	GenericSkinnedModelSorted* mTestSortedModel;
+	//GenericSkinnedModelSorted* mTestSortedModel;
 };
 
 #endif
