@@ -106,33 +106,14 @@ void Component::requestMessage(string message, MessageFunction f) {
 	fEntityManager->registerGlobalRequest(req, reg);
 }
 
-// get a request id
-RequestId Component::getMessageRequestId(string name) {
-	return fEntityManager->getMessageRequestId(REQ_MESSAGE, name);
-}
-
-
-// request all components of a given type in a given Entity
-list<Component*> Component::getComponents(string name, EntityId id) {
-	if (id == -1) return fEntityManager->getComponents(getOwnerId(), name);
-	else return fEntityManager->getComponents(id, name);
-}
-
 /**
  * MESSAGING FUNCTIONS
  */
 
 // send a message
-void Component::sendMessage(string msg, Payload payload) {
-	fEntityManager->sendGlobalMessage(msg, this, payload);
-}
-void Component::sendLocalMessage(string msg, Payload payload) {
-	fEntityManager->sendMessageToEntity(msg, this, fOwnerId, payload);
-}
 void Component::sendMessageToEntity(EntityId id, string msg, Payload payload) {
 	fEntityManager->sendMessageToEntity(msg, this, id, payload);
 }
-
 
 // called when added to an Entity
 void Component::addedToEntity() {
@@ -148,11 +129,6 @@ void Component::update(float deltaTime)
 {
 	// does nothing by default
 }
-
-list<Component*> Component::getComponentsByName(string name) {
-	return fEntityManager->getComponentsByName(name);
-}
-
 
 // destroy this component
 void Component::destroy() {

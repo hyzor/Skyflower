@@ -190,9 +190,7 @@ bool Entity::isFinalized() {
 
 
 // finalize the Entity
-void Entity::finalize() {
-
-	
+void Entity::finalize() {	
 
 	// we're done
 	fFinalized = true;
@@ -306,26 +304,6 @@ void Entity::registerRequest(RequestId reqId, RegisteredComponent reg) {
 		fLocalRequests.resize(reqId+1);
 	}
 	fLocalRequests[reqId].push_back(reg);
-}
-
-
-// track a local request
-void Entity::trackRequest(RequestId reqId, Component *component) {
-
-	// find in global request list
-	for (unsigned i = 0; i < fLocalRequests[reqId].size(); ++i) {
-		if (fLocalRequests[reqId][i].component->getId() == component->getId()) fLocalRequests[reqId][i].trackMe = true;
-	}
-}
-
-
-void Entity::sendAMessageToAll(string message)
-{
-	//fins the first component in the entity with the name "Messenger"
-	if (this->fComponents.count("Messenger") != 0)
-	{
-		this->fComponents["Messenger"].front()->sendMessage(message);
-	}
 }
 
 void Entity::sendMessageToEntity(string message, EntityId id)

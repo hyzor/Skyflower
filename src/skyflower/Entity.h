@@ -34,28 +34,17 @@ class Entity {
 		Entity(const Modules *modules, EntityId id, EntityId relativeid, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
 			 float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated);
 		virtual ~Entity();
-
-
-		template <typename T>
-		T getComponent(string Type)
-		{
-			if (this->hasComponents(Type))
-				return (T)fComponents[Type].front();
-			else
-				return NULL;
-		}
-
-
 		
 		Entity* ground;				//a pointer to the ground the entity stands on, if it stands on something		
 		Entity* wall;				//a pointer to the wall the entity is colliding with, if it is colliding with a wall
+		EntityId relativeid;
+		EntityId fId;
 		Sphere *sphere;				
 		Vec3 spawnpos;
 		CollisionInstance* collInst;
 		Field* field;
-		EntityId relativeid;
 		PhysicsEntity* mPhysicsEntity;
-		EntityId fId;
+
 
 		void updatePos(Vec3 pos);
 		void update(float deltaTime);
@@ -76,15 +65,20 @@ class Entity {
 		Vec3 returnScale();
 		Vec3 getRelativePos();
 
-
 		const Modules *getModules();
 		PhysicsEntity* getPhysics();
 		string getType();
 		AnimatedInstance *getAnimatedInstance();
 		CollisionInstance* returnCollision();
 
-
-
+		template <typename T>
+		T getComponent(string Type)
+		{
+			if (this->hasComponents(Type))
+				return (T)fComponents[Type].front();
+			else
+				return NULL;
+		}
 
 	private:
 
@@ -151,22 +145,12 @@ class Entity {
 		 * LOGGING
 		 */
 
-		// track a request
-		void trackRequest(RequestId, Component*);
-
-
 		// Entity manager is our friend
 		friend class EntityManager;
 
 		// Private functions we made
-		void sendAMessageToAll(string message);
 		void sendMessageToEntity(string message, EntityId id);
-
 		EntityId getEntityId();
-
-
-
-
 };
 
 

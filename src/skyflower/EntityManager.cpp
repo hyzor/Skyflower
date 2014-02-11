@@ -407,9 +407,7 @@ void EntityManager::registerGlobalRequest(ComponentRequest req, RegisteredCompon
 				}
 				break;
 			}
-		}
-
-		
+		}	
 	}
 
 	// if we want the previously created components as well, we process them
@@ -534,11 +532,6 @@ void EntityManager::removeEntity(Entity* e) {
 
 }
 
-
-
-
-
-
 // destroy a component
 void EntityManager::destroyComponent(Component *comp) {
 
@@ -610,53 +603,6 @@ void EntityManager::destroyComponent(Component *comp) {
 
 	// make it invalid
 	delete comp;
-}
-
-
-// get the id based on the unique name identified
-list<Component*> EntityManager::getComponentsByName(string name) {
-
-	// see if the name doesn't exist yet
-	if (fComponentsByName.find(name) == fComponentsByName.end()) {
-		//error(format("Failed to acquire Entity id for unique name identifier %s because it doesn't exist!") % name);
-		return list<Component*>();
-	}
-
-	// return id
-	return fComponentsByName[name];
-}
-
-
-// logging
-void EntityManager::trackRequest(RequestId reqId, bool local, Component *component) {
-
-	// if global, find it
-	if (!local) {
-
-		// find in global request list
-		for (list<RegisteredComponent>::iterator it = fGlobalRequests[reqId].begin(); it != fGlobalRequests[reqId].end(); ++it) {
-			if ((*it).component->getId() == component->getId()) (*it).trackMe = true;
-		}
-
-		// also pass to local for extra check (MESSAGE messages are always local AND global)
-		getEntity(component->getOwnerId())->trackRequest(reqId, component);
-
-
-	}
-
-	// if local, forward to Entity
-	else {
-		getEntity(component->getOwnerId())->trackRequest(reqId, component);
-	}
-}
-
-
-void EntityManager::sendMessageToAllEntities(string message)
-{
-	for (size_t i = 0; i < fEntitys.size(); i++)
-	{
-		this->fEntitys[i]->sendAMessageToAll(message);
-	}
 }
 
 void EntityManager::sendMessageToEntity(string message, string entity)
