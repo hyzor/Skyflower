@@ -14,11 +14,12 @@ public:
 
 	Throw() : Component("Throw")
 	{
-		this->holdingEntityId = 0;
+		this->holdingEntityId = -1;
 		this->toPickUp = false;
 		this->toPutDown = false;
 		this->isHoldingThrowable = false;
 		this->toThrow = false;
+		this->isDizzy = false;
 	}
 	virtual ~Throw() {};
 
@@ -29,6 +30,8 @@ public:
 		requestMessage("Throw", &Throw::Throwing);
 		requestMessage("StopThrow", &Throw::stopThrowing);
 		requestMessage("DropThrowable", &Throw::dropThrowable);
+		requestMessage("isDizzy", &Throw::setIsDizzy);
+		requestMessage("notDizzy", &Throw::setNotDizzy);
 	}
 
 	//for throw and throwing
@@ -39,7 +42,10 @@ public:
 
 	void setToPickUp(bool state)
 	{
-		this->toPickUp = state;
+		if (!isDizzy)
+		{
+			this->toPickUp = state;
+		}
 	}
 
 	bool getToPutDown()
@@ -48,8 +54,11 @@ public:
 	}
 
 	void setToPutDown(bool state)
-	{
-		this->toPutDown = state;
+	{		
+		if (!isDizzy)
+		{
+			this->toPutDown = state;
+		}
 	}
 
 	bool getIsHoldingThrowable()
@@ -58,8 +67,11 @@ public:
 	}
 
 	void setIsHoldingThrowable(bool state)
-	{
-		this->isHoldingThrowable = state;
+	{		
+		if (!isDizzy)
+		{
+			this->isHoldingThrowable = state;
+		}
 	}
 
 	bool getToThrow()
@@ -68,13 +80,19 @@ public:
 	}
 
 	void setToThrow(bool state)
-	{
-		this->toThrow = state;
+	{		
+		if (!isDizzy)
+		{
+			this->toThrow = state;
+		}
 	}
 
 	void setHoldingEntityId(EntityId id)
-	{
-		this->holdingEntityId = id;
+	{		
+		if (!isDizzy)
+		{
+			this->holdingEntityId = id;
+		}
 	}
 
 	EntityId getHoldingEntityId()
@@ -92,6 +110,7 @@ private:
 	bool isHoldingThrowable;
 	bool toThrow;
 	EntityId holdingEntityId;
+	bool isDizzy;
 
 	void printToAll(Message const & msg)
 	{
@@ -99,6 +118,14 @@ private:
 	}
 	void update(Message const & msg)
 	{
+		if (isDizzy)
+		{
+			this->holdingEntityId = -1;
+			this->toPickUp = false;
+			this->toPutDown = false;
+			this->isHoldingThrowable = false;
+			this->toThrow = false;
+		}
 		sendMessageToEntity(this->getOwnerId(), "update");
 	}
 
@@ -117,6 +144,7 @@ private:
 			setToPickUp(true);
 			setToPutDown(false);
 		}
+
 	}
 
 	void pickUp(Message const & msg)
@@ -128,13 +156,17 @@ private:
 	//if the entity should throw something away
 	void Throwing(Message const & msg)
 	{
+
 		setToThrow(true);
+
 	}
 
 	//if the entity should stop to try to throw something.
 	void stopThrowing(Message const & msg)
 	{
+
 		setToThrow(false);
+
 	}
 
 	void dropThrowable(Message const & msg)
@@ -146,6 +178,16 @@ private:
 			setToPickUp(false);
 			sendMessageToEntity(holdingEntityId, "Dropped");
 		}
+	}
+
+	void setIsDizzy(Message const &msg)
+	{
+		this->isDizzy = true;
+	}
+
+	void setNotDizzy(Message const & msg)
+	{
+		this->isDizzy = false;
 	}
 };
 
