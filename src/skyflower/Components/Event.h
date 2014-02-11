@@ -51,6 +51,11 @@ public:
 		lua_register(sh->L, "Push", Event::push);
 		lua_register(sh->L, "PushAll", Event::pushAll);
 		lua_register(sh->L, "SetSpeed", Event::SetSpeed);
+		//Throw
+		lua_register(sh->L, "PickUp", Event::PickUp);
+		lua_register(sh->L, "CanPick", Event::CanPick);
+		lua_register(sh->L, "Throw", Event::sThrow);
+		lua_register(sh->L, "CanThrow", Event::CanThrow);
 
 		// MoveTarget component
 		lua_register(sh->L, "MoveToTarget", Event::MoveToTarget);
@@ -116,6 +121,11 @@ private:
 	static int push(lua_State* L);
 	static int pushAll(lua_State* L);
 	static int SetSpeed(lua_State* L);
+
+	static int PickUp(lua_State* L);
+	static int CanPick(lua_State* L);
+	static int sThrow(lua_State* L);
+	static int CanThrow(lua_State* L);
 
 	static int MoveToTarget(lua_State* L);
 	static int MoveToSpawn(lua_State* L);

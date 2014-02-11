@@ -115,6 +115,36 @@ function update_aiPush(id, dt)
 	
 end
 
+
+--TestAI script--
+-----------------
+
+function load_testAI(id)
+	StartUpdate()
+end
+
+throwtime = 0
+function update_testAI(id, dt)
+	PickUp(id)
+	if not CanThrow(id, 98713) then
+		SetTarget(id, 98713)
+	else
+		throwtime = throwtime + dt
+		SetTarget(id, player)
+		if throwtime > 2 then
+			Throw(id)
+			throwtime = 0
+		end
+	end
+end
+
+
+
+
+
+--Goal script--
+---------------
+
 function cutscene_Goal()
 	Print("cutscene_goal")
 	x, y, z = GetCameraPos()
@@ -130,8 +160,6 @@ function update_Goal(id)
 		ChangeLevel(0)
 	end
 end
-
-
 
 function activated_Goal(id)
 	Print("activated_Goal")

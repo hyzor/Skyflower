@@ -1,6 +1,6 @@
 <root>
 	<Entity entityName="player" id="1"
-		 xPos="0" yPos="0" zPos="0"
+		xPos="0" yPos="0" zPos="0"
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="1.0" yScale="1.0" zScale="1.0"
 		model="Models/Player/playerAnimated"
@@ -63,7 +63,7 @@
         <MoveTarget targetPosX="60" targetPosY="6" targetPosZ="-24" duration="5" easingPower = "3" continuous = "1" />
     </Entity>
 	
-    <Entity entityName="Puncha" model="Models\Worlds\Subworld 1\Puncha" id="27" isVisible="1" isCollidible="0" isAnimated="1" xPos="334.311318695" yPos="78.4862951289" zPos="171.906910353" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
+    <Entity entityName="Puncha" model="Models\Worlds\Subworld 1\Puncha" id="984" isVisible="1" isCollidible="0" isAnimated="1" xPos="334.311318695" yPos="78.4862951289" zPos="171.906910353" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <Gravity/>
 		<Messenger />
         <AI />
@@ -71,6 +71,18 @@
 		<Pushable />
         <Movement speed="10"/>
 		<Event script="aiPush" />
+    </Entity>
+	
+	
+    <Entity entityName="Test" model="Models\Worlds\Subworld 1\Puncha" id="27" isVisible="1" isCollidible="0" isAnimated="1" xPos="80" yPos="0" zPos="20" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
+        <Gravity/>
+		<Messenger />
+        <AI />
+		<Push />
+		<Pushable />
+		<Throw />
+        <Movement speed="10"/>
+		<Event script="testAI" />
     </Entity>
 	
     <Entity entityName="WoodBlock" model="Models\Worlds\Subworld 1\WoodBlock" id="19" isVisible="1" isCollidible="1" isAnimated="0" xPos="472.770895471" yPos="120.251395515" zPos="122.055509702" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">

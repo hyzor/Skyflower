@@ -25,6 +25,7 @@ public:
 	void addedToEntity()
 	{
 		requestMessage("PickUpOrDown", &Throw::pickUpOrDown);
+		requestMessage("PickUp", &Throw::pickUp);
 		requestMessage("Throw", &Throw::Throwing);
 		requestMessage("StopThrow", &Throw::stopThrowing);
 		requestMessage("DropThrowable", &Throw::dropThrowable);
@@ -81,6 +82,9 @@ public:
 		return this->holdingEntityId;
 	}
 
+
+	
+
 private:
 
 	bool toPickUp;
@@ -113,6 +117,12 @@ private:
 			setToPickUp(true);
 			setToPutDown(false);
 		}
+	}
+
+	void pickUp(Message const & msg)
+	{
+		setToPickUp(true);
+		setToPutDown(false);
 	}
 
 	//if the entity should throw something away

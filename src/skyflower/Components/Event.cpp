@@ -1,5 +1,6 @@
 #include "Components/Event.h"
 #include "EntityManager.h"
+#include "Components/Throw.h"
 
 // Must be included last!
 #include "shared/debug.h"
@@ -428,4 +429,52 @@ int Event::SetContinous(lua_State* L)
 	}
 
 	return 0;
+}
+
+
+int Event::PickUp(lua_State* L)
+{
+	int n = lua_gettop(L);
+	assert(n == 1);
+
+	Entity* entity = entityManager->getEntity(lua_tointeger(L, 1));
+
+	entityManager->sendMessageToEntity("PickUp", entity->fId);
+
+
+	return 0;
+}
+
+
+int Event::CanPick(lua_State* L)
+{
+	return 0;
+}
+
+int Event::sThrow(lua_State* L)
+{
+	int n = lua_gettop(L);
+	assert(n == 1);
+
+	Entity* entity = entityManager->getEntity(lua_tointeger(L, 1));
+
+	entityManager->sendMessageToEntity("Throw", entity->fId);
+
+	return 0;
+}
+
+int Event::CanThrow(lua_State* L)
+{
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		Entity* entity = entityManager->getEntity(lua_tointeger(L, 1));
+
+		if (n == 1)
+			lua_pushboolean(L, entity->getComponent<Throw*>("Throw")->getIsHoldingThrowable());
+		else
+			lua_pushboolean(L, entity->getComponent<Throw*>("Throw")->getHoldingEntityId() == lua_tointeger(L, 2));
+	}
+
+	return 1;
 }
