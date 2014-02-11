@@ -407,9 +407,7 @@ void EntityManager::registerGlobalRequest(ComponentRequest req, RegisteredCompon
 				}
 				break;
 			}
-		}
-
-		
+		}	
 	}
 
 	// if we want the previously created components as well, we process them
@@ -534,11 +532,6 @@ void EntityManager::removeEntity(Entity* e) {
 
 }
 
-
-
-
-
-
 // destroy a component
 void EntityManager::destroyComponent(Component *comp) {
 
@@ -610,119 +603,6 @@ void EntityManager::destroyComponent(Component *comp) {
 
 	// make it invalid
 	delete comp;
-}
-
-
-// finalize an Entity
-void EntityManager::finalizeEntity(EntityId id) {
-
-	int index = -1;
-	for (int i = 0; i < (int)fEntitys.size(); i++)
-	{
-		if (fEntitys[i]->getEntityId() == id)
-		{
-			index = i;
-			break;
-		}
-	}
-
-	// Entity doesn't exist
-	if (index == -1)
-	{
-		stringstream ss;
-		ss << "Failed to destroy Entity " << id << ": it does not exist!";
-		error(ss);
-	}
-	else
-	{
-		// finalize the Entity itself
-		fEntitys[index]->finalize();
-
-		// see if there are any requirements
-		if (fRequiredComponents.find(id) == fRequiredComponents.end()) return;
-
-		// there are, do the checklist
-		list<string> requiredComponents = fRequiredComponents[index];
-		bool destroyEntity = false;
-		for (list<string>::iterator it = requiredComponents.begin(); it != requiredComponents.end(); ++it) {
-
-			// get the components of this type
-			list<Component*> comps = fEntitys[index]->getComponents(*it);
-
-			// if there are none, we want this Entity dead!
-			if (comps.size() == 0) destroyEntity = true;
-		}
-		/*if (!destroyEntity) cout << "Finalized Entity " << id << " succesfully!" << endl;
-		else cout << "Finalize on Entity " << id << " failed, destroying..." << endl;*/
-		// we destroy the Entity if we didn't find what we needed
-		if (destroyEntity) this->destroyEntity(id);
-	}
-}
-
-
-// register a unique name for an Entity
-void EntityManager::registerName(Component *comp, string name) {
-	fComponentsByName[name].push_back(comp);
-}
-void EntityManager::unregisterName(Component *comp, string name) {
-
-	// not found
-	if (fComponentsByName.find(name) == fComponentsByName.end()) return;
-
-	// unregister
-	for (list<Component*>::iterator it = fComponentsByName[name].begin(); it != fComponentsByName[name].end(); ++it) {
-		if ((*it)->getId() == comp->getId()) {
-			it = fComponentsByName[name].erase(it);
-			return;
-		}
-	}
-}
-
-
-// get the id based on the unique name identified
-list<Component*> EntityManager::getComponentsByName(string name) {
-
-	// see if the name doesn't exist yet
-	if (fComponentsByName.find(name) == fComponentsByName.end()) {
-		//error(format("Failed to acquire Entity id for unique name identifier %s because it doesn't exist!") % name);
-		return list<Component*>();
-	}
-
-	// return id
-	return fComponentsByName[name];
-}
-
-
-// logging
-void EntityManager::trackRequest(RequestId reqId, bool local, Component *component) {
-
-	// if global, find it
-	if (!local) {
-
-		// find in global request list
-		for (list<RegisteredComponent>::iterator it = fGlobalRequests[reqId].begin(); it != fGlobalRequests[reqId].end(); ++it) {
-			if ((*it).component->getId() == component->getId()) (*it).trackMe = true;
-		}
-
-		// also pass to local for extra check (MESSAGE messages are always local AND global)
-		getEntity(component->getOwnerId())->trackRequest(reqId, component);
-
-
-	}
-
-	// if local, forward to Entity
-	else {
-		getEntity(component->getOwnerId())->trackRequest(reqId, component);
-	}
-}
-
-
-void EntityManager::sendMessageToAllEntities(string message)
-{
-	for (size_t i = 0; i < fEntitys.size(); i++)
-	{
-		this->fEntitys[i]->sendAMessageToAll(message);
-	}
 }
 
 void EntityManager::sendMessageToEntity(string message, string entity)

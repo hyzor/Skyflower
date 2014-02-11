@@ -49,19 +49,6 @@ class EntityManager {
 		// destroy a component
 		void destroyComponent(Component*);
 
-		// finalize an Entity, resolving the required components
-		void finalizeEntity(EntityId);
-
-
-		// register a unique name for an Entity
-		void registerName(Component*, string name);
-		void unregisterName(Component*, string name);
-
-		// get the id based on the unique name identified
-		list<Component*> getComponentsByName(string name);
-
-
-
 		/**
 		 * REQUEST MESSAGES
 		 */
@@ -72,23 +59,10 @@ class EntityManager {
 		// register a local request
 		void registerLocalRequest(ComponentRequest, RegisteredComponent reg);
 
-		// get all components of a given type in a given Entity
-		list<Component*> getComponents(EntityId objId, string componentName) {
-			return fEntitys[objId]->getComponents(componentName);
-		}
-
-
 		/**
 		 * SENDING MESSAGES
 		 */
 
-		// send global messages
-		inline void sendGlobalMessage(string msg, Component *component, Payload payload) {
-			sendGlobalMessage(getExistingRequestId(REQ_MESSAGE, msg), Message(MESSAGE, component, payload));
-		}
-		inline void sendGlobalMessage(RequestId reqId, Component *component, Payload payload) {
-			sendGlobalMessage(reqId, Message(MESSAGE, component, payload));
-		}
 		void sendGlobalMessage(RequestId reqId, Message const & msg);
 
 		// send local messages to another Entity
@@ -103,50 +77,6 @@ class EntityManager {
 				}
 			}
 		}
-		inline void sendMessageToEntity(RequestId reqId, Component *component, EntityId id) 
-		{
-			for (size_t i = 0; i < fEntitys.size(); i++)
-			{
-				if (fEntitys[i]->getEntityId() == id)
-				{
-					fEntitys[i]->sendMessage(reqId, Message(MESSAGE, component));
-					return;
-				}
-			}
-		}
-		inline void sendMessageToEntity(RequestId reqId, Component *component, EntityId id, Payload payload) 
-		{
-			for (size_t i = 0; i < fEntitys.size(); i++)
-			{
-				if (fEntitys[i]->getEntityId() == id)
-				{
-					fEntitys[i]->sendMessage(reqId, Message(MESSAGE, component, payload));
-					return;
-				}
-			}
-		}
-		inline void sendMessageToEntity(string name, Message const & msg, EntityId id) 
-		{
-			for (size_t i = 0; i < fEntitys.size(); i++)
-			{
-				if (fEntitys[i]->getEntityId() == id)
-				{
-					fEntitys[i]->sendMessage(getMessageRequestId(REQ_MESSAGE, name), msg);
-					return;
-				}
-			}
-		}
-		inline void sendMessageToEntity(RequestId reqId, Message const & msg, EntityId id) 
-		{
-			for (size_t i = 0; i < fEntitys.size(); i++)
-			{
-				if (fEntitys[i]->getEntityId() == id)
-				{
-					fEntitys[i]->sendMessage(reqId, msg);
-					return;
-				}
-			}
-		}
 
 		// ask for a request id
 		RequestId getMessageRequestId(ComponentRequestType, string name);
@@ -155,9 +85,6 @@ class EntityManager {
 		 * LOGGING
 		 */
 
-		// track a request
-		void trackRequest(RequestId, bool local, Component*);
-
 		// get request name
 		inline string getRequestById(ComponentRequestType type, RequestId reqId) {
 			return fIdToRequest[type][reqId];
@@ -165,7 +92,6 @@ class EntityManager {
 
 
 		// Functions we made
-		void sendMessageToAllEntities(string message); //sends a message to all components in all entities in that manager
 		void sendMessageToEntity(string message, string entity); //sends a message to a specific entity
 		void sendMessageToEntity(string message, EntityId entity); //sends a message to a specific entity
 
@@ -193,15 +119,6 @@ class EntityManager {
 
 		void activateEntity(EntityId eId);
 		void deactivateEntity(EntityId eId);
-
-		//throw and throwable-functions
-		//void pickUpEntity(EntityId, EntityId);
-		//void throwEntity(EntityId throwingEntity, EntityId throwableEntity);
-		//void putDownEntity(EntityId throwingEntity, EntityId throwableEntity);
-		//void setPickUpOrPutDown(bool state, EntityId id);
-		//void setIsHoldingThrowable(bool state, EntityId id);
-		//void setIsBeingPickedUp(bool state, EntityId id);
-		//void setToThrow(bool state, EntityId id);
 
 		const Modules *modules;
 
@@ -279,16 +196,12 @@ class EntityManager {
 		// list of component requests, by component id
 		std::tr1::unordered_map<ComponentId, list<ComponentRequest> > fRequestsByComponentId;
 
-
-
-
 		/**
 		 * ERROR PROCESSING
 		 */
 
 		// error function
 		void error(stringstream& str);
-
 
 		std::string m_resourceDir;
 };
