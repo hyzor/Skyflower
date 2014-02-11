@@ -523,6 +523,7 @@ void Movement::dizzyTimer(float deltaTime)
 	{
 		this->canMove = true;
 		this->isDizzy = false;
+		sendMessageToEntity(getOwnerId(), "notDizzy");
 	}
 }
 
