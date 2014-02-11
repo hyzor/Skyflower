@@ -14,12 +14,14 @@ void Throwable::update(float deltaTime)
 				//check if colliding with player or AI
 				if (entity->sphere != NULL && getOwner()->sphere != NULL && entity->sphere->Test(*getOwner()->sphere))
 				{
-					isBeingThrown = false;
-					sendMessageToEntity(entity->fId, "isDizzy");
-					Vec3 temp;
-					temp *= 0;
-					p->SetVelocity(temp);
-					throwerId = -1;
+					//if (entity->fId != throwerId)
+					//{
+						isBeingThrown = false;
+						sendMessageToEntity(entity->fId, "isDizzy");
+						Vec3 temp;
+						temp *= 0;
+						p->SetVelocity(temp);
+						throwerId = -1;
 					//}
 				}
 				//dont fly through collidable entities
