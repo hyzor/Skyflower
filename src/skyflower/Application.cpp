@@ -89,7 +89,7 @@ void Application::Start()
 	});
 
 	// Start playing some background music for the menu.
-	m_backgroundMusic->SetVolume(0.05f);
+	m_backgroundMusic->SetVolume(0.25f);
 	setBackgroundMusicList(m_backgroundMusicMenu);
 
 	m_entityManager = new EntityManager("../../XML/", &modules);
