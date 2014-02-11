@@ -267,7 +267,7 @@ void ShadowMap::DrawSceneToShadowMap(
 
 void ShadowMap::DrawSceneToShadowMap(const std::vector<ModelInstanceImpl*>& modelInstances,
 	const std::vector<AnimatedInstanceImpl*>& mAnimatedInstances,
-	const std::vector<MorphModelInstance*>& mMorphInstances,
+	const std::vector<MorphModelInstanceImpl*>& mMorphInstances,
 	ID3D11DeviceContext* deviceContext,
 	ShadowShader* shadowShader,
 	SkinnedShadowShader* skinnedShadowShader,
@@ -333,7 +333,7 @@ void ShadowMap::DrawSceneToShadowMap(const std::vector<ModelInstanceImpl*>& mode
 
 	for (UINT i = 0; i < mMorphInstances.size(); ++i)
 	{
-		if (mMorphInstances[i]->isVisible)
+		if (mMorphInstances[i]->IsVisible())
 		{
 			world = XMLoadFloat4x4(&mMorphInstances[i]->world);
 			worldViewProj = world * viewProj;

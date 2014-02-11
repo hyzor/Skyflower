@@ -74,7 +74,7 @@ void AI::update(float dt)
 
 	for (size_t i = 0; i < collisionInstances.size(); i++)
 	{
-		Vec3 p = pos + dir * 10;
+		Vec3 p = pos + dir * 5;
 		if (collisionInstances[i]->Test(Ray(p + Vec3(0, 15, 0), Vec3(0, -30, 0))) > 0.0f)
 		{
 			safe = true;
@@ -86,7 +86,7 @@ void AI::update(float dt)
 		if (unsafe[unsafeIndex] != nullptr)
 			getEntityManager()->modules->potentialField->DeleteField(unsafe[unsafeIndex]);
 
-		unsafe[unsafeIndex] = getEntityManager()->modules->potentialField->CreateField(20, 10, pos);
+		unsafe[unsafeIndex] = getEntityManager()->modules->potentialField->CreateField(10, 10, pos + dir * 10);
 		unsafeIndex++;
 		unsafeIndex %= 5;
 	}
@@ -96,9 +96,11 @@ void AI::update(float dt)
 	Vec3 dif = dir - curDir;
 	curDir += dif / 10;
 
-	getOwner()->getComponent<Movement*>("Movement")->setCamera(curDir, Vec3(), Vec3());
-	if(dif.Length() < 0.5f && safe)
+	if (dif.Length() < 0.5f && safe)
+	{
+		getOwner()->getComponent<Movement*>("Movement")->setCamera(dir, Vec3(), Vec3());
 		getEntityManager()->sendMessageToEntity("StartMoveForward", getOwnerId());
+	}
 	else
 		getEntityManager()->sendMessageToEntity("StopMoveForward", getOwnerId());
 

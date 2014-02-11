@@ -78,6 +78,7 @@ private:
 	float dizzyMaxTimer;
 	float dizzyCounter;
 	bool isDizzy;
+	Vec3 pRot;
 
 	ParticleSystem *mParticleSystemRun;
 	ParticleSystem *mParticleSystemDizzy;

@@ -77,13 +77,13 @@ void MorphModel::SetVertices(ID3D11Device* device, const VertexType* vertices, U
 	device->CreateBuffer(&vbd, &vInitData, &mVertexBuffer);
 }
 
-struct MorphModelInstance
+/*struct MorphModelInstance
 {
 	MorphModel* model;
 	XMFLOAT4X4 world;
 	bool isVisible;
 	XMFLOAT4 weights;
-	XMFLOAT4X4 prevWorld;
-};
+	XMFLOAT4X4 prevWorld; 
+}; */
 
 #endif

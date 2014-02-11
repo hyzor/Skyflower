@@ -1,14 +1,14 @@
 player = 1 --player id
 
 function loaded()
-	Print("Lua script loaded")
+	CutScenePlay("intro")
 end
 
 
 --Intro script--
 ----------------
 
-function intro()
+function cutscene_intro()
 -- syntax: AddPoint(x, y, z, yaw, pitch, speed)
 	SetCamera(0, 0, 0, 0, 45)
 	AddPoint(0, 100, -130, 0, 45, 1)

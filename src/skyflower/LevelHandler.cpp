@@ -24,6 +24,7 @@ LevelHandler::LevelHandler()
 	this->loading = false;
 	this->queued = false;
 	this->queueID = 0;
+	this->skyflower = NULL;
 }
 
 LevelHandler::~LevelHandler(){}
@@ -123,7 +124,6 @@ void LevelHandler::loadQueued(int id)
 	Event::entityManager = _entityManager;
 	lua_getglobal(_entityManager->modules->script->L, "loaded");
 	lua_pcall(_entityManager->modules->script->L, 0, 0, 0);
-
 
 	loading = false;
 }

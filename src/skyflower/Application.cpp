@@ -89,7 +89,7 @@ void Application::Start()
 	});
 
 	// Start playing some background music for the menu.
-	m_backgroundMusic->SetVolume(0.05f);
+	m_backgroundMusic->SetVolume(0.25f);
 	setBackgroundMusicList(m_backgroundMusicMenu);
 
 	m_entityManager = new EntityManager("../../XML/", &modules);
@@ -151,16 +151,16 @@ void Application::Start()
 
 	//startTime = GetTime();
 
+	m_cutscene = new CutScene(m_entityManager->modules->script, m_camera);
+
+	int loadingScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "Menygrafik\\fyraTreRatio.png");
+	m_GUI->GetGUIElement(loadingScreen)->SetVisible(false);
+	skyflower = m_graphicsEngine->CreateMorphAnimatedInstance("Models/skyflower meshar/Skyflower_Final/", "skyflower.morph", Vec3(0.0f, -40.0f, 45.0f));
+	skyflower->SetVisibility(true);
 	mGameTime = 0.0;
 	m_oldTime = GetTime();
 	mStartTime = GetTime();
 	m_quit = false;
-
-	changeGameState(GameState::cutScene);
-	cs = new CutScene(m_entityManager->modules->script, m_camera);
-
-	int loadingScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "Menygrafik\\fyraTreRatio.png");
-	m_GUI->GetGUIElement(loadingScreen)->SetVisible(false);
 
 	while(!m_quit)
 	{
@@ -199,7 +199,6 @@ void Application::Start()
 			playerListener->setVolume(volume);
 			m_oldVolume = volume;
 		}
-
 		switch (gameState)
 		{
 		case GameState::game:
@@ -237,16 +236,27 @@ void Application::Start()
 			levelHandler->LoadQueued();
 			m_graphicsEngine->Clear();
 			m_graphicsEngine->UpdateSceneData();
-			m_oldTime = GetTime();
+
 			m_GUI->GetGUIElement(loadingScreen)->SetVisible(false);
-			changeGameState(GameState::cutScene);
+			if (levelHandler->currentLevel() == 0)
+			{
+				if (skyflower)
+					skyflower->SetVisibility(true);
+			}
+			else
+			{
+				if (skyflower)
+					skyflower->SetVisibility(false);
+			}
+
+			m_oldTime = GetTime();
 		}
 	}
 	
 	//m_graphicsEngine->DeleteTexture2D(memoryChartTexture);
 	//m_graphicsEngine->DeleteTexture2D(frameTimeChartTexture);
 
-	delete cs;
+	delete m_cutscene;
 	delete m_menu;
 	m_GUI->Destroy();
 	delete m_GUI;
@@ -302,7 +312,7 @@ void Application::updateMenu(float dt)
 
 		// Set if mouse is inverted based on if it's been checked in menu
 		m_camera->SetInverted(m_menu->getSettings()._mouseInverted);
-		if (cs->isPlaying())
+		if (m_cutscene->isPlaying())
 			changeGameState(GameState::cutScene);
 		else
 			changeGameState(GameState::game);
@@ -314,15 +324,32 @@ void Application::updateMenu(float dt)
 
 void Application::updateCutScene(float dt)
 {
+
+	if (levelHandler->currentLevel() == 0 && skyflower)
+	{
+		Vec3 weights = skyflower->GetWeights();
+
+		// FIX ME : more appropiate weights when more levels are in the game
+		if (weights.X < 1.0f)
+			weights.X += dt * 0.5f;
+		else if (weights.X > 1.0f)
+			weights.X = 1.0f;
+
+		if (!m_cutscene->isPlaying())
+			weights.X = 1.0f;
+
+		skyflower->SetWeights(weights);
+	}
+
 	m_camera->Update(dt);
 	m_graphicsEngine->UpdateScene(dt, (float)mGameTime);
 	m_graphicsEngine->DrawScene();
 
-	cs->update(dt);
+	m_cutscene->update(dt);
 
 	if (m_menu->isActive())
 		changeGameState(GameState::menu);
-	if (!cs->isPlaying())
+	if (!m_cutscene->isPlaying())
 	{
 		changeGameState(GameState::game);
 	}
@@ -343,7 +370,7 @@ void Application::updateGame(float dt, float gameTime)
 
 	m_camera->Rotate(m_camera->GetYaw(), m_camera->GetPitch());
 
-	if (cs->isPlaying())
+	if (m_cutscene->isPlaying())
 		changeGameState(GameState::cutScene);
 
 	if (m_menu->isActive())
@@ -431,6 +458,7 @@ void Application::OnWindowActivate()
 	{
 		m_inputHandler->SetMouseCapture(true);
 		m_window->SetCursorVisibility(false);
+		m_oldTime = GetTime();
 	}
 }
 
@@ -504,13 +532,13 @@ void Application::OnKeyDown(unsigned short key)
 		break;
 	case 'R':
 		m_graphicsEngine->clearLights();
-		levelHandler->queue(4);
+		levelHandler->queue(0);
 		m_entityManager->loadXML("subWorld1Lights.XML");
 			
 		break;
 	case VK_SPACE:
-		if (cs->isPlaying())
-			cs->stop(); 
+		if (m_cutscene->isPlaying())
+			m_cutscene->stop();
 	case 'P':
 		m_graphicsEngine->SetPostProcessingEffects(m_graphicsEngine->GetPostProcessingEffects() ^ POST_PROCESSING_SSAO);
 		break;
