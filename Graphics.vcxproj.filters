@@ -25,6 +25,12 @@
     <Filter Include="Models\Upper &amp; lower body sorting">
       <UniqueIdentifier>{8098f622-b4b3-43e3-afc6-9cce2a6ff34f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\SMAA">
+      <UniqueIdentifier>{deb8b524-5fa7-4e88-98f8-05a2cb5f67d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\SMAA">
+      <UniqueIdentifier>{5f1c1aea-c01f-46d8-9c26-61c1bcb19ad4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\graphics\MathHelper.cpp">
@@ -120,6 +126,9 @@
     <ClCompile Include="src\graphics\GenericSkinnedModelSorted.cpp">
       <Filter>Models\Upper &amp; lower body sorting</Filter>
     </ClCompile>
+    <ClCompile Include="src\graphics\SmaaBuffers.cpp">
+      <Filter>Header Files\SMAA</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\graphics\AnimatedEntity.h">
@@ -138,9 +147,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics\GraphicsEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\graphics\GraphicsEngineImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics\LightDef.h">
@@ -226,6 +232,15 @@
     </ClInclude>
     <ClInclude Include="src\graphics\GenericSkinnedModelSorted.h">
       <Filter>Models\Upper &amp; lower body sorting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\SmaaBuffers.h">
+      <Filter>Header Files\SMAA</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\External\SMAA\SearchTex.h">
+      <Filter>Header Files\SMAA</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\External\SMAA\AreaTex.h">
+      <Filter>Header Files\SMAA</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -371,6 +386,9 @@
     </None>
     <None Include="src\graphics\Shaders\Shared.hlsli">
       <Filter>Shaders</Filter>
+    </None>
+    <None Include="src\graphics\Shaders\SMAA\SMAA_Shared.hlsli">
+      <Filter>Shaders\SMAA</Filter>
     </None>
   </ItemGroup>
 </Project>

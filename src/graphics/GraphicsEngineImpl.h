@@ -29,6 +29,8 @@
 
 #include "GenericSkinnedModelSorted.h"
 
+#include "SmaaBuffers.h"
+
 const float fovY = 0.785398f; // 0.25f * MathHelper::pi
 const float zNear = 1.0f;
 const float zFar = 10000.0f;
@@ -176,6 +178,8 @@ private:
 	//GenericSkinnedModelSortedInstance* mSkinnedSortedTestInstance;
 	std::vector<GenericSkinnedModelSortedInstance*> mSkinnedSortedInstances;
 	std::map<std::string, GenericSkinnedModelSorted*> mSkinnedSortedModels;
+
+	SmaaBuffers* mSmaaBuffers;
 
 	//GenericSkinnedModelSorted* mTestSortedModel;
 };

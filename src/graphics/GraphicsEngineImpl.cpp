@@ -95,6 +95,8 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 	delete mDoFBlurTexture1;
 	delete mDoFBlurTexture2;
 
+	delete mSmaaBuffers;
+
 	mD3D->Shutdown();
 	delete mD3D;
 }
@@ -160,6 +162,11 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShadowMap = new ShadowMap(mD3D->GetDevice(), 2048, 2048);
 
 	mGameTime = 0.0f;
+
+	mSmaaBuffers = new SmaaBuffers();
+	mSmaaBuffers->Init(mD3D->GetDevice(), width, height,
+		mTextureMgr->CreateTexture(mResourceDir + "Textures/SMAA/AreaTexDX10.dds"),
+		mTextureMgr->CreateTexture(mResourceDir + "Textures/SMAA/SearchTex.dds"));
 
 	//-------------------------------------------------------------------------------------------------------
 	// Shaders
@@ -675,6 +682,11 @@ void GraphicsEngineImpl::DrawScene()
 	}
 
 	//-------------------------------------------------------------------------------------
+	// SMAA
+	//-------------------------------------------------------------------------------------
+	mSmaaBuffers->ClearRenderTargets(mD3D->GetImmediateContext(), XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f), mD3D->GetDepthStencilView());
+
+	//-------------------------------------------------------------------------------------
 	// Motion blur cache
 	//-------------------------------------------------------------------------------------
 	// Store current view projection matrix as previous view proj for use in next frame
@@ -1006,6 +1018,8 @@ void GraphicsEngineImpl::OnResize(UINT width, UINT height)
 	mCamera->SetLens(fovY, (float)width / height, zNear, zFar);
 	mCamera->UpdateOrthoMatrix(static_cast<float>(width), static_cast<float>(height), zNear, zFar);
 	mOrthoWindow->OnResize(mD3D->GetDevice(), width, height);
+
+	mSmaaBuffers->OnResize(mD3D->GetDevice(), width, height);
 
 	// Resize Post-processing textures
 	mIntermediateTexture->Resize(mD3D->GetDevice(), width, height);

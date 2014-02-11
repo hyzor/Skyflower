@@ -47,6 +47,7 @@
     <ClCompile Include="src\graphics\SkinnedData.cpp" />
     <ClCompile Include="src\graphics\SkinnedDataSorted.cpp" />
     <ClCompile Include="src\graphics\Sky.cpp" />
+    <ClCompile Include="src\graphics\SmaaBuffers.cpp" />
     <ClCompile Include="src\graphics\Texture2DImpl.cpp" />
     <ClCompile Include="src\graphics\TextureManager.cpp" />
     <ClCompile Include="src\graphics\Vertex.cpp" />
@@ -60,6 +61,8 @@
     <ClInclude Include="src\graphics\d3dUtilities.h" />
     <ClInclude Include="src\graphics\DeferredBuffers.h" />
     <ClInclude Include="src\graphics\Direct3D.h" />
+    <ClInclude Include="src\graphics\External\SMAA\AreaTex.h" />
+    <ClInclude Include="src\graphics\External\SMAA\SearchTex.h" />
     <ClInclude Include="src\graphics\GenericMesh.h" />
     <ClInclude Include="src\graphics\GenericModel.h" />
     <ClInclude Include="src\graphics\GenericObjectLoader.h" />
@@ -68,7 +71,6 @@
     <ClInclude Include="src\graphics\GenericSkinnedModelSorted.h" />
     <ClInclude Include="src\graphics\GeometryGenerator.h" />
     <ClInclude Include="src\graphics\GraphicsEngine.h" />
-    <ClInclude Include="src\graphics\GraphicsEngineImpl.h" />
     <ClInclude Include="src\graphics\Instance.h" />
     <ClInclude Include="src\graphics\InstanceImpl.h" />
     <ClInclude Include="src\graphics\LightDef.h" />
@@ -83,6 +85,7 @@
     <ClInclude Include="src\graphics\SkinnedData.h" />
     <ClInclude Include="src\graphics\SkinnedDataSorted.h" />
     <ClInclude Include="src\graphics\Sky.h" />
+    <ClInclude Include="src\graphics\SmaaBuffers.h" />
     <ClInclude Include="src\graphics\Texture2D.h" />
     <ClInclude Include="src\graphics\Texture2DImpl.h" />
     <ClInclude Include="src\graphics\TextureManager.h" />
@@ -357,6 +360,7 @@
     </None>
     <None Include="src\graphics\Shaders\ParticleSystemShared.hlsli" />
     <None Include="src\graphics\Shaders\Shared.hlsli" />
+    <None Include="src\graphics\Shaders\SMAA\SMAA_Shared.hlsli" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9B38121D-8D9E-45A3-AEE4-483D762F930F}</ProjectGuid>
