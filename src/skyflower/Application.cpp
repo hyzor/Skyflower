@@ -530,6 +530,9 @@ void Application::OnKeyDown(unsigned short key)
 		m_GUI->GetGUIElement(m_fpsChartID)->SetVisible(m_showCharts);
 		m_GUI->GetGUIElement(m_memChartID)->SetVisible(m_showCharts);
 		break;
+	case 'N':
+		g_quakeSounds = !g_quakeSounds;
+		break;
 	case 'R':
 		m_graphicsEngine->clearLights();
 		levelHandler->queue(0);
