@@ -87,7 +87,7 @@ VertexOut main(VertexIn vIn)
 		if (vIn.BoneIndices[i] != rootBoneIndex)
 		{
 			// Check if the modified local position is different from the local position (bind pose)
-			if (modifiedPosL_Lower.x != vIn.PosL.x && modifiedPosL_Lower.y != vIn.PosL.y && modifiedPosL_Lower.y != vIn.PosL.y)
+			if (modifiedPosL_Lower.x != vIn.PosL.x && modifiedPosL_Lower.y != vIn.PosL.y && modifiedPosL_Lower.z != vIn.PosL.z)
 			{
 				// Transforming with lower body transformations
 				posL += weights[i] * modifiedPosL_Lower.xyz;
@@ -98,7 +98,7 @@ VertexOut main(VertexIn vIn)
 			}
 
 			// Check if the modified local position is different from the local position (bind pose)
-			if (modifiedPosL_Upper.x != vIn.PosL.x && modifiedPosL_Upper.y != vIn.PosL.y && modifiedPosL_Upper.y != vIn.PosL.y)
+			if (modifiedPosL_Upper.x != vIn.PosL.x && modifiedPosL_Upper.y != vIn.PosL.y && modifiedPosL_Upper.z != vIn.PosL.z)
 			{
 				// Now transform with upper body transformations
 				posL += weights[i] * modifiedPosL_Upper.xyz;

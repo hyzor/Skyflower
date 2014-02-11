@@ -369,7 +369,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 
 	// Sorted skinned model test
 	/*
-	std::string testPath = mResourceDir + "Models/Enemies/Puncher/Puncha.dae";
+	std::string testPath = mResourceDir + "Models/Player/playerAnimated.dae";
 	mSkinnedSortedModels["TestSortedModel"] = new GenericSkinnedModelSorted(mD3D->GetDevice(), mTextureMgr, testPath);
 
 	// Skinned model with separated upper and lower body transformations
@@ -380,10 +380,10 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mSkinnedSortedInstances.back()->isVisible = true;
 	mSkinnedSortedInstances.back()->playLowerBodyAnimForward = true;
 	mSkinnedSortedInstances.back()->playUpperBodyAnimForward = true;
-	mSkinnedSortedInstances.back()->lowerBodyFrameStart = 2;
-	mSkinnedSortedInstances.back()->lowerBodyFrameEnd = 34 - 1;
-	mSkinnedSortedInstances.back()->upperBodyFrameStart = 72; 
-	mSkinnedSortedInstances.back()->upperBodyFrameEnd = 99 - 1;
+	mSkinnedSortedInstances.back()->lowerBodyFrameStart = 76;
+	mSkinnedSortedInstances.back()->lowerBodyFrameEnd = 99 - 1;
+	mSkinnedSortedInstances.back()->upperBodyFrameStart = 61;
+	mSkinnedSortedInstances.back()->upperBodyFrameEnd = 75 - 1;
 	mSkinnedSortedInstances.back()->AnimationIndex = 0;
 	mSkinnedSortedInstances.back()->TimePos = 0.0f;
 
