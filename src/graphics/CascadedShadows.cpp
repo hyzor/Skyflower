@@ -177,6 +177,9 @@ void CascadedShadows::CreateLightFrustums(const DirectionalLight& light, const B
 
 			}
 
+			//nearPlane = intervalBegin;
+			//farPlane = intervalEnd;
+
 			//The resulting projection matrix for the current cascade
 			P = XMMatrixOrthographicOffCenterLH(
 				XMVectorGetX(lightOrtographicMin), XMVectorGetX(lightOrtographicMax), 
