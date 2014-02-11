@@ -22,6 +22,9 @@
     <Filter Include="Shaders\Particle System">
       <UniqueIdentifier>{d26e061e-40e2-45bf-b370-80554617b641}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Models\Upper &amp; lower body sorting">
+      <UniqueIdentifier>{8098f622-b4b3-43e3-afc6-9cce2a6ff34f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\graphics\MathHelper.cpp">
@@ -110,6 +113,12 @@
     </ClCompile>
     <ClCompile Include="src\graphics\ParticleSystemImpl.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\SkinnedDataSorted.cpp">
+      <Filter>Models\Upper &amp; lower body sorting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\GenericSkinnedModelSorted.cpp">
+      <Filter>Models\Upper &amp; lower body sorting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -211,6 +220,12 @@
     </ClInclude>
     <ClInclude Include="src\graphics\ParticleSystem.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\SkinnedDataSorted.h">
+      <Filter>Models\Upper &amp; lower body sorting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\GenericSkinnedModelSorted.h">
+      <Filter>Models\Upper &amp; lower body sorting</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -338,6 +353,9 @@
       <Filter>Shaders\Particle System</Filter>
     </FxCompile>
     <FxCompile Include="src\graphics\Shaders\LightDeferredPS_ToTexture.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\BasicDeferredSkinnedSortedVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

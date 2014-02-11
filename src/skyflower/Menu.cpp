@@ -47,6 +47,11 @@ void Menu::init(GUI *g, int screenWidth, int screeenHeight, SoundEngine *sound)
 	m_bg = g->CreateGUIElementAndBindTexture(Vec3(0, 0), "Menygrafik\\fyraTreRatio.png");
 	g->GetGUIElement(m_bg)->SetVisible(false);
 
+	// FIXME: Hardcoding ;(
+	m_instructionsWidth = 736;
+	m_instructions = g->CreateGUIElementAndBindTexture(Vec3(screenWidth - m_instructionsWidth - 6.0f, 6.0f), "Menygrafik\\instructions.png");
+	g->GetGUIElement(m_instructions)->SetVisible(false);
+
 	settingsBox = g->CreateGUIElementAndBindTexture(Vec3(400, 100), "Menygrafik\\bg_settings.png");
 	g->GetGUIElement(settingsBox)->GetDrawInput()->color = XMVectorSet(1.0f, 1.0f, 1.0f, 0.9f);
 	g->GetGUIElement(settingsBox)->GetDrawInput()->scale = XMFLOAT2(40, 40);
@@ -187,6 +192,11 @@ void Menu::setVisible(bool visible)
 {
 	guiPtr->GetGUIElement(m_bg)->SetVisible(visible);
 
+	if (visible && m_activePage == MenuPageMain)
+		guiPtr->GetGUIElement(m_instructions)->SetVisible(true);
+	else
+		guiPtr->GetGUIElement(m_instructions)->SetVisible(false);
+
 	if (visible && m_activePage == MenuPageSettings)
 		guiPtr->GetGUIElement(settingsBox)->SetVisible(true);
 	else
@@ -242,6 +252,9 @@ void Menu::onResize(unsigned int width, unsigned int height)
 	}
 
 	guiPtr->GetGUIElement(m_bg)->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
+
+	guiPtr->GetGUIElement(m_instructions)->GetDrawInput()->pos = XMFLOAT2(width - m_instructionsWidth - 6.0f, 6.0f);
+
 	XMFLOAT2 oldPos(400, 100);
 	guiPtr->GetGUIElement(settingsBox)->GetDrawInput()->pos = XMFLOAT2(oldPos.x *scaleX, oldPos.y*scaleY);
 	guiPtr->GetGUIElement(settingsBox)->GetDrawInput()->scale = XMFLOAT2(scaleX*40, scaleY*40);

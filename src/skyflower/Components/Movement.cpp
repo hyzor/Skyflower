@@ -38,10 +38,13 @@ Movement::Movement(float speed) : Component("Movement")
 	this->walkAngle = 0.0f;
 	this->timeFalling = 0.0f;
 	this->mInitialJumpDir = None;
-	this->mParticleSystem = NULL;
 	this->dizzyMaxTimer = 2.0f;
 	this->isDizzy = false;
 	this->yaw = 0;
+
+	this->mParticleSystemRun = NULL;
+	this->mParticleSystemDizzy = NULL;
+	mParticleSystemDizzyAngle = 0.0f;
 }
 
 Movement::~Movement()
@@ -51,10 +54,15 @@ Movement::~Movement()
 void Movement::addedToEntity() {
 	this->p = getOwner()->getPhysics();
 
-	this->mParticleSystem = getOwner()->getModules()->graphics->CreateParticleSystem();
-	this->mParticleSystem->SetParticleType(ParticleType::PT_PARTICLE);
-	this->mParticleSystem->SetParticleAgeLimit(0.25f);
-	this->mParticleSystem->SetEmitFrequency(1.0f / 10.0f);
+	this->mParticleSystemRun = getOwner()->getModules()->graphics->CreateParticleSystem();
+	this->mParticleSystemRun->SetParticleType(ParticleType::PT_PARTICLE);
+	this->mParticleSystemRun->SetParticleAgeLimit(0.25f);
+	this->mParticleSystemRun->SetEmitFrequency(1.0f / 10.0f);
+
+	this->mParticleSystemDizzy = getOwner()->getModules()->graphics->CreateParticleSystem();
+	this->mParticleSystemDizzy->SetParticleType(ParticleType::PT_BIRD);
+	this->mParticleSystemDizzy->SetParticleAgeLimit(3.75f);
+	this->mParticleSystemDizzy->SetEmitFrequency(1.0f / 2.0f);
 
 	requestMessage("StartMoveForward", &Movement::startMoveForward);
 	requestMessage("StartMoveBackward", &Movement::startMoveBackward);
@@ -82,8 +90,10 @@ void Movement::removeFromEntity()
 {
 	this->p = NULL;
 
-	getOwner()->getModules()->graphics->DeleteParticleSystem(this->mParticleSystem);
-	this->mParticleSystem = NULL;
+	getOwner()->getModules()->graphics->DeleteParticleSystem(this->mParticleSystemRun);
+	getOwner()->getModules()->graphics->DeleteParticleSystem(this->mParticleSystemDizzy);
+	this->mParticleSystemRun = NULL;
+	this->mParticleSystemDizzy = NULL;
 }
 
 void Movement::update(float deltaTime)
@@ -229,14 +239,30 @@ void Movement::update(float deltaTime)
 
 	this->p->ApplyVelocityToPos(pos);
 
-	// Update particle system
+	// Update run particle system.
 	Vec3 emitDirection = Vec3(cosf(-rot.Y + 3.14f / 2), 0, sinf(-rot.Y + 3.14f / 2)).Normalize();
 	float particleAcceleration = 10.0f;
 
-	this->mParticleSystem->SetActive(!(this->isInAir || !p->GetStates()->isMoving));
-	this->mParticleSystem->SetEmitPos(XMFLOAT3(pos.X, pos.Y, pos.Z));
-	this->mParticleSystem->SetEmitDir(XMFLOAT3(emitDirection.X, emitDirection.Y, emitDirection.Z));
-	this->mParticleSystem->SetConstantAccel(XMFLOAT3(emitDirection.X * particleAcceleration, emitDirection.Y * particleAcceleration, emitDirection.Z * particleAcceleration));
+	this->mParticleSystemRun->SetActive(!(this->isInAir || !p->GetStates()->isMoving));
+	this->mParticleSystemRun->SetEmitPos(XMFLOAT3(pos.X, pos.Y, pos.Z));
+	this->mParticleSystemRun->SetEmitDir(XMFLOAT3(emitDirection.X, emitDirection.Y, emitDirection.Z));
+	this->mParticleSystemRun->SetConstantAccel(XMFLOAT3(emitDirection.X * particleAcceleration, emitDirection.Y * particleAcceleration, emitDirection.Z * particleAcceleration));
+
+	// Update dizzy particle system.
+	this->mParticleSystemDizzy->SetActive(isDizzy);
+
+	if (isDizzy)
+	{
+		mParticleSystemDizzyAngle += DegreesToRadians(135.0f) * deltaTime;
+
+		if (mParticleSystemDizzyAngle > XM_2PI)
+			mParticleSystemDizzyAngle -= XM_2PI;
+
+		Vec3 headPosition = pos + Vec3(0.0f, 10.0f, 0.0f);
+		Vec3 particleSystemPosition = headPosition + Vec3(cosf(mParticleSystemDizzyAngle), 0.0f, sinf(mParticleSystemDizzyAngle)) * 3.0f;
+
+		this->mParticleSystemDizzy->SetEmitPos(XMFLOAT3(particleSystemPosition.X, particleSystemPosition.Y, particleSystemPosition.Z));
+	}
 
 	updateEntityPos(pos);
 

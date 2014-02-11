@@ -12,6 +12,18 @@ GraphicsEngineImpl::GraphicsEngineImpl()
 
 GraphicsEngineImpl::~GraphicsEngineImpl()
 {
+	for (UINT i = 0; i < mSkinnedSortedInstances.size(); ++i)
+	{
+		delete mSkinnedSortedInstances[i];
+	}
+
+	for (auto& it(mSkinnedSortedModels.begin()); it != mSkinnedSortedModels.end(); ++it)
+	{
+		if (it->second)
+			SafeDelete(it->second);
+	}
+	mSkinnedSortedModels.clear();
+
 	ReleaseCOM(mRandom1DTexSRV);
 	ReleaseCOM(mParticlesTextureArray);
 
@@ -182,6 +194,9 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\BasicDeferredMorphVS.cso", "BasicDeferredMorphVS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\BasicDeferredMorphPS.cso", "BasicDeferredMorphPS", mD3D->GetDevice());
 
+	// Skinning shader with separated lower and upper body transformations
+	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\BasicDeferredSkinnedSortedVS.cso", "BasicDeferredSkinnedSortedVS", mD3D->GetDevice());
+
 	// Lit scene to texture
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\LightDeferredPS_ToTexture.cso", "LightDeferredPS_ToTexture", mD3D->GetDevice());
 
@@ -258,6 +273,11 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 		mShaderHandler->GetVertexShader("LightDeferredVS"),
 		mShaderHandler->GetPixelShader("LightDeferredPS_ToTexture"));
 
+	// Skinning shader with separated lower and upper body transformations
+	mShaderHandler->mBasicDeferredSkinnedSortedShader->BindShaders(
+		mShaderHandler->GetVertexShader("BasicDeferredSkinnedSortedVS"),
+		mShaderHandler->GetPixelShader("BasicDeferredSkinnedPS"));
+
 	// Shadow mapping
 	mShaderHandler->mShadowShader->BindShaders(
 		mShaderHandler->GetVertexShader("ShadowBuildVS"),
@@ -311,6 +331,8 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 
 	mShaderHandler->mLightDeferredToTextureShader->Init(mD3D->GetDevice(), mInputLayouts->PosTex);
 
+	mShaderHandler->mBasicDeferredSkinnedSortedShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTanSkinned);
+
 	std::string fontPath = mResourceDir + "myfile.spritefont";
 	std::wstring fontPathW(fontPath.begin(), fontPath.end());
 
@@ -343,6 +365,34 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	testSystem1->SetParticleFadeTime(4.0f);
 	testSystem1->SetBlendingMethod(BlendingMethods::ALPHA_BLENDING);
 	mParticleSystems.push_back(testSystem1);
+	*/
+
+	// Sorted skinned model test
+	/*
+	std::string testPath = mResourceDir + "Models/Enemies/Puncher/Puncha.dae";
+	mSkinnedSortedModels["TestSortedModel"] = new GenericSkinnedModelSorted(mD3D->GetDevice(), mTextureMgr, testPath);
+
+	// Skinned model with separated upper and lower body transformations
+	mSkinnedSortedInstances.push_back(new GenericSkinnedModelSortedInstance());
+	mSkinnedSortedInstances.back()->model = mSkinnedSortedModels["TestSortedModel"];
+	mSkinnedSortedInstances.back()->loopLowerBodyAnim = true;
+	mSkinnedSortedInstances.back()->loopUpperbodyAnim = true;
+	mSkinnedSortedInstances.back()->isVisible = true;
+	mSkinnedSortedInstances.back()->playLowerBodyAnimForward = true;
+	mSkinnedSortedInstances.back()->playUpperBodyAnimForward = true;
+	mSkinnedSortedInstances.back()->lowerBodyFrameStart = 2;
+	mSkinnedSortedInstances.back()->lowerBodyFrameEnd = 34 - 1;
+	mSkinnedSortedInstances.back()->upperBodyFrameStart = 72; 
+	mSkinnedSortedInstances.back()->upperBodyFrameEnd = 99 - 1;
+	mSkinnedSortedInstances.back()->AnimationIndex = 0;
+	mSkinnedSortedInstances.back()->TimePos = 0.0f;
+
+	XMMATRIX offset = XMMatrixTranslation(0.0f, 10.0f, 0.0f);
+	XMMATRIX mrot = XMMatrixRotationX(0.0f);
+	XMMATRIX mscale = XMMatrixScaling(1.0f, 1.0, 1.0f);
+	XMMATRIX world = mscale*mrot*offset;
+	XMStoreFloat4x4(&mSkinnedSortedInstances.back()->world, world);
+	XMStoreFloat4x4(&mSkinnedSortedInstances.back()->prevWorld, world);
 	*/
 
 	mCurFPS = 0.0f;
@@ -656,6 +706,14 @@ void GraphicsEngineImpl::DrawScene()
 		}
 	}
 
+	for (UINT i = 0; i < mSkinnedSortedInstances.size(); ++i)
+	{
+		if (mSkinnedSortedInstances[i]->isVisible)
+		{
+			mSkinnedSortedInstances[i]->prevWorld = mSkinnedSortedInstances[i]->world;
+		}
+	}
+
 	//XMFLOAT4 test = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
 	/*
 	XMVECTORF32 Green = { 0.000000000f, 1.000000000f, 0.000000000f, 1.000000000f };
@@ -806,6 +864,39 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 				mShaderHandler->mDeferredMorphShader->UpdatePerObj(mD3D->GetImmediateContext());
 
 				mMorphInstances[i]->model->Draw(mD3D->GetImmediateContext());
+			}
+		}
+	}
+
+	//---------------------------------------------------------------------------------------
+	// Skinned opaque objects with separated upper and lower body transformations
+	//---------------------------------------------------------------------------------------
+	mShaderHandler->mBasicDeferredSkinnedSortedShader->SetActive(mD3D->GetImmediateContext());
+	mShaderHandler->mBasicDeferredSkinnedShader->SetShadowMapTexture(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
+
+	for (UINT i = 0; i < mSkinnedSortedInstances.size(); ++i)
+	{
+		if (mSkinnedSortedInstances[i]->isVisible)
+		{
+			mShaderHandler->mBasicDeferredSkinnedSortedShader->SetWorldViewProjTex(XMLoadFloat4x4(&mSkinnedSortedInstances[i]->world), mCamera->GetViewProjMatrix(), toTexSpace);
+			mShaderHandler->mBasicDeferredSkinnedSortedShader->SetPrevWorldViewProj(XMLoadFloat4x4(&mSkinnedSortedInstances[i]->prevWorld), mCamera->GetPreviousViewProj());
+
+			mShaderHandler->mBasicDeferredSkinnedSortedShader->SetBoneTransforms(
+				mSkinnedSortedInstances[i]->FinalLowerBodyTransforms.data(), mSkinnedSortedInstances[i]->FinalLowerBodyTransforms.size(),
+				mSkinnedSortedInstances[i]->FinalUpperBodyTransforms.data(), mSkinnedSortedInstances[i]->FinalUpperBodyTransforms.size());
+
+			mShaderHandler->mBasicDeferredSkinnedSortedShader->SetRootBoneIndex(mSkinnedSortedInstances[i]->model->skinnedData.RootBoneIndex);
+
+			mD3D->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+			for (UINT j = 0; j < mSkinnedSortedInstances[i]->model->meshes.size(); ++j)
+			{
+				UINT matIndex = mSkinnedSortedInstances[i]->model->meshes[j].mMaterialIndex;
+				mShaderHandler->mBasicDeferredSkinnedSortedShader->SetMaterial(mSkinnedSortedInstances[i]->model->mat[matIndex]);
+				mShaderHandler->mBasicDeferredSkinnedSortedShader->SetDiffuseMap(mD3D->GetImmediateContext(), mSkinnedSortedInstances[i]->model->diffuseMapSRV[matIndex]);
+				mShaderHandler->mBasicDeferredSkinnedSortedShader->UpdatePerObj(mD3D->GetImmediateContext());
+
+				mSkinnedSortedInstances[i]->model->meshes[j].draw(mD3D->GetImmediateContext());
 			}
 		}
 	}
@@ -1000,6 +1091,11 @@ void GraphicsEngineImpl::UpdateScene(float dt, float gameTime)
 	{
 		//mAnimatedInstances[i]->model->SetKeyFrameInterval(mAnimatedInstances[i]->model->mAnimations[mAnimatedInstances[i]->model->mCurAnim].FrameStart, mAnimatedInstances[i]->model->mAnimations[mAnimatedInstances[i]->model->mCurAnim].FrameEnd);
 		mAnimatedInstances[i]->model->Update(dt);
+	}
+
+	for (UINT i = 0; i < mSkinnedSortedInstances.size(); ++i)
+	{
+		mSkinnedSortedInstances[i]->Update(dt);
 	}
 
 	// Morph testing
