@@ -288,9 +288,9 @@ void Movement::setCamera(Vec3 look, Vec3 right, Vec3 up)
 
 		yaw = asinf(lookY.X);
 		if (lookY.Z > 0)
-			yaw = -yaw - 3.14/2;
+			yaw = -yaw - 3.14f/2;
 		else
-			yaw = yaw + 3.14f - 3.14 / 2;
+			yaw = yaw + 3.14f - 3.14f / 2;
 
 		float pitch = -asinf(look.Y);
 
