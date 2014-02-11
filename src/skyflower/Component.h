@@ -141,13 +141,8 @@ class Component {
 
 		// send a message
 		void sendMessage(string msg, Payload  payload = 0);
-		void sendMessage(RequestId id, Payload  payload = 0);
 		void sendMessageToEntity(EntityId id, string msg, Payload payload = 0);
-		void sendMessageToEntity(EntityId id, RequestId reqId, Payload payload = 0);
-		void sendMessageToEntity(EntityId id, RequestId reqId, Message const & msg);
 		void sendLocalMessage(string msg, Payload payload = 0);
-		void sendLocalMessage(RequestId reqId, Payload payload = 0);
-		void sendLocalMessage(RequestId reqId, Message const & msg);
 
 		/**
 		 * IMPLEMENTED REQUESTS & LOGGING
@@ -233,17 +228,24 @@ class Component {
 
 
 /**
- * TEMPLATED REQUEST FUNCTIONS
- */
+* TEMPLATED REQUEST FUNCTIONS
+*/
 
 // request all components of a given type in a given Entity
 template<class T>
 list<T*> Component::getComponents(string name, EntityId id) {
 	list<Component*> comps;
-	if (id == -1) comps = fEntityManager->getComponents(getOwnerId(), name);
+	if (id == -1)
+	{
+		comps = fEntityManager->getComponents(getOwnerId(), name);
+	}
 	else comps = fEntityManager->getComponents(id, name);
-	list<T*> tcomps;
-	for (list<Component*>::iterator it = comps.begin(); it != comps.end(); ++it) {
+	{
+		list<T*> tcomps;
+	}
+
+	for (list<Component*>::iterator it = comps.begin(); it != comps.end(); ++it)
+	{
 		tcomps.push_back(dynamic_cast<T*>(*it));
 	}
 	return tcomps;

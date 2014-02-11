@@ -23,13 +23,6 @@ Component::Component(string name) : fOwnerId(-1), fName(name), fDestroyed(false)
 Component::~Component() {
 }
 
-
-// track activity in the log
-/*void Component::trackMe(track) {
-	fTrack = track;
-}*/
-
-
 // check for validity of the Entity
 bool Component::isValid() {
 	return fOwnerId >= 0 && fName.size() > 0 && !fDestroyed;
@@ -125,7 +118,6 @@ list<Component*> Component::getComponents(string name, EntityId id) {
 	else return fEntityManager->getComponents(id, name);
 }
 
-
 /**
  * MESSAGING FUNCTIONS
  */
@@ -134,28 +126,12 @@ list<Component*> Component::getComponents(string name, EntityId id) {
 void Component::sendMessage(string msg, Payload payload) {
 	fEntityManager->sendGlobalMessage(msg, this, payload);
 }
-void Component::sendMessage(RequestId reqId, Payload payload) {
-	fEntityManager->sendGlobalMessage(reqId, this, payload);
-}
 void Component::sendLocalMessage(string msg, Payload payload) {
 	fEntityManager->sendMessageToEntity(msg, this, fOwnerId, payload);
-}
-void Component::sendLocalMessage(RequestId reqId, Payload payload) {
-	fEntityManager->sendMessageToEntity(reqId, this, fOwnerId, payload);
-}
-void Component::sendLocalMessage(RequestId reqId, Message const & msg) {
-	fEntityManager->sendMessageToEntity(reqId, msg, fOwnerId);
 }
 void Component::sendMessageToEntity(EntityId id, string msg, Payload payload) {
 	fEntityManager->sendMessageToEntity(msg, this, id, payload);
 }
-void Component::sendMessageToEntity(EntityId id, RequestId reqId, Payload payload) {
-	fEntityManager->sendMessageToEntity(reqId, this, id, payload);
-}
-void Component::sendMessageToEntity(EntityId id, RequestId reqId, Message const & msg) {
-	fEntityManager->sendMessageToEntity(reqId, msg, id);
-}
-
 
 
 // called when added to an Entity
@@ -206,28 +182,6 @@ string Component::toString() {
 // process ping
 void Component::processPing(Message const & msg) {
 	cout << *this << " PING" << endl;
-}
-
-
-// track a component request
-void Component::trackComponentRequest(string name, bool local) {
-
-	// get request id
-	RequestId reqId = fEntityManager->getMessageRequestId(REQ_COMPONENT, name);
-
-	// start tracking
-	fEntityManager->trackRequest(reqId, local, this);
-}
-
-
-// track a message request
-void Component::trackMessageRequest(string message) {
-
-	// get request id
-	RequestId reqId = fEntityManager->getMessageRequestId(REQ_MESSAGE, message);
-
-	// start tracking
-	fEntityManager->trackRequest(reqId, false, this);
 }
 
 Vec3 Component::getEntityPos()
