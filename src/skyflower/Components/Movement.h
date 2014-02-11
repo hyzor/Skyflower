@@ -79,6 +79,7 @@ private:
 	float dizzyMaxTimer;
 	float dizzyCounter;
 	bool isDizzy;
+	Vec3 pRot;
 
 	void DoJumpStuff(float &speed);
 };

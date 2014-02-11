@@ -41,6 +41,7 @@ Movement::Movement(float speed) : Component("Movement")
 	this->mParticleSystem = NULL;
 	this->dizzyMaxTimer = 2.0f;
 	this->isDizzy = false;
+	this->yaw = 0;
 }
 
 Movement::~Movement()
@@ -172,10 +173,7 @@ void Movement::update(float deltaTime)
 				if (tot < -180)
 					tot += 360;
 
-				if (tot > 0)
-					walkAngle += std::abs(tot) * deltaTime * 7;
-				else
-					walkAngle -= std::abs(tot) * deltaTime * 7;
+				walkAngle += tot * deltaTime * 14;
 			}
 			else
 				walkAngle = targetRot;
@@ -196,10 +194,10 @@ void Movement::update(float deltaTime)
 			}
 
 			// If the player is moving, rotate it to match the camera's direction.
-			if (getOwnerId() == 1)
-			{
+			//if (getOwner()->hasComponents("AI"))
+			//{
 				rot = Vec3(0.0f, -this->yaw + DegreesToRadians(90.0f + walkAngle), 0.0f);
-			}
+			//}
 		}
 		else
 		{
@@ -241,13 +239,35 @@ void Movement::update(float deltaTime)
 	this->mParticleSystem->SetConstantAccel(XMFLOAT3(emitDirection.X * particleAcceleration, emitDirection.Y * particleAcceleration, emitDirection.Z * particleAcceleration));
 
 	updateEntityPos(pos);
-	updateEntityRot(rot);
+
+	float d = (rot.Y - pRot.Y);
+	if (d > 3.14f)
+		d -= 3.14f*2;
+	else if (d < -3.14f)
+		d += 3.14f*2;
+
+
+	Vec3 nRot = pRot + Vec3(0,d,0) * 14*deltaTime;
+	updateEntityRot(nRot);
+	pRot = nRot;
 }
 
 void Movement::setCamera(Vec3 look, Vec3 right, Vec3 up)
 {
-	if (p)
+	//if (p)
 	{
+		Vec3 lookY = look;
+		lookY.Y = 0;
+		lookY.Normalize();
+
+		yaw = asinf(lookY.X);
+		if (lookY.Z > 0)
+			yaw = -yaw - 3.14/2;
+		else
+			yaw = yaw + 3.14f - 3.14 / 2;
+
+		float pitch = -asinf(look.Y);
+
 		this->camLook = look;
 	}
 }
