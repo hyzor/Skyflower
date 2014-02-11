@@ -15,6 +15,8 @@
 #include <assimp/Logger.hpp>
 #include <assimp/DefaultLogger.hpp>
 
+#include "SkinnedDataSorted.h"
+
 struct GenericMaterial
 {
 	Material mat;
@@ -45,6 +47,12 @@ public:
 		std::vector<GenericSkinnedMesh>& meshes,
 		SkinnedData& skinnedData);
 
+	bool LoadSkinnedObjectSorted(
+		const std::string& fileName,
+		std::vector<GenericMaterial>& materials,
+		std::vector<GenericSkinnedMesh>& meshes,
+		SkinnedDataSorted& skinnedData);
+
 	bool LoadMorphObject(const std::string& fileName,
 		std::vector<GenericMaterial>& materials,
 		std::vector<Mesh>& meshes);
@@ -56,8 +64,10 @@ private:
 	void ReadBones(aiMesh* mesh, GenericSkinnedMesh& myMesh);
 	//void ReadBoneKeyframes(aiNodeAnim* nodeAnim, BoneAnimation& boneAnimation);
 	SkinData::Bone* CreateBoneTree(aiNode* node, SkinData::Bone* parent, SkinnedData& skinnedData);
+	SkinData::Bone* CreateBoneTree(aiNode* node, SkinData::Bone* parent, SkinnedDataSorted& skinnedData);
 	//void CalculateBoneToWorldTransform(SkinData::Bone* child);
 	void ReadAnimations(const aiScene* scene, SkinnedData& skinnedData);
+	void ReadAnimations(const aiScene* scene, SkinnedDataSorted& skinnedData);
 
 	void SetVertexWeights(GenericSkinnedMesh& myMesh);
 };
