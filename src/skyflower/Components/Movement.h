@@ -75,10 +75,13 @@ private:
 	float walkAngle;
 	float timeFalling;
 	JumpDirection mInitialJumpDir;
-	ParticleSystem *mParticleSystem;
 	float dizzyMaxTimer;
 	float dizzyCounter;
 	bool isDizzy;
+
+	ParticleSystem *mParticleSystemRun;
+	ParticleSystem *mParticleSystemDizzy;
+	float mParticleSystemDizzyAngle;
 
 	void DoJumpStuff(float &speed);
 };
