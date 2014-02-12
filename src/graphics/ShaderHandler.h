@@ -484,7 +484,7 @@ public:
 	void SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetType(int type);
-	void SetCascade(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex, const XMMATRIX& transform, float nearDepth, float farDepth, int index);
+	void SetCascadeVars(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex, const XMMATRIX& transform, float nearDepth, float farDepth, int index);
 
 	void UpdatePerObj(ID3D11DeviceContext* dc);
 
@@ -499,13 +499,17 @@ private:
 		//XMMATRIX worldViewProjTex;
 		XMMATRIX texTransform;
 		XMMATRIX shadowTransform;
-		XMMATRIX shadowTransforms[MAX_CASC];
 		XMMATRIX prevWorldViewProj;
+
+		XMMATRIX worldView;
+		XMMATRIX lightSpace;
+		XMMATRIX shadowTransforms[MAX_CASC];
+		XMMATRIX shadowProjTex[MAX_CASC];
 
 		float nearDepth[MAX_CASC];
 		float farDepth[MAX_CASC];
 	};
-
+	
 	struct PS_CPEROBJBUFFER
 	{
 		Material mat;

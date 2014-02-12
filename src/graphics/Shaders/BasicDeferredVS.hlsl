@@ -8,8 +8,14 @@ cbuffer cbPerObject : register(b0)
 	//float4x4 gWorldViewProjTex;
 	float4x4 gTexTransform;
 	float4x4 gShadowTransform;
-	float4x4 gShadowTransforms[MAX_CASCADES];
+	float4x4 gShadowTransforms[MAX_CASCADES]; 
 	float4x4 gPrevWorldViewProj;
+
+	float4x4 gShadowSpace; //Regardless of cascade, transform to lightspace
+	float4x4 gShadowProjTex[MAX_CASCADES]; //Transform for each cascade's individual projection
+
+	float gNearDepths[MAX_CASCADES];
+	float gFarDepths[MAX_CASCADES]
 };
 
 struct VertexIn

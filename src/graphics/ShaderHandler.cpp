@@ -1289,6 +1289,11 @@ void BasicDeferredShader::SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderRes
 	dc->PSSetShaderResources(0, 1, &tex);
 }
 
+void BasicDeferredShader::SetCascadeVars(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex, const XMMATRIX& transform, float nearDepth, float farDepth, int index)
+{
+	//mBufferCache.vsPerObjBuffer.
+}
+
 void BasicDeferredShader::UpdatePerObj(ID3D11DeviceContext* dc)
 {
 	// Update constant shader buffers using our cache

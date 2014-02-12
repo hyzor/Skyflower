@@ -10,7 +10,10 @@ cbuffer cPerObject : register(b0)
 
 Texture2D gDiffuseMap : register(t0);
 Texture2D gShadowMap : register(t1);
-Texture2DArray gShadowMaps : register(t2);
+Texture2D gShadowMap1 : register(t2);
+Texture2D gShadowMap2 : register(t3);
+Texture2D gShadowMap3 : register(t4);
+//TODO: Texture2DArray gShadowMaps : register(t2);
 
 SamplerState samLinear : register(s0);
 SamplerState samAnisotropic : register(s1);
