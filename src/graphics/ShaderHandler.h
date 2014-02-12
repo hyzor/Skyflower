@@ -1155,8 +1155,8 @@ public:
 
 	struct VS_PERFRAMEBUFFER
 	{
-		UINT screenHeight;
 		UINT screenWidth;
+		UINT screenHeight;
 		XMFLOAT2 padding;
 	};
 
@@ -1196,15 +1196,15 @@ public:
 
 	struct VS_PERFRAMEBUFFER
 	{
-		UINT screenHeight;
 		UINT screenWidth;
+		UINT screenHeight;
 		XMFLOAT2 padding;
 	};
 
 	struct PS_PERFRAMEBUFFER
 	{
-		UINT screenHeight;
 		UINT screenWidth;
+		UINT screenHeight;
 		XMFLOAT2 padding;
 	};
 
@@ -1248,8 +1248,8 @@ public:
 
 	struct VS_PERFRAMEBUFFER
 	{
-		UINT screenHeight;
 		UINT screenWidth;
+		UINT screenHeight;
 		XMFLOAT2 padding;
 	};
 
@@ -1289,15 +1289,15 @@ public:
 
 	struct VS_PERFRAMEBUFFER
 	{
-		UINT screenHeight;
 		UINT screenWidth;
+		UINT screenHeight;
 		XMFLOAT2 padding;
 	};
 
 	struct PS_PERFRAMEBUFFER
 	{
-		UINT screenHeight;
 		UINT screenWidth;
+		UINT screenHeight;
 		XMFLOAT2 padding;
 	};
 
@@ -1343,15 +1343,15 @@ public:
 
 	struct VS_PERFRAMEBUFFER
 	{
-		UINT screenHeight;
 		UINT screenWidth;
+		UINT screenHeight;
 		XMFLOAT2 padding;
 	};
 
 	struct PS_PERFRAMEBUFFER
 	{
-		UINT screenHeight;
 		UINT screenWidth;
+		UINT screenHeight;
 		XMFLOAT2 padding;
 	};
 

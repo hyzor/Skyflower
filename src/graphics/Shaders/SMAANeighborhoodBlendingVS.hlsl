@@ -2,8 +2,8 @@
 
 cbuffer cbPerFrame : register(b0)
 {
-	unsigned int screenHeight;
 	unsigned int screenWidth;
+	unsigned int screenHeight;
 	float2 padding;
 };
 
