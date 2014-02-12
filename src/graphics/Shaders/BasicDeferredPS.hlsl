@@ -28,28 +28,55 @@ PixelOut main(VertexOut pIn)
 {
 	PixelOut pOut;
 
-	// Sample color from texture
-	if(type == 0)
+	if (type == 0) //textured
+	{
+		// Sample color from texture
 		pOut.Color = gDiffuseMap.Sample(samAnisotropic, pIn.Tex);
-	else
-		pOut.Color = gMaterial.Diffuse;
 
-	if(type == 1)
-		pOut.Normal = float4(pIn.NormalW, 1.0f);
-	else
 		pOut.Normal = float4(pIn.NormalW, 0.0f);
 
-	pOut.Specular = gMaterial.Specular;
+		pOut.Specular = gMaterial.Specular;
+
+		// Bake shadow factor into color w component
+		float shadowFactor = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
+
+		pOut.Color.w = shadowFactor;
+	}
+	else if (type == 1) //cloud
+	{
+		pOut.Color = gMaterial.Diffuse;
+
+		pOut.Normal = float4(pIn.NormalW, 1.0f);
+
+		pOut.Specular = gMaterial.Specular;
+
+
+		pOut.Color.w = 1.0f;
+
+	}
+	else if (type == 2) //no texture
+	{
+		pOut.Color = gMaterial.Diffuse;
+
+		pOut.Normal = float4(pIn.NormalW, 0.0f);
+
+		pOut.Specular = gMaterial.Specular;
+
+		// Bake shadow factor into color w component
+		float shadowFactor = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
+
+		pOut.Color.w = shadowFactor;
+	}
+
+	
+	
+
+	
 
 	//pOut.Position = float4(pIn.PosW, 1.0f);
 
-	// Bake shadow factor into color w component
-	float shadowFactor = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
-
-	if (type == 1)
-		pOut.Color.w = 1.0f;
-	else
-		pOut.Color.w = shadowFactor;
+	
+		
 
 	//pOut.Velocity = ((pIn.CurPosH - pIn.PrevPosH) / 2.0f).xy;
 	//pOut.Velocity = pIn.Velocity;
