@@ -65,8 +65,12 @@ void Menu::init(GUI *g, int screenWidth, int screeenHeight, SoundEngine *sound)
 	MenuButton *settings = new MenuButton(g, Vec3(30, 250), 240, 100, "button_settings.png", "button_settings_hover.png");
 	settings->setOnClick([this]() { setActivePage(MenuPageSettings); });
 	m_pages[MenuPageMain].buttons.push_back(settings);
+	
+	MenuButton *instructions = new MenuButton(g, Vec3(30, 400), 240, 100, "button_instructions.png", "button_instructions_hover.png");
+	instructions->setOnClick([this]() { setActivePage(MenuPageInstructions); });
+	m_pages[MenuPageMain].buttons.push_back(instructions);
 
-	MenuButton *exit = new MenuButton(g, Vec3(30, 400), 240, 100, "button_exit.png", "button_exit_hover.png");
+	MenuButton *exit = new MenuButton(g, Vec3(30, 550), 240, 100, "button_exit.png", "button_exit_hover.png");
 	exit->setOnClick([this]() {buttonExitClicked(); });
 	m_pages[MenuPageMain].buttons.push_back(exit);
 
@@ -86,6 +90,11 @@ void Menu::init(GUI *g, int screenWidth, int screeenHeight, SoundEngine *sound)
 
 	Slider *mouseSense = new Slider(g, Vec3(430, 280), 150, 40);
 	m_pages[MenuPageSettings].sliders.push_back(mouseSense);
+
+	// Instructions page
+	MenuButton *back2 = new MenuButton(g, Vec3(30, 100), 240, 100, "button_back.png", "button_back_hover.png");
+	back2->setOnClick([this]() { setActivePage(MenuPageMain); });
+	m_pages[MenuPageInstructions].buttons.push_back(back2);
 
 	m_activePage = MenuPageMain;
 }
@@ -192,7 +201,7 @@ void Menu::setVisible(bool visible)
 {
 	guiPtr->GetGUIElement(m_bg)->SetVisible(visible);
 
-	if (visible && m_activePage == MenuPageMain)
+	if (visible && m_activePage == MenuPageInstructions)
 		guiPtr->GetGUIElement(m_instructions)->SetVisible(true);
 	else
 		guiPtr->GetGUIElement(m_instructions)->SetVisible(false);
