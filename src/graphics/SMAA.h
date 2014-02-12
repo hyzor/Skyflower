@@ -18,11 +18,11 @@ enum PreCalculatedTexturesIndex
 	PerCalcTexCount
 };
 
-class SmaaBuffers
+class SMAA
 {
 public:
-	SmaaBuffers();
-	~SmaaBuffers();
+	SMAA();
+	~SMAA();
 
 	bool Init(ID3D11Device* device, UINT width, UINT height, ID3D11ShaderResourceView* areaTex, ID3D11ShaderResourceView* searchTex);
 	void OnResize(ID3D11Device* device, UINT width, UINT height);

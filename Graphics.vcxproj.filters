@@ -31,6 +31,18 @@
     <Filter Include="Shaders\SMAA">
       <UniqueIdentifier>{5f1c1aea-c01f-46d8-9c26-61c1bcb19ad4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\SMAA\First pass">
+      <UniqueIdentifier>{774322bf-d0cb-42a2-828d-577db4469e80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\SMAA\Second pass">
+      <UniqueIdentifier>{767e2b28-b846-4a23-8d06-075c327c306b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\SMAA\Third pass">
+      <UniqueIdentifier>{41f12721-337e-409b-bffb-5b10b08e3460}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\SMAA\Optional passes">
+      <UniqueIdentifier>{601711fb-4d09-4417-8a4c-b14d8c905a84}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\graphics\MathHelper.cpp">
@@ -372,6 +384,36 @@
     </FxCompile>
     <FxCompile Include="src\graphics\Shaders\BasicDeferredSkinnedSortedVS.hlsl">
       <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SMAAEdgeDetectionVS.hlsl">
+      <Filter>Shaders\SMAA</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SMAABlendingWeightCalculationsVS.hlsl">
+      <Filter>Shaders\SMAA</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SMAANeighborhoodBlendingVS.hlsl">
+      <Filter>Shaders\SMAA</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SMAALumaEdgeDetectionPS.hlsl">
+      <Filter>Shaders\SMAA\First pass</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SMAADepthEdgeDetectionPS.hlsl">
+      <Filter>Shaders\SMAA\First pass</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SMAAColorEdgeDetectionPS.hlsl">
+      <Filter>Shaders\SMAA\First pass</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SMAABlendingWeightCalculationsPS.hlsl">
+      <Filter>Shaders\SMAA\Second pass</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SMAANeighborhoodBlendingPS.hlsl">
+      <Filter>Shaders\SMAA\Third pass</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SMAASeparatePS.hlsl">
+      <Filter>Shaders\SMAA\Optional passes</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SMAAResolvePS.hlsl">
+      <Filter>Shaders\SMAA\Optional passes</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

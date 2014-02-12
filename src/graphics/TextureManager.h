@@ -22,6 +22,8 @@ public:
 
 	ID3D11ShaderResourceView* CreateTexture(std::string fileName);
 
+	ID3D11ShaderResourceView* CreateDDSTextureFromBytes(const unsigned char* bytes, UINT byteSize, std::string textureName);
+
 private:
 	ID3D11Device* md3dDevice;
 	ID3D11DeviceContext* mDC;

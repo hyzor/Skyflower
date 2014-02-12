@@ -1,7 +1,7 @@
-#include "SmaaBuffers.h"
+#include "SMAA.h"
 
 
-SmaaBuffers::SmaaBuffers()
+SMAA::SMAA()
 {
 	for (UINT i = 0; i < SmaaBufferIndex::SmaaBufferCount; ++i)
 	{
@@ -12,7 +12,7 @@ SmaaBuffers::SmaaBuffers()
 }
 
 
-SmaaBuffers::~SmaaBuffers()
+SMAA::~SMAA()
 {
 	Shutdown();
 }
@@ -85,7 +85,7 @@ bool SmaaBuffers::Init(ID3D11Device* device, UINT width, UINT height)
 }
 */
 
-bool SmaaBuffers::Init(ID3D11Device* device, UINT width, UINT height, ID3D11ShaderResourceView* areaTex, ID3D11ShaderResourceView* searchTex)
+bool SMAA::Init(ID3D11Device* device, UINT width, UINT height, ID3D11ShaderResourceView* areaTex, ID3D11ShaderResourceView* searchTex)
 {
 	HRESULT hr;
 	D3D11_TEXTURE2D_DESC textureDesc;
@@ -154,18 +154,18 @@ bool SmaaBuffers::Init(ID3D11Device* device, UINT width, UINT height, ID3D11Shad
 	return true;
 }
 
-void SmaaBuffers::OnResize(ID3D11Device* device, UINT width, UINT height)
+void SMAA::OnResize(ID3D11Device* device, UINT width, UINT height)
 {
 	Shutdown();
 	Init(device, width, height, mPreCalculatedTextures[PreCalculatedTexturesIndex::Area], mPreCalculatedTextures[PreCalculatedTexturesIndex::Search]);
 }
 
-void SmaaBuffers::SetRenderTargets(ID3D11DeviceContext* dc, ID3D11DepthStencilView* depthStencilView)
+void SMAA::SetRenderTargets(ID3D11DeviceContext* dc, ID3D11DepthStencilView* depthStencilView)
 {
 	dc->OMSetRenderTargets(SmaaBufferIndex::SmaaBufferCount, mRenderTargetViewArray, depthStencilView);
 }
 
-void SmaaBuffers::ClearRenderTargets(ID3D11DeviceContext* dc, DirectX::XMFLOAT4 RGBA, ID3D11DepthStencilView* depthStencilView)
+void SMAA::ClearRenderTargets(ID3D11DeviceContext* dc, DirectX::XMFLOAT4 RGBA, ID3D11DepthStencilView* depthStencilView)
 {
 	float color[4];
 
@@ -182,17 +182,17 @@ void SmaaBuffers::ClearRenderTargets(ID3D11DeviceContext* dc, DirectX::XMFLOAT4 
 	dc->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
-ID3D11RenderTargetView* SmaaBuffers::GetRenderTarget(UINT bufferIndex)
+ID3D11RenderTargetView* SMAA::GetRenderTarget(UINT bufferIndex)
 {
 	return mRenderTargetViewArray[bufferIndex];
 }
 
-ID3D11ShaderResourceView* SmaaBuffers::GetSRV(UINT view)
+ID3D11ShaderResourceView* SMAA::GetSRV(UINT view)
 {
 	return mShaderResourceViewArray[view];
 }
 
-void SmaaBuffers::Shutdown()
+void SMAA::Shutdown()
 {
 	for (UINT i = 0; i < SmaaBufferIndex::SmaaBufferCount; i++)
 	{
@@ -216,7 +216,7 @@ void SmaaBuffers::Shutdown()
 	}
 }
 
-ID3D11ShaderResourceView* SmaaBuffers::GetPreCalculatedTexture(UINT preCalcTexIndex)
+ID3D11ShaderResourceView* SMAA::GetPreCalculatedTexture(UINT preCalcTexIndex)
 {
 	return mPreCalculatedTextures[preCalcTexIndex];
 }

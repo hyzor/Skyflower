@@ -95,7 +95,7 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 	delete mDoFBlurTexture1;
 	delete mDoFBlurTexture2;
 
-	delete mSmaaBuffers;
+	delete mSMAA;
 
 	mD3D->Shutdown();
 	delete mD3D;
@@ -163,9 +163,10 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 
 	mGameTime = 0.0f;
 
-	mSmaaBuffers = new SmaaBuffers();
-	mSmaaBuffers->Init(mD3D->GetDevice(), width, height,
-		mTextureMgr->CreateTexture(mResourceDir + "Textures/SMAA/AreaTexDX10.dds"),
+	mSMAA = new SMAA();
+	mSMAA->Init(mD3D->GetDevice(), width, height,
+		//mTextureMgr->CreateDDSTextureFromBytes(areaTexBytes, AREATEX_SIZE, "AreaTex"),
+		mTextureMgr->CreateTexture(mResourceDir + "Textures/SMAA/AreaTexDX11.dds"),
 		mTextureMgr->CreateTexture(mResourceDir + "Textures/SMAA/SearchTex.dds"));
 
 	//-------------------------------------------------------------------------------------------------------
@@ -684,7 +685,7 @@ void GraphicsEngineImpl::DrawScene()
 	//-------------------------------------------------------------------------------------
 	// SMAA
 	//-------------------------------------------------------------------------------------
-	mSmaaBuffers->ClearRenderTargets(mD3D->GetImmediateContext(), XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f), mD3D->GetDepthStencilView());
+	mSMAA->ClearRenderTargets(mD3D->GetImmediateContext(), XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f), mD3D->GetDepthStencilView());
 
 	//-------------------------------------------------------------------------------------
 	// Motion blur cache
@@ -1019,7 +1020,7 @@ void GraphicsEngineImpl::OnResize(UINT width, UINT height)
 	mCamera->UpdateOrthoMatrix(static_cast<float>(width), static_cast<float>(height), zNear, zFar);
 	mOrthoWindow->OnResize(mD3D->GetDevice(), width, height);
 
-	mSmaaBuffers->OnResize(mD3D->GetDevice(), width, height);
+	mSMAA->OnResize(mD3D->GetDevice(), width, height);
 
 	// Resize Post-processing textures
 	mIntermediateTexture->Resize(mD3D->GetDevice(), width, height);
