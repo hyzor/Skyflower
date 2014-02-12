@@ -40,4 +40,6 @@ void Health::Respawn(Message const& msg)
 		updateEntityPos(getOwner()->spawnpos);
 		health = maxHP;
 	}
+
+	sendMessageToEntity(getOwnerId(), "DropThrowable");
 }
