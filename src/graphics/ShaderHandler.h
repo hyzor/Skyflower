@@ -1141,6 +1141,255 @@ public:
 };
 #pragma endregion CompositeShader
 
+//----------------------------------------------------------------------
+// SMAA
+//----------------------------------------------------------------------
+#pragma region SMAA
+
+#pragma region SMAAColorEdgeDetectionShader
+class SMAAColorEdgeDetectionShader : public IShader
+{
+public:
+	SMAAColorEdgeDetectionShader();
+	~SMAAColorEdgeDetectionShader();
+
+	struct VS_PERFRAMEBUFFER
+	{
+		UINT screenHeight;
+		UINT screenWidth;
+		XMFLOAT2 padding;
+	};
+
+	struct BUFFERCACHE
+	{
+		VS_PERFRAMEBUFFER VS_PerFrameBuffer;
+	};
+
+	struct BUFFERCACHE mBufferCache;
+
+	// VS per frame buffer
+	ID3D11Buffer* VS_PerFrameBuffer;
+	VS_PERFRAMEBUFFER VS_PerFrameBufferVariables;
+
+	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
+	bool SetActive(ID3D11DeviceContext* dc);
+
+	void UpdatePerFrame(ID3D11DeviceContext* dc);
+
+	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+
+	void SetScreenDimensions(UINT screenHeight, UINT screenWidth);
+	void SetColorTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetPredicationTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+
+private:
+	void Update(ID3D11DeviceContext* dc) { ; }
+};
+#pragma endregion SMAAColorEdgeDetectionShader
+
+#pragma region SMAADepthEdgeDetectionShader
+class SMAADepthEdgeDetectionShader : public IShader
+{
+public:
+	SMAADepthEdgeDetectionShader();
+	~SMAADepthEdgeDetectionShader();
+
+	struct VS_PERFRAMEBUFFER
+	{
+		UINT screenHeight;
+		UINT screenWidth;
+		XMFLOAT2 padding;
+	};
+
+	struct PS_PERFRAMEBUFFER
+	{
+		UINT screenHeight;
+		UINT screenWidth;
+		XMFLOAT2 padding;
+	};
+
+	struct BUFFERCACHE
+	{
+		VS_PERFRAMEBUFFER VS_PerFrameBuffer;
+		PS_PERFRAMEBUFFER PS_PerFrameBuffer;
+	};
+
+	struct BUFFERCACHE mBufferCache;
+
+	// VS per frame buffer
+	ID3D11Buffer* VS_PerFrameBuffer;
+	VS_PERFRAMEBUFFER VS_PerFrameBufferVariables;
+
+	// PS per frame buffer
+	ID3D11Buffer* PS_PerFrameBuffer;
+	PS_PERFRAMEBUFFER PS_PerFrameBufferVariables;
+
+	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
+	bool SetActive(ID3D11DeviceContext* dc);
+
+	void UpdatePerFrame(ID3D11DeviceContext* dc);
+
+	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+
+	void SetScreenDimensions(UINT screenHeight, UINT screenWidth);
+	void SetDepthTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+
+private:
+	void Update(ID3D11DeviceContext* dc) { ; }
+};
+#pragma endregion SMAADepthEdgeDetectionShader
+
+#pragma region SMAALumaEdgeDetectionShader
+class SMAALumaEdgeDetectionShader : public IShader
+{
+public:
+	SMAALumaEdgeDetectionShader();
+	~SMAALumaEdgeDetectionShader();
+
+	struct VS_PERFRAMEBUFFER
+	{
+		UINT screenHeight;
+		UINT screenWidth;
+		XMFLOAT2 padding;
+	};
+
+	struct BUFFERCACHE
+	{
+		VS_PERFRAMEBUFFER VS_PerFrameBuffer;
+	};
+
+	struct BUFFERCACHE mBufferCache;
+
+	// VS per frame buffer
+	ID3D11Buffer* VS_PerFrameBuffer;
+	VS_PERFRAMEBUFFER VS_PerFrameBufferVariables;
+
+	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
+	bool SetActive(ID3D11DeviceContext* dc);
+
+	void UpdatePerFrame(ID3D11DeviceContext* dc);
+
+	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+
+	void SetScreenDimensions(UINT screenHeight, UINT screenWidth);
+	void SetColorTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetPredicationTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+
+private:
+	void Update(ID3D11DeviceContext* dc) { ; }
+};
+#pragma endregion SMAALumaEdgeDetectionShader
+
+#pragma region SMAABlendingWeightCalculationsShader
+class SMAABlendingWeightCalculationsShader : public IShader
+{
+public:
+	SMAABlendingWeightCalculationsShader();
+	~SMAABlendingWeightCalculationsShader();
+
+	struct VS_PERFRAMEBUFFER
+	{
+		UINT screenHeight;
+		UINT screenWidth;
+		XMFLOAT2 padding;
+	};
+
+	struct PS_PERFRAMEBUFFER
+	{
+		UINT screenHeight;
+		UINT screenWidth;
+		XMFLOAT2 padding;
+	};
+
+	struct BUFFERCACHE
+	{
+		VS_PERFRAMEBUFFER VS_PerFrameBuffer;
+		PS_PERFRAMEBUFFER PS_PerFrameBuffer;
+	};
+
+	struct BUFFERCACHE mBufferCache;
+
+	// VS per frame buffer
+	ID3D11Buffer* VS_PerFrameBuffer;
+	VS_PERFRAMEBUFFER VS_PerFrameBufferVariables;
+
+	// PS per frame buffer
+	ID3D11Buffer* PS_PerFrameBuffer;
+	PS_PERFRAMEBUFFER PS_PerFrameBufferVariables;
+
+	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
+	bool SetActive(ID3D11DeviceContext* dc);
+
+	void UpdatePerFrame(ID3D11DeviceContext* dc);
+
+	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+
+	void SetScreenDimensions(UINT screenHeight, UINT screenWidth);
+	void SetEdgesTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetAreaTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetSearchTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+
+private:
+	void Update(ID3D11DeviceContext* dc) { ; }
+};
+#pragma endregion SMAABlendingWeightCalculationsShader
+
+#pragma region SMAANeighborhoodBlendingShader
+class SMAANeighborhoodBlendingShader : public IShader
+{
+public:
+	SMAANeighborhoodBlendingShader();
+	~SMAANeighborhoodBlendingShader();
+
+	struct VS_PERFRAMEBUFFER
+	{
+		UINT screenHeight;
+		UINT screenWidth;
+		XMFLOAT2 padding;
+	};
+
+	struct PS_PERFRAMEBUFFER
+	{
+		UINT screenHeight;
+		UINT screenWidth;
+		XMFLOAT2 padding;
+	};
+
+	struct BUFFERCACHE
+	{
+		VS_PERFRAMEBUFFER VS_PerFrameBuffer;
+		PS_PERFRAMEBUFFER PS_PerFrameBuffer;
+	};
+
+	struct BUFFERCACHE mBufferCache;
+
+	// VS per frame buffer
+	ID3D11Buffer* VS_PerFrameBuffer;
+	VS_PERFRAMEBUFFER VS_PerFrameBufferVariables;
+
+	// PS per frame buffer
+	ID3D11Buffer* PS_PerFrameBuffer;
+	PS_PERFRAMEBUFFER PS_PerFrameBufferVariables;
+
+	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
+	bool SetActive(ID3D11DeviceContext* dc);
+
+	void UpdatePerFrame(ID3D11DeviceContext* dc);
+
+	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+
+	void SetScreenDimensions(UINT screenHeight, UINT screenWidth);
+	void SetColorTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetBlendTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+	void SetVelocityTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+
+private:
+	void Update(ID3D11DeviceContext* dc) { ; }
+};
+#pragma endregion SMAANeighborhoodBlendingShader
+
+#pragma endregion SMAA
+
 #pragma region ShaderHandler
 enum ShaderType
 {
@@ -1197,6 +1446,13 @@ public:
 	ParticleSystemShader* mParticleSystemShader;
 	LightDeferredShader* mLightDeferredToTextureShader;
 	BasicDeferredSkinnedSortedShader* mBasicDeferredSkinnedSortedShader;
+
+	// SMAA
+	SMAAColorEdgeDetectionShader* mSMAAColorEdgeDetectionShader;
+	SMAALumaEdgeDetectionShader* mSMAALumaEdgeDetectionShader;
+	SMAADepthEdgeDetectionShader* mSMAADepthEdgeDetectionShader;
+	SMAABlendingWeightCalculationsShader* mSMAABlendingWeightCalculationsShader;
+	SMAANeighborhoodBlendingShader* mSMAANeighborhoodBlendingShader;
 
 private:
 

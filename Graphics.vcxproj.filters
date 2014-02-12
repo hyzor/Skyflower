@@ -138,7 +138,7 @@
     <ClCompile Include="src\graphics\GenericSkinnedModelSorted.cpp">
       <Filter>Models\Upper &amp; lower body sorting</Filter>
     </ClCompile>
-    <ClCompile Include="src\graphics\SmaaBuffers.cpp">
+    <ClCompile Include="src\graphics\SMAA.cpp">
       <Filter>Header Files\SMAA</Filter>
     </ClCompile>
   </ItemGroup>
@@ -245,14 +245,17 @@
     <ClInclude Include="src\graphics\GenericSkinnedModelSorted.h">
       <Filter>Models\Upper &amp; lower body sorting</Filter>
     </ClInclude>
-    <ClInclude Include="src\graphics\SmaaBuffers.h">
-      <Filter>Header Files\SMAA</Filter>
-    </ClInclude>
     <ClInclude Include="src\graphics\External\SMAA\SearchTex.h">
       <Filter>Header Files\SMAA</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics\External\SMAA\AreaTex.h">
       <Filter>Header Files\SMAA</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\SMAA.h">
+      <Filter>Header Files\SMAA</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\GraphicsEngineImpl.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -385,15 +388,6 @@
     <FxCompile Include="src\graphics\Shaders\BasicDeferredSkinnedSortedVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="src\graphics\Shaders\SMAAEdgeDetectionVS.hlsl">
-      <Filter>Shaders\SMAA</Filter>
-    </FxCompile>
-    <FxCompile Include="src\graphics\Shaders\SMAABlendingWeightCalculationsVS.hlsl">
-      <Filter>Shaders\SMAA</Filter>
-    </FxCompile>
-    <FxCompile Include="src\graphics\Shaders\SMAANeighborhoodBlendingVS.hlsl">
-      <Filter>Shaders\SMAA</Filter>
-    </FxCompile>
     <FxCompile Include="src\graphics\Shaders\SMAALumaEdgeDetectionPS.hlsl">
       <Filter>Shaders\SMAA\First pass</Filter>
     </FxCompile>
@@ -414,6 +408,15 @@
     </FxCompile>
     <FxCompile Include="src\graphics\Shaders\SMAAResolvePS.hlsl">
       <Filter>Shaders\SMAA\Optional passes</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SMAABlendingWeightCalculationsVS.hlsl">
+      <Filter>Shaders\SMAA\Second pass</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SMAANeighborhoodBlendingVS.hlsl">
+      <Filter>Shaders\SMAA\Third pass</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SMAAEdgeDetectionVS.hlsl">
+      <Filter>Shaders\SMAA\First pass</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

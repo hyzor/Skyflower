@@ -230,6 +230,18 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 		&GeoStreamOutDesc::ParticleStride,
 		1);
 
+	// SMAA shaders
+	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\SMAAEdgeDetectionVS.cso", "SMAAEdgeDetectionVS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\SMAAColorEdgeDetectionPS.cso", "SMAAColorEdgeDetectionPS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\SMAADepthEdgeDetectionPS.cso", "SMAADepthEdgeDetectionPS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\SMAALumaEdgeDetectionPS.cso", "SMAALumaEdgeDetectionPS", mD3D->GetDevice());
+
+	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\SMAABlendingWeightCalculationsVS.cso", "SMAABlendingWeightCalculationsVS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\SMAABlendingWeightCalculationsPS.cso", "SMAABlendingWeightCalculationsPS", mD3D->GetDevice());
+
+	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\SMAANeighborhoodBlendingVS.cso", "SMAANeighborhoodBlendingVS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\SMAANeighborhoodBlendingPS.cso", "SMAANeighborhoodBlendingPS", mD3D->GetDevice());
+
 	// Bind loaded shaders to shader objects
 	mShaderHandler->mBasicShader->BindShaders(
 		mShaderHandler->GetVertexShader("BasicVS"),
@@ -305,6 +317,23 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 		mShaderHandler->GetGeometryShader("DrawParticleGS"),
 		mShaderHandler->GetPixelShader("DrawParticlePS"));
 
+	// SMAA
+	mShaderHandler->mSMAAColorEdgeDetectionShader->BindShaders(
+		mShaderHandler->GetVertexShader("SMAAEdgeDetectionVS"),
+		mShaderHandler->GetPixelShader("SMAAColorEdgeDetectionPS"));
+	mShaderHandler->mSMAADepthEdgeDetectionShader->BindShaders(
+		mShaderHandler->GetVertexShader("SMAAEdgeDetectionVS"),
+		mShaderHandler->GetPixelShader("SMAADepthEdgeDetectionPS"));
+	mShaderHandler->mSMAALumaEdgeDetectionShader->BindShaders(
+		mShaderHandler->GetVertexShader("SMAAEdgeDetectionVS"),
+		mShaderHandler->GetPixelShader("SMAALumaEdgeDetectionPS"));
+	mShaderHandler->mSMAABlendingWeightCalculationsShader->BindShaders(
+		mShaderHandler->GetVertexShader("SMAABlendingWeightCalculationsVS"),
+		mShaderHandler->GetPixelShader("SMAABlendingWeightCalculationsPS"));
+	mShaderHandler->mSMAANeighborhoodBlendingShader->BindShaders(
+		mShaderHandler->GetVertexShader("SMAANeighborhoodBlendingVS"),
+		mShaderHandler->GetPixelShader("SMAANeighborhoodBlendingPS"));
+
 	// Now create all the input layouts
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("BasicVS"), InputLayoutDesc::PosNormalTex, COUNT_OF(InputLayoutDesc::PosNormalTex), &mInputLayouts->PosNormalTex);
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("SkyVS"), InputLayoutDesc::Position, COUNT_OF(InputLayoutDesc::Position), &mInputLayouts->Position);
@@ -340,6 +369,13 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mLightDeferredToTextureShader->Init(mD3D->GetDevice(), mInputLayouts->PosTex);
 
 	mShaderHandler->mBasicDeferredSkinnedSortedShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTanSkinned);
+
+	// SMAA
+	mShaderHandler->mSMAAColorEdgeDetectionShader->Init(mD3D->GetDevice(), mInputLayouts->PosTex);
+	mShaderHandler->mSMAADepthEdgeDetectionShader->Init(mD3D->GetDevice(), mInputLayouts->PosTex);
+	mShaderHandler->mSMAALumaEdgeDetectionShader->Init(mD3D->GetDevice(), mInputLayouts->PosTex);
+	mShaderHandler->mSMAABlendingWeightCalculationsShader->Init(mD3D->GetDevice(), mInputLayouts->PosTex);
+	mShaderHandler->mSMAANeighborhoodBlendingShader->Init(mD3D->GetDevice(), mInputLayouts->PosTex);
 
 	std::string fontPath = mResourceDir + "myfile.spritefont";
 	std::wstring fontPathW(fontPath.begin(), fontPath.end());
@@ -449,10 +485,7 @@ void GraphicsEngineImpl::DrawScene()
 	mD3D->GetImmediateContext()->ClearDepthStencilView(mD3D->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
 
-	//------------------------------------------------------------------------------
-	// Deferred shading
-	//------------------------------------------------------------------------------
-	// Render the scene to the render buffers
+	// Render the scene to the render buffers and light it up
 	RenderSceneToTexture();
 
 	// Turn off Z-buffer to begin 2D-drawing
@@ -460,6 +493,10 @@ void GraphicsEngineImpl::DrawScene()
 
 	ID3D11RenderTargetView* renderTarget;
 
+	//------------------------------------------------------------------------------
+	// Post processing
+	//------------------------------------------------------------------------------
+	// SSAO
 	if (mPostProcessingEffects & POST_PROCESSING_SSAO)
 	{
 		D3D11_VIEWPORT SSAOViewport;
@@ -539,51 +576,7 @@ void GraphicsEngineImpl::DrawScene()
 		mD3D->GetImmediateContext()->ClearRenderTargetView(mSSAOTexture->GetRenderTargetView(), clearColor);
 	}
 
-	/*
-	renderTarget = mIntermediateTexture->GetRenderTargetView();
-	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
-
- 	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
-
-	mShaderHandler->mLightDeferredShader->SetActive(mD3D->GetImmediateContext());
-	mShaderHandler->mLightDeferredShader->SetEyePosW(mCamera->GetPosition());
-	mShaderHandler->mLightDeferredShader->SetPointLights(mD3D->GetImmediateContext(), (UINT)mPointLights.size(), mPointLights.data());
-	mShaderHandler->mLightDeferredShader->SetDirLights(mD3D->GetImmediateContext(), (UINT)mDirLights.size(), mDirLights.data());
-	mShaderHandler->mLightDeferredShader->SetSpotLights(mD3D->GetImmediateContext(), (UINT)mSpotLights.size(), mSpotLights.data());
-	mShaderHandler->mLightDeferredShader->SetShadowTransform(mShadowMap->GetShadowTransform());
-	mShaderHandler->mLightDeferredShader->SetCameraViewProjMatrix(mCamera->GetViewMatrix(), mCamera->GetProjMatrix());
-	mShaderHandler->mLightDeferredShader->SetLightWorldViewProj(mShadowMap->GetLightWorld(), mShadowMap->GetLightView(), mShadowMap->GetLightProj());
-	
-	// TODO: Instead of hard coding these properties, get them from some modifiable settings collection
-	mShaderHandler->mLightDeferredShader->SetFogProperties(0, 0.0075f, -150.0f, 0.005f, XMFLOAT4(0.86f, 0.86f, 0.9f, 1.0f));//XMFLOAT4(0.85f, 0.85f, 0.85f, 1.0f));
-	mShaderHandler->mLightDeferredShader->SetMotionBlurProperties(1);
-	mShaderHandler->mLightDeferredShader->SetFpsValues(mCurFPS, mTargetFPS);
-
-	mShaderHandler->mLightDeferredShader->UpdatePerFrame(mD3D->GetImmediateContext());
-
-	mShaderHandler->mLightDeferredShader->SetDiffuseTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Diffuse));
-	mShaderHandler->mLightDeferredShader->SetNormalTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Normal));
-	mShaderHandler->mLightDeferredShader->SetSpecularTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Specular));
-	mShaderHandler->mLightDeferredShader->SetVelocityTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Velocity));
-	mShaderHandler->mLightDeferredShader->SetSSAOTexture(mD3D->GetImmediateContext(), mSSAOTexture->GetShaderResourceView());
-	mShaderHandler->mLightDeferredShader->SetDepthTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
-
-	mShaderHandler->mLightDeferredShader->SetWorldViewProj(XMMatrixIdentity(), mCamera->GetBaseViewMatrix(), mCamera->GetOrthoMatrix());
-	mShaderHandler->mLightDeferredShader->UpdatePerObj(mD3D->GetImmediateContext());
-
-	// Now render the window
-	mOrthoWindow->Render(mD3D->GetImmediateContext());
-
-	// Lastly, clear (unbind) the textures (otherwise D3D11 WARNING)
-	mShaderHandler->mLightDeferredShader->SetDiffuseTexture(mD3D->GetImmediateContext(), NULL);
-	mShaderHandler->mLightDeferredShader->SetNormalTexture(mD3D->GetImmediateContext(), NULL);
-	mShaderHandler->mLightDeferredShader->SetSpecularTexture(mD3D->GetImmediateContext(), NULL);
-	//mShaderHandler->mLightDeferredShader->SetPositionTexture(mD3D->GetImmediateContext(), NULL);
-	mShaderHandler->mLightDeferredShader->SetSSAOTexture(mD3D->GetImmediateContext(), NULL);
-	mShaderHandler->mLightDeferredShader->SetDepthTexture(mD3D->GetImmediateContext(), NULL);
-	mShaderHandler->mLightDeferredShader->SetVelocityTexture(mD3D->GetImmediateContext(), NULL);
-	*/
-
+	// Depth of field
 	if (mPostProcessingEffects & POST_PROCESSING_DOF)
 	{
 		D3D11_VIEWPORT DoFViewport;
@@ -682,10 +675,19 @@ void GraphicsEngineImpl::DrawScene()
 		mD3D->GetImmediateContext()->CopyResource(destination, source);
 	}
 
-	//-------------------------------------------------------------------------------------
-	// SMAA
-	//-------------------------------------------------------------------------------------
+	// Anti-aliasing (SMAA)
+
+	//******
+	// TODO: Gamma correct light accumulation buffer!
+	//******
+
 	mSMAA->ClearRenderTargets(mD3D->GetImmediateContext(), XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f), mD3D->GetDepthStencilView());
+	mSMAA->Run(mD3D->GetImmediateContext(),
+		mIntermediateTexture->GetShaderResourceView(), // <--- Has to be gamma corrected
+		mD3D->GetDepthStencilSRView(),
+		mDeferredBuffers->GetSRV(DeferredBuffersIndex::Velocity),
+		mD3D->GetRenderTargetView(),
+		mD3D->GetDepthStencilView());
 
 	//-------------------------------------------------------------------------------------
 	// Motion blur cache

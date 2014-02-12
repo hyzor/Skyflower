@@ -179,7 +179,7 @@ void SMAA::ClearRenderTargets(ID3D11DeviceContext* dc, DirectX::XMFLOAT4 RGBA, I
 		dc->ClearRenderTargetView(mRenderTargetViewArray[i], color);
 	}
 
-	dc->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	//dc->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
 ID3D11RenderTargetView* SMAA::GetRenderTarget(UINT bufferIndex)
@@ -219,4 +219,24 @@ void SMAA::Shutdown()
 ID3D11ShaderResourceView* SMAA::GetPreCalculatedTexture(UINT preCalcTexIndex)
 {
 	return mPreCalculatedTextures[preCalcTexIndex];
+}
+
+void SMAA::Run(ID3D11DeviceContext* dc,
+	ID3D11ShaderResourceView* sourceGammaSRV,
+	ID3D11ShaderResourceView* depthSRV,
+	ID3D11ShaderResourceView* velocitySRV,
+	ID3D11RenderTargetView* destinationRTV,
+	ID3D11DepthStencilView* dsv)
+{
+	// Reset render target
+	dc->OMSetRenderTargets(0, nullptr, nullptr);
+
+	// Clear render targets
+	ClearRenderTargets(dc, XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f), dsv);
+
+	// Edge detection pass
+
+	// Blending weights calculation pass
+	
+	// Neighborhood blending pass
 }

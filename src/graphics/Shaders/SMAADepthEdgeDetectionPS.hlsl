@@ -11,6 +11,7 @@ cbuffer cbPerFrame : register(b0)
 {
 	unsigned int screenWidth;
 	unsigned int screenHeight;
+	float2 padding;
 };
 
 Texture2D depthTex : register(t0);

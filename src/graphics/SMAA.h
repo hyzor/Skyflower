@@ -4,6 +4,8 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 
+using namespace DirectX;
+
 enum SmaaBufferIndex
 {
 	Edges = 0,
@@ -35,6 +37,13 @@ public:
 	ID3D11ShaderResourceView* GetPreCalculatedTexture(UINT preCalcTexIndex);
 
 	ID3D11ShaderResourceView* GetSRV(UINT view);
+
+	void Run(ID3D11DeviceContext* dc,
+		ID3D11ShaderResourceView* sourceGammaSRV,
+		ID3D11ShaderResourceView* depthSRV,
+		ID3D11ShaderResourceView* velocitySRV,
+		ID3D11RenderTargetView* destinationRTV,
+		ID3D11DepthStencilView* dsv);
 
 	void Shutdown();
 

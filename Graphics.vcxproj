@@ -47,7 +47,7 @@
     <ClCompile Include="src\graphics\SkinnedData.cpp" />
     <ClCompile Include="src\graphics\SkinnedDataSorted.cpp" />
     <ClCompile Include="src\graphics\Sky.cpp" />
-    <ClCompile Include="src\graphics\SmaaBuffers.cpp" />
+    <ClCompile Include="src\graphics\SMAA.cpp" />
     <ClCompile Include="src\graphics\Texture2DImpl.cpp" />
     <ClCompile Include="src\graphics\TextureManager.cpp" />
     <ClCompile Include="src\graphics\Vertex.cpp" />
@@ -71,6 +71,7 @@
     <ClInclude Include="src\graphics\GenericSkinnedModelSorted.h" />
     <ClInclude Include="src\graphics\GeometryGenerator.h" />
     <ClInclude Include="src\graphics\GraphicsEngine.h" />
+    <ClInclude Include="src\graphics\GraphicsEngineImpl.h" />
     <ClInclude Include="src\graphics\Instance.h" />
     <ClInclude Include="src\graphics\InstanceImpl.h" />
     <ClInclude Include="src\graphics\LightDef.h" />
@@ -85,7 +86,7 @@
     <ClInclude Include="src\graphics\SkinnedData.h" />
     <ClInclude Include="src\graphics\SkinnedDataSorted.h" />
     <ClInclude Include="src\graphics\Sky.h" />
-    <ClInclude Include="src\graphics\SmaaBuffers.h" />
+    <ClInclude Include="src\graphics\SMAA.h" />
     <ClInclude Include="src\graphics\Texture2D.h" />
     <ClInclude Include="src\graphics\Texture2DImpl.h" />
     <ClInclude Include="src\graphics\TextureManager.h" />

@@ -4,6 +4,7 @@ cbuffer cbPerFrame : register(b0)
 {
 	unsigned int screenHeight;
 	unsigned int screenWidth;
+	float2 padding;
 };
 
 struct VertexIn
