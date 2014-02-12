@@ -264,12 +264,12 @@ int Event::IsActivator(lua_State* L)
 		bool ret = false;
 		if (entity->ground)
 		{
-			if (entity->ground->hasComponents(comp));
+			if (entity->ground->hasComponents(comp))
 				ret = true;
 		}
 		else if (entity->wall)
 		{
-			if (entity->wall->hasComponents(comp));
+			if (entity->wall->hasComponents(comp))
 				ret = true;
 		}
 		else
