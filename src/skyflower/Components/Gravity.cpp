@@ -62,7 +62,7 @@ void GravityComponent::update(float dt)
 
 	//activate event for wall
 	if (getOwner()->wall)
-		getEntityManager()->sendMessageToEntity("Wall", getOwner()->wall->fId);
+  		getEntityManager()->sendMessageToEntity("Wall", getOwner()->wall->fId);
 
 
 	createGroundTriangle(getOwner(), getOwner()->ground);

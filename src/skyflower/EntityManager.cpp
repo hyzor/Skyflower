@@ -880,7 +880,7 @@ bool EntityManager::loadXML(string xmlFile)
 				}
 				else if (componentName == "Goal")
 				{
-					Goal *g = new Goal();
+					Goal* g = new Goal();
 					this->addComponent(entity, g);
 				}
 				else if (componentName == "Throw")
@@ -891,6 +891,11 @@ bool EntityManager::loadXML(string xmlFile)
 				else if (componentName == "Throwable")
 				{
 					Throwable *t = new Throwable();
+					this->addComponent(entity, t);
+				}
+				else if (componentName == "Touch")
+				{
+					Touch* t = new Touch();
 					this->addComponent(entity, t);
 				}
 				else

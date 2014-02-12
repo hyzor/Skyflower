@@ -10,7 +10,7 @@
 			<Gravity />
 			<Listener />
 			<Footsteps />
-			<Messenger />
+			
 			<Push />
 			<Pushable />
 			<Health maxHP = "100" />
@@ -21,6 +21,9 @@
 	
     <Entity entityName="ballonPlattform" model="Models\Worlds\Subworld 1\ballonPlattform" id="24" isVisible="1" isCollidible="1" isAnimated="0" xPos="294" yPos="79" zPos="125"  xRot="0.0" yRot="-1.57145119464" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <MoveTarget targetPosX="199.477652486" targetPosY="39.1736969453" targetPosZ="116.23238288" duration="5" easingPower="3" continuous="0" />
+		<Messenger />
+		<Touch />
+		<Event script="ballonPop" />
     </Entity>
 	
     <Entity entityName="plattform1" model="Models\Worlds\Subworld 1\plattform1" id="100" isVisible="1" isCollidible="1" isAnimated="0" xPos="0.0" yPos="0.0" zPos="-0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
@@ -45,7 +48,7 @@
     <Entity entityName="Rock" model="Models\Worlds\Subworld 1\Rock" id="13" isVisible="1" isCollidible="1" isAnimated="0" xPos="301.101785755" yPos="77.6491530009" zPos="176.172195801" xRot="-0.169338101103" yRot="0.0" zRot="0.0" xScale="6.76847965241" yScale="6.76847965241" zScale="6.76847965241"/>
     <Entity entityName="WoodBlock" model="Models\Checkpoint\Checkpoint_FINAL\checkpointBase" id="14" isVisible="1" isCollidible="0" isAnimated="0" xPos="290.030637847" yPos="79.7036492634" zPos="152.252250723" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
 		<Messenger />
-        <Checkpoint/>
+        <Checkpoint />
     </Entity>
 	<Entity entityName="WoodBlock" model="Models\Worlds\Subworld 1\Puncha_static" id="1411" isVisible="1" isCollidible="0" isAnimated="0" xPos="565.370649948" yPos="116.5956517912" zPos="51.8543727491" xRot="0.0" yRot="1.57" zRot="0.0" xScale="5.0" yScale="5.0" zScale="5.0">
 		<Messenger />

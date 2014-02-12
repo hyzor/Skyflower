@@ -151,7 +151,15 @@ function update_testAI(id, dt)
 end
 
 
+--ballonPop script--
+--------------------
 
+function activated_ballonPop(id)
+	Print("Touched")
+	if IsActivator(id, "Throwable") then
+		Print("POP!")
+	end
+end
 
 
 --Goal script--
@@ -180,3 +188,5 @@ function activated_Goal(id)
 	StartUpdate()
 
 end
+
+

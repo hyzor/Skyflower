@@ -42,6 +42,7 @@ public:
 		lua_register(sh->L, "StartUpdate", Event::StartUpdate);
 		lua_register(sh->L, "InRange", Event::InRange);
 		lua_register(sh->L, "IsActivated", Event::IsActivated);
+		lua_register(sh->L, "IsActivator", Event::IsActivator);
 
 		//AI
 		lua_register(sh->L, "SetTarget", Event::SetTarget);
@@ -113,6 +114,7 @@ private:
 	static int StopUpdate(lua_State* L);
 	static int InRange(lua_State* L);
 	static int IsActivated(lua_State* L);
+	static int IsActivator(lua_State* L);
 
 	static int SetTarget(lua_State* L);
 	static int IsTouching(lua_State* L);
