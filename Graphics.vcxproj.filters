@@ -357,5 +357,8 @@
     <None Include="src\graphics\Shaders\ParticleSystemShared.hlsli">
       <Filter>Shaders\Particle System</Filter>
     </None>
+    <None Include="src\graphics\Shaders\CascadedShadowsShared.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

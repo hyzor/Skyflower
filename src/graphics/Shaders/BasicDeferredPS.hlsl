@@ -5,11 +5,12 @@ cbuffer cPerObject : register(b0)
 {
 	Material gMaterial;
 	int type;
-	float3 skit;
+	float3 skit; //B-E-A-UTIFUL!
 }
 
 Texture2D gDiffuseMap : register(t0);
 Texture2D gShadowMap : register(t1);
+Texture2DArray gShadowMaps : register(t2);
 
 SamplerState samLinear : register(s0);
 SamplerState samAnisotropic : register(s1);

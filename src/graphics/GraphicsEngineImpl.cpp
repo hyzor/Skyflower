@@ -635,6 +635,7 @@ void GraphicsEngineImpl::DrawScene()
 		}
 	}
 
+	//Debugging shadowcascades
 	mSpriteBatch->Begin();
 
 	mSpriteBatch->Draw(

@@ -15,6 +15,7 @@
 #define MAX_DIR_LIGHTS 4
 #define MAX_POINT_LIGHTS 16
 #define MAX_SPOT_LIGHTS 8
+#define MAX_CASC 8
 
 using namespace DirectX;
 
@@ -483,6 +484,7 @@ public:
 	void SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetType(int type);
+	void SetCascade(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex, const XMMATRIX& transform, float nearDepth, float farDepth, int index);
 
 	void UpdatePerObj(ID3D11DeviceContext* dc);
 
@@ -497,8 +499,11 @@ private:
 		//XMMATRIX worldViewProjTex;
 		XMMATRIX texTransform;
 		XMMATRIX shadowTransform;
-
+		XMMATRIX shadowTransforms[MAX_CASC];
 		XMMATRIX prevWorldViewProj;
+
+		float nearDepth[MAX_CASC];
+		float farDepth[MAX_CASC];
 	};
 
 	struct PS_CPEROBJBUFFER

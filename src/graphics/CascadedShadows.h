@@ -5,15 +5,15 @@
 #include "Cascade.h"
 #include "Camera.h"
 
-#define CASCADES_MAX 3
+#define CASCADES_MAX 8
 
 static const XMVECTORF32 gVecFLTMAX = { FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX };
 static const XMVECTORF32 gVecFLTMIN = { -FLT_MAX, -FLT_MAX, -FLT_MAX, -FLT_MAX };
 
 enum FRUSTUM_SPLIT_METHOD
 {
-	FIT_TO_SCENE,
-	FIT_TO_CASCADE
+	FIT_TO_SCENE, //The cascades overlap eachother (e.g: 0 - 0.33, 0-0.66, 0-1.0)
+	FIT_TO_CASCADE //The cascades do not overlap eachother (e.g: 0 - 0.33, 0.33-0.66, 0.66-1.0)
 };
 
 enum NEAR_FAR_FIT_METHOD
