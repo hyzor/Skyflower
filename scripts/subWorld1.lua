@@ -124,16 +124,28 @@ function load_testAI(id)
 end
 
 throwtime = 0
+currtarget = 511;
 function update_testAI(id, dt)
 	PickUp(id)
 	if not CanThrow(id, 98713) then
 		SetTarget(id, 98713)
 	else
-		throwtime = throwtime + dt
-		SetTarget(id, player)
-		if throwtime > 2 then
-			Throw(id)
-			throwtime = 0
+		if InRange(id, player, 60) then
+			throwtime = throwtime + dt
+			SetTarget(id, player)
+			if throwtime > 2 then
+				Throw(id)
+				throwtime = 0
+			end
+		else --patrulera
+			SetTarget(id, currtarget)
+			if InRange(id, currtarget, 4) then
+				if currtarget == 511 then
+					currtarget = 512
+				else
+					currtarget = 511
+				end
+			end
 		end
 	end
 end
