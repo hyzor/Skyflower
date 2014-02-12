@@ -155,8 +155,9 @@ void Application::Start()
 
 	int loadingScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "Menygrafik\\fyraTreRatio.png");
 	m_GUI->GetGUIElement(loadingScreen)->SetVisible(false);
-	skyflower = m_graphicsEngine->CreateMorphAnimatedInstance("Models/skyflower meshar/Skyflower_Final/", "skyflower.morph", Vec3(0.0f, -40.0f, 45.0f));
-	skyflower->SetVisibility(true);
+
+	skyflower = NULL;
+
 	mGameTime = 0.0;
 	m_oldTime = GetTime();
 	mStartTime = GetTime();
@@ -238,10 +239,13 @@ void Application::Start()
 			m_graphicsEngine->UpdateSceneData();
 
 			m_GUI->GetGUIElement(loadingScreen)->SetVisible(false);
+
 			if (levelHandler->currentLevel() == 0)
 			{
-				if (skyflower)
-					skyflower->SetVisibility(true);
+				if (!skyflower)
+					skyflower = m_graphicsEngine->CreateMorphAnimatedInstance("Models/skyflower meshar/Skyflower_Final/", "skyflower.morph", Vec3(0.0f, -40.0f, 45.0f));
+
+				skyflower->SetVisibility(true);
 			}
 			else
 			{
@@ -255,6 +259,9 @@ void Application::Start()
 	
 	//m_graphicsEngine->DeleteTexture2D(memoryChartTexture);
 	//m_graphicsEngine->DeleteTexture2D(frameTimeChartTexture);
+
+	//if (skyflower)
+		//m_graphicsEngine->DeleteInstance(skyflower);
 
 	delete m_cutscene;
 	delete m_menu;
@@ -324,7 +331,6 @@ void Application::updateMenu(float dt)
 
 void Application::updateCutScene(float dt)
 {
-
 	if (levelHandler->currentLevel() == 0 && skyflower)
 	{
 		Vec3 weights = skyflower->GetWeights();
