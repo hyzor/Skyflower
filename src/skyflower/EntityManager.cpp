@@ -574,7 +574,7 @@ void EntityManager::destroyComponent(Component *comp) {
 
 	comp->removeFromEntity();
 	// remove its own local requests - only if the Entity itself wasn't removed yet
-	getEntity(comp->getOwnerId())->removeComponent(comp);
+	comp->getOwner()->removeComponent(comp);
 
 	// CREATE event
 	Message msg(DESTROY);
@@ -595,7 +595,7 @@ void EntityManager::destroyComponent(Component *comp) {
 		}
 
 		// forward to the Entity itself, so local requests are processed also
-		getEntity(comp->getOwnerId())->sendMessage(reqId, msg);
+		comp->getOwner()->sendMessage(reqId, msg);
 
 		// release the lock
 		releaseLock(reqId);
