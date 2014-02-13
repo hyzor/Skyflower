@@ -8,6 +8,7 @@
 
 Push::Push() : Component("Push")
 {
+	this->canPush = true;
 }
 
 Push::~Push()
@@ -20,6 +21,8 @@ void Push::addedToEntity()
 
 	//requestMessage("inAir", &Push::stopPush);
 	requestMessage("Wall", &Push::stopPush);
+	requestMessage("isHoldingThrowable", &Push::setCanNotPush);
+	requestMessage("isNotHoldingThrowable", &Push::setCanPush);
 }
 
 void Push::removeFromEntity()
@@ -35,7 +38,7 @@ void Push::update(float dt)
 
 	if (pushedObject != nullptr)
 	{
-		if (pushedObject->hasComponents("Box"))
+		if (pushedObject->hasComponents("Box") && canPush)
 		{
 			isPushingBox = true;
 
@@ -102,7 +105,7 @@ void Push::stopPush(Message const& msg)
 		getEntityManager()->sendMessageToEntity("stopBeingPushed", getOwnerId());
 }
 
-bool Push::canPush(Entity* target)
+bool Push::colliding(Entity* target)
 {
 	return target->sphere->Test(*getOwner()->sphere);
 }
@@ -116,20 +119,21 @@ void Push::push(Entity* target)
 		if (getOwner()->sphere && e->sphere)
 		{
 			//are two entities colliding?
-			if (canPush(e))
+			if (colliding(e))
 			{
-				Vec3 dir = (e->returnPos() - getOwner()->returnPos()).Normalize();
-
-				//if (this->fEntitys[i]->getType() == "player" || this->fEntitys[j]->getType() == "player")
-
-				//if "i" is moving and can push, and that "j" is pushable
-				if (getOwner()->getPhysics()->GetStates()->isMoving && e->hasComponents("Pushable"))
+				if (canPush)
 				{
-					e->getPhysics()->SetPushDirection(dir * 10);
-					getEntityManager()->sendMessageToEntity("beingPushed", e->fId);
+					Vec3 dir = (e->returnPos() - getOwner()->returnPos()).Normalize();
 
-					Vec3 position = e->returnPos();
-					e->getModules()->sound->PlaySound("push.wav", 1.0f, &position.X);
+					//if this entity is moving and can push, and that the other entity is pushable
+					if (getOwner()->getPhysics()->GetStates()->isMoving && e->hasComponents("Pushable"))
+					{
+						e->getPhysics()->SetPushDirection(dir * 10);
+						getEntityManager()->sendMessageToEntity("beingPushed", e->fId);
+
+						Vec3 position = e->returnPos();
+						e->getModules()->sound->PlaySound("push.wav", 1.0f, &position.X);
+					}
 				}
 			}
 		}
@@ -145,4 +149,14 @@ void Push::pushAll()
 bool Push::isPushingBox()
 {
 	return m_isPushingBox;
+}
+
+void Push::setCanPush(Message const& msg)
+{
+	this->canPush = true;
+}
+
+void Push::setCanNotPush(Message const& msg)
+{
+	this->canPush = false;
 }
