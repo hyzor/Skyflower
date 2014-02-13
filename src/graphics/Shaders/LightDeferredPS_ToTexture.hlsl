@@ -1,6 +1,19 @@
 #include "LightDeferredVS.hlsl"
 #include "LightDef.hlsli"
 
+//http://frictionalgames.blogspot.se/2012/09/tech-feature-hdr-lightning.html
+float3 Uncharted2Tonemap(float3 x)
+{
+	float A = 0.15;
+	float B = 0.50;
+	float C = 0.10;
+	float D = 0.20;
+	float E = 0.02;
+	float F = 0.30;
+
+	return ((x*(A*x + C*B) + D*E) / (x*(A*x + B) + D*F)) - E / F;
+};
+
 #define MAX_MOTIONBLURSAMPLES 32
 
 cbuffer cLightBuffer : register(b0)
@@ -212,6 +225,25 @@ PixelOut main(VertexOut pIn)
 	}
 
 	//return litColor;
+
+	// Exposure and vignetting
+	//float luminance = dot(diffuse.xyz, float3(0.333f, 0.333f, 0.333f));
+
+	/*
+	float exposure = 1.25f;
+	float2 vtc = float2(pIn.Tex - 0.5);
+	float vignette = pow(1 - (dot(vtc, vtc) * 1.0), 2.0);
+
+	float3 exposed = 1.0 - pow(2.71, -(vignette * pOut.LitColor.xyz * exposure));
+
+	pOut.LitColor.xyz = exposed;
+	*/
+
+	// Tone mapping
+	//pOut.LitColor.xyz = Uncharted2Tonemap(pOut.LitColor.xyz);
+
+	// Gamma encode final lit color
+	pOut.LitColor.xyz = pow(pOut.LitColor.xyz, 1.0f / 2.2f);
 
 	return pOut;
 }

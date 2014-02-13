@@ -15,6 +15,7 @@ struct VertexIn
 
 struct VertexOut
 {
+	float4 position : SV_POSITION;
 	float2 texCoord : TEXCOORD;
 	float2 pixCoord : PIXCOORD;
 	float4 offset[3] : OFFSET;
@@ -40,8 +41,11 @@ VertexOut main(VertexIn vIn)
 
 	vOut.texCoord = vIn.texCoord;
 
-	// TODO: Figure out what this does
-	vOut.subSampleIndices = float4(1.0f, 1.0f, 1.0f, 1.0f);
+	// This is for temporal modes (SMAA T2x)
+	vOut.subSampleIndices = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+	vOut.position.xyz = vIn.position.xyz;
+	vOut.position.w = 1.0f;
 
 	return vOut;
 }

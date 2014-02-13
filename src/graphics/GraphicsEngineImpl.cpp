@@ -375,17 +375,18 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mFullscreenTriangle = new FullscreenTriangle(mD3D->GetDevice(), mInputLayouts->PosTex);
 
 	mSMAA = new SMAA();
-	mSMAA->Init(mD3D->GetDevice(), width, height,
-		//mTextureMgr->CreateDDSTextureFromBytes(areaTexBytes, AREATEX_SIZE, "AreaTex"),
-		mTextureMgr->CreateTexture(mResourceDir + "Textures/SMAA/AreaTexDX11.dds"),
-		mTextureMgr->CreateTexture(mResourceDir + "Textures/SMAA/SearchTex.dds"),
-		mFullscreenTriangle);
 
 	mSMAA->SetShaders(mShaderHandler->mSMAAColorEdgeDetectionShader,
 		mShaderHandler->mSMAALumaEdgeDetectionShader,
 		mShaderHandler->mSMAADepthEdgeDetectionShader,
 		mShaderHandler->mSMAANeighborhoodBlendingShader,
 		mShaderHandler->mSMAABlendingWeightCalculationsShader);
+
+	mSMAA->Init(mD3D->GetDevice(), width, height,
+		//mTextureMgr->CreateDDSTextureFromBytes(areaTexBytes, AREATEX_SIZE, "AreaTex"),
+		mTextureMgr->CreateTexture(mResourceDir + "Textures/SMAA/AreaTexDX11.dds"),
+		mTextureMgr->CreateTexture(mResourceDir + "Textures/SMAA/SearchTex.dds"),
+		mFullscreenTriangle);
 
 	std::string fontPath = mResourceDir + "myfile.spritefont";
 	std::wstring fontPathW(fontPath.begin(), fontPath.end());
@@ -620,7 +621,8 @@ void GraphicsEngineImpl::DrawScene()
 		renderTarget = mDoFBlurTexture1->GetRenderTargetView();
 		mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
 
-		mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mIntermediateTexture->GetShaderResourceView());
+		//mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mIntermediateTexture->GetShaderResourceView());
+		mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetLitSceneSRV());
 		mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetInputTexture(mD3D->GetImmediateContext(), mDoFCoCTexture->GetShaderResourceView());
 
 		mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetFramebufferSize(XMFLOAT2((float)mDoFCoCTexture->GetWidth(), (float)mDoFCoCTexture->GetHeight()));
@@ -661,7 +663,8 @@ void GraphicsEngineImpl::DrawScene()
  		mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
 
 		// Composite the result of the light pass with the depth of field.
-		mShaderHandler->mCompositeShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mIntermediateTexture->GetShaderResourceView());
+		//mShaderHandler->mCompositeShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mIntermediateTexture->GetShaderResourceView());
+		mShaderHandler->mCompositeShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetLitSceneSRV());
 		mShaderHandler->mCompositeShader->SetDoFCoCTexture(mD3D->GetImmediateContext(), mDoFCoCTexture->GetShaderResourceView());
 		mShaderHandler->mCompositeShader->SetDoFFarFieldTexture(mD3D->GetImmediateContext(), mDoFBlurTexture2->GetShaderResourceView());
 
@@ -677,7 +680,8 @@ void GraphicsEngineImpl::DrawScene()
 	}
 	else
 	{
-		ID3D11Resource *source = mIntermediateTexture->GetTexture();
+		//ID3D11Resource *source = mIntermediateTexture->GetTexture();
+		ID3D11Resource* source = mDeferredBuffers->GetLitSceneTexture2D();
 		ID3D11Resource *destination;
 		mD3D->GetSwapChain()->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&destination));
 
@@ -691,9 +695,11 @@ void GraphicsEngineImpl::DrawScene()
 	// TODO: Gamma correct light accumulation buffer!
 	//******
 
-	mSMAA->ClearRenderTargets(mD3D->GetImmediateContext(), XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f), mD3D->GetDepthStencilView());
+	mD3D->GetImmediateContext()->OMSetDepthStencilState(0, 0);
+
 	mSMAA->Run(mD3D->GetImmediateContext(),
-		mIntermediateTexture->GetShaderResourceView(), // <--- Has to be gamma corrected
+		//mIntermediateTexture->GetShaderResourceView(), // <--- Has to be gamma corrected
+		mDeferredBuffers->GetLitSceneSRV(),
 		mD3D->GetDepthStencilSRView(),
 		mDeferredBuffers->GetSRV(DeferredBuffersIndex::Velocity),
 		mD3D->GetRenderTargetView(),
@@ -739,15 +745,19 @@ void GraphicsEngineImpl::DrawScene()
 		}
 	}
 
+	renderTarget = mD3D->GetRenderTargetView();
+	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
+	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
+
 	//XMFLOAT4 test = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
-	/*
 	XMVECTORF32 Green = { 0.000000000f, 1.000000000f, 0.000000000f, 1.000000000f };
 	mSpriteBatch->Begin();
-	mSpriteBatch->Draw(mD3D->GetDepthStencilSRView(), XMFLOAT2(0.0f, 0.0f), nullptr, Colors::Red, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
-	mSpriteBatch->Draw(mDeferredBuffers->GetLitSceneSRV(), XMFLOAT2(0.0f, 400.0f), nullptr, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
-	mSpriteBatch->Draw(mD3D->GetDepthStencilSRView(), XMFLOAT2(0.0f, 200.0f), nullptr, Green, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
+// 	mSpriteBatch->Draw(mD3D->GetDepthStencilSRView(), XMFLOAT2(0.0f, 0.0f), nullptr, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
+// 	mSpriteBatch->Draw(mDeferredBuffers->GetLitSceneSRV(), XMFLOAT2(0.0f, 400.0f), nullptr, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
+// 	mSpriteBatch->Draw(mD3D->GetDepthStencilSRView(), XMFLOAT2(0.0f, 200.0f), nullptr, Green, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
+	mSpriteBatch->Draw(mSMAA->GetSRV(SmaaBufferIndex::Edges), XMFLOAT2(0.0f, 0.0f), nullptr, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
+	mSpriteBatch->Draw(mSMAA->GetSRV(SmaaBufferIndex::Blend), XMFLOAT2(0.0f, 200.0f), nullptr, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
 	mSpriteBatch->End();
-	*/
 
 	//-------------------------------------------------------------------------------------
 	// Restore defaults
@@ -1051,10 +1061,10 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
 
 	mDeferredBuffers->ClearRenderTargets(mD3D->GetImmediateContext(), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), mD3D->GetDepthStencilView());
-	//mD3D->GetImmediateContext()->ClearRenderTargetView(mDeferredBuffers->GetLitSceneRTV(), reinterpret_cast<const float*>(&Colors::Black));
-	mD3D->GetImmediateContext()->ClearRenderTargetView(mIntermediateTexture->GetRenderTargetView(), reinterpret_cast<const float*>(&Colors::Black));
+	mD3D->GetImmediateContext()->ClearRenderTargetView(mDeferredBuffers->GetLitSceneRTV(), reinterpret_cast<const float*>(&Colors::Black));
+	//mD3D->GetImmediateContext()->ClearRenderTargetView(mIntermediateTexture->GetRenderTargetView(), reinterpret_cast<const float*>(&Colors::Black));
 
-	// Draw sky first of all
+	// Draw sky first of all/
 	mSky->Draw(mD3D->GetImmediateContext(), *mCamera, mShaderHandler->mSkyDeferredShader);
 
 	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
@@ -1204,8 +1214,8 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 		}
 	}
 
-	//ID3D11RenderTargetView* renderTargetsLitScene[1] = { mDeferredBuffers->GetLitSceneRTV() };
-	ID3D11RenderTargetView* renderTargetsLitScene[1] = { mIntermediateTexture->GetRenderTargetView() };
+	ID3D11RenderTargetView* renderTargetsLitScene[1] = { mDeferredBuffers->GetLitSceneRTV() };
+	//ID3D11RenderTargetView* renderTargetsLitScene[1] = { mIntermediateTexture->GetRenderTargetView() };
 	//mD3D->GetImmediateContext()->OMSetRenderTargets(1, renderTargetsLitScene, NULL);
 	mD3D->GetImmediateContext()->OMSetRenderTargets(1, renderTargetsLitScene, NULL);
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDepthDisabledStencilEnabledDSS, 0);
@@ -1226,7 +1236,7 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	mShaderHandler->mLightDeferredToTextureShader->SetLightWorldViewProj(mShadowMap->GetLightWorld(), mShadowMap->GetLightView(), mShadowMap->GetLightProj());
 
 	// TODO: Instead of hard coding these properties, get them from some modifiable settings collection
-	mShaderHandler->mLightDeferredToTextureShader->SetFogProperties(1, 0.0095f, -75.0f, 0.0105f, XMFLOAT4(0.86f, 0.86f, 0.9f, 1.0f));//XMFLOAT4(0.85f, 0.85f, 0.85f, 1.0f));
+	mShaderHandler->mLightDeferredToTextureShader->SetFogProperties(1, 0.0095f, -100.0f, 0.0105f, XMFLOAT4(0.86f, 0.86f, 0.9f, 1.0f));//XMFLOAT4(0.85f, 0.85f, 0.85f, 1.0f));
 	mShaderHandler->mLightDeferredToTextureShader->SetMotionBlurProperties(1);
 	mShaderHandler->mLightDeferredToTextureShader->SetFpsValues(mCurFPS, mTargetFPS);
 
@@ -1273,8 +1283,8 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	//mDeferredBuffers->ClearRenderTargets(mD3D->GetImmediateContext(), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), mD3D->GetDepthStencilView());
 
 	// Set previously drawn lit scene as a texture to use in particle shader
-	//mShaderHandler->mParticleSystemShader->SetLitSceneTex(mD3D->GetImmediateContext(), mDeferredBuffers->GetLitSceneSRV());
-	mShaderHandler->mParticleSystemShader->SetLitSceneTex(mD3D->GetImmediateContext(), mIntermediateTexture->GetShaderResourceView());
+	mShaderHandler->mParticleSystemShader->SetLitSceneTex(mD3D->GetImmediateContext(), mDeferredBuffers->GetLitSceneSRV());
+	//mShaderHandler->mParticleSystemShader->SetLitSceneTex(mD3D->GetImmediateContext(), mIntermediateTexture->GetShaderResourceView());
 
 	// Now draw transparent particles (stencil still enabled)...
 	for (UINT i = 0; i < mParticleSystems.size(); ++i)
@@ -1388,10 +1398,17 @@ void GraphicsEngineImpl::addDirLight(Vec3 color, Vec3 direction, float intensity
 	DirectionalLight dirLight;
 	ZeroMemory(&dirLight, sizeof(DirectionalLight));
 
+	color.X = pow(color.X, 2.2f);
+	color.Y = pow(color.Y, 2.2f);
+	color.Z = pow(color.Z, 2.2f);
+
 	dirLight.Ambient = XMFLOAT4(intensity / 10.0f, intensity / 10.0f, intensity / 10.0f, 1.0f);
 	dirLight.Diffuse = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
 	dirLight.Direction = XMFLOAT3(direction.X, direction.Y, direction.Z);
 	dirLight.Specular = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
+
+	//XMFLOAT3 gammaCorrected = XMFLOAT3(dirLight.Diffuse.x, dirLight.Diffuse.y, dirLight.Diffuse.z);
+	//gammaCorrected = pow(gammaCorrected, 2.2f)
 
 	mDirLights.push_back(dirLight);
 }
@@ -1401,12 +1418,16 @@ void GraphicsEngineImpl::addPointLight(Vec3 color, Vec3 position, float intensit
 	PointLight pointLight;
 	ZeroMemory(&pointLight, sizeof(PointLight));
 
+	color.X = pow(color.X, 2.2f);
+	color.Y = pow(color.Y, 2.2f);
+	color.Z = pow(color.Z, 2.2f);
+
 	pointLight.Position = XMFLOAT3(position.X, position.Y, position.Z);
 	pointLight.Ambient = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
 	pointLight.Specular = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
 	pointLight.Diffuse = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
 	pointLight.Attenuation = XMFLOAT3(intensity / 100.0f, intensity / 100.0f, intensity / 100.0f);
-	pointLight.Range = 1000.0f;
+	pointLight.Range = 250.0f;
 	mPointLights.push_back(pointLight);
 }
 
@@ -1415,12 +1436,16 @@ void GraphicsEngineImpl::addSpotLight(Vec3 color, Vec3 direction, Vec3 position,
 	SpotLight spotLight;
 	ZeroMemory(&spotLight, sizeof(SpotLight));
 
-	spotLight.Ambient = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	color.X = pow(color.X, 2.2f);
+	color.Y = pow(color.Y, 2.2f);
+	color.Z = pow(color.Z, 2.2f);
+
+	spotLight.Ambient = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
 	spotLight.Diffuse = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
-	spotLight.Specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	spotLight.Specular = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
 	spotLight.Attenuation = XMFLOAT3(1.0f, 0.0f, 0.0f);
 	spotLight.Spot = angle;
-	spotLight.Range = 1000.0f;
+	spotLight.Range = 500.0f;
 	spotLight.Position = XMFLOAT3(position.X, position.Y, position.Z);
 	spotLight.Direction = XMFLOAT3(direction.X, direction.Y, direction.Z);
 	mSpotLights.push_back(spotLight);

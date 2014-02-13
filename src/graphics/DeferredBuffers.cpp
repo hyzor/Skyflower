@@ -84,25 +84,23 @@ bool DeferredBuffers::Init(ID3D11Device* device, UINT width, UINT height)
 			return false;
 	}
 
-	/*
-	// Lit scene buffer
-	DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	// Lit scene HDR buffer
+	DXGI_FORMAT format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 
 	textureDesc.Format = format;
-	hr = device->CreateTexture2D(&textureDesc, NULL, &mLitSceneTexture);
+	hr = device->CreateTexture2D(&textureDesc, NULL, &mLitSceneRenderTargetTexture);
 	if (FAILED(hr))
 		return false;
 
 	renderTargetViewDesc.Format = format;
-	hr = device->CreateRenderTargetView(mLitSceneTexture, &renderTargetViewDesc, &mLitSceneRenderTargetView);
+	hr = device->CreateRenderTargetView(mLitSceneRenderTargetTexture, &renderTargetViewDesc, &mLitSceneRenderTargetView);
 	if (FAILED(hr))
 		return false;
 
 	shaderResourceViewDesc.Format = format;
-	hr = device->CreateShaderResourceView(mLitSceneTexture, &shaderResourceViewDesc, &mLitSceneShaderResourceView);
+	hr = device->CreateShaderResourceView(mLitSceneRenderTargetTexture, &shaderResourceViewDesc, &mLitSceneShaderResourceView);
 	if (FAILED(hr))
 		return false;
-	*/
 
 	return true;
 }
@@ -169,7 +167,6 @@ ID3D11RenderTargetView* DeferredBuffers::GetRenderTarget(UINT bufferIndex)
 	return mRenderTargetViewArray[bufferIndex];
 }
 
-/*
 ID3D11RenderTargetView* DeferredBuffers::GetLitSceneRTV()
 {
 	return mLitSceneRenderTargetView;
@@ -179,4 +176,8 @@ ID3D11ShaderResourceView* DeferredBuffers::GetLitSceneSRV()
 {
 	return mLitSceneShaderResourceView;
 }
-*/
+
+ID3D11Texture2D* DeferredBuffers::GetLitSceneTexture2D()
+{
+	return mLitSceneRenderTargetTexture;
+}

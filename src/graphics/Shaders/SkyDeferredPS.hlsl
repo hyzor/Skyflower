@@ -38,6 +38,9 @@ PixelOut main(VertexOut pIn)// : SV_TARGET
 
 	pOut.Specular = float4(0.0f, 0.0f, 0.0f, 1.0f);
 
+	// Gamma correct color (make it linear)
+	pOut.Color.xyz = pow(pOut.Color.xyz, 2.2f);
+
 	float2 CurPosXY;
 	float2 PrevPosXY;
 

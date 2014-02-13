@@ -155,6 +155,12 @@ bool SMAA::Init(ID3D11Device* device, UINT width, UINT height,
 
 	mFullscreenTriangle = fullscreenTriangle;
 
+	mSMAAColorEdgeDetectionShader->SetScreenDimensions(height, width);
+	mSMAADepthEdgeDetectionShader->SetScreenDimensions(height, width);
+	mSMAALumaEdgeDetectionShader->SetScreenDimensions(height, width);
+	mSMAABlendingWeightCalculationsShader->SetScreenDimensions(height, width);
+	mSMAANeighborhoodBlendingShader->SetScreenDimensions(height, width);
+
 	return true;
 }
 
@@ -165,6 +171,12 @@ void SMAA::OnResize(ID3D11Device* device, UINT width, UINT height)
 		mPreCalculatedTextures[PreCalculatedTexturesIndex::Area],
 		mPreCalculatedTextures[PreCalculatedTexturesIndex::Search],
 		mFullscreenTriangle);
+
+	mSMAAColorEdgeDetectionShader->SetScreenDimensions(height, width);
+	mSMAADepthEdgeDetectionShader->SetScreenDimensions(height, width);
+	mSMAALumaEdgeDetectionShader->SetScreenDimensions(height, width);
+	mSMAABlendingWeightCalculationsShader->SetScreenDimensions(height, width);
+	mSMAANeighborhoodBlendingShader->SetScreenDimensions(height, width);
 }
 
 void SMAA::SetRenderTargets(ID3D11DeviceContext* dc, ID3D11DepthStencilView* depthStencilView)
@@ -235,22 +247,81 @@ void SMAA::Run(ID3D11DeviceContext* dc,
 	ID3D11RenderTargetView* destinationRTV,
 	ID3D11DepthStencilView* dsv)
 {
-	// Reset render target
-	dc->OMSetRenderTargets(0, nullptr, nullptr);
-
 	// Clear render targets
 	ClearRenderTargets(dc, XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f), dsv);
 
+	float blendFactor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	//------------------------------------------------------------------------------
 	// Edge detection pass
+	//------------------------------------------------------------------------------
+	// Disable depth replace stencil
+	dc->OMSetDepthStencilState(RenderStates::mDepthDisabledStencilEnabledDSS, 1);
+
+	// Edge detection passes uses no blending
+	dc->OMSetBlendState(RenderStates::mDefaultBS, blendFactor, 0xffffffff);
+	dc->OMSetRenderTargets(1, &mRenderTargetViewArray[SmaaBufferIndex::Edges], dsv);
+
+	// Luma edge detection
 	mSMAALumaEdgeDetectionShader->SetActive(dc);
 	mSMAALumaEdgeDetectionShader->SetColorTexture(dc, sourceGammaSRV);
 	mSMAALumaEdgeDetectionShader->SetPredicationTex(dc, nullptr);
 	mSMAALumaEdgeDetectionShader->UpdatePerFrame(dc);
+
+	// Depth edge detection
+// 	mSMAADepthEdgeDetectionShader->SetActive(dc);
+// 	mSMAADepthEdgeDetectionShader->SetDepthTexture(dc, depthSRV);
+// 	mSMAADepthEdgeDetectionShader->UpdatePerFrame(dc);
+
+	// Color edge detection
+// 	mSMAAColorEdgeDetectionShader->SetActive(dc);
+// 	mSMAAColorEdgeDetectionShader->SetColorTexture(dc, sourceGammaSRV);
+// 	mSMAAColorEdgeDetectionShader->SetPredicationTex(dc, nullptr);
+// 	mSMAAColorEdgeDetectionShader->UpdatePerFrame(dc);
+	
 	mFullscreenTriangle->Draw(dc);
 
+	mSMAADepthEdgeDetectionShader->SetDepthTexture(dc, nullptr);
+
+	//------------------------------------------------------------------------------
 	// Blending weights calculation pass
+	//------------------------------------------------------------------------------
+	// Disable depth use stencil
+	dc->OMSetDepthStencilState(RenderStates::mDepthDisabledStencilEnabledDSS, 1);
+
+	// Blending weights calculations pass uses no blending
+	dc->OMSetBlendState(RenderStates::mDefaultBS, blendFactor, 0xffffffff);
+	dc->OMSetRenderTargets(1, &mRenderTargetViewArray[SmaaBufferIndex::Blend], dsv);
+
+	mSMAABlendingWeightCalculationsShader->SetActive(dc);
+	mSMAABlendingWeightCalculationsShader->SetEdgesTexture(dc, mShaderResourceViewArray[SmaaBufferIndex::Edges]);
+	mSMAABlendingWeightCalculationsShader->SetAreaTexture(dc, mPreCalculatedTextures[PreCalculatedTexturesIndex::Area]);
+	mSMAABlendingWeightCalculationsShader->SetSearchTexture(dc, mPreCalculatedTextures[PreCalculatedTexturesIndex::Search]);
+	mSMAABlendingWeightCalculationsShader->UpdatePerFrame(dc);
+
+	mFullscreenTriangle->Draw(dc);
 	
+	//------------------------------------------------------------------------------
 	// Neighborhood blending pass
+	//------------------------------------------------------------------------------
+	// Disable depth and stencil
+	dc->OMSetDepthStencilState(RenderStates::mDisabledDSS, 0);
+
+	// If using SMAA 1x, no blending is used
+	// Blending is used for all the other modes
+	dc->OMSetBlendState(RenderStates::mDefaultBS, blendFactor, 0xffffffff);
+	dc->OMSetRenderTargets(1, &destinationRTV, dsv);
+
+	mSMAANeighborhoodBlendingShader->SetActive(dc);
+	mSMAANeighborhoodBlendingShader->SetBlendTex(dc, mShaderResourceViewArray[SmaaBufferIndex::Blend]);
+	mSMAANeighborhoodBlendingShader->SetColorTexture(dc, sourceGammaSRV);
+	mSMAANeighborhoodBlendingShader->SetVelocityTex(dc, velocitySRV);
+	mSMAANeighborhoodBlendingShader->UpdatePerFrame(dc);
+
+	mFullscreenTriangle->Draw(dc);
+
+	// Reset render target
+	dc->OMSetRenderTargets(0, nullptr, nullptr);
 }
 
 void SMAA::SetShaders(SMAAColorEdgeDetectionShader* colorEdge,

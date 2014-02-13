@@ -15,6 +15,7 @@ struct VertexIn
 
 struct VertexOut
 {
+	float4 position : SV_POSITION;
 	float2 texCoord : TEXCOORD;
 	float4 offset[3] : OFFSET;
 };
@@ -30,6 +31,8 @@ VertexOut main(VertexIn vIn)
 	vOut.offset[2] = mad(SMAA_RT_METRICS.xyxy, float4(-2.0, 0.0, 0.0, -2.0), vIn.texCoord.xyxy);
 
 	vOut.texCoord = vIn.texCoord;
+	vOut.position.xyz = vIn.position.xyz;
+	vOut.position.w = 1.0f;
 
 	return vOut;
 }

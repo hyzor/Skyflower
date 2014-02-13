@@ -76,7 +76,8 @@ PixelOut main(VertexOut pIn)
 	//pOut.Position = float4(pIn.PosW, 1.0f);
 
 	
-		
+	// Gamma correct color (make it linear)
+	pOut.Color.xyz = pow(pOut.Color.xyz, 2.2f);
 
 	//pOut.Velocity = ((pIn.CurPosH - pIn.PrevPosH) / 2.0f).xy;
 	//pOut.Velocity = pIn.Velocity;
