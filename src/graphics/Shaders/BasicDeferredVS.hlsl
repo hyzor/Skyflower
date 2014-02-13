@@ -8,14 +8,11 @@ cbuffer cbPerObject : register(b0)
 	//float4x4 gWorldViewProjTex;
 	float4x4 gTexTransform;
 	float4x4 gShadowTransform;
-	float4x4 gShadowTransforms[MAX_CASCADES]; 
+	//float4x4 gShadowTransforms[MAX_CASCADES]; 
 	float4x4 gPrevWorldViewProj;
-
+	
+	float4x4 gWorldView;
 	float4x4 gShadowSpace; //Regardless of cascade, transform to lightspace
-	float4x4 gShadowProjTex[MAX_CASCADES]; //Transform for each cascade's individual projection
-
-	float gNearDepths[MAX_CASCADES];
-	float gFarDepths[MAX_CASCADES]
 };
 
 struct VertexIn
@@ -32,9 +29,12 @@ struct VertexOut
 	float3 NormalW : NORMAL;
 	float2 Tex : TEXCOORD0;
 	float4 ShadowPosH : TEXCOORD1;
+	float4 TexShadow : TEXCOORD2;
 
 	float4 CurPosH : CURPOSH;
 	float4 PrevPosH : PREVPOSH;
+
+	float Depth : TEXCOORD3;
 
 	//float2 CurPosXY : CURPOSXY;
 	//float2 PrevPosXY : PREVPOSXY;
@@ -77,6 +77,12 @@ VertexOut main(VertexIn vIn)
 	vOut.PrevPosH = mul(float4(vIn.PosL, 1.0f), gPrevWorldViewProj);
 	//vOut.PrevPosH.xy = (vOut.PrevPosH.xy / vOut.PrevPosH.w) * 0.5f + 0.5f;
 	//vOut.PrevPosH.xy /= vOut.PrevPosH.w;
+
+	//Generate depth for current pixel in cam space
+	vOut.Depth = mul(float4(vIn.PosL, 1.0), gWorldView).z;
+
+	//Transform position to light/shadow -space
+	vOut.TexShadow = mul(float4(vIn.PosL, 1.0), gShadowSpace);
 
 	//vOut.Velocity = vOut.CurPosH - vOut.PrevPosH;
 	//vOut.Velocity /= 2.0f;

@@ -191,6 +191,8 @@ void CascadedShadows::CreateLightFrustums(const DirectionalLight& light, const B
 			//Set the depths of the intervals to later use these to determine correct cascade to sample from
 			this->mCascades.at(i)->SetSplitDepthNear(intervalBegin);
 			this->mCascades.at(i)->SetSplitDepthFar(intervalEnd);
+			//this->mCascades.at(i)->SetSplitDepthNear(nearPlane);
+			//this->mCascades.at(i)->SetSplitDepthFar(farPlane);
 
 			//Increment beginning and end equally to create the next subfrustum
 			intervalBegin += split * camRange;
@@ -230,4 +232,9 @@ Cascade* CascadedShadows::GetCascade(UINT index)
 		return this->mCascades.at(index);
 	else 
 		return nullptr;
+}
+
+UINT CascadedShadows::GetNrOfCascades() const
+{
+	return this->mNrOfCascades;
 }

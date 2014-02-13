@@ -1289,9 +1289,20 @@ void BasicDeferredShader::SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderRes
 	dc->PSSetShaderResources(0, 1, &tex);
 }
 
-void BasicDeferredShader::SetCascadeVars(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex, const XMMATRIX& transform, float nearDepth, float farDepth, int index)
+void BasicDeferredShader::SetCascadeVars(
+	ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex,
+	const XMMATRIX& view, const XMMATRIX& lightSpace,
+	const XMMATRIX& shadowProj, float nearDepth, 
+	float farDepth, int index, int nrOfCascades)
 {
-	//mBufferCache.vsPerObjBuffer.
+	dc->PSSetShaderResources(index + SHADOWMAP_SR_REG_OFFSET, 1, &tex);
+
+	mBufferCache.vsPerObjBuffer.worldView = XMMatrixTranspose(view);
+	mBufferCache.vsPerObjBuffer.lightSpace = XMMatrixTranspose(lightSpace);
+	mBufferCache.psPerObjBuffer.shadowProj[index] = XMMatrixTranspose(shadowProj);
+	mBufferCache.psPerObjBuffer.nearDepths[index] = nearDepth;
+	mBufferCache.psPerObjBuffer.farDepths[index] = farDepth;
+	mBufferCache.psPerObjBuffer.nrOfCascades = nrOfCascades;
 }
 
 void BasicDeferredShader::UpdatePerObj(ID3D11DeviceContext* dc)

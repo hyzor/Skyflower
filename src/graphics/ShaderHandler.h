@@ -15,7 +15,7 @@
 #define MAX_DIR_LIGHTS 4
 #define MAX_POINT_LIGHTS 16
 #define MAX_SPOT_LIGHTS 8
-#define MAX_CASC 8
+#define MAX_CASC 4
 
 using namespace DirectX;
 
@@ -484,7 +484,12 @@ public:
 	void SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetType(int type);
-	void SetCascadeVars(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex, const XMMATRIX& transform, float nearDepth, float farDepth, int index);
+
+	void SetCascadeVars(
+		ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex,
+		const XMMATRIX& View, const XMMATRIX& lightSpace,
+		const XMMATRIX& shadowProj, float nearDepth, float farDepth, 
+		int index, int nrOfCascades);
 
 	void UpdatePerObj(ID3D11DeviceContext* dc);
 
@@ -503,11 +508,7 @@ private:
 
 		XMMATRIX worldView;
 		XMMATRIX lightSpace;
-		XMMATRIX shadowTransforms[MAX_CASC];
-		XMMATRIX shadowProjTex[MAX_CASC];
-
-		float nearDepth[MAX_CASC];
-		float farDepth[MAX_CASC];
+		//XMMATRIX shadowTransforms[MAX_CASC];
 	};
 	
 	struct PS_CPEROBJBUFFER
@@ -515,6 +516,14 @@ private:
 		Material mat;
 		int type;
 		XMFLOAT3 skit;
+
+		XMMATRIX shadowProj[MAX_CASC];
+
+		float nearDepths[MAX_CASC];
+		float farDepths[MAX_CASC];
+
+		int nrOfCascades;
+		//XMFLOAT3 ytterligareSkit; // (padding)
 	};
 
 	struct BUFFERCACHE
@@ -522,6 +531,8 @@ private:
 		VS_CPEROBJBUFFER vsPerObjBuffer;
 		PS_CPEROBJBUFFER psPerObjBuffer;
 	};
+
+	static const UINT SHADOWMAP_SR_REG_OFFSET = 2; // Make sure this is the same amount as there are occupied registers before the register for the shadowmaps
 
 	struct BUFFERCACHE mBufferCache;
 

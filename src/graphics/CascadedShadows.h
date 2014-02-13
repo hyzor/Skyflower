@@ -30,6 +30,7 @@ class CascadedShadows
 private:
 	std::vector<Cascade*> mCascades;
 	UINT mNrOfCascades;
+
 	FRUSTUM_SPLIT_METHOD mFrustumSplitMethod;
 	NEAR_FAR_FIT_METHOD mNearFarFitMethod;
 
@@ -61,6 +62,8 @@ public:
 		ShadowMorphShader* shadowMorphShader);
 
 	Cascade* GetCascade(UINT index);
+
+	UINT GetNrOfCascades() const;
 
 };
 

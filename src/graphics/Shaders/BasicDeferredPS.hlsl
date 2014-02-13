@@ -6,6 +6,14 @@ cbuffer cPerObject : register(b0)
 	Material gMaterial;
 	int type;
 	float3 skit; //B-E-A-UTIFUL!
+
+	float4x4 gShadowProjTex[MAX_CASCADES]; //Transform for each cascade's individual projection
+
+	float gNearDepths[MAX_CASCADES];
+	float gFarDepths[MAX_CASCADES];
+
+	int nrOfCascades;
+	//float3 ytterligareSkit; // (Padding)
 }
 
 Texture2D gDiffuseMap : register(t0);
@@ -47,8 +55,38 @@ PixelOut main(VertexOut pIn)
 
 	//pOut.Position = float4(pIn.PosW, 1.0f);
 
+	int cascadeIndex = 0;
+	float shadowFactor;
+	float4 shadowPos;
+
+	if (true)
+	{
+
+		if (pIn.Depth > gFarDepths[nrOfCascades - 1])
+			shadowFactor = 1.0f;
+
+		//Compare the depth of current pixel in camera space and compare to given near and far depths
+		//to decide appropriate index of cascade to sample from
+		for (int i = 0; i < nrOfCascades; i++)
+		{
+			if (pIn.Depth < gFarDepths[i] && pIn.Depth > gNearDepths[i])
+			{
+				cascadeIndex = i;
+			}
+		}
+
+		shadowPos = mul(pIn.TexShadow, gShadowProjTex[cascadeIndex]); //Transform to shadow projection texture space
+
+		if (cascadeIndex == 0)
+			shadowFactor = CalcShadowFactor(samShadow, gShadowMap1, shadowPos); //Cascade 1
+		else if (cascadeIndex == 1)
+			shadowFactor = CalcShadowFactor(samShadow, gShadowMap2, shadowPos); //Cascade 2
+		else if (cascadeIndex == 2)
+			shadowFactor = CalcShadowFactor(samShadow, gShadowMap3, shadowPos); //Cascade 3
+
+	}
 	// Bake shadow factor into color w component
-	float shadowFactor = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
+	//shadowFactor = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
 
 	if (type == 1)
 		pOut.Color.w = 1.0f;

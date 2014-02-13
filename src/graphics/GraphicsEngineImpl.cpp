@@ -58,6 +58,7 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 
 	delete mSky;
 	delete mShadowMap;
+	delete mCascadedShadows;
 	delete mCamera;
 	delete mTextureMgr;
 
@@ -144,8 +145,8 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mFarBlurryPlane = 250.0f;
 
 	mSky = new Sky(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Textures\\SkyBox.dds", 2000.0f);
-	mShadowMap = new ShadowMap(mD3D->GetDevice(), 2048, 2048);
-	mCascadedShadows = new CascadedShadows(mD3D->GetDevice(), 2048, 2048, 3);
+	mShadowMap = new ShadowMap(mD3D->GetDevice(), 2048 * 2, 2048 * 2); //Remember that a const is defined in LightDef.hlsli 
+	mCascadedShadows = new CascadedShadows(mD3D->GetDevice(), 2048, 2048, 3); //Ditto!
 	mCascadedShadows->SetSplitMethod(FIT_TO_CASCADE);
 	mCascadedShadows->SetNearFarFitMethod(FIT_NEARFAR_AABB);
 
@@ -638,15 +639,15 @@ void GraphicsEngineImpl::DrawScene()
 	//Debugging shadowcascades
 	mSpriteBatch->Begin();
 
-	mSpriteBatch->Draw(
-		mShadowMap->getDepthMapSRV(), 
-		XMFLOAT2(0.0f, 0.0f), 
-		nullptr, 
-		Colors::White, 
-		0.0f, 
-		XMFLOAT2(0.0f, 0.0f), 
-		XMFLOAT2(0.1f, 0.1f)
-		);
+	//mSpriteBatch->Draw(
+	//	mShadowMap->getDepthMapSRV(), 
+	//	XMFLOAT2(0.0f, 0.0f), 
+	//	nullptr, 
+	//	Colors::White, 
+	//	0.0f, 
+	//	XMFLOAT2(0.0f, 0.0f), 
+	//	XMFLOAT2(0.1f, 0.1f)
+	//	);
 
 	mSpriteBatch->Draw(
 		mCascadedShadows->GetCascade(0)->getDepthMapSRV(), 
@@ -991,6 +992,8 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	//mShaderHandler->mBasicDeferredShader->SetViewProjMatrices(mCamera->GetViewProjMatrix(), XMLoadFloat4x4(&
 	//));
 
+	Cascade* currCasc;
+
 	// Loop through all model instances
 	for (UINT i = 0; i < mInstances.size(); ++i)
 	{
@@ -1010,6 +1013,18 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 				XMMatrixMultiply(mInstances[i]->GetWorld(), mShadowMap->GetShadowTransform()),
 				mShadowMap->GetLightView(),
 				mShadowMap->GetLightProj());
+
+			for (UINT cIndex = 0; cIndex < this->mCascadedShadows->GetNrOfCascades(); cIndex++)
+			{
+				currCasc = mCascadedShadows->GetCascade(cIndex);
+
+				if (currCasc)
+				{
+					mShaderHandler->mBasicDeferredShader->SetCascadeVars(mD3D->GetImmediateContext(), currCasc->getDepthMapSRV(),  
+						this->mCamera->GetViewMatrix(), currCasc->GetLightView(), currCasc->GetLightProj(), 
+						currCasc->GetSplitDepthNear(), currCasc->GetSplitDepthFar(), cIndex, this->mCascadedShadows->GetNrOfCascades());
+				}
+			}
 
 			for (UINT j = 0; j < mInstances[i]->model->meshCount; ++j)
 			{
