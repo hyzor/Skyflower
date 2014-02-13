@@ -35,44 +35,25 @@ public:
 
 	}
 
-	//for throw and throwing
-	bool getToPickUp()
-	{
-		return this->toPickUp;
-	}
+	
 
-	void setToPickUp(bool state)
+	void update(float dt)
 	{
-		if (!isDizzy)
+		if (isDizzy)
 		{
-			this->toPickUp = state;
+			/*this->holdingEntityId = -1;
+			this->toPickUp = false;
+			this->toPutDown = false;
+			this->isHoldingThrowable = false;
+			this->toThrow = false;*/
 		}
+		//sendMessageToEntity(this->getOwnerId(), "update");
 	}
+	
 
-	bool getToPutDown()
+	EntityId getHoldingEntityId()
 	{
-		return this->toPutDown;
-	}
-
-	void setToPutDown(bool state)
-	{		
-		if (!isDizzy)
-		{
-			this->toPutDown = state;
-		}
-	}
-
-	bool getIsHoldingThrowable()
-	{
-		return this->isHoldingThrowable;
-	}
-
-	void setIsHoldingThrowable(bool state)
-	{		
-		if (!isDizzy)
-		{
-			this->isHoldingThrowable = state;
-		}
+		return this->holdingEntityId;
 	}
 
 	bool getToThrow()
@@ -80,29 +61,51 @@ public:
 		return this->toThrow;
 	}
 
+	bool getIsHoldingThrowable()
+	{
+		return this->isHoldingThrowable;
+	}
+
+	bool getToPickUp()
+	{
+		return this->toPickUp;
+	}
+
+	bool getToPutDown()
+	{
+		return this->toPutDown;
+	}
+
+	bool IsDizzy()
+	{
+		return isDizzy;
+	}
+
+
+	void setToPickUp(bool state)
+	{
+		this->toPickUp = state;
+	}
+
+	void setToPutDown(bool state)
+	{
+		this->toPutDown = state;
+	}
+
+	void setIsHoldingThrowable(bool state)
+	{
+		this->isHoldingThrowable = state;
+	}
+
 	void setToThrow(bool state)
-	{		
-		if (!isDizzy)
-		{
-			this->toThrow = state;
-		}
+	{
+		this->toThrow = state;
 	}
 
 	void setHoldingEntityId(EntityId id)
-	{		
-		if (!isDizzy)
-		{
-			this->holdingEntityId = id;
-		}
-	}
-
-	EntityId getHoldingEntityId()
 	{
-		return this->holdingEntityId;
+		this->holdingEntityId = id;
 	}
-
-
-	
 
 private:
 
@@ -117,18 +120,7 @@ private:
 	{
 
 	}
-	void update(Message const & msg)
-	{
-		if (isDizzy)
-		{
-			this->holdingEntityId = -1;
-			this->toPickUp = false;
-			this->toPutDown = false;
-			this->isHoldingThrowable = false;
-			this->toThrow = false;
-		}
-		sendMessageToEntity(this->getOwnerId(), "update");
-	}
+	
 
 	//when pick up or put down-button is pressed
 	void pickUpOrDown(Message const & msg)
@@ -174,12 +166,18 @@ private:
 	{
 		if (isHoldingThrowable)
 		{
-			setToPutDown(false);
+			/*setToPutDown(false);
 			setIsHoldingThrowable(false);
 			setToPickUp(false);
-			sendMessageToEntity(holdingEntityId, "Dropped");
+			sendMessageToEntity(holdingEntityId, "Dropped");*/
 		}
 	}
+
+	
+
+	
+
+
 
 	void setIsDizzy(Message const &msg)
 	{
@@ -190,6 +188,7 @@ private:
 	{
 		this->isDizzy = false;
 	}
+	
 };
 
 #endif

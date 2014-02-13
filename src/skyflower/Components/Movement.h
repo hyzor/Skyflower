@@ -41,6 +41,11 @@ public:
 	float GetSpeed();
 	void SetSpeed(float speed);
 
+	bool IsDizzy()
+	{
+		return isDizzy;
+	}
+
 private:
 	void startMoveForward(Message const& msg);
 	void startMoveBackward(Message const& msg);
