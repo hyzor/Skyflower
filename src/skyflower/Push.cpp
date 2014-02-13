@@ -29,11 +29,11 @@ void Push::removeFromEntity()
 void Push::update(float dt)
 {
 	//push box
-	Entity *pusher = getOwner();
-	Entity *pushedObject = pusher->wall;
+	Entity* pusher = getOwner();
+	Entity* pushedObject = pusher->wall;
 	bool isPushingBox = false;
 
-	if (pushedObject != nullptr)
+	if (pushedObject)
 	{
 		if (pushedObject->hasComponents("Box"))
 		{
@@ -77,7 +77,17 @@ void Push::update(float dt)
 				rotation.Y = DegreesToRadians(90.0f + 90.0f * sign);
 			}
 
-			pushedObject->updatePos(pushedObjectPos + dir * dt * pushedObject->getComponent<Movement*>("Movement")->GetSpeed());
+
+			//check if entity is holding
+			bool p = true;
+			Throw* throwcomp = pusher->getComponent<Throw*>("Throw");
+			if(throwcomp)
+				if (throwcomp->getIsHoldingThrowable())
+					p = false;
+
+			if(p)
+				pushedObject->updatePos(pushedObjectPos + dir * dt * pushedObject->getComponent<Movement*>("Movement")->GetSpeed());
+			
 			pusher->updateRot(rotation);
 
 			EntityId pusherId = getOwnerId();

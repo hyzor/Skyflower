@@ -83,7 +83,7 @@ void AI::update(float dt)
 	}
 	if (!safe)
 	{
-		if (unsafe[unsafeIndex] != nullptr)
+		if (unsafe[unsafeIndex])
 			getEntityManager()->modules->potentialField->DeleteField(unsafe[unsafeIndex]);
 
 		unsafe[unsafeIndex] = getEntityManager()->modules->potentialField->CreateField(10, 10, pos + dir * 10);
