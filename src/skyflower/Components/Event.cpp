@@ -369,7 +369,7 @@ int Event::CanPush(lua_State* L)
 		Entity* entityAi = entityManager->getEntity(aiId);
 		Entity* entityTarget = entityManager->getEntity(targetId);
 
-		lua_pushboolean(L, entityAi->getComponent<Push*>("Push")->canPush(entityTarget));
+		lua_pushboolean(L, entityAi->getComponent<Push*>("Push")->colliding(entityTarget));
 		return 1;
 	}
 
@@ -501,7 +501,7 @@ int Event::PickUp(lua_State* L)
 
 	Entity* entity = entityManager->getEntity(lua_tointeger(L, 1));
 
-	entityManager->sendMessageToEntity("PickUp", entity->fId);
+	//entityManager->sendMessageToEntity("PickUp", entity->fId);
 
 
 	return 0;

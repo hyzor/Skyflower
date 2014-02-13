@@ -32,6 +32,7 @@ public:
 		requestMessage("DropThrowable", &Throw::dropThrowable);
 		requestMessage("isDizzy", &Throw::setIsDizzy);
 		requestMessage("notDizzy", &Throw::setNotDizzy);
+
 	}
 
 	//for throw and throwing

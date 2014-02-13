@@ -24,7 +24,7 @@ public:
 
 	void update(float deltaTime);
 
-	bool canPush(Entity* target);
+	bool colliding(Entity* target);
 
 	//push only selected entity
 	void push(Entity* target);
@@ -35,10 +35,13 @@ public:
 
 private:
 	void stopPush(Message const& msg);
+	void setCanPush(Message const& msg);
+	void setCanNotPush(Message const& msg);
 
 private:
 	bool m_isPushingBox;
 	Vec3 m_initialPushDirection;
+	bool canPush;
 };
 
 #endif
