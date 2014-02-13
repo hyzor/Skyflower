@@ -119,21 +119,18 @@ void Push::push(Entity* target)
 		if (getOwner()->sphere && e->sphere)
 		{
 			//are two entities colliding?
-			if (colliding(e))
+			if (colliding(e) && canPush)
 			{
-				if (canPush)
+				Vec3 dir = (e->returnPos() - getOwner()->returnPos()).Normalize();
+
+				//if this entity is moving and can push, and that the other entity is pushable
+				if (getOwner()->getPhysics()->GetStates()->isMoving && e->hasComponents("Pushable"))
 				{
-					Vec3 dir = (e->returnPos() - getOwner()->returnPos()).Normalize();
+					e->getPhysics()->SetPushDirection(dir * 10);
+					getEntityManager()->sendMessageToEntity("beingPushed", e->fId);
 
-					//if this entity is moving and can push, and that the other entity is pushable
-					if (getOwner()->getPhysics()->GetStates()->isMoving && e->hasComponents("Pushable"))
-					{
-						e->getPhysics()->SetPushDirection(dir * 10);
-						getEntityManager()->sendMessageToEntity("beingPushed", e->fId);
-
-						Vec3 position = e->returnPos();
-						e->getModules()->sound->PlaySound("push.wav", 1.0f, &position.X);
-					}
+					Vec3 position = e->returnPos();
+					e->getModules()->sound->PlaySound("push.wav", 1.0f, &position.X);
 				}
 			}
 		}

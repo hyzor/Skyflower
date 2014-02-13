@@ -501,7 +501,7 @@ int Event::PickUp(lua_State* L)
 
 	Entity* entity = entityManager->getEntity(lua_tointeger(L, 1));
 
-	entityManager->sendMessageToEntity("PickUp", entity->fId);
+	//entityManager->sendMessageToEntity("PickUp", entity->fId);
 
 
 	return 0;
