@@ -3,6 +3,8 @@
 
 #include <d3d11.h>
 #include <DirectXMath.h>
+#include "ShaderHandler.h"
+#include "FullscreenTriangle.h"
 
 using namespace DirectX;
 
@@ -26,11 +28,19 @@ public:
 	SMAA();
 	~SMAA();
 
-	bool Init(ID3D11Device* device, UINT width, UINT height, ID3D11ShaderResourceView* areaTex, ID3D11ShaderResourceView* searchTex);
+	bool Init(ID3D11Device* device, UINT width, UINT height,
+		ID3D11ShaderResourceView* areaTex, ID3D11ShaderResourceView* searchTex,
+		FullscreenTriangle* fullscreenTriangle);
 	void OnResize(ID3D11Device* device, UINT width, UINT height);
 
 	void SetRenderTargets(ID3D11DeviceContext* dc, ID3D11DepthStencilView* depthStencilView);
 	void ClearRenderTargets(ID3D11DeviceContext* dc, DirectX::XMFLOAT4 RGBA, ID3D11DepthStencilView* depthStencilView);
+
+	void SetShaders(SMAAColorEdgeDetectionShader* colorEdge,
+		SMAALumaEdgeDetectionShader* lumaEdge,
+		SMAADepthEdgeDetectionShader* depthEdge,
+		SMAANeighborhoodBlendingShader* neighborhoodBlending,
+		SMAABlendingWeightCalculationsShader* blendingWeightCalc);
 
 	ID3D11RenderTargetView* GetRenderTarget(UINT bufferIndex);
 
@@ -54,6 +64,15 @@ private:
 
 	// Pre-calculated textures
 	ID3D11ShaderResourceView* mPreCalculatedTextures[PreCalculatedTexturesIndex::PerCalcTexCount];
+
+	SMAAColorEdgeDetectionShader* mSMAAColorEdgeDetectionShader;
+	SMAALumaEdgeDetectionShader* mSMAALumaEdgeDetectionShader;
+	SMAADepthEdgeDetectionShader* mSMAADepthEdgeDetectionShader;
+
+	SMAANeighborhoodBlendingShader* mSMAANeighborhoodBlendingShader;
+	SMAABlendingWeightCalculationsShader* mSMAABlendingWeightCalculationsShader;
+
+	FullscreenTriangle* mFullscreenTriangle;
 };
 
 #endif

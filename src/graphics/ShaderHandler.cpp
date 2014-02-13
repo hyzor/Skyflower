@@ -86,6 +86,8 @@ ShaderHandler::~ShaderHandler()
 	delete mParticleSystemShader;
 	delete mLightDeferredToTextureShader;
 
+	delete mBasicDeferredSkinnedSortedShader;
+
 	// SMAA
 	delete mSMAAColorEdgeDetectionShader;
 	delete mSMAADepthEdgeDetectionShader;
@@ -1676,7 +1678,7 @@ bool LightDeferredShader::SetActive(ID3D11DeviceContext* dc)
 	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
 	dc->PSSetSamplers(1, 1, &RenderStates::mAnisotropicSS);
 	dc->PSSetSamplers(2, 1, &RenderStates::mComparisonSS);
-	dc->PSSetSamplers(3, 1, &RenderStates::mPointSS);
+	dc->PSSetSamplers(3, 1, &RenderStates::mPointClampedSS);
 
 	return true;
 }
@@ -2758,7 +2760,7 @@ void ParticleSystemShader::ActivateDrawShaders(ID3D11DeviceContext* dc)
 	dc->PSSetShader(mDrawParticlePS, nullptr, 0);
 
 	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
-	dc->PSSetSamplers(1, 1, &RenderStates::mPointSS);
+	dc->PSSetSamplers(1, 1, &RenderStates::mPointClampedSS);
 }
 
 void ParticleSystemShader::ActivateStreamShaders(ID3D11DeviceContext* dc)
@@ -3088,6 +3090,8 @@ bool SMAAColorEdgeDetectionShader::SetActive(ID3D11DeviceContext* dc)
 	dc->VSSetShader(mVertexShader, nullptr, 0);
 	dc->PSSetShader(mPixelShader, nullptr, 0);
 
+	dc->PSSetSamplers(0, 1, &RenderStates::mPointClampedSS);
+
 	return true;
 }
 
@@ -3218,6 +3222,8 @@ bool SMAADepthEdgeDetectionShader::SetActive(ID3D11DeviceContext* dc)
 	dc->VSSetShader(mVertexShader, nullptr, 0);
 	dc->PSSetShader(mPixelShader, nullptr, 0);
 
+	dc->PSSetSamplers(0, 1, &RenderStates::mLinearClampedSS);
+
 	return true;
 }
 
@@ -3329,6 +3335,8 @@ bool SMAALumaEdgeDetectionShader::SetActive(ID3D11DeviceContext* dc)
 	// Set active shaders
 	dc->VSSetShader(mVertexShader, nullptr, 0);
 	dc->PSSetShader(mPixelShader, nullptr, 0);
+
+	dc->PSSetSamplers(0, 1, &RenderStates::mPointClampedSS);
 
 	return true;
 }
@@ -3459,6 +3467,8 @@ bool SMAABlendingWeightCalculationsShader::SetActive(ID3D11DeviceContext* dc)
 	// Set active shaders
 	dc->VSSetShader(mVertexShader, nullptr, 0);
 	dc->PSSetShader(mPixelShader, nullptr, 0);
+	
+	dc->PSSetSamplers(0, 1, &RenderStates::mLinearClampedSS);
 
 	return true;
 }
@@ -3610,6 +3620,8 @@ bool SMAANeighborhoodBlendingShader::SetActive(ID3D11DeviceContext* dc)
 	// Set active shaders
 	dc->VSSetShader(mVertexShader, nullptr, 0);
 	dc->PSSetShader(mPixelShader, nullptr, 0);
+
+	dc->PSSetSamplers(0, 1, &RenderStates::mLinearClampedSS);
 
 	return true;
 }

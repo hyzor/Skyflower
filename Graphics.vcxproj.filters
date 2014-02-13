@@ -141,6 +141,9 @@
     <ClCompile Include="src\graphics\SMAA.cpp">
       <Filter>Header Files\SMAA</Filter>
     </ClCompile>
+    <ClCompile Include="src\graphics\FullscreenTriangle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\graphics\AnimatedEntity.h">
@@ -255,6 +258,9 @@
       <Filter>Header Files\SMAA</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics\GraphicsEngineImpl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\FullscreenTriangle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

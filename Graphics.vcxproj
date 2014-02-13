@@ -27,6 +27,7 @@
     <ClCompile Include="src\graphics\d3dUtilities.cpp" />
     <ClCompile Include="src\graphics\DeferredBuffers.cpp" />
     <ClCompile Include="src\graphics\Direct3D.cpp" />
+    <ClCompile Include="src\graphics\FullscreenTriangle.cpp" />
     <ClCompile Include="src\graphics\GenericMesh.cpp" />
     <ClCompile Include="src\graphics\GenericModel.cpp" />
     <ClCompile Include="src\graphics\GenericObjectLoader.cpp" />
@@ -63,6 +64,7 @@
     <ClInclude Include="src\graphics\Direct3D.h" />
     <ClInclude Include="src\graphics\External\SMAA\AreaTex.h" />
     <ClInclude Include="src\graphics\External\SMAA\SearchTex.h" />
+    <ClInclude Include="src\graphics\FullscreenTriangle.h" />
     <ClInclude Include="src\graphics\GenericMesh.h" />
     <ClInclude Include="src\graphics\GenericModel.h" />
     <ClInclude Include="src\graphics\GenericObjectLoader.h" />
@@ -421,7 +423,9 @@
     </None>
     <None Include="src\graphics\Shaders\ParticleSystemShared.hlsli" />
     <None Include="src\graphics\Shaders\Shared.hlsli" />
-    <None Include="src\graphics\Shaders\SMAA\SMAA_Shared.hlsli" />
+    <None Include="src\graphics\Shaders\SMAA\SMAA_Shared.hlsli">
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9B38121D-8D9E-45A3-AEE4-483D762F930F}</ProjectGuid>

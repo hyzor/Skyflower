@@ -9,11 +9,13 @@ cbuffer cbPerFrame : register(b0)
 
 struct VertexIn
 {
+	float3 position : POSITION;
 	float2 texCoord : TEXCOORD;
 };
 
 struct VertexOut
 {
+	float2 texCoord : TEXCOORD;
 	float4 offset[3] : OFFSET;
 };
 
@@ -26,6 +28,8 @@ VertexOut main(VertexIn vIn)
 	vOut.offset[0] = mad(SMAA_RT_METRICS.xyxy, float4(-1.0, 0.0, 0.0, -1.0), vIn.texCoord.xyxy);
 	vOut.offset[1] = mad(SMAA_RT_METRICS.xyxy, float4(1.0, 0.0, 0.0, 1.0), vIn.texCoord.xyxy);
 	vOut.offset[2] = mad(SMAA_RT_METRICS.xyxy, float4(-2.0, 0.0, 0.0, -2.0), vIn.texCoord.xyxy);
+
+	vOut.texCoord = vIn.texCoord;
 
 	return vOut;
 }

@@ -6,17 +6,22 @@
 */
 
 #include "SMAA/SMAA_Shared.hlsli"
+#include "SMAAEdgeDetectionVS.hlsl"
 
 Texture2D colorTex : register(t0);
 Texture2D predicationTex : register(t1);
 
+SamplerState samPoint : register(s0);
+
+/*
 struct VertexIn
 {
 	float2 texCoord : TEXCOORD;
 	float4 offset[3] : OFFSET;
 };
+*/
 
-float2 main(VertexIn vIn) : SV_TARGET
+float2 main(VertexOut vIn) : SV_TARGET
 {
 	// Calculate the threshold:
 #if SMAA_PREDICATION
@@ -27,13 +32,13 @@ float2 main(VertexIn vIn) : SV_TARGET
 
 	// Calculate color deltas:
 	float4 delta;
-	float3 C = SMAASamplePoint(colorTex, vIn.texCoord).rgb;
+	float3 C = SMAASamplePoint(colorTex, vIn.texCoord, samPoint).rgb;
 
-	float3 Cleft = SMAASamplePoint(colorTex, vIn.offset[0].xy).rgb;
+	float3 Cleft = SMAASamplePoint(colorTex, vIn.offset[0].xy, samPoint).rgb;
 	float3 t = abs(C - Cleft);
 	delta.x = max(max(t.r, t.g), t.b);
 
-	float3 Ctop = SMAASamplePoint(colorTex, vIn.offset[0].zw).rgb;
+	float3 Ctop = SMAASamplePoint(colorTex, vIn.offset[0].zw, samPoint).rgb;
 	t = abs(C - Ctop);
 	delta.y = max(max(t.r, t.g), t.b);
 
@@ -45,11 +50,11 @@ float2 main(VertexIn vIn) : SV_TARGET
 		discard;
 
 	// Calculate right and bottom deltas:
-	float3 Cright = SMAASamplePoint(colorTex, vIn.offset[1].xy).rgb;
+	float3 Cright = SMAASamplePoint(colorTex, vIn.offset[1].xy, samPoint).rgb;
 	t = abs(C - Cright);
 	delta.z = max(max(t.r, t.g), t.b);
 
-	float3 Cbottom = SMAASamplePoint(colorTex, vIn.offset[1].zw).rgb;
+	float3 Cbottom = SMAASamplePoint(colorTex, vIn.offset[1].zw, samPoint).rgb;
 	t = abs(C - Cbottom);
 	delta.w = max(max(t.r, t.g), t.b);
 
@@ -57,11 +62,11 @@ float2 main(VertexIn vIn) : SV_TARGET
 	float2 maxDelta = max(delta.xy, delta.zw);
 
 	// Calculate left-left and top-top deltas:
-	float3 Cleftleft = SMAASamplePoint(colorTex, vIn.offset[2].xy).rgb;
+	float3 Cleftleft = SMAASamplePoint(colorTex, vIn.offset[2].xy, samPoint).rgb;
 	t = abs(C - Cleftleft);
 	delta.z = max(max(t.r, t.g), t.b);
 
-	float3 Ctoptop = SMAASamplePoint(colorTex, vIn.offset[2].zw).rgb;
+	float3 Ctoptop = SMAASamplePoint(colorTex, vIn.offset[2].zw, samPoint).rgb;
 	t = abs(C - Ctoptop);
 	delta.w = max(max(t.r, t.g), t.b);
 

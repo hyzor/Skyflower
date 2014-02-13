@@ -31,6 +31,7 @@
 
 #include "SMAA.h"
 #include "External/SMAA/AreaTex.h"
+#include "FullscreenTriangle.h"
 
 const float fovY = 0.785398f; // 0.25f * MathHelper::pi
 const float zNear = 1.0f;
@@ -181,6 +182,8 @@ private:
 	std::map<std::string, GenericSkinnedModelSorted*> mSkinnedSortedModels;
 
 	SMAA* mSMAA;
+
+	FullscreenTriangle* mFullscreenTriangle;
 
 	//GenericSkinnedModelSorted* mTestSortedModel;
 };

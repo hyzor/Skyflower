@@ -96,6 +96,7 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 	delete mDoFBlurTexture2;
 
 	delete mSMAA;
+	delete mFullscreenTriangle;
 
 	mD3D->Shutdown();
 	delete mD3D;
@@ -162,12 +163,6 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShadowMap = new ShadowMap(mD3D->GetDevice(), 2048, 2048);
 
 	mGameTime = 0.0f;
-
-	mSMAA = new SMAA();
-	mSMAA->Init(mD3D->GetDevice(), width, height,
-		//mTextureMgr->CreateDDSTextureFromBytes(areaTexBytes, AREATEX_SIZE, "AreaTex"),
-		mTextureMgr->CreateTexture(mResourceDir + "Textures/SMAA/AreaTexDX11.dds"),
-		mTextureMgr->CreateTexture(mResourceDir + "Textures/SMAA/SearchTex.dds"));
 
 	//-------------------------------------------------------------------------------------------------------
 	// Shaders
@@ -376,6 +371,21 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mSMAALumaEdgeDetectionShader->Init(mD3D->GetDevice(), mInputLayouts->PosTex);
 	mShaderHandler->mSMAABlendingWeightCalculationsShader->Init(mD3D->GetDevice(), mInputLayouts->PosTex);
 	mShaderHandler->mSMAANeighborhoodBlendingShader->Init(mD3D->GetDevice(), mInputLayouts->PosTex);
+
+	mFullscreenTriangle = new FullscreenTriangle(mD3D->GetDevice(), mInputLayouts->PosTex);
+
+	mSMAA = new SMAA();
+	mSMAA->Init(mD3D->GetDevice(), width, height,
+		//mTextureMgr->CreateDDSTextureFromBytes(areaTexBytes, AREATEX_SIZE, "AreaTex"),
+		mTextureMgr->CreateTexture(mResourceDir + "Textures/SMAA/AreaTexDX11.dds"),
+		mTextureMgr->CreateTexture(mResourceDir + "Textures/SMAA/SearchTex.dds"),
+		mFullscreenTriangle);
+
+	mSMAA->SetShaders(mShaderHandler->mSMAAColorEdgeDetectionShader,
+		mShaderHandler->mSMAALumaEdgeDetectionShader,
+		mShaderHandler->mSMAADepthEdgeDetectionShader,
+		mShaderHandler->mSMAANeighborhoodBlendingShader,
+		mShaderHandler->mSMAABlendingWeightCalculationsShader);
 
 	std::string fontPath = mResourceDir + "myfile.spritefont";
 	std::wstring fontPathW(fontPath.begin(), fontPath.end());

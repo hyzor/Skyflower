@@ -85,7 +85,9 @@ bool SmaaBuffers::Init(ID3D11Device* device, UINT width, UINT height)
 }
 */
 
-bool SMAA::Init(ID3D11Device* device, UINT width, UINT height, ID3D11ShaderResourceView* areaTex, ID3D11ShaderResourceView* searchTex)
+bool SMAA::Init(ID3D11Device* device, UINT width, UINT height,
+	ID3D11ShaderResourceView* areaTex, ID3D11ShaderResourceView* searchTex,
+	FullscreenTriangle* fullscreenTriangle)
 {
 	HRESULT hr;
 	D3D11_TEXTURE2D_DESC textureDesc;
@@ -151,13 +153,18 @@ bool SMAA::Init(ID3D11Device* device, UINT width, UINT height, ID3D11ShaderResou
 	mPreCalculatedTextures[PreCalculatedTexturesIndex::Area] = areaTex;
 	mPreCalculatedTextures[PreCalculatedTexturesIndex::Search] = searchTex;
 
+	mFullscreenTriangle = fullscreenTriangle;
+
 	return true;
 }
 
 void SMAA::OnResize(ID3D11Device* device, UINT width, UINT height)
 {
 	Shutdown();
-	Init(device, width, height, mPreCalculatedTextures[PreCalculatedTexturesIndex::Area], mPreCalculatedTextures[PreCalculatedTexturesIndex::Search]);
+	Init(device, width, height,
+		mPreCalculatedTextures[PreCalculatedTexturesIndex::Area],
+		mPreCalculatedTextures[PreCalculatedTexturesIndex::Search],
+		mFullscreenTriangle);
 }
 
 void SMAA::SetRenderTargets(ID3D11DeviceContext* dc, ID3D11DepthStencilView* depthStencilView)
@@ -235,8 +242,26 @@ void SMAA::Run(ID3D11DeviceContext* dc,
 	ClearRenderTargets(dc, XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f), dsv);
 
 	// Edge detection pass
+	mSMAALumaEdgeDetectionShader->SetActive(dc);
+	mSMAALumaEdgeDetectionShader->SetColorTexture(dc, sourceGammaSRV);
+	mSMAALumaEdgeDetectionShader->SetPredicationTex(dc, nullptr);
+	mSMAALumaEdgeDetectionShader->UpdatePerFrame(dc);
+	mFullscreenTriangle->Draw(dc);
 
 	// Blending weights calculation pass
 	
 	// Neighborhood blending pass
+}
+
+void SMAA::SetShaders(SMAAColorEdgeDetectionShader* colorEdge,
+	SMAALumaEdgeDetectionShader* lumaEdge,
+	SMAADepthEdgeDetectionShader* depthEdge,
+	SMAANeighborhoodBlendingShader* neighborhoodBlending,
+	SMAABlendingWeightCalculationsShader* blendingWeightCalc)
+{
+	mSMAAColorEdgeDetectionShader = colorEdge;
+	mSMAALumaEdgeDetectionShader = lumaEdge;
+	mSMAADepthEdgeDetectionShader = depthEdge;
+	mSMAANeighborhoodBlendingShader = neighborhoodBlending;
+	mSMAABlendingWeightCalculationsShader = blendingWeightCalc;
 }

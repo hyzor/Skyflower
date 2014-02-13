@@ -9,13 +9,16 @@ cbuffer cbPerFrame : register(b0)
 
 struct VertexIn
 {
+	float3 position : POSITION;
 	float2 texCoord : TEXCOORD;
 };
 
 struct VertexOut
 {
+	float2 texCoord : TEXCOORD;
 	float2 pixCoord : PIXCOORD;
 	float4 offset[3] : OFFSET;
+	float4 subSampleIndices : SAMPLEINDICES;
 };
 
 VertexOut main(VertexIn vIn)
@@ -34,6 +37,11 @@ VertexOut main(VertexIn vIn)
 	vOut.offset[2] = mad(SMAA_RT_METRICS.xxyy,
 	float4(-2.0, 2.0, -2.0, 2.0) * float(SMAA_MAX_SEARCH_STEPS),
 	float4(vOut.offset[0].xz, vOut.offset[1].yw));
+
+	vOut.texCoord = vIn.texCoord;
+
+	// TODO: Figure out what this does
+	vOut.subSampleIndices = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	return vOut;
 }
