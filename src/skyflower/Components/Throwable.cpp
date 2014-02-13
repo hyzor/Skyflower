@@ -85,6 +85,7 @@ void Throwable::update(float deltaTime)
 						entity->getComponent<Throw*>("Throw")->setHoldingEntityId(getOwnerId());
 						throwerId = entity->getComponent<Throw*>("Throw")->getOwnerId();
 						isBeingPickedUp = true;
+						sendMessageToEntity(entity->fId, "isHoldingThrowable");
 					}
 				}
 				//check so that we are comparing the correct entities
@@ -110,6 +111,7 @@ void Throwable::update(float deltaTime)
 						getOwner()->getPhysics()->SetVelocity(Vec3());
 
 						entity->getComponent<Throw*>("Throw")->setHoldingEntityId(-1);
+						sendMessageToEntity(entity->fId, "isNotHoldingThrowable");
 
 						throwerId = -1;
 					}
@@ -142,6 +144,7 @@ void Throwable::update(float deltaTime)
 
 							//TODO Throwing in Physics!
 							p->FireProjectile(entity->returnPos(), o);
+							sendMessageToEntity(entity->fId, "isNotHoldingThrowable");
 						}
 						//if entity did not throw throwable, update throwable postition in front of entity
 						else if (isBeingPickedUp)
