@@ -52,7 +52,8 @@ void GravityComponent::update(float dt)
 	//activate event for ground
 	if (getOwner()->ground)
 	{
-		getEntityManager()->sendMessageToEntity("Ground", getOwner()->ground->fId);
+		if(!getOwner()->hasComponents("Throwable")) // bollar kan inte trycka knappar
+			getEntityManager()->sendMessageToEntity("Ground", getOwner()->ground->fId);
 		//so that you can't jump while falling from something
 		getEntityManager()->sendMessageToEntity("notInAir", getOwnerId());
 	}
@@ -61,7 +62,7 @@ void GravityComponent::update(float dt)
 
 	//activate event for wall
 	if (getOwner()->wall)
-		getEntityManager()->sendMessageToEntity("Wall", getOwner()->wall->fId);
+  		getEntityManager()->sendMessageToEntity("Wall", getOwner()->wall->fId);
 
 
 	createGroundTriangle(getOwner(), getOwner()->ground);

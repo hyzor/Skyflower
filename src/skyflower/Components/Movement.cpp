@@ -55,11 +55,13 @@ void Movement::addedToEntity() {
 	this->p = getOwner()->getPhysics();
 
 	this->mParticleSystemRun = getOwner()->getModules()->graphics->CreateParticleSystem();
+	this->mParticleSystemRun->SetActive(false);
 	this->mParticleSystemRun->SetParticleType(ParticleType::PT_PARTICLE);
 	this->mParticleSystemRun->SetParticleAgeLimit(0.25f);
 	this->mParticleSystemRun->SetEmitFrequency(1.0f / 10.0f);
 
 	this->mParticleSystemDizzy = getOwner()->getModules()->graphics->CreateParticleSystem();
+	this->mParticleSystemDizzy->SetActive(false);
 	this->mParticleSystemDizzy->SetParticleType(ParticleType::PT_BIRD);
 	this->mParticleSystemDizzy->SetParticleAgeLimit(3.75f);
 	this->mParticleSystemDizzy->SetEmitFrequency(1.0f / 2.0f);

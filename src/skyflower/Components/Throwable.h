@@ -32,6 +32,7 @@ public:
 	void setIsBeingThrown(bool state);
 	
 
+
 private:
 
 	bool isBeingPickedUp;

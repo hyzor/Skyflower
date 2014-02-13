@@ -115,6 +115,56 @@ function update_aiPush(id, dt)
 	
 end
 
+
+--TestAI script--
+-----------------
+
+function load_testAI(id)
+	StartUpdate()
+end
+
+throwtime = 0
+currtarget = 511;
+function update_testAI(id, dt)
+	PickUp(id)
+	if not CanThrow(id, 98713) then
+		SetTarget(id, 98713)
+	else
+		if InRange(id, player, 60) then
+			throwtime = throwtime + dt
+			SetTarget(id, player)
+			if throwtime > 2 then
+				Throw(id)
+				throwtime = 0
+			end
+		else --patrulera
+			SetTarget(id, currtarget)
+			if InRange(id, currtarget, 4) then
+				if currtarget == 511 then
+					currtarget = 512
+				else
+					currtarget = 511
+				end
+			end
+		end
+	end
+end
+
+
+--ballonPop script--
+--------------------
+
+function activated_ballonPop(id)
+	Print("Touched")
+	if IsActivator(id, "Throwable") then
+		Print("POP!")
+	end
+end
+
+
+--Goal script--
+---------------
+
 function cutscene_Goal()
 	Print("cutscene_goal")
 	x, y, z = GetCameraPos()
@@ -131,8 +181,6 @@ function update_Goal(id)
 	end
 end
 
-
-
 function activated_Goal(id)
 	Print("activated_Goal")
 
@@ -140,3 +188,6 @@ function activated_Goal(id)
 	StartUpdate()
 
 end
+
+
+

@@ -20,5 +20,6 @@
 #include "Components/MoveTarget.h"
 #include "Components/Throw.h"
 #include "Components/Throwable.h"
+#include "Components/Touch.h"
 
 #endif

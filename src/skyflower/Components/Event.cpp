@@ -1,5 +1,6 @@
 #include "Components/Event.h"
 #include "EntityManager.h"
+#include "Components/Throw.h"
 
 // Must be included last!
 #include "shared/debug.h"
@@ -229,6 +230,68 @@ int Event::IsActivated(lua_State* L)
 	return 1;
 }
 
+int Event::IsActivator(lua_State* L)
+{
+	int n = lua_gettop(L);
+
+	
+	if (n >= 2 && lua_isnumber(L, 2)) //check for id
+	{
+		Entity* entity = entityManager->getEntity(lua_tointeger(L, 1));
+		Entity* entityTarget = entityManager->getEntity(lua_tointeger(L, 2));
+
+		bool ret = false;
+		if (entity->ground == entityTarget)
+			ret = true;
+		else if (entity->wall == entityTarget)
+			ret = true;
+		else
+		{
+			Touch* t = entity->getComponent<Touch*>("Touch");
+			if (t)
+				if (t->activator == entityTarget)
+					ret = true;
+		}
+
+		lua_pushboolean(L, ret);
+		return 1;
+	}
+	else if (n >= 2 && lua_isstring(L, 2)) //check for component
+	{
+		Entity* entity = entityManager->getEntity(lua_tointeger(L, 1));
+		std::string comp = lua_tostring(L, 2);
+
+		bool ret = false;
+		if (entity->ground)
+		{
+			if (entity->ground->hasComponents(comp))
+				ret = true;
+		}
+		else if (entity->wall)
+		{
+			if (entity->wall->hasComponents(comp))
+				ret = true;
+		}
+		else
+		{
+			Touch* t = entity->getComponent<Touch*>("Touch");
+			if (t)
+			if (t->activator)
+			{
+				if(t->activator->hasComponents(comp))
+					ret = true;
+			}
+		}
+
+		lua_pushboolean(L, ret);
+		return 1;
+	}
+
+
+	lua_pushboolean(L, self->isActivated());
+	return 1;
+}
+
 int Event::SetTarget(lua_State* L)
 {
 	int n = lua_gettop(L);
@@ -306,7 +369,7 @@ int Event::CanPush(lua_State* L)
 		Entity* entityAi = entityManager->getEntity(aiId);
 		Entity* entityTarget = entityManager->getEntity(targetId);
 
-		lua_pushboolean(L, entityAi->getComponent<Push*>("Push")->canPush(entityTarget));
+		lua_pushboolean(L, entityAi->getComponent<Push*>("Push")->colliding(entityTarget));
 		return 1;
 	}
 
@@ -428,4 +491,52 @@ int Event::SetContinous(lua_State* L)
 	}
 
 	return 0;
+}
+
+
+int Event::PickUp(lua_State* L)
+{
+	int n = lua_gettop(L);
+	assert(n == 1);
+
+	Entity* entity = entityManager->getEntity(lua_tointeger(L, 1));
+
+	entityManager->sendMessageToEntity("PickUp", entity->fId);
+
+
+	return 0;
+}
+
+
+int Event::CanPick(lua_State* L)
+{
+	return 0;
+}
+
+int Event::sThrow(lua_State* L)
+{
+	int n = lua_gettop(L);
+	assert(n == 1);
+
+	Entity* entity = entityManager->getEntity(lua_tointeger(L, 1));
+
+	entityManager->sendMessageToEntity("Throw", entity->fId);
+
+	return 0;
+}
+
+int Event::CanThrow(lua_State* L)
+{
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		Entity* entity = entityManager->getEntity(lua_tointeger(L, 1));
+
+		if (n == 1)
+			lua_pushboolean(L, entity->getComponent<Throw*>("Throw")->getIsHoldingThrowable());
+		else
+			lua_pushboolean(L, entity->getComponent<Throw*>("Throw")->getHoldingEntityId() == lua_tointeger(L, 2));
+	}
+
+	return 1;
 }

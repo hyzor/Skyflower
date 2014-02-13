@@ -115,9 +115,12 @@
       <Filter>Source Files\Components</Filter>
     </ClCompile>
     <ClCompile Include="src\skyflower\Components\Health.cpp">
-		<Filter>Source Files\Components</Filter>
+      <Filter>Source Files\Components</Filter>
     </ClCompile>
     <ClCompile Include="src\skyflower\Components\Goal.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\skyflower\Components\Touch.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
   </ItemGroup>
@@ -234,6 +237,9 @@
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\skyflower\Components\Throwable.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\Components\Touch.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>

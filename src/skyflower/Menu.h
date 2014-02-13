@@ -46,6 +46,7 @@ public:
 	{
 		MenuPageMain = 0,
 		MenuPageSettings,
+		MenuPageInstructions,
 		MenuPageCount
 	};
 	struct Settings
