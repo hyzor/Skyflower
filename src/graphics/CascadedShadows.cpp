@@ -188,11 +188,16 @@ void CascadedShadows::CreateLightFrustums(const DirectionalLight& light, const B
 
 			this->mCascades.at(i)->SetShadowMatrices(lightView, P, lightPos);
 			
+			//float transformedIntervalBegin, transformedIntervalEnd;
+
+			//transformedIntervalBegin = XMVectorGetZ(XMVector3Transform(XMVECTOR(XMLoadFloat3(&XMFLOAT3(0.0f, 0.0f, intervalBegin) ) ), cam->GetViewMatrix() ) );
+			//transformedIntervalEnd = XMVectorGetZ(XMVector3Transform(XMVECTOR(XMLoadFloat3(&XMFLOAT3(0.0f, 0.0f, intervalEnd))), cam->GetViewMatrix()));
+
 			//Set the depths of the intervals to later use these to determine correct cascade to sample from
 			this->mCascades.at(i)->SetSplitDepthNear(intervalBegin);
 			this->mCascades.at(i)->SetSplitDepthFar(intervalEnd);
-			//this->mCascades.at(i)->SetSplitDepthNear(nearPlane);
-			//this->mCascades.at(i)->SetSplitDepthFar(farPlane);
+			//this->mCascades.at(i)->SetSplitDepthNear(transformedIntervalBegin);
+			//this->mCascades.at(i)->SetSplitDepthFar(transformedIntervalEnd);
 
 			//Increment beginning and end equally to create the next subfrustum
 			intervalBegin += split * camRange;

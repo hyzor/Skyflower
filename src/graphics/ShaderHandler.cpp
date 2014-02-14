@@ -1235,7 +1235,7 @@ bool BasicDeferredShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLay
 	InitData2.SysMemSlicePitch = 0;
 
 	// Now create the buffer
-	device->CreateBuffer(&cbDesc2, &InitData2, &ps_cPerObjBuffer);
+	HRESULT res = device->CreateBuffer(&cbDesc2, &InitData2, &ps_cPerObjBuffer);
 
 	mInputLayout = inputLayout;
 
@@ -1292,14 +1292,16 @@ void BasicDeferredShader::SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderRes
 void BasicDeferredShader::SetCascadeVars(
 	ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex,
 	const XMMATRIX& view, const XMMATRIX& lightSpace,
-	const XMMATRIX& shadowProj, float nearDepth, 
+	const XMMATRIX& shadowProj, const XMMATRIX& shadowTransform, float nearDepth,
 	float farDepth, int index, int nrOfCascades)
 {
 	dc->PSSetShaderResources(index + SHADOWMAP_SR_REG_OFFSET, 1, &tex);
 
 	mBufferCache.vsPerObjBuffer.worldView = XMMatrixTranspose(view);
 	mBufferCache.vsPerObjBuffer.lightSpace = XMMatrixTranspose(lightSpace);
-	mBufferCache.psPerObjBuffer.shadowProj[index] = XMMatrixTranspose(shadowProj);
+	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixIdentity();
+	mBufferCache.vsPerObjBuffer.shadowTransforms[index] = XMMatrixTranspose(shadowTransform);
+	//mBufferCache.psPerObjBuffer.shadowProj[index] = XMMatrixTranspose(shadowProj);
 	mBufferCache.psPerObjBuffer.nearDepths[index] = nearDepth;
 	mBufferCache.psPerObjBuffer.farDepths[index] = farDepth;
 	mBufferCache.psPerObjBuffer.nrOfCascades = nrOfCascades;

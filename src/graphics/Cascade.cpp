@@ -166,7 +166,7 @@ void Cascade::SetShadowMatrices(const XMMATRIX& lightView, const XMMATRIX& proj,
 
 	XMStoreFloat4x4(&this->mLightWorld, world);
 	XMStoreFloat4x4(&this->mLightView, lightView);
-	XMStoreFloat4x4(&this->mLightProj, proj * T);
+	XMStoreFloat4x4(&this->mLightProj, proj);
 	XMStoreFloat4x4(&this->mShadowTransform, lightView * proj * T );
 }
 

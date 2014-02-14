@@ -8,7 +8,7 @@ cbuffer cbPerObject : register(b0)
 	//float4x4 gWorldViewProjTex;
 	float4x4 gTexTransform;
 	float4x4 gShadowTransform;
-	//float4x4 gShadowTransforms[MAX_CASCADES]; 
+	float4x4 gShadowTransforms[MAX_CASCADES]; //Transform for each cascade's individual projection
 	float4x4 gPrevWorldViewProj;
 	
 	float4x4 gWorldView;
@@ -29,12 +29,14 @@ struct VertexOut
 	float3 NormalW : NORMAL;
 	float2 Tex : TEXCOORD0;
 	float4 ShadowPosH : TEXCOORD1;
-	float4 TexShadow : TEXCOORD2;
+	float4 ShadowPosH1 : TEXCOORD2;
+	float4 ShadowPosH2 : TEXCOORD3;
+	float4 ShadowPosH3 : TEXCOORD4;
 
 	float4 CurPosH : CURPOSH;
 	float4 PrevPosH : PREVPOSH;
 
-	float Depth : TEXCOORD3;
+	float Depth : TEXCOORD5;
 
 	//float2 CurPosXY : CURPOSXY;
 	//float2 PrevPosXY : PREVPOSXY;
@@ -82,7 +84,11 @@ VertexOut main(VertexIn vIn)
 	vOut.Depth = mul(float4(vIn.PosL, 1.0), gWorldView).z;
 
 	//Transform position to light/shadow -space
-	vOut.TexShadow = mul(float4(vIn.PosL, 1.0), gShadowSpace);
+	//vOut.TexShadow = mul(float4(vIn.PosL, 1.0), gShadowSpace);
+
+	vOut.ShadowPosH1 = mul(float4(vIn.PosL, 1.0f), gShadowTransforms[0]);
+	vOut.ShadowPosH2 = mul(float4(vIn.PosL, 1.0f), gShadowTransforms[1]);
+	vOut.ShadowPosH3 = mul(float4(vIn.PosL, 1.0f), gShadowTransforms[2]);
 
 	//vOut.Velocity = vOut.CurPosH - vOut.PrevPosH;
 	//vOut.Velocity /= 2.0f;

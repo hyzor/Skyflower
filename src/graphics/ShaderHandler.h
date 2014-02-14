@@ -488,7 +488,7 @@ public:
 	void SetCascadeVars(
 		ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex,
 		const XMMATRIX& View, const XMMATRIX& lightSpace,
-		const XMMATRIX& shadowProj, float nearDepth, float farDepth, 
+		const XMMATRIX& shadowProj, const XMMATRIX& shadowTransform, float nearDepth, float farDepth,
 		int index, int nrOfCascades);
 
 	void UpdatePerObj(ID3D11DeviceContext* dc);
@@ -504,6 +504,7 @@ private:
 		//XMMATRIX worldViewProjTex;
 		XMMATRIX texTransform;
 		XMMATRIX shadowTransform;
+		XMMATRIX shadowTransforms[MAX_CASC];
 		XMMATRIX prevWorldViewProj;
 
 		XMMATRIX worldView;
@@ -515,15 +516,15 @@ private:
 	{
 		Material mat;
 		int type;
-		XMFLOAT3 skit;
-
-		XMMATRIX shadowProj[MAX_CASC];
+		//XMFLOAT3 skit;
+		float a, b, c;
+		//XMMATRIX shadowProj[MAX_CASC];
 
 		float nearDepths[MAX_CASC];
 		float farDepths[MAX_CASC];
 
 		int nrOfCascades;
-		//XMFLOAT3 ytterligareSkit; // (padding)
+		XMFLOAT3 ytterligareSkit; // (padding)
 	};
 
 	struct BUFFERCACHE

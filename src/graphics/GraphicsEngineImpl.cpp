@@ -1021,7 +1021,7 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 				if (currCasc)
 				{
 					mShaderHandler->mBasicDeferredShader->SetCascadeVars(mD3D->GetImmediateContext(), currCasc->getDepthMapSRV(),  
-						this->mCamera->GetViewMatrix(), currCasc->GetLightView(), currCasc->GetLightProj(), 
+						this->mCamera->GetViewMatrix(), currCasc->GetLightView(), currCasc->GetLightProj(), currCasc->GetShadowTransform(), 
 						currCasc->GetSplitDepthNear(), currCasc->GetSplitDepthFar(), cIndex, this->mCascadedShadows->GetNrOfCascades());
 				}
 			}
