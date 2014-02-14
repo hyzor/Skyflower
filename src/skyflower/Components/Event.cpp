@@ -237,8 +237,8 @@ int Event::IsActivator(lua_State* L)
 	
 	if (n >= 2 && lua_isnumber(L, 2)) //check for id
 	{
-		Entity* entity = entityManager->getEntity(lua_tointeger(L, 1));
-		Entity* entityTarget = entityManager->getEntity(lua_tointeger(L, 2));
+		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+		Entity* entityTarget = entityManager->getEntity((EntityId)lua_tointeger(L, 2));
 
 		bool ret = false;
 		if (entity->ground == entityTarget)
@@ -258,7 +258,7 @@ int Event::IsActivator(lua_State* L)
 	}
 	else if (n >= 2 && lua_isstring(L, 2)) //check for component
 	{
-		Entity* entity = entityManager->getEntity(lua_tointeger(L, 1));
+		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
 		std::string comp = lua_tostring(L, 2);
 
 		bool ret = false;
@@ -499,7 +499,7 @@ int Event::PickUp(lua_State* L)
 	int n = lua_gettop(L);
 	assert(n == 1);
 
-	Entity* entity = entityManager->getEntity(lua_tointeger(L, 1));
+	Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
 
 	entityManager->sendMessageToEntity("PickUp", entity->fId);
 
@@ -518,7 +518,7 @@ int Event::sThrow(lua_State* L)
 	int n = lua_gettop(L);
 	assert(n == 1);
 
-	Entity* entity = entityManager->getEntity(lua_tointeger(L, 1));
+	Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
 
 	entityManager->sendMessageToEntity("Throw", entity->fId);
 
@@ -530,7 +530,7 @@ int Event::CanThrow(lua_State* L)
 	int n = lua_gettop(L);
 	if (n >= 1)
 	{
-		Entity* entity = entityManager->getEntity(lua_tointeger(L, 1));
+		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
 
 		if (n == 1)
 			lua_pushboolean(L, entity->getComponent<Throw*>("Throw")->getIsHoldingThrowable());

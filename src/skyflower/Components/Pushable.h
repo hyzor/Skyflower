@@ -50,6 +50,7 @@ public:
 			{
 				sendMessageToEntity(getOwnerId(), "StartMoving");
 				this->isPushed = false;
+				this->p->GetStates()->isBeingPushed = false;
 			}
 		}
 	}
@@ -78,6 +79,7 @@ private:
 	void stopBeingPushed(Message const& msg)
 	{
 		this->isPushed = false;
+		this->p->GetStates()->isBeingPushed = false;
 		sendMessageToEntity(getOwnerId(), "StartMoving");
 	}
 

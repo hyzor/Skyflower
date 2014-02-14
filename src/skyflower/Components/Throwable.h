@@ -27,6 +27,7 @@ public:
 		requestMessage("Dropped", &Throwable::dropped);
 
 		this->p = getOwner()->getPhysics();
+		getOwner()->sphere->Radius = 3.5f; // Throwable size
 	}
 
 	void setIsBeingThrown(bool state);

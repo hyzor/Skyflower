@@ -16,6 +16,7 @@ void AI::addedToEntity()
 		getOwner()->field = getEntityManager()->modules->potentialField->CreateField(8, 8, getEntityPos());
 
 	target = nullptr;
+	getOwner()->sphere->Radius = 3.5f; // AI size
 }
 
 void AI::setTarget(Entity* e, float radius)

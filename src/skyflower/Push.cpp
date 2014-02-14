@@ -9,6 +9,8 @@
 Push::Push() : Component("Push")
 {
 	this->canPush = true;
+	this->isColliding = false;
+	this->resetSpeed = false;
 }
 
 Push::~Push()
@@ -23,6 +25,8 @@ void Push::addedToEntity()
 	requestMessage("Wall", &Push::stopPush);
 	requestMessage("isHoldingThrowable", &Push::setCanNotPush);
 	requestMessage("isNotHoldingThrowable", &Push::setCanPush);
+	requestMessage("beingPushed", &Push::beingPushed);
+
 }
 
 void Push::removeFromEntity()
@@ -106,7 +110,23 @@ void Push::update(float dt)
 
 	m_isPushingBox = isPushingBox;
 
+
+	//reset the entity to normal speed
+	if (resetSpeed)
+	{
+		Movement* mov = getOwner()->getComponent<Movement*>("Movement");
+		mov->SetSpeed(mov->GetSpeed()+80*dt); //accelerate speed 40*dt
+		if (mov->GetSpeed() >= pSpeed)
+		{
+			resetSpeed = false;
+			mov->SetSpeed(pSpeed);
+		}
+	}
+
 	//pushAll();
+
+	isColliding = false;
+
 }
 
 void Push::stopPush(Message const& msg)
@@ -117,7 +137,26 @@ void Push::stopPush(Message const& msg)
 
 bool Push::colliding(Entity* target)
 {
-	return target->sphere->Test(*getOwner()->sphere);
+	if (!target->getPhysics()->GetStates()->isBeingPushed && (target->sphere->Test(*getOwner()->sphere) || isColliding))
+	{
+		isColliding = false;
+		//get owner look vector
+		Vec3 rot = getOwner()->returnRot();
+		Vec3 look = Vec3(cosf(-rot.Y - 3.14f / 2), 0, sinf(-rot.Y - 3.14f / 2)).Normalize();
+		look.Normalize();
+
+		//get direction to target
+		Vec3 dir = target->returnPos() - getOwner()->returnPos();
+		dir.Y = 0;
+		dir.Normalize();
+
+		//se if owner looks at target
+		float dot = look.Dot(dir);
+		if (dot > 0.6f)
+			return true;
+	}
+
+	return false;
 }
 
 void Push::push(Entity* target)
@@ -131,7 +170,9 @@ void Push::push(Entity* target)
 			//are two entities colliding?
 			if (colliding(e) && canPush)
 			{
-				Vec3 dir = (e->returnPos() - getOwner()->returnPos()).Normalize();
+				Vec3 dir = (e->returnPos() - getOwner()->returnPos());
+				dir.Y = 0;
+				dir.Normalize();
 
 				//if this entity is moving and can push, and that the other entity is pushable
 				if (getOwner()->getPhysics()->GetStates()->isMoving && e->hasComponents("Pushable"))
@@ -141,6 +182,15 @@ void Push::push(Entity* target)
 
 					Vec3 position = e->returnPos();
 					e->getModules()->sound->PlaySound("push.wav", 1.0f, &position.X);
+
+					//slow entity for 1 sec after push
+					Movement* mov = getOwner()->getComponent<Movement*>("Movement");
+					if (mov)
+					{
+						pSpeed = mov->GetSpeed();
+						mov->SetSpeed(5);
+						resetSpeed = true;
+					}
 				}
 			}
 		}
@@ -166,4 +216,9 @@ void Push::setCanPush(Message const& msg)
 void Push::setCanNotPush(Message const& msg)
 {
 	this->canPush = false;
+}
+
+void Push::beingPushed(Message const& msg)
+{
+	this->isColliding = true;
 }
