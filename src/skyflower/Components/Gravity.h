@@ -61,6 +61,8 @@ private:
 
 	float testMove(Ray r, Entity* e, Entity* &out);
 
+	void sphereCollision(float dt);
+
 
 	void createRays();
 

@@ -84,6 +84,7 @@
 		<Push />
 		<Pushable />
 		<Throw />
+		<Health />
         <Movement speed="10"/>
 		<Event script="testAI" />
     </Entity>

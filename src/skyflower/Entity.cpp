@@ -124,7 +124,7 @@ Entity::Entity(const Modules *modules, EntityId id, EntityId relativeid, string 
 		field = nullptr;
 	}
 
-	this->sphere = new Sphere(pos, 3.5f);
+	this->sphere = new Sphere(pos, 0);
 
 }
 Entity::~Entity() {

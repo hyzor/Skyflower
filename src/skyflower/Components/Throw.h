@@ -27,6 +27,8 @@ public:
 	{
 		requestMessage("PickUpOrDown", &Throw::pickUpOrDown);
 		requestMessage("PickUp", &Throw::pickUp);
+		requestMessage("PickUpStart", &Throw::pickUp);
+		requestMessage("PickUpStop", &Throw::pickUpStop);
 		requestMessage("Throw", &Throw::Throwing);
 		requestMessage("StopThrow", &Throw::stopThrowing);
 		requestMessage("DropThrowable", &Throw::dropThrowable);
@@ -144,6 +146,11 @@ private:
 	{
 		setToPickUp(true);
 		setToPutDown(false);
+	}
+
+	void pickUpStop(Message const & msg)
+	{
+		setToPickUp(false);
 	}
 
 	//if the entity should throw something away

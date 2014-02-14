@@ -15,6 +15,8 @@ void Input::addedToEntity()
 {
 	Entity *owner = getOwner();
 	owner->getModules()->input->AddListener(this);
+
+	getOwner()->sphere->Radius = 3.5f; //only player uses input
 }
 
 void Input::removeFromEntity()
@@ -79,7 +81,7 @@ void Input::OnMouseButtonDown(enum MouseButton button)
 		sendMessageToEntity(this->getOwnerId(), "Throw");
 		break;
 	case MouseButtonRight:
-		sendMessageToEntity(this->getOwnerId(), "PickUpOrDown");
+		sendMessageToEntity(this->getOwnerId(), "PickUpStart");
 		break;
 	default:
 		break;
@@ -92,6 +94,9 @@ void Input::OnMouseButtonUp(enum MouseButton button)
 	{
 	case MouseButtonLeft:
 		sendMessageToEntity(this->getOwnerId(), "StopThrow");
+		break;
+	case MouseButtonRight:
+		sendMessageToEntity(this->getOwnerId(), "PickUpStop");
 		break;
 	default:
 		break;

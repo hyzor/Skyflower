@@ -41,6 +41,8 @@ public:
 	float GetSpeed();
 	void SetSpeed(float speed);
 
+	Vec3 GetLook();
+
 	bool IsDizzy()
 	{
 		return isDizzy;

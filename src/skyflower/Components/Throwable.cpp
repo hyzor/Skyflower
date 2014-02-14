@@ -28,12 +28,6 @@ void Throwable::update(float deltaTime)
 					Vec3 pos = getOwner()->returnPos();
 					Vec3 rot = getOwner()->returnRot();
 
-					//o = direction
-					Vec3 o = Vec3(cosf(-rot.Y - 3.14f / 2), 0, sinf(-rot.Y - 3.14f / 2)).Normalize() * 10;
-
-					Collision *collision = getOwner()->getModules()->collision;
-					const std::vector<CollisionInstance *> &collisionInstances = collision->GetCollisionInstances();
-
 
 					//collision with ground
 					if (getOwner()->ground)
@@ -74,16 +68,16 @@ void Throwable::update(float deltaTime)
 							entity->getComponent<Throw*>("Throw")->setToPutDown(false);
 							isBeingPickedUp = false;
 
-							//update throwable position
+							/*//update throwable position
 							Vec3 pos = entity->returnPos();
 							Vec3 rot = entity->returnRot();
 
-							Vec3 o = Vec3(cosf(-rot.Y - 3.14f / 2), 0, sinf(-rot.Y - 3.14f / 2)).Normalize() * 10;
-							o.Y = 5;
+							Vec3 o = Vec3(cosf(-rot.Y - 3.14f / 2), 0, sinf(-rot.Y - 3.14f / 2)).Normalize() * 2.198f;
+							o.Y = 5.423f;
 
 							getOwner()->updateRot(rot);
 
-							updateEntityPos(pos + o);
+							updateEntityPos(pos + o);*/
 							getOwner()->getPhysics()->SetVelocity(Vec3());
 
 							entity->getComponent<Throw*>("Throw")->setHoldingEntityId(-1);
@@ -129,8 +123,8 @@ void Throwable::update(float deltaTime)
 								Vec3 pos = entity->returnPos();
 								Vec3 rot = entity->returnRot();
 
-								Vec3 o = Vec3(cosf(-rot.Y - 3.14f / 2), 0, sinf(-rot.Y - 3.14f / 2)).Normalize() * 3;
-								o.Y = 5;
+								Vec3 o = Vec3(cosf(-rot.Y - 3.14f / 2), 0, sinf(-rot.Y - 3.14f / 2)).Normalize() * 2.198f;
+								o.Y = 5.423f;
 
 								getOwner()->getPhysics()->SetVelocity(Vec3());
 								updateEntityPos(pos + o);

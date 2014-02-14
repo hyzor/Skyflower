@@ -16,6 +16,7 @@
 #include "graphics/GraphicsEngine.h"
 #include "physics/Collision.h"
 
+#include <algorithm>
 
 namespace Cistron {
 

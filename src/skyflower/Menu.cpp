@@ -155,7 +155,7 @@ void Menu::keyPressed(unsigned short key)
 		break;
 	}
 
-	selectedButton = (selectedButton + m_pages[m_activePage].buttons.size()) % m_pages[m_activePage].buttons.size();
+	selectedButton = (int)((selectedButton + m_pages[m_activePage].buttons.size()) % m_pages[m_activePage].buttons.size());
 
 	if (enter)
 	{
