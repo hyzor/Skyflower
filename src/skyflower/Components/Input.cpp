@@ -15,6 +15,8 @@ void Input::addedToEntity()
 {
 	Entity *owner = getOwner();
 	owner->getModules()->input->AddListener(this);
+
+	getOwner()->sphere->Radius = 3.5f; //only player uses input
 }
 
 void Input::removeFromEntity()

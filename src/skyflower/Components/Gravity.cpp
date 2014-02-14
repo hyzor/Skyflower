@@ -65,6 +65,8 @@ void GravityComponent::update(float dt)
   		getEntityManager()->sendMessageToEntity("Wall", getOwner()->wall->fId);
 
 
+	sphereCollision(dt);
+
 	createGroundTriangle(getOwner(), getOwner()->ground);
 
 }
@@ -244,4 +246,24 @@ void GravityComponent::createGroundTriangle(Entity* e, Entity* ground)
 Triangle GravityComponent::GetGroundTriangle()
 {
 	return groundt;
+}
+
+
+void GravityComponent::sphereCollision(float dt)
+{
+	if (getOwner()->sphere)
+	{
+		for (int j = 0; j < getEntityManager()->getNrOfEntities(); j++)
+		{
+			Entity* EntiJ = getEntityManager()->getEntityByIndex(j);
+			if (EntiJ->sphere && EntiJ != getOwner())
+			{
+				if (EntiJ->sphere->Test(*getOwner()->sphere))
+				{
+					Vec3 dist = EntiJ->returnPos() - getOwner()->returnPos();
+					getOwner()->updatePos(getOwner()->returnPos()-dist*2*dt);
+				}
+			}
+		}
+	}
 }

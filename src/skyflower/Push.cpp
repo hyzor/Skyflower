@@ -123,7 +123,7 @@ void Push::update(float dt)
 		}
 	}
 
-	pushAll();
+	//pushAll();
 
 	isColliding = false;
 
