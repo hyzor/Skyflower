@@ -42,38 +42,33 @@ void CutScene::update(float dt)
 	if (mWaypoints.size() > 0)
 	{
 		WayPoint target = mWaypoints.at(mCurrentWP);
-		float distance = (mCameraPtr->GetPosition() - target._position).Length();
+		float distance = (mCameraPtr->GetPosition() - target.position).Length();
 		if (distance < 5.0f)
 		{
 			mCurrentWP++;
 			if ((unsigned)mCurrentWP >= mWaypoints.size())
 			{
-				done = true;
-				mCurrentPitch = 0.0f;
-				mCurrentYaw = 0.0f;
-				mCurrentWP = 0;
-				mWaypoints.clear();
+				this->clear();
 			}
 		}
 
 		if (!done)
 		{
 			Vec3 position = mCameraPtr->GetPosition();
-			position = Lerp(position, target._position, dt * target._time);
+			position = Lerp(position, target.position, dt * target.time);
 
-			float tot = target._yaw - self->mCurrentYaw;
+			float tot = target.yaw - self->mCurrentYaw;
 			if (tot > 3.14f)
 				tot -= 2 * 3.14f;
 			else if (tot < -3.14f)
 				tot += 2 * 3.14f;
 
 			if (tot > 0)
-				mCurrentYaw += std::abs(tot) * dt * target._time;
+				mCurrentYaw += std::abs(tot) * dt * target.time;
 			else
-				mCurrentYaw -= std::abs(tot) * dt * target._time;
+				mCurrentYaw -= std::abs(tot) * dt * target.time;
 
-			//mCurrentYaw = Lerp(mCurrentYaw, target._yaw, dt * target._time);
-			mCurrentPitch = Lerp(mCurrentPitch, target._pitch, dt*target._time);
+			mCurrentPitch = Lerp(mCurrentPitch, target.pitch, dt*target.time);
 
 			mCameraPtr->SetPosition(position);
 			mCameraPtr->Rotate(mCurrentYaw, mCurrentPitch);
@@ -113,10 +108,10 @@ int CutScene::AddPoint(lua_State* L)
 	int n = lua_gettop(L);
 
 	float yaw = self->mCameraPtr->GetYaw();
-	wp._position = Vec3(lua_tonumber(L, 1), lua_tonumber(L, 2), lua_tonumber(L, 3));
-	wp._yaw = (float)(lua_tonumber(L, 4) *(3.14 / 180));
-	wp._pitch = (float)(lua_tonumber(L, 5) * (3.14 / 180));
-	wp._time = (float)lua_tonumber(L, 6);
+	wp.position = Vec3(lua_tonumber(L, 1), lua_tonumber(L, 2), lua_tonumber(L, 3));
+	wp.yaw = (float)(lua_tonumber(L, 4) *(3.14 / 180));
+	wp.pitch = (float)(lua_tonumber(L, 5) * (3.14 / 180));
+	wp.time = (float)lua_tonumber(L, 6);
 
 	self->mWaypoints.push_back(wp);
 
@@ -161,7 +156,7 @@ int CutScene::getCameraPos(lua_State *L)
 	return 3;
 }
 
-int CutScene::getYawPitch(lua_State *L)
+int CutScene::getCameraYawPitch(lua_State *L)
 {
 	float yaw, pitch;
 	self->translateYawPitch(yaw, pitch);
@@ -173,4 +168,13 @@ int CutScene::getYawPitch(lua_State *L)
 	lua_pushnumber(L, pitch);
 
 	return 2;
+}
+
+void CutScene::clear()
+{
+	done = true;
+	mCurrentPitch = 0.0f;
+	mCurrentYaw = 0.0f;
+	mCurrentWP = 0;
+	mWaypoints.clear();
 }
