@@ -9,6 +9,7 @@
 Push::Push() : Component("Push")
 {
 	this->canPush = true;
+	this->isColliding = false;
 }
 
 Push::~Push()
@@ -23,6 +24,8 @@ void Push::addedToEntity()
 	requestMessage("Wall", &Push::stopPush);
 	requestMessage("isHoldingThrowable", &Push::setCanNotPush);
 	requestMessage("isNotHoldingThrowable", &Push::setCanPush);
+	requestMessage("beingPushed", &Push::beingPushed);
+
 }
 
 void Push::removeFromEntity()
@@ -107,6 +110,8 @@ void Push::update(float dt)
 	m_isPushingBox = isPushingBox;
 
 	pushAll();
+
+	isColliding = false;
 }
 
 void Push::stopPush(Message const& msg)
@@ -117,8 +122,9 @@ void Push::stopPush(Message const& msg)
 
 bool Push::colliding(Entity* target)
 {
-	if (target->sphere->Test(*getOwner()->sphere))
+	if (!target->getPhysics()->GetStates()->isBeingPushed && (target->sphere->Test(*getOwner()->sphere) || isColliding))
 	{
+		isColliding = false;
 		//get owner look vector
 		Vec3 rot = getOwner()->returnRot();
 		Vec3 look = Vec3(cosf(-rot.Y - 3.14f / 2), 0, sinf(-rot.Y - 3.14f / 2)).Normalize();
@@ -186,4 +192,9 @@ void Push::setCanPush(Message const& msg)
 void Push::setCanNotPush(Message const& msg)
 {
 	this->canPush = false;
+}
+
+void Push::beingPushed(Message const& msg)
+{
+	this->isColliding = true;
 }

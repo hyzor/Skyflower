@@ -33,15 +33,18 @@ public:
 
 	bool isPushingBox();
 
+
 private:
 	void stopPush(Message const& msg);
 	void setCanPush(Message const& msg);
 	void setCanNotPush(Message const& msg);
+	void beingPushed(Message const& msg);
 
 private:
 	bool m_isPushingBox;
 	Vec3 m_initialPushDirection;
 	bool canPush;
+	bool isColliding;
 };
 
 #endif
