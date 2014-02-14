@@ -149,7 +149,9 @@ void Push::push(Entity* target)
 			//are two entities colliding?
 			if (colliding(e) && canPush)
 			{
-				Vec3 dir = (e->returnPos() - getOwner()->returnPos()).Normalize();
+				Vec3 dir = (e->returnPos() - getOwner()->returnPos());
+				dir.Y = 0;
+				dir.Normalize();
 
 				//if this entity is moving and can push, and that the other entity is pushable
 				if (getOwner()->getPhysics()->GetStates()->isMoving && e->hasComponents("Pushable"))
