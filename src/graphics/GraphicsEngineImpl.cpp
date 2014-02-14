@@ -1236,7 +1236,7 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	mShaderHandler->mLightDeferredToTextureShader->SetLightWorldViewProj(mShadowMap->GetLightWorld(), mShadowMap->GetLightView(), mShadowMap->GetLightProj());
 
 	// TODO: Instead of hard coding these properties, get them from some modifiable settings collection
-	mShaderHandler->mLightDeferredToTextureShader->SetFogProperties(1, 0.0095f, -100.0f, 0.0105f, XMFLOAT4(0.86f, 0.86f, 0.9f, 1.0f));//XMFLOAT4(0.85f, 0.85f, 0.85f, 1.0f));
+	mShaderHandler->mLightDeferredToTextureShader->SetFogProperties(1, 0.0195f, -125.0f, 0.105f, XMFLOAT4(0.86f, 0.86f, 0.9f, 1.0f));//XMFLOAT4(0.85f, 0.85f, 0.85f, 1.0f));
 	mShaderHandler->mLightDeferredToTextureShader->SetMotionBlurProperties(1);
 	mShaderHandler->mLightDeferredToTextureShader->SetFpsValues(mCurFPS, mTargetFPS);
 
