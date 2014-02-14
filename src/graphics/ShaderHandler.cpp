@@ -1302,9 +1302,27 @@ void BasicDeferredShader::SetCascadeVars(
 	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixIdentity();
 	mBufferCache.vsPerObjBuffer.shadowTransforms[index] = XMMatrixTranspose(shadowTransform);
 	//mBufferCache.psPerObjBuffer.shadowProj[index] = XMMatrixTranspose(shadowProj);
-	mBufferCache.psPerObjBuffer.nearDepths[index] = nearDepth;
-	mBufferCache.psPerObjBuffer.farDepths[index] = farDepth;
-	mBufferCache.psPerObjBuffer.nrOfCascades = (float)nrOfCascades;
+
+	if (index == 0)
+		mBufferCache.psPerObjBuffer.nearDepths.x = nearDepth;
+	else if (index == 1)
+		mBufferCache.psPerObjBuffer.nearDepths.y = nearDepth;
+	else if (index == 2)
+		mBufferCache.psPerObjBuffer.nearDepths.z = nearDepth;
+	else if (index == 3)
+		mBufferCache.psPerObjBuffer.nearDepths.w = nearDepth;
+
+	if (index == 0)
+		mBufferCache.psPerObjBuffer.farDepths.x = farDepth;
+	else if (index == 1)
+		mBufferCache.psPerObjBuffer.farDepths.y = farDepth;
+	else if (index == 2)
+		mBufferCache.psPerObjBuffer.farDepths.z = farDepth;
+	else if (index == 3)
+		mBufferCache.psPerObjBuffer.farDepths.w = farDepth;
+	//mBufferCache.psPerObjBuffer.nearDepths[index] = nearDepth;
+	//mBufferCache.psPerObjBuffer.farDepths[index] = farDepth;
+	//mBufferCache.psPerObjBuffer.nrOfCascades = (float)nrOfCascades;
 }
 
 void BasicDeferredShader::UpdatePerObj(ID3D11DeviceContext* dc)

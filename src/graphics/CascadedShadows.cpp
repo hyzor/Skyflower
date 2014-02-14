@@ -128,6 +128,7 @@ void CascadedShadows::CreateLightFrustums(const DirectionalLight& light, const B
 			for (int cIndex = 0; cIndex < 8; cIndex++)
 			{
 				//Transform from camera view space to world
+				//frustumPoints[cIndex] = XMVector4Transform(frustumPoints[cIndex], cam->GetViewMatrix());
 				frustumPoints[cIndex] = XMVector4Transform(frustumPoints[cIndex], XMMatrixInverse(nullptr, cam->GetViewMatrix()));
 
 				//Transform to lightspace
@@ -188,10 +189,13 @@ void CascadedShadows::CreateLightFrustums(const DirectionalLight& light, const B
 
 			this->mCascades.at(i)->SetShadowMatrices(lightView, P, lightPos);
 			
-			//float transformedIntervalBegin, transformedIntervalEnd;
+			float transformedIntervalBegin, transformedIntervalEnd;
 
-			//transformedIntervalBegin = XMVectorGetZ(XMVector3Transform(XMVECTOR(XMLoadFloat3(&XMFLOAT3(0.0f, 0.0f, intervalBegin) ) ), cam->GetViewMatrix() ) );
-			//transformedIntervalEnd = XMVectorGetZ(XMVector3Transform(XMVECTOR(XMLoadFloat3(&XMFLOAT3(0.0f, 0.0f, intervalEnd))), cam->GetViewMatrix()));
+			//transformedIntervalBegin = XMVectorGetZ(XMVector3Transform(XMVECTOR(XMLoadFloat3(&XMFLOAT3(0.0f, 0.0f, intervalBegin) ) ), XMMatrixInverse( nullptr, cam->GetViewMatrix() )) );
+			//transformedIntervalEnd = XMVectorGetZ(XMVector3Transform(XMVECTOR(XMLoadFloat3(&XMFLOAT3(0.0f, 0.0f, intervalEnd))), XMMatrixInverse(nullptr, cam->GetViewMatrix())));
+
+			transformedIntervalBegin = XMVectorGetZ(XMVector3Transform(XMVECTOR(XMLoadFloat3(&XMFLOAT3(0.0f, 0.0f, intervalBegin))), cam->GetViewMatrix()));
+			transformedIntervalEnd = XMVectorGetZ(XMVector3Transform(XMVECTOR(XMLoadFloat3(&XMFLOAT3(0.0f, 0.0f, intervalEnd))), cam->GetViewMatrix()));
 
 			//Set the depths of the intervals to later use these to determine correct cascade to sample from
 			this->mCascades.at(i)->SetSplitDepthNear(intervalBegin);

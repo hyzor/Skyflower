@@ -3,19 +3,16 @@
 
 cbuffer cPerObject : register(b0)
 {
-	float nrOfCascades;
-	float d, e, f;
+	//float nrOfCascades;
+	//float d, e, f;
 
 	Material gMaterial;
 	float type;
 	//float3 skit; //B-E-A-UTIFUL!
 	float a, b, c;
 
-	float gNearDepths[MAX_CASCADES];
-	float g;
-	float gFarDepths[MAX_CASCADES];
-	float h;
-
+	float4 gNearDepths;
+	float4 gFarDepths;
 
 	//float3 ytterligareSkit; // (Padding)
 }
@@ -60,24 +57,30 @@ PixelOut main(VertexOut pIn)
 	//pOut.Position = float4(pIn.PosW, 1.0f);
 
 	int cascadeIndex = 0;
-	float shadowFactor;
-	float4 shadowPos1, shadowPos2, shadowPos3;
+	float shadowFactor = 0.0f;
 
 	if (true)
 	{
 
-		if (pIn.Depth > gFarDepths[nrOfCascades - 1])
+		if (pIn.Depth > gFarDepths.z)
 			shadowFactor = 1.0f;
 
 		//Compare the depth of current pixel in camera space and compare to given near and far depths
 		//to decide appropriate index of cascade to sample from
-		for (int i = 0; i < nrOfCascades; i++)
-		{
-			if (pIn.Depth < gFarDepths[i] && pIn.Depth > gNearDepths[i])
-			{
-				cascadeIndex = i;
-			}
-		}
+		//for (int i = 0; i < nrOfCascades; i++)
+		//{
+		//	if (pIn.Depth < gFarDepths[i] && pIn.Depth > gNearDepths[i])
+		//	{
+		//		cascadeIndex = i;
+		//	}
+		//}
+
+		if (pIn.Depth > gNearDepths.x && pIn.Depth < gFarDepths.x)
+			cascadeIndex = 0;
+		else if (pIn.Depth > gNearDepths.y && pIn.Depth < gFarDepths.y)
+			cascadeIndex = 0;
+		else if (pIn.Depth > gNearDepths.z && pIn.Depth < gFarDepths.z)
+			cascadeIndex = 0;
 
 		//shadowPos = mul(pIn.TexShadow, gShadowProjTex[cascadeIndex]); //Transform to shadow projection texture space
 

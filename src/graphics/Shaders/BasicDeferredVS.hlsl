@@ -8,7 +8,7 @@ cbuffer cbPerObject : register(b0)
 	//float4x4 gWorldViewProjTex;
 	float4x4 gTexTransform;
 	float4x4 gShadowTransform;
-	float4x4 gShadowTransforms[MAX_CASCADES]; //Transform for each cascade's individual projection
+	float4x4 gShadowTransforms[MAX_CASCADES]; //Transform for each cascade's individual transform
 	float4x4 gPrevWorldViewProj;
 	
 	float4x4 gWorldView;
@@ -82,6 +82,7 @@ VertexOut main(VertexIn vIn)
 
 	//Generate depth for current pixel in cam space
 	vOut.Depth = mul(float4(vIn.PosL, 1.0), gWorldView).z;
+	//vOut.Depth = vIn.PosL.z;
 
 	//Transform position to light/shadow -space
 	//vOut.TexShadow = mul(float4(vIn.PosL, 1.0), gShadowSpace);
