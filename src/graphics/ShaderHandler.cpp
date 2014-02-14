@@ -1304,7 +1304,7 @@ void BasicDeferredShader::SetCascadeVars(
 	//mBufferCache.psPerObjBuffer.shadowProj[index] = XMMatrixTranspose(shadowProj);
 	mBufferCache.psPerObjBuffer.nearDepths[index] = nearDepth;
 	mBufferCache.psPerObjBuffer.farDepths[index] = farDepth;
-	mBufferCache.psPerObjBuffer.nrOfCascades = nrOfCascades;
+	mBufferCache.psPerObjBuffer.nrOfCascades = (float)nrOfCascades;
 }
 
 void BasicDeferredShader::UpdatePerObj(ID3D11DeviceContext* dc)

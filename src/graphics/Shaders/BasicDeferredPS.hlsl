@@ -3,16 +3,21 @@
 
 cbuffer cPerObject : register(b0)
 {
+	float nrOfCascades;
+	float d, e, f;
+
 	Material gMaterial;
-	int type;
+	float type;
 	//float3 skit; //B-E-A-UTIFUL!
 	float a, b, c;
 
 	float gNearDepths[MAX_CASCADES];
+	float g;
 	float gFarDepths[MAX_CASCADES];
+	float h;
 
-	int nrOfCascades;
-	float3 ytterligareSkit; // (Padding)
+
+	//float3 ytterligareSkit; // (Padding)
 }
 
 Texture2D gDiffuseMap : register(t0);

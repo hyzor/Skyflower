@@ -15,7 +15,7 @@
 #define MAX_DIR_LIGHTS 4
 #define MAX_POINT_LIGHTS 16
 #define MAX_SPOT_LIGHTS 8
-#define MAX_CASC 4
+#define MAX_CASC 3
 
 using namespace DirectX;
 
@@ -514,17 +514,20 @@ private:
 	
 	struct PS_CPEROBJBUFFER
 	{
+		float nrOfCascades;
+		float d, e, f;
+
 		Material mat;
-		int type;
+		float type;
 		//XMFLOAT3 skit;
 		float a, b, c;
 		//XMMATRIX shadowProj[MAX_CASC];
 
 		float nearDepths[MAX_CASC];
+		float g;
 		float farDepths[MAX_CASC];
-
-		int nrOfCascades;
-		XMFLOAT3 ytterligareSkit; // (padding)
+		float h;
+		//XMFLOAT3 ytterligareSkit; // (padding)
 	};
 
 	struct BUFFERCACHE
