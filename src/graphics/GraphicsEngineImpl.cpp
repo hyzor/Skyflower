@@ -749,6 +749,7 @@ void GraphicsEngineImpl::DrawScene()
 	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
 	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
 
+	/*
 	//XMFLOAT4 test = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
 	XMVECTORF32 Green = { 0.000000000f, 1.000000000f, 0.000000000f, 1.000000000f };
 	mSpriteBatch->Begin();
@@ -758,6 +759,7 @@ void GraphicsEngineImpl::DrawScene()
 	mSpriteBatch->Draw(mSMAA->GetSRV(SmaaBufferIndex::Edges), XMFLOAT2(0.0f, 0.0f), nullptr, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
 	mSpriteBatch->Draw(mSMAA->GetSRV(SmaaBufferIndex::Blend), XMFLOAT2(0.0f, 200.0f), nullptr, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
 	mSpriteBatch->End();
+	*/
 
 	//-------------------------------------------------------------------------------------
 	// Restore defaults
