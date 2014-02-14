@@ -185,6 +185,8 @@ private:
 
 	FullscreenTriangle* mFullscreenTriangle;
 
+	bool mEnableAntiAliasing;
+
 	//GenericSkinnedModelSorted* mTestSortedModel;
 };
 

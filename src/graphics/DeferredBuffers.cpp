@@ -31,6 +31,7 @@ bool DeferredBuffers::Init(ID3D11Device* device, UINT width, UINT height)
 	formats[DeferredBuffersIndex::Specular] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	formats[DeferredBuffersIndex::Velocity] = DXGI_FORMAT_R8G8_UNORM;
 	//formats[DeferredBuffersIndex::LitScene] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	formats[DeferredBuffersIndex::Background] = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 	// Setup render target texture description
 	ZeroMemory(&textureDesc, sizeof(D3D11_TEXTURE2D_DESC));
@@ -101,6 +102,23 @@ bool DeferredBuffers::Init(ID3D11Device* device, UINT width, UINT height)
 	hr = device->CreateShaderResourceView(mLitSceneRenderTargetTexture, &shaderResourceViewDesc, &mLitSceneShaderResourceView);
 	if (FAILED(hr))
 		return false;
+
+	// Background buffer
+// 	DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
+// 	textureDesc.Format = format;
+// 	hr = device->CreateTexture2D(&textureDesc, NULL, &mBackgroundRenderTargetTexture);
+// 	if (FAILED(hr))
+// 		return false;
+// 
+// 	renderTargetViewDesc.Format = format;
+// 	hr = device->CreateRenderTargetView(mBackgroundRenderTargetTexture, &renderTargetViewDesc, &mBackgroundRenderTargetView);
+// 	if (FAILED(hr))
+// 		return false;
+// 
+// 	shaderResourceViewDesc.Format = format;
+// 	hr = device->CreateShaderResourceView(mBackgroundRenderTargetTexture, &shaderResourceViewDesc, &mBackgroundShaderResourceView);
+// 	if (FAILED(hr))
+// 		return false;
 
 	return true;
 }
@@ -178,6 +196,21 @@ ID3D11ShaderResourceView* DeferredBuffers::GetLitSceneSRV()
 }
 
 ID3D11Texture2D* DeferredBuffers::GetLitSceneTexture2D()
+{
+	return mLitSceneRenderTargetTexture;
+}
+
+ID3D11RenderTargetView* DeferredBuffers::GetBackgroundRTV()
+{
+	return mLitSceneRenderTargetView;
+}
+
+ID3D11ShaderResourceView* DeferredBuffers::GetBackgroundSRV()
+{
+	return mLitSceneShaderResourceView;
+}
+
+ID3D11Texture2D* DeferredBuffers::GetBackgroundTexture2D()
 {
 	return mLitSceneRenderTargetTexture;
 }

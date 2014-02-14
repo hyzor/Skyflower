@@ -1856,6 +1856,11 @@ void LightDeferredShader::SetFpsValues(float curFps, float targetFps)
 	mBufferCache.psPerFrameBuffer.targetFPS = targetFps;
 }
 
+void LightDeferredShader::SetBackgroundTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(6, 1, &tex);
+}
+
 SkyDeferredShader::SkyDeferredShader()
 {
 

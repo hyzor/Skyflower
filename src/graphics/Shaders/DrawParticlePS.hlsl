@@ -13,7 +13,8 @@ struct PixelOut
 	float4 Color : SV_Target0;
 	float4 Normal : SV_Target1;
 	float4 Specular : SV_Target2;
-	float2 Velocity : SV_target3;
+	float2 Velocity : SV_Target3;
+	float4 Background : SV_Target4;
 };
 
 PixelOut main(GeoOut pIn)
@@ -54,7 +55,7 @@ PixelOut main(GeoOut pIn)
 	// No blending
 	else
 	{
-	
+
 	}
 
 	// No shadow cast on it
@@ -69,6 +70,9 @@ PixelOut main(GeoOut pIn)
 
 	// Gamma correct color (make it linear)
 	pOut.Color.xyz = pow(pOut.Color.xyz, 2.2f);
+
+	pOut.Background.xyz = pOut.Color.xyz;
+	pOut.Background.w = 1.0f;
 
 	float2 CurPosXY;
 	float2 PrevPosXY;

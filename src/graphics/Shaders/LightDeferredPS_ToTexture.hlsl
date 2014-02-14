@@ -62,6 +62,7 @@ Texture2D gSpecularTexture : register(t2);
 Texture2D gVelocityTexture : register(t3);
 Texture2D gSSAOTexture : register(t4);
 Texture2D gDepthTexture : register(t5);
+Texture2D gBackgroundTexture : register(t6);
 
 SamplerState samLinear : register(s0);
 SamplerState samAnisotropic : register(s1);
@@ -241,6 +242,12 @@ PixelOut main(VertexOut pIn)
 
 	// Tone mapping
 	//pOut.LitColor.xyz = Uncharted2Tonemap(pOut.LitColor.xyz);
+
+	float4 backgroundColor = gBackgroundTexture.Sample(samLinear, pIn.Tex);
+
+		float3 colorOut = pOut.LitColor.xyz * float3(1.0f, 1.0f, 1.0f) + backgroundColor.xyz * float3(1.0f, 1.0f, 1.0f);
+
+		pOut.LitColor.xyz = colorOut.xyz;
 
 	// Gamma encode final lit color
 	pOut.LitColor.xyz = pow(pOut.LitColor.xyz, 1.0f / 2.2f);

@@ -256,7 +256,7 @@ void SMAA::Run(ID3D11DeviceContext* dc,
 	// Edge detection pass
 	//------------------------------------------------------------------------------
 	// Disable depth replace stencil
-	dc->OMSetDepthStencilState(RenderStates::mDepthDisabledStencilEnabledDSS, 1);
+	dc->OMSetDepthStencilState(RenderStates::mDepthDisabledStencilReplaceDSS, 1);
 
 	// Edge detection passes uses no blending
 	dc->OMSetBlendState(RenderStates::mDefaultBS, blendFactor, 0xffffffff);
@@ -287,7 +287,7 @@ void SMAA::Run(ID3D11DeviceContext* dc,
 	// Blending weights calculation pass
 	//------------------------------------------------------------------------------
 	// Disable depth use stencil
-	dc->OMSetDepthStencilState(RenderStates::mDepthDisabledStencilEnabledDSS, 1);
+	dc->OMSetDepthStencilState(RenderStates::mDepthDisabledStencilUseDSS, 1);
 
 	// Blending weights calculations pass uses no blending
 	dc->OMSetBlendState(RenderStates::mDefaultBS, blendFactor, 0xffffffff);
@@ -305,7 +305,7 @@ void SMAA::Run(ID3D11DeviceContext* dc,
 	// Neighborhood blending pass
 	//------------------------------------------------------------------------------
 	// Disable depth and stencil
-	dc->OMSetDepthStencilState(RenderStates::mDisabledDSS, 0);
+	dc->OMSetDepthStencilState(RenderStates::mDepthStencilDisabledDSS, 0);
 
 	// If using SMAA 1x, no blending is used
 	// Blending is used for all the other modes

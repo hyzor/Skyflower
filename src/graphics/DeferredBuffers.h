@@ -11,6 +11,7 @@ enum DeferredBuffersIndex
 	Specular,
 	Velocity,
 	//LitScene,
+	Background,
 	Count
 };
 
@@ -34,6 +35,10 @@ public:
 
 	ID3D11ShaderResourceView* GetSRV(int view);
 
+	ID3D11RenderTargetView* GetBackgroundRTV();
+	ID3D11ShaderResourceView* GetBackgroundSRV();
+	ID3D11Texture2D* GetBackgroundTexture2D();
+
 	void Shutdown();
 
 private:
@@ -44,6 +49,10 @@ private:
 	ID3D11Texture2D* mLitSceneRenderTargetTexture;
 	ID3D11RenderTargetView* mLitSceneRenderTargetView;
 	ID3D11ShaderResourceView* mLitSceneShaderResourceView;
+
+	ID3D11Texture2D* mBackgroundRenderTargetTexture;
+	ID3D11RenderTargetView* mBackgroundRenderTargetView;
+	ID3D11ShaderResourceView* mBackgroundShaderResourceView;
 
 	/*
 	ID3D11Texture2D* mLitSceneTexture;
