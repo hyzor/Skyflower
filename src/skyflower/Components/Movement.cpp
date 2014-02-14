@@ -280,6 +280,11 @@ void Movement::update(float deltaTime)
 	pRot = nRot;
 }
 
+Vec3 Movement::GetLook()
+{
+	return this->camLook;
+}
+
 void Movement::setCamera(Vec3 look, Vec3 right, Vec3 up)
 {
 	//if (p)

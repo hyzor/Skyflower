@@ -126,6 +126,18 @@ end
 throwtime = 0
 currtarget = 511;
 function update_testAI(id, dt)
+
+			SetTarget(id, currtarget)
+			if InRange(id, currtarget, 4) then
+				if currtarget == 511 then
+					currtarget = 512
+				else
+					currtarget = 511
+				end
+			end
+end
+
+function skit(id, dt)
 	PickUp(id)
 	if not CanThrow(id, 98713) then
 		SetTarget(id, 98713)

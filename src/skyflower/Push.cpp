@@ -106,7 +106,7 @@ void Push::update(float dt)
 
 	m_isPushingBox = isPushingBox;
 
-	//pushAll();
+	pushAll();
 }
 
 void Push::stopPush(Message const& msg)
@@ -117,7 +117,25 @@ void Push::stopPush(Message const& msg)
 
 bool Push::colliding(Entity* target)
 {
-	return target->sphere->Test(*getOwner()->sphere);
+	if (target->sphere->Test(*getOwner()->sphere))
+	{
+		//get owner look vector
+		Vec3 rot = getOwner()->returnRot();
+		Vec3 look = Vec3(cosf(-rot.Y - 3.14f / 2), 0, sinf(-rot.Y - 3.14f / 2)).Normalize();
+		look.Normalize();
+
+		//get direction to target
+		Vec3 dir = target->returnPos() - getOwner()->returnPos();
+		dir.Y = 0;
+		dir.Normalize();
+
+		//se if owner looks at target
+		float dot = look.Dot(dir);
+		if (dot > 0.6f)
+			return true;
+	}
+
+	return false;
 }
 
 void Push::push(Entity* target)
