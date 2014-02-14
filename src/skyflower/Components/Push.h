@@ -45,6 +45,9 @@ private:
 	Vec3 m_initialPushDirection;
 	bool canPush;
 	bool isColliding;
+
+	float pSpeed;
+	float resetSpeed;
 };
 
 #endif

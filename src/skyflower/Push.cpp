@@ -10,6 +10,7 @@ Push::Push() : Component("Push")
 {
 	this->canPush = true;
 	this->isColliding = false;
+	this->resetSpeed = false;
 }
 
 Push::~Push()
@@ -109,9 +110,23 @@ void Push::update(float dt)
 
 	m_isPushingBox = isPushingBox;
 
+
+	//reset the entity to normal speed
+	if (resetSpeed)
+	{
+		Movement* mov = getOwner()->getComponent<Movement*>("Movement");
+		mov->SetSpeed(mov->GetSpeed()+80*dt); //accelerate speed 40*dt
+		if (mov->GetSpeed() >= pSpeed)
+		{
+			resetSpeed = false;
+			mov->SetSpeed(pSpeed);
+		}
+	}
+
 	pushAll();
 
 	isColliding = false;
+
 }
 
 void Push::stopPush(Message const& msg)
@@ -167,6 +182,15 @@ void Push::push(Entity* target)
 
 					Vec3 position = e->returnPos();
 					e->getModules()->sound->PlaySound("push.wav", 1.0f, &position.X);
+
+					//slow entity for 1 sec after push
+					Movement* mov = getOwner()->getComponent<Movement*>("Movement");
+					if (mov)
+					{
+						pSpeed = mov->GetSpeed();
+						mov->SetSpeed(5);
+						resetSpeed = true;
+					}
 				}
 			}
 		}
