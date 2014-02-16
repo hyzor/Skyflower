@@ -1861,6 +1861,11 @@ void LightDeferredShader::SetBackgroundTexture(ID3D11DeviceContext* dc, ID3D11Sh
 	dc->PSSetShaderResources(6, 1, &tex);
 }
 
+void LightDeferredShader::SetSkipLighting(bool skipLighting)
+{
+	mBufferCache.psPerFrameBuffer.skipLighting = skipLighting;
+}
+
 SkyDeferredShader::SkyDeferredShader()
 {
 

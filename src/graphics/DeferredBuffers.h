@@ -1,8 +1,7 @@
 #ifndef DEFERREDBUFFERS_H_
 #define DEFERREDBUFFERS_H_
 
-#include <d3d11.h>
-#include <DirectXMath.h>
+#include "d3dUtilities.h"
 
 enum DeferredBuffersIndex
 {
@@ -39,6 +38,8 @@ public:
 	ID3D11ShaderResourceView* GetBackgroundSRV();
 	ID3D11Texture2D* GetBackgroundTexture2D();
 
+	/*ID3D11DepthStencilView* GetDepthStencilView();*/
+
 	void Shutdown();
 
 private:
@@ -50,9 +51,12 @@ private:
 	ID3D11RenderTargetView* mLitSceneRenderTargetView;
 	ID3D11ShaderResourceView* mLitSceneShaderResourceView;
 
-	ID3D11Texture2D* mBackgroundRenderTargetTexture;
-	ID3D11RenderTargetView* mBackgroundRenderTargetView;
-	ID3D11ShaderResourceView* mBackgroundShaderResourceView;
+// 	ID3D11Texture2D* mDepthStencilBuffer;
+// 	ID3D11DepthStencilView* mDepthStencilView;
+
+// 	ID3D11Texture2D* mBackgroundRenderTargetTexture;
+// 	ID3D11RenderTargetView* mBackgroundRenderTargetView;
+// 	ID3D11ShaderResourceView* mBackgroundShaderResourceView;
 
 	/*
 	ID3D11Texture2D* mLitSceneTexture;

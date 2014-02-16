@@ -250,6 +250,9 @@ void SMAA::Run(ID3D11DeviceContext* dc,
 	// Clear render targets
 	ClearRenderTargets(dc, XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f), dsv);
 
+	// Clear depth/stencil view
+	dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
 	float blendFactor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	//------------------------------------------------------------------------------
@@ -281,7 +284,9 @@ void SMAA::Run(ID3D11DeviceContext* dc,
 	
 	mFullscreenTriangle->Draw(dc);
 
-	mSMAADepthEdgeDetectionShader->SetDepthTexture(dc, nullptr);
+	//mSMAADepthEdgeDetectionShader->SetDepthTexture(dc, nullptr);
+	mSMAALumaEdgeDetectionShader->SetColorTexture(dc, nullptr);
+	mSMAALumaEdgeDetectionShader->SetPredicationTex(dc, nullptr);
 
 	//------------------------------------------------------------------------------
 	// Blending weights calculation pass
@@ -300,6 +305,10 @@ void SMAA::Run(ID3D11DeviceContext* dc,
 	mSMAABlendingWeightCalculationsShader->UpdatePerFrame(dc);
 
 	mFullscreenTriangle->Draw(dc);
+
+	mSMAABlendingWeightCalculationsShader->SetEdgesTexture(dc, nullptr);
+	mSMAABlendingWeightCalculationsShader->SetAreaTexture(dc, nullptr);
+	mSMAABlendingWeightCalculationsShader->SetSearchTexture(dc, nullptr);
 	
 	//------------------------------------------------------------------------------
 	// Neighborhood blending pass
@@ -319,6 +328,10 @@ void SMAA::Run(ID3D11DeviceContext* dc,
 	mSMAANeighborhoodBlendingShader->UpdatePerFrame(dc);
 
 	mFullscreenTriangle->Draw(dc);
+
+	mSMAANeighborhoodBlendingShader->SetBlendTex(dc, nullptr);
+	mSMAANeighborhoodBlendingShader->SetColorTexture(dc, nullptr);
+	mSMAANeighborhoodBlendingShader->SetVelocityTex(dc, nullptr);
 
 	// Reset render target
 	dc->OMSetRenderTargets(0, nullptr, nullptr);

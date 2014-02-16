@@ -72,7 +72,7 @@ PixelOut main(GeoOut pIn)
 	pOut.Color.xyz = pow(pOut.Color.xyz, 2.2f);
 
 	pOut.Background.xyz = pOut.Color.xyz;
-	pOut.Background.w = 1.0f;
+	pOut.Background.w = pIn.Color.w;
 
 	float2 CurPosXY;
 	float2 PrevPosXY;

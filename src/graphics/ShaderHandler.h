@@ -728,6 +728,8 @@ public:
 	void SetMotionBlurProperties(int enableMotionBlur);
 	void SetFpsValues(float curFps, float targetFps);
 
+	void SetSkipLighting(bool skipLighting);
+
 	void UpdatePerObj(ID3D11DeviceContext* dc);
 	void UpdatePerFrame(ID3D11DeviceContext* dc);
 
@@ -773,7 +775,7 @@ private:
 		int enableMotionBlur;
 		float curFPS;
 		float targetFPS;
-		int padding001;
+		int skipLighting;
 
 		XMMATRIX shadowTransform;
 		XMMATRIX cameraViewMatrix;

@@ -101,7 +101,7 @@ void ParticleSystemImpl::Update(float dt, float gameTime)
 	mAge += dt;
 }
 
-void ParticleSystemImpl::Draw(ID3D11DeviceContext* dc, const Camera& cam)
+void ParticleSystemImpl::Draw(ID3D11DeviceContext* dc, const Camera& cam, ID3D11DepthStencilState* drawDepthStencilState)
 {
 	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
@@ -158,7 +158,7 @@ void ParticleSystemImpl::Draw(ID3D11DeviceContext* dc, const Camera& cam)
 	std::swap(mDrawVB, mStreamOutVB);
 
 	// Restore depth buffer
-	dc->OMSetDepthStencilState(0, 0);
+	dc->OMSetDepthStencilState(drawDepthStencilState, 1);
 	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	dc->OMSetBlendState(RenderStates::mAdditiveBS, blendFactor, 0xffffffff);
 
