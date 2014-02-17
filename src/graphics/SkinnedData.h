@@ -136,7 +136,7 @@ public:
 class SkinnedData
 {
 public:
-	SkinnedData(): Skeleton(0), CurrentAnimIndex(-1) {}
+	SkinnedData(): Skeleton(0), CurrentAnimIndex(0) {}
 	~SkinnedData();
 
 	bool SetAnimIndex(UINT animIndex);

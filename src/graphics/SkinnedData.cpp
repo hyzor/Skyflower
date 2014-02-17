@@ -316,6 +316,7 @@ UINT AnimEvaluator::GetFrameIndexAt( float time, UINT frameStart, UINT frameEnd,
 	UINT frameIndex = static_cast<UINT>((static_cast<float>(nrOfFrames) * percent));
 
 	frameIndex += (frameStart - 1);
+	frameIndex = min(frameIndex, Transforms.size() - 1);
 
 	return frameIndex;
 }
