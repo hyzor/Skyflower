@@ -261,7 +261,7 @@ void GravityComponent::sphereCollision(float dt)
 				if (EntiJ->sphere->Test(*getOwner()->sphere))
 				{
 					Vec3 dist = EntiJ->returnPos() - getOwner()->returnPos();
-					getOwner()->updatePos(getOwner()->returnPos()-dist*2*dt);
+					//getOwner()->updatePos(getOwner()->returnPos()-dist*2*dt);
 				}
 			}
 		}
