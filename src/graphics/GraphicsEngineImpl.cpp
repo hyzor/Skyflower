@@ -1461,10 +1461,11 @@ void GraphicsEngineImpl::clearLights()
 }
 
 
-void GraphicsEngineImpl::printText(wchar_t* text, int x, int y, Vec3 color, float scale)
+void GraphicsEngineImpl::printText(std::string text, int x, int y, Vec3 color, float scale)
 {
+	std::wstring t = std::wstring(text.begin(), text.end());
 	XMVECTORF32 v_color = { color.X, color.Y, color.Z, 1 };
-	mSpriteFont->DrawString(mSpriteBatch, text, XMFLOAT2((float)x, (float)y), v_color, 0.0f, XMFLOAT2(0, 0), scale);
+	mSpriteFont->DrawString(mSpriteBatch, t.c_str(), XMFLOAT2((float)x, (float)y), v_color, 0.0f, XMFLOAT2(0, 0), scale);
 }
 void GraphicsEngineImpl::Clear()
 {

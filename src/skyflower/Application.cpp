@@ -74,6 +74,7 @@ void Application::Start()
 	modules.collision = m_collision;
 	modules.potentialField = m_potentialField;
 	modules.script = m_scriptHandler;
+	modules.gui = m_GUI;
 	
 	m_backgroundMusicMenu.push_back("music/ants.opus");
 

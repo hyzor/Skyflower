@@ -124,16 +124,16 @@ void Menu::draw()
 	if (m_activePage == MenuPageSettings)
 	{
 		Vec3 fullScreenPos = m_pages[MenuPageSettings].checkboxes.at(0)->getPosition();
-		guiPtr->printText(L"Fullscreen", (int)(fullScreenPos.X + (30 * scaleX)), (int)fullScreenPos.Y, Vec3(1.0f, 1.0f, 1.0f), scaleX);
+		guiPtr->printText("Fullscreen", (int)(fullScreenPos.X + (30 * scaleX)), (int)fullScreenPos.Y, Vec3(1.0f, 1.0f, 1.0f), scaleX);
 
 		Vec3 mouseInvertPos = m_pages[MenuPageSettings].checkboxes.at(1)->getPosition();
-		guiPtr->printText(L"Invert Camera", (int)(mouseInvertPos.X + 30 * scaleX), (int)mouseInvertPos.Y, Vec3(1.0f, 1.0f, 1.0f), scaleX);
+		guiPtr->printText("Invert Camera", (int)(mouseInvertPos.X + 30 * scaleX), (int)mouseInvertPos.Y, Vec3(1.0f, 1.0f, 1.0f), scaleX);
 
 		Vec3 soundVolumePos = m_pages[MenuPageSettings].sliders.at(0)->getPosition();
-		guiPtr->printText(L"Sound Volume", (int)(soundVolumePos.X + 160 * scaleX), (int)soundVolumePos.Y+ 10, Vec3(1.0f, 1.0f, 1.0f), scaleX);
+		guiPtr->printText("Sound Volume", (int)(soundVolumePos.X + 160 * scaleX), (int)soundVolumePos.Y+ 10, Vec3(1.0f, 1.0f, 1.0f), scaleX);
 
 		Vec3 mouseSensePos = m_pages[MenuPageSettings].sliders.at(1)->getPosition();
-		guiPtr->printText(L"Mouse sense", (int)(mouseSensePos.X + 160 * scaleX), (int)mouseSensePos.Y + 10, Vec3(1.0f, 1.0f, 1.0f), scaleX);
+		guiPtr->printText("Mouse sense", (int)(mouseSensePos.X + 160 * scaleX), (int)mouseSensePos.Y + 10, Vec3(1.0f, 1.0f, 1.0f), scaleX);
 	}
 }
 

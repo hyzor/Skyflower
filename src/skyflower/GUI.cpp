@@ -170,7 +170,7 @@ void GUI::UploadData(unsigned int id, const void* data)
 	_GetGUIElement(id)->UploadTextureData(data);
 }
 
-void GUI::printText(wchar_t* text, int x, int y, Vec3 color, float scale)
+void GUI::printText(std::string text, int x, int y, Vec3 color, float scale)
 {
 	TextElement txt(text, x, y, color, scale);
 	textQueue.push_back(txt);

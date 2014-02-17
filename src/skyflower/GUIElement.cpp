@@ -51,7 +51,7 @@ TextElement::TextElement()
 	this->scale = 0.0f;
 }
 
-TextElement::TextElement(wchar_t* text, int x, int y, Vec3 color, float scale)
+TextElement::TextElement(std::string text, int x, int y, Vec3 color, float scale)
 {
 	this->color = color;
 	this->x = x;

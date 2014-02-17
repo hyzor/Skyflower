@@ -68,7 +68,7 @@ public:
 	virtual ParticleSystem *CreateParticleSystem() = 0;
 	virtual void DeleteParticleSystem(ParticleSystem *particleSystem) = 0;
 
-	virtual void printText(wchar_t* text, int x, int y, Vec3 color = Vec3::Zero(), float scale = 1.0f) = 0;
+	virtual void printText(std::string text, int x, int y, Vec3 color = Vec3::Zero(), float scale = 1.0f) = 0;
 //	virtual Text2D* CreateText2D() = 0;
 //	virtual void DeleteTexture2D(Text2D *text) = 0;
 

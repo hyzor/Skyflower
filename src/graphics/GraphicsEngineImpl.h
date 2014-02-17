@@ -92,7 +92,7 @@ public:
 
 	void clearLights();
 
-	void printText(wchar_t* text, int x, int y, Vec3 color = Vec3::Zero(), float scale = 1.0f);
+	void printText(std::string text, int x, int y, Vec3 color = Vec3::Zero(), float scale = 1.0f);
 	void Clear();
 
 	void SetFullscreen(bool fullscreen);
