@@ -78,9 +78,9 @@ PixelOut main(VertexOut pIn)
 		if (pIn.Depth > gNearDepths.x && pIn.Depth < gFarDepths.x)
 			cascadeIndex = 0;
 		else if (pIn.Depth > gNearDepths.y && pIn.Depth < gFarDepths.y)
-			cascadeIndex = 0;
+			cascadeIndex = 1;
 		else if (pIn.Depth > gNearDepths.z && pIn.Depth < gFarDepths.z)
-			cascadeIndex = 0;
+			cascadeIndex = 2;
 
 		//shadowPos = mul(pIn.TexShadow, gShadowProjTex[cascadeIndex]); //Transform to shadow projection texture space
 

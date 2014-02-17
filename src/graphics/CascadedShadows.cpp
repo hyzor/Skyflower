@@ -128,8 +128,7 @@ void CascadedShadows::CreateLightFrustums(const DirectionalLight& light, const B
 			for (int cIndex = 0; cIndex < 8; cIndex++)
 			{
 				//Transform from camera view space to world
-				//frustumPoints[cIndex] = XMVector4Transform(frustumPoints[cIndex], cam->GetViewMatrix());
-				frustumPoints[cIndex] = XMVector4Transform(frustumPoints[cIndex], XMMatrixInverse(nullptr, cam->GetViewMatrix()));
+				//frustumPoints[cIndex] = XMVector4Transform(frustumPoints[cIndex], XMMatrixInverse(nullptr, cam->GetViewMatrix()));
 
 				//Transform to lightspace
 				tempTranslatedPoint = XMVector4Transform(frustumPoints[cIndex], lightView);
