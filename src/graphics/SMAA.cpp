@@ -313,8 +313,11 @@ void SMAA::Run(ID3D11DeviceContext* dc,
 	//------------------------------------------------------------------------------
 	// Neighborhood blending pass
 	//------------------------------------------------------------------------------
+	// Clear depth/stencil view
+	dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
 	// Disable depth and stencil
-	dc->OMSetDepthStencilState(RenderStates::mDepthStencilDisabledDSS, 0);
+	dc->OMSetDepthStencilState(RenderStates::mDepthDisabledStencilUseDSS, 0);
 
 	// If using SMAA 1x, no blending is used
 	// Blending is used for all the other modes

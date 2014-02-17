@@ -1866,6 +1866,11 @@ void LightDeferredShader::SetSkipLighting(bool skipLighting)
 	mBufferCache.psPerFrameBuffer.skipLighting = skipLighting;
 }
 
+void LightDeferredShader::SetIsTransparencyPass(bool isTransparencyPass)
+{
+	mBufferCache.psPerFrameBuffer.isTransparencyPass = isTransparencyPass;
+}
+
 SkyDeferredShader::SkyDeferredShader()
 {
 

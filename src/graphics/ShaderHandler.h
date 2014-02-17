@@ -729,6 +729,7 @@ public:
 	void SetFpsValues(float curFps, float targetFps);
 
 	void SetSkipLighting(bool skipLighting);
+	void SetIsTransparencyPass(bool isTransparencyPass);
 
 	void UpdatePerObj(ID3D11DeviceContext* dc);
 	void UpdatePerFrame(ID3D11DeviceContext* dc);
@@ -766,7 +767,7 @@ private:
 
 		// Forms into a 4D vector
 		XMFLOAT3 gEyePosW;
-		float padding;
+		int isTransparencyPass;
 
 		int enableFogging;
 		float fogHeightFalloff, fogHeightOffset, fogGlobalDensity;

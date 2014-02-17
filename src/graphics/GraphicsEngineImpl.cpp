@@ -476,7 +476,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	depthStencilDesc.SampleDesc.Quality = 0;
 
 	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;			// How the texture will be used
-	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;	// Where the resource will be bound to the pipeline
+	depthStencilDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;	// Where the resource will be bound to the pipeline
 	depthStencilDesc.CPUAccessFlags = 0;					// Specify CPU access (Only GPU writes/reads to the depth/buffer)
 	depthStencilDesc.MiscFlags = 0;							// Optional flags
 
@@ -1080,6 +1080,8 @@ void GraphicsEngineImpl::DeleteParticleSystem(ParticleSystem *particleSystem)
 void GraphicsEngineImpl::OnResize(UINT width, UINT height)
 {
 	mD3D->OnResize(width, height);
+	ReleaseCOM(mDepthStencilTextureCopy);
+	ReleaseCOM(mDepthStencilSRVCopy);
 	mDeferredBuffers->OnResize(mD3D->GetDevice(), width, height);
 	mCamera->SetLens(fovY, (float)width / height, zNear, zFar);
 	mCamera->UpdateOrthoMatrix(static_cast<float>(width), static_cast<float>(height), zNear, zFar);
@@ -1096,6 +1098,38 @@ void GraphicsEngineImpl::OnResize(UINT width, UINT height)
 	mDoFCoCTexture->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
 	mDoFBlurTexture1->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
 	mDoFBlurTexture2->Resize(mD3D->GetDevice(), (UINT)(width * mDoFScale), (UINT)(height * mDoFScale));
+
+	// Resize depth/stencil copy
+	HRESULT hr;
+
+	// Depth/stencil buffer copy
+	// Create the depth/stencil buffer and view
+	D3D11_TEXTURE2D_DESC depthStencilDesc;
+	depthStencilDesc.Width = width;						// Texture width in texels
+	depthStencilDesc.Height = height;					// Texture height in texels
+	depthStencilDesc.MipLevels = 1;								// Number of mipmap levels
+	depthStencilDesc.ArraySize = 1;								// Number of textures in texture array
+	depthStencilDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;	// Texel format
+
+	// Set number of multisamples and quality level for the depth/stencil buffer
+	// This has to match swap chain MSAA values
+	depthStencilDesc.SampleDesc.Count = 1;
+	depthStencilDesc.SampleDesc.Quality = 0;
+
+	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;			// How the texture will be used
+	depthStencilDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;	// Where the resource will be bound to the pipeline
+	depthStencilDesc.CPUAccessFlags = 0;					// Specify CPU access (Only GPU writes/reads to the depth/buffer)
+	depthStencilDesc.MiscFlags = 0;							// Optional flags
+
+	hr = mD3D->GetDevice()->CreateTexture2D(&depthStencilDesc, 0, &mDepthStencilTextureCopy);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC depthStencilSRViewDesc;
+	memset(&depthStencilSRViewDesc, 0, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+	depthStencilSRViewDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	depthStencilSRViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	depthStencilSRViewDesc.Texture2D.MipLevels = 1;
+
+	hr = mD3D->GetDevice()->CreateShaderResourceView(mDepthStencilTextureCopy, &depthStencilSRViewDesc, &mDepthStencilSRVCopy);
 }
 
 void GraphicsEngineImpl::RenderSceneToTexture()
@@ -1280,6 +1314,7 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	mShaderHandler->mLightDeferredToTextureShader->SetMotionBlurProperties(1);
 	mShaderHandler->mLightDeferredToTextureShader->SetFpsValues(mCurFPS, mTargetFPS);
 	mShaderHandler->mLightDeferredToTextureShader->SetSkipLighting(false);
+	mShaderHandler->mLightDeferredToTextureShader->SetIsTransparencyPass(false);
 
 	mShaderHandler->mLightDeferredToTextureShader->UpdatePerFrame(mD3D->GetImmediateContext());
 	
@@ -1355,7 +1390,7 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	mShaderHandler->mParticleSystemShader->UpdateDrawShaders(mD3D->GetImmediateContext());
 
 	// Clear diffuse from transparent objects with black
-	mD3D->GetImmediateContext()->ClearRenderTargetView(mDeferredBuffers->GetRenderTarget(DeferredBuffersIndex::Diffuse), reinterpret_cast<const float*>(&Colors::Black));
+	//mD3D->GetImmediateContext()->ClearRenderTargetView(mDeferredBuffers->GetRenderTarget(DeferredBuffersIndex::Diffuse), reinterpret_cast<const float*>(&Colors::Black));
 
 	// Restore to not using a geometry shader
 	mD3D->GetImmediateContext()->GSSetShader(nullptr, nullptr, 0);
@@ -1389,7 +1424,8 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	mShaderHandler->mLightDeferredToTextureShader->SetPointLights(mD3D->GetImmediateContext(), (UINT)mPointLights.size(), mPointLights.data());
 	mShaderHandler->mLightDeferredToTextureShader->SetDirLights(mD3D->GetImmediateContext(), (UINT)mDirLights.size(), mDirLights.data());
 	mShaderHandler->mLightDeferredToTextureShader->SetSpotLights(mD3D->GetImmediateContext(), (UINT)mSpotLights.size(), mSpotLights.data());
-	mShaderHandler->mLightDeferredToTextureShader->SetSkipLighting(true);
+	mShaderHandler->mLightDeferredToTextureShader->SetSkipLighting(false);
+	mShaderHandler->mLightDeferredToTextureShader->SetIsTransparencyPass(true);
 
 	mShaderHandler->mLightDeferredToTextureShader->UpdatePerFrame(mD3D->GetImmediateContext());
 

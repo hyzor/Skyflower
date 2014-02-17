@@ -31,7 +31,7 @@ cbuffer cLightBuffer : register(b0)
 	int padding8, padding9, padding10;
 
 	float3 gEyePosW;
-	float padding;
+	int gIsTransparencyPass;
 
 	int gEnableFogging;
 	float gFogHeightFalloff, gFogHeightOffset, gFogGlobalDensity;
@@ -250,9 +250,29 @@ PixelOut main(VertexOut pIn)
 	pOut.LitColor.xyz = exposed;
 	*/
 
-	float4 backgroundColor = gBackgroundTexture.Sample(samLinear, pIn.Tex);
-	float3 colorOut = pOut.LitColor.xyz * float3(1.0f, 1.0f, 1.0f) + backgroundColor.xyz * float3(1.0f, 1.0f, 1.0f);
-	pOut.LitColor.xyz = colorOut.xyz;
+	if (gIsTransparencyPass == 1)
+	{
+		float4 backgroundColor = gBackgroundTexture.Sample(samLinear, pIn.Tex);
+
+		// Perform alpha blending
+		if (backgroundColor.w < 1.0f)
+		{
+			float3 alphaFloat3 = float3(backgroundColor.w, backgroundColor.w, backgroundColor.w);
+			float3 alphaFloat3Inv = float3(1.0f - backgroundColor.w, 1.0f - backgroundColor.w, 1.0f - backgroundColor.w);
+
+			float3 colorOut = pOut.LitColor.xyz * alphaFloat3 + backgroundColor.xyz * alphaFloat3Inv;
+			pOut.LitColor.xyz = colorOut.xyz;
+		}
+
+		// Perform additive blending
+		else
+		{
+			float3 colorOut = pOut.LitColor.xyz * float3(1.0f, 1.0f, 1.0f) + backgroundColor.xyz * float3(1.0f, 1.0f, 1.0f);
+			pOut.LitColor.xyz = colorOut.xyz;
+			//float4 colorOut = pOut.LitColor * float4(1.0f, 1.0f, 1.0f, 1.0f) + backgroundColor * float4(1.0f, 1.0f, 1.0f, 1.0f);
+			//pOut.LitColor = colorOut;
+		}
+	}
 
 	// Tone mapping
 	//pOut.LitColor.xyz = Uncharted2Tonemap(pOut.LitColor.xyz);
