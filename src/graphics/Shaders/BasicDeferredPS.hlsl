@@ -3,18 +3,13 @@
 
 cbuffer cPerObject : register(b0)
 {
-	//float nrOfCascades;
-	//float d, e, f;
-
 	Material gMaterial;
-	float type;
-	//float3 skit; //B-E-A-UTIFUL!
-	float a, b, c;
+	int type;
+
+	float3 padding;
 
 	float4 gNearDepths;
 	float4 gFarDepths;
-
-	//float3 ytterligareSkit; // (Padding)
 }
 
 Texture2D gDiffuseMap : register(t0);
@@ -56,40 +51,45 @@ PixelOut main(VertexOut pIn)
 
 	//pOut.Position = float4(pIn.PosW, 1.0f);
 
-	int cascadeIndex = 0;
+	int cascadeIndex;
 	float shadowFactor = 0.0f;
+	float depth = pIn.Depth;
+	float4 shadowPosH1 = pIn.ShadowPosH1;
+	float4 shadowPosH2 = pIn.ShadowPosH2;
+	float4 shadowPosH3 = pIn.ShadowPosH3;
 
 	if (true)
 	{
 
-		if (pIn.Depth > gFarDepths.z)
+		if (depth > gFarDepths.z)
 			shadowFactor = 1.0f;
-
 		//Compare the depth of current pixel in camera space and compare to given near and far depths
 		//to decide appropriate index of cascade to sample from
-		//for (int i = 0; i < nrOfCascades; i++)
-		//{
-		//	if (pIn.Depth < gFarDepths[i] && pIn.Depth > gNearDepths[i])
-		//	{
-		//		cascadeIndex = i;
-		//	}
-		//}
-
-		if (pIn.Depth > gNearDepths.x && pIn.Depth < gFarDepths.x)
+		if (depth > gNearDepths.x && depth < gFarDepths.x)
+		{
 			cascadeIndex = 0;
-		else if (pIn.Depth > gNearDepths.y && pIn.Depth < gFarDepths.y)
+		}
+		else if (depth > gNearDepths.y && depth < gFarDepths.y)
+		{
 			cascadeIndex = 1;
-		else if (pIn.Depth > gNearDepths.z && pIn.Depth < gFarDepths.z)
+		}
+		else if (depth > gNearDepths.z && depth < gFarDepths.z)
+		{
 			cascadeIndex = 2;
-
-		//shadowPos = mul(pIn.TexShadow, gShadowProjTex[cascadeIndex]); //Transform to shadow projection texture space
+		}
 
 		if (cascadeIndex == 0)
-			shadowFactor = CalcShadowFactor(samShadow, gShadowMap1, pIn.ShadowPosH1); //Cascade 1
+		{
+			shadowFactor = CalcShadowFactor(samShadow, gShadowMap1, shadowPosH1); //Cascade 1
+		}
 		else if (cascadeIndex == 1)
-			shadowFactor = CalcShadowFactor(samShadow, gShadowMap2, pIn.ShadowPosH2); //Cascade 2
+		{
+			shadowFactor = CalcShadowFactor(samShadow, gShadowMap2, shadowPosH2); //Cascade 2
+		}
 		else if (cascadeIndex == 2)
-			shadowFactor = CalcShadowFactor(samShadow, gShadowMap3, pIn.ShadowPosH3); //Cascade 3
+		{
+			shadowFactor = CalcShadowFactor(samShadow, gShadowMap3, shadowPosH3); //Cascade 3
+		}
 
 	}
 	// Bake shadow factor into color w component

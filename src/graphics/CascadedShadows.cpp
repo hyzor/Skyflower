@@ -18,6 +18,8 @@ CascadedShadows::CascadedShadows(ID3D11Device* device, UINT width, UINT height, 
 		this->mCascades.push_back(c);*/
 		this->mCascades.push_back(new Cascade(device, width, height));
 		this->mNrOfCascades++;
+
+		this->mCascadeSplits.push_back(CascadeSplit(0.0f, 0.0f));
 	}
 }
 
@@ -39,6 +41,21 @@ bool CascadedShadows::AddCascade(ID3D11Device* device, UINT width, UINT height)
 		Cascade* c = new Cascade(device, width, height);
 		this->mCascades.push_back(c);
 		this->mNrOfCascades++;
+
+		result = true;
+	}
+
+	return result;
+}
+
+bool CascadedShadows::SetSplitDepths(float _near, float _far, int cascadeIndex)
+{
+	bool result = false;
+
+	if (cascadeIndex >= 0 && cascadeIndex < this->mNrOfCascades - 1)
+	{
+		this->mCascadeSplits.at(cascadeIndex).sNear = _near;
+		this->mCascadeSplits.at(cascadeIndex).sNear = _near;
 
 		result = true;
 	}
@@ -128,7 +145,7 @@ void CascadedShadows::CreateLightFrustums(const DirectionalLight& light, const B
 			for (int cIndex = 0; cIndex < 8; cIndex++)
 			{
 				//Transform from camera view space to world
-				//frustumPoints[cIndex] = XMVector4Transform(frustumPoints[cIndex], XMMatrixInverse(nullptr, cam->GetViewMatrix()));
+				frustumPoints[cIndex] = XMVector4Transform(frustumPoints[cIndex], XMMatrixInverse(nullptr, cam->GetViewMatrix()));
 
 				//Transform to lightspace
 				tempTranslatedPoint = XMVector4Transform(frustumPoints[cIndex], lightView);
@@ -180,21 +197,20 @@ void CascadedShadows::CreateLightFrustums(const DirectionalLight& light, const B
 			//nearPlane = intervalBegin;
 			//farPlane = intervalEnd;
 
-			//The resulting projection matrix for the current cascade
+
+			float transformedIntervalBegin, transformedIntervalEnd;
+
+			transformedIntervalBegin = XMVectorGetZ(XMVector3Transform(XMVECTOR(XMLoadFloat3(&XMFLOAT3(1.0f, 1.0f, intervalBegin))), cam->GetViewMatrix()));
+			transformedIntervalEnd = XMVectorGetZ(XMVector3Transform(XMVECTOR(XMLoadFloat3(&XMFLOAT3(1.0f, 1.0f, intervalEnd))), cam->GetViewMatrix()));
+
 			P = XMMatrixOrthographicOffCenterLH(
-				XMVectorGetX(lightOrtographicMin), XMVectorGetX(lightOrtographicMax), 
-				XMVectorGetY(lightOrtographicMin), XMVectorGetY(lightOrtographicMax), 
+				XMVectorGetX(lightOrtographicMin), XMVectorGetX(lightOrtographicMax),
+				XMVectorGetY(lightOrtographicMin), XMVectorGetY(lightOrtographicMax),
 				nearPlane, farPlane);
 
 			this->mCascades.at(i)->SetShadowMatrices(lightView, P, lightPos);
 			
-			float transformedIntervalBegin, transformedIntervalEnd;
 
-			//transformedIntervalBegin = XMVectorGetZ(XMVector3Transform(XMVECTOR(XMLoadFloat3(&XMFLOAT3(0.0f, 0.0f, intervalBegin) ) ), XMMatrixInverse( nullptr, cam->GetViewMatrix() )) );
-			//transformedIntervalEnd = XMVectorGetZ(XMVector3Transform(XMVECTOR(XMLoadFloat3(&XMFLOAT3(0.0f, 0.0f, intervalEnd))), XMMatrixInverse(nullptr, cam->GetViewMatrix())));
-
-			transformedIntervalBegin = XMVectorGetZ(XMVector3Transform(XMVECTOR(XMLoadFloat3(&XMFLOAT3(0.0f, 0.0f, intervalBegin))), cam->GetViewMatrix()));
-			transformedIntervalEnd = XMVectorGetZ(XMVector3Transform(XMVECTOR(XMLoadFloat3(&XMFLOAT3(0.0f, 0.0f, intervalEnd))), cam->GetViewMatrix()));
 
 			//Set the depths of the intervals to later use these to determine correct cascade to sample from
 			this->mCascades.at(i)->SetSplitDepthNear(intervalBegin);

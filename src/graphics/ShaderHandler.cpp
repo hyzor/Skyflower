@@ -1211,7 +1211,8 @@ bool BasicDeferredShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLay
 	InitData.SysMemSlicePitch = 0;
 
 	// Now create the buffer
-	device->CreateBuffer(&cbDesc, &InitData, &vs_cPerObjBuffer);
+	HRESULT res = device->CreateBuffer(&cbDesc, &InitData, &vs_cPerObjBuffer);
+
 
 	//------------------------
 	// Pixel shader buffers
@@ -1235,7 +1236,7 @@ bool BasicDeferredShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLay
 	InitData2.SysMemSlicePitch = 0;
 
 	// Now create the buffer
-	HRESULT res = device->CreateBuffer(&cbDesc2, &InitData2, &ps_cPerObjBuffer);
+	res = device->CreateBuffer(&cbDesc2, &InitData2, &ps_cPerObjBuffer);
 
 	mInputLayout = inputLayout;
 

@@ -80,16 +80,19 @@ VertexOut main(VertexIn vIn)
 	//vOut.PrevPosH.xy = (vOut.PrevPosH.xy / vOut.PrevPosH.w) * 0.5f + 0.5f;
 	//vOut.PrevPosH.xy /= vOut.PrevPosH.w;
 
+
 	//Generate depth for current pixel in cam space
-	vOut.Depth = mul(float4(vIn.PosL, 1.0), gWorldView).z;
+	//vOut.Depth = mul(float4(vIn.PosL, 1.0), gWorld).z;
+	vOut.Depth = mul(float4(vOut.PosW, 1.0f), gWorldView).z;
 	//vOut.Depth = vIn.PosL.z;
 
-	//Transform position to light/shadow -space
-	//vOut.TexShadow = mul(float4(vIn.PosL, 1.0), gShadowSpace);
+	//vOut.ShadowPosH1 = mul(float4(vIn.PosL, 1.0f), gShadowTransforms[0]);
+	//vOut.ShadowPosH2 = mul(float4(vIn.PosL, 1.0f), gShadowTransforms[1]);
+	//vOut.ShadowPosH3 = mul(float4(vIn.PosL, 1.0f), gShadowTransforms[2]);
 
-	vOut.ShadowPosH1 = mul(float4(vIn.PosL, 1.0f), gShadowTransforms[0]);
-	vOut.ShadowPosH2 = mul(float4(vIn.PosL, 1.0f), gShadowTransforms[1]);
-	vOut.ShadowPosH3 = mul(float4(vIn.PosL, 1.0f), gShadowTransforms[2]);
+	vOut.ShadowPosH1 = mul(float4(vOut.PosW, 1.0f), gShadowTransforms[0]);
+	vOut.ShadowPosH2 = mul(float4(vOut.PosW, 1.0f), gShadowTransforms[1]);
+	vOut.ShadowPosH3 = mul(float4(vOut.PosW, 1.0f), gShadowTransforms[2]);
 
 	//vOut.Velocity = vOut.CurPosH - vOut.PrevPosH;
 	//vOut.Velocity /= 2.0f;

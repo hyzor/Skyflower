@@ -146,9 +146,11 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 
 	mSky = new Sky(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Textures\\SkyBox.dds", 2000.0f);
 	mShadowMap = new ShadowMap(mD3D->GetDevice(), 2048 * 2, 2048 * 2); //Remember that a const is defined in LightDef.hlsli 
-	mCascadedShadows = new CascadedShadows(mD3D->GetDevice(), 2048, 2048, 3); //Ditto!
+	mCascadedShadows = new CascadedShadows(mD3D->GetDevice(), 2048, 2048, 2); //Ditto!
 	mCascadedShadows->SetSplitMethod(FIT_TO_CASCADE);
 	mCascadedShadows->SetNearFarFitMethod(FIT_NEARFAR_AABB);
+	mCascadedShadows->SetSplitDepths(0.0f, 0.25f, 0);
+	mCascadedShadows->SetSplitDepths(0.25f, 1.00f, 1);
 
 	mGameTime = 0.0f;
 

@@ -514,22 +514,11 @@ private:
 	
 	struct PS_CPEROBJBUFFER
 	{
-		//float nrOfCascades;
-		//float d, e, f;
 		Material mat;
-		float type;
-		//XMFLOAT3 skit;
-		float a, b, c;
-		//XMMATRIX shadowProj[MAX_CASC];
-
+		int type;
+		XMFLOAT3 padding;
 		XMFLOAT4 nearDepths;
 		XMFLOAT4 farDepths;
-
-		//float nearDepths[MAX_CASC];
-		//float g;
-		//float farDepths[MAX_CASC];
-		//float h;
-		//XMFLOAT3 ytterligareSkit; // (padding)
 	};
 
 	struct BUFFERCACHE
