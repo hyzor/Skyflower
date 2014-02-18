@@ -27,7 +27,7 @@ PixelOut main(GeoOut pIn)
 	clip(alpha - 0.1f);
 
 	// Dont bother drawing pixel if alpha is so minimal it's fully transparent
-	//clip(pIn.Color.w - 0.001f);
+	clip(pIn.Color.w - 0.001f);
 
 	float4 sceneColor = gLitScene.Sample(samPoint, pIn.TexSpace);
 
@@ -44,17 +44,15 @@ PixelOut main(GeoOut pIn)
 		float3 alphaFloat3 = float3(realAlpha, realAlpha, realAlpha);
 		float3 alphaFloat3Inv = float3(1.0f - realAlpha, 1.0f - realAlpha, 1.0f - realAlpha);
 
-			float3 colorOut = pOut.Color.xyz * alphaFloat3 + sceneColor.xyz * alphaFloat3Inv;
+		float3 colorOut = pOut.Color.xyz * alphaFloat3 + sceneColor.xyz * alphaFloat3Inv;
+		pOut.Background.xyz = colorOut;
 
-			//pOut.Color.xyz = colorOut.xyz;
-
-			//pOut.Background.xyz = float3(0.0f, 0.0f, 0.0f);
-			//pOut.Background.xyz = sceneColor.xyz;
-			pOut.Background.xyz = colorOut;
+		// Avoid using additive blending in light accumulation stage
+		// by always making sure the alpha value isn't 1.0f
+		if (realAlpha < 1.0f)
 			pOut.Background.w = realAlpha;
-
-			// Fill the diffuse buffer with black color
-			//pOut.Color.xyz = float3(0.0f, 0.0f, 0.0f);
+		else
+			pOut.Background.w = 0.999f;
 	}
 
 	// Additive blending
@@ -78,8 +76,6 @@ PixelOut main(GeoOut pIn)
 	// No shadow cast on it
 	pOut.Color.w = 1.0f;
 
-	// Not affected by lights
-	//pOut.Normal = float4(0.0f, 1.0f, 0.0f, 0.0f);
 	pOut.Normal.xyz = pIn.NormalW;
 	pOut.Normal.w = 0.0f;
 
@@ -87,6 +83,7 @@ PixelOut main(GeoOut pIn)
 
 	// Gamma correct color (make it linear)
 	pOut.Color.xyz = pow(pOut.Color.xyz, 2.2f);
+	pOut.Background.xyz = pow(pOut.Background.xyz, 2.2f);
 
 	float2 CurPosXY;
 	float2 PrevPosXY;

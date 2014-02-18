@@ -255,7 +255,7 @@ PixelOut main(VertexOut pIn)
 		float4 backgroundColor = gBackgroundTexture.Sample(samLinear, pIn.Tex);
 
 		// Perform alpha blending
-		if (backgroundColor.w < 1.0f)
+		if (backgroundColor.w != 1.0f)
 		{
 			float3 alphaFloat3 = float3(backgroundColor.w, backgroundColor.w, backgroundColor.w);
 			float3 alphaFloat3Inv = float3(1.0f - backgroundColor.w, 1.0f - backgroundColor.w, 1.0f - backgroundColor.w);
@@ -269,8 +269,6 @@ PixelOut main(VertexOut pIn)
 		{
 			float3 colorOut = pOut.LitColor.xyz * float3(1.0f, 1.0f, 1.0f) + backgroundColor.xyz * float3(1.0f, 1.0f, 1.0f);
 			pOut.LitColor.xyz = colorOut.xyz;
-			//float4 colorOut = pOut.LitColor * float4(1.0f, 1.0f, 1.0f, 1.0f) + backgroundColor * float4(1.0f, 1.0f, 1.0f, 1.0f);
-			//pOut.LitColor = colorOut;
 		}
 	}
 

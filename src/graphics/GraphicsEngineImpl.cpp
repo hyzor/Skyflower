@@ -416,6 +416,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 
 	mEnableAntiAliasing = true;
 
+	/*
 	ParticleSystemImpl* testSystem1 = new ParticleSystemImpl();
 	testSystem1->Init(
 		mD3D->GetDevice(),
@@ -430,6 +431,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	testSystem1->SetParticleFadeTime(4.0f);
 	testSystem1->SetBlendingMethod(BlendingMethods::ALPHA_BLENDING);
 	mParticleSystems.push_back(testSystem1);
+	*/
 
 	// Sorted skinned model test
 	/*

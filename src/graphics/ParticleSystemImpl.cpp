@@ -160,7 +160,8 @@ void ParticleSystemImpl::Draw(ID3D11DeviceContext* dc, const Camera& cam, ID3D11
 	// Restore depth buffer
 	dc->OMSetDepthStencilState(drawDepthStencilState, 1);
 	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	dc->OMSetBlendState(RenderStates::mAdditiveBS, blendFactor, 0xffffffff);
+	//dc->OMSetBlendState(RenderStates::mAdditiveBS, blendFactor, 0xffffffff);
+	dc->OMSetBlendState(RenderStates::mDefaultBS, blendFactor, 0xffffffff);
 
 	// Now draw the update particle system we just streamed out
 	// Use DrawParticleVS, DrawParticleGS and DrawParticlePS
