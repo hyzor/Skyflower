@@ -268,16 +268,21 @@ void Movement::update(float deltaTime)
 
 	updateEntityPos(pos);
 
-	float d = (rot.Y - pRot.Y);
-	if (d > 3.14f)
-		d -= 3.14f*2;
-	else if (d < -3.14f)
-		d += 3.14f*2;
+	// Update player and AI rotation.
+	if (getOwnerId() == 1 || getOwner()->getComponent<AI *>("AI"))
+	{
+		float d = (rot.Y - pRot.Y);
 
+		if (d > 3.14f)
+			d -= 3.14f*2;
+		else if (d < -3.14f)
+			d += 3.14f*2;
 
-	Vec3 nRot = pRot + Vec3(0,d,0) * 14*deltaTime;
-	updateEntityRot(nRot);
-	pRot = nRot;
+		Vec3 nRot = pRot + Vec3(0,d,0) * 14 *deltaTime;
+
+		updateEntityRot(nRot);
+		pRot = nRot;
+	}
 }
 
 Vec3 Movement::GetLook()
