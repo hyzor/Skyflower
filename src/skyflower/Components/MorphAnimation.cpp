@@ -11,7 +11,7 @@ void MorphAnimtation::addedToEntity()
 
 	m_model = getOwner()->getModules()->graphics->CreateMorphAnimatedInstance(path, model, Vec3());
 
-	m_model->Set(pos, rot, scale, Vec3(1.0f, 0.0f, 0.0f));
+	m_model->Set(pos, rot, scale, Vec3(0.0f, 0.0f, 0.0f));
 }
 
 void MorphAnimtation::update(float dt)
