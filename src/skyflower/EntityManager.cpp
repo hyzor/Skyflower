@@ -898,6 +898,15 @@ bool EntityManager::loadXML(string xmlFile)
 					Touch* t = new Touch();
 					this->addComponent(entity, t);
 				}
+				else if (componentName == "MorphAnimation")
+				{
+					string path = GetStringAttribute(e, "path", entityName, componentName);
+					string file = GetStringAttribute(e, "file", entityName, componentName);
+
+					MorphAnimtation *m = new MorphAnimtation(path, file);
+					this->addComponent(entity, m);
+					
+				}
 				else
 				{
 					cout << xmlFile << ": Unknown component with name " << componentName << " in entity " << entityName << endl;

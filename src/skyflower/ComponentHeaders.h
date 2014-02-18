@@ -21,5 +21,6 @@
 #include "Components/Throw.h"
 #include "Components/Throwable.h"
 #include "Components/Touch.h"
+#include "Components/MorphAnimation.h"
 
 #endif

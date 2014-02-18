@@ -32,6 +32,7 @@
     <ClCompile Include="src\skyflower\Components\Health.cpp" />
     <ClCompile Include="src\skyflower\Components\Input.cpp" />
     <ClCompile Include="src\skyflower\Components\Listener.cpp" />
+    <ClCompile Include="src\skyflower\Components\MorphAnimation.cpp" />
     <ClCompile Include="src\skyflower\Components\Movement.cpp" />
     <ClCompile Include="src\skyflower\Components\MoveTarget.cpp" />
     <ClCompile Include="src\skyflower\Components\Throwable.cpp" />
@@ -73,6 +74,7 @@
     <ClInclude Include="src\skyflower\Components\Input.h" />
     <ClInclude Include="src\skyflower\Components\Listener.h" />
     <ClInclude Include="src\skyflower\Components\Messenger.h" />
+    <ClInclude Include="src\skyflower\Components\MorphAnimation.h" />
     <ClInclude Include="src\skyflower\Components\Movement.h" />
     <ClInclude Include="src\skyflower\Components\MoveTarget.h" />
     <ClInclude Include="src\skyflower\Components\Push.h" />

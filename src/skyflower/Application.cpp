@@ -99,10 +99,10 @@ void Application::Start()
 	levelHandler->init(m_entityManager);
 
 	// Load Hub Level
-	//levelHandler->queue(0);
-	//levelHandler->loadQueued();
- 	levelHandler->queue(4);
- 	levelHandler->loadQueued();
+	levelHandler->queue(4);
+	levelHandler->loadQueued();
+// 	levelHandler->queue(4);
+// 	levelHandler->loadQueued();
 
 	//m_entityManager->sendMessageToEntity("ActivateListener", "player");
 	m_graphicsEngine->UpdateSceneData();
@@ -158,8 +158,6 @@ void Application::Start()
 
 	int loadingScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "Menygrafik\\fyraTreRatio.png");
 	m_GUI->GetGUIElement(loadingScreen)->SetVisible(false);
-
-	skyflower = NULL;
 
 	mGameTime = 0.0;
 	m_oldTime = GetTime();
@@ -243,28 +241,12 @@ void Application::Start()
 
 			m_GUI->GetGUIElement(loadingScreen)->SetVisible(false);
 
-			if (levelHandler->currentLevel() == 0)
-			{
-				if (!skyflower)
-					skyflower = m_graphicsEngine->CreateMorphAnimatedInstance("Models/skyflower meshar/Skyflower_Final/", "skyflower.morph", Vec3(0.0f, -40.0f, 45.0f));
-
-				skyflower->SetVisibility(true);
-			}
-			else
-			{
-				if (skyflower)
-					skyflower->SetVisibility(false);
-			}
-
 			m_oldTime = GetTime();
 		}
 	}
 	
 	//m_graphicsEngine->DeleteTexture2D(memoryChartTexture);
 	//m_graphicsEngine->DeleteTexture2D(frameTimeChartTexture);
-
-	//if (skyflower)
-		//m_graphicsEngine->DeleteInstance(skyflower);
 
 	delete m_cutscene;
 	delete m_menu;
@@ -334,22 +316,6 @@ void Application::updateMenu(float dt)
 
 void Application::updateCutScene(float dt)
 {
-	if (levelHandler->currentLevel() == 0 && skyflower)
-	{
-		Vec3 weights = skyflower->GetWeights();
-
-		// FIX ME : more appropiate weights when more levels are in the game
-		if (weights.X < 1.0f)
-			weights.X += dt * 0.5f;
-		else if (weights.X > 1.0f)
-			weights.X = 1.0f;
-
-		if (!m_cutscene->isPlaying())
-			weights.X = 1.0f;
-
-		skyflower->SetWeights(weights);
-	}
-
 	m_camera->Update(dt);
 	m_graphicsEngine->UpdateScene(dt, (float)mGameTime);
 	m_graphicsEngine->DrawScene();
