@@ -79,6 +79,20 @@ GenericSkinnedModel::~GenericSkinnedModel(void)
 {
 }
 
+
+GenericSkinnedModelInstance::GenericSkinnedModelInstance()
+{
+	model = NULL;
+	isVisible = false;
+	AnimationName = "";
+	AnimationIndex = 0;
+	TimePos = 0.0f;
+	frameStart = 0;
+	frameEnd = 0;
+	playAnimForward = true;
+	loop = true;
+}
+
 void GenericSkinnedModelInstance::Update(float dt)
 {
 	TimePos += dt;

@@ -218,23 +218,46 @@ void Movement::update(float deltaTime)
 	}
 
 
-	if (getOwnerId() == 1 && getOwner()->getAnimatedInstance())
+	if (getOwner()->getAnimatedInstance())
 	{
-		Push *pushComponent = getOwner()->getComponent<Push *>("Push");
+		if (getOwnerId() == 1)
+		{
+			// Player animations
+			Push *pushComponent = getOwner()->getComponent<Push *>("Push");
 
-		if ((this->isInAir && timeFalling > 0.3f) || p->GetStates()->isJumping)
-		{
-			getOwner()->getAnimatedInstance()->SetAnimation(1, false);
+			if ((this->isInAir && timeFalling > 0.3f) || p->GetStates()->isJumping)
+			{
+				// Jump
+				getOwner()->getAnimatedInstance()->SetAnimation(1, false);
+			}
+			else if (pushComponent && !pushComponent->isPushingBox())
+			{
+				if (p->GetStates()->isMoving)
+				{
+					// Run
+					getOwner()->getAnimatedInstance()->SetAnimation(0, true);
+				}
+				else
+				{
+					// Idle
+					getOwner()->getAnimatedInstance()->SetAnimation(4, true);
+				}
+			}
 		}
-		else if (pushComponent && !pushComponent->isPushingBox())
+		else if (getOwner()->getComponent<AI *>("AI"))
 		{
+			// AI animations
 			if (p->GetStates()->isMoving)
 			{
+				// Run
 				getOwner()->getAnimatedInstance()->SetAnimation(0, true);
 			}
 			else
 			{
-				getOwner()->getAnimatedInstance()->SetAnimation(4, true);
+				// Idle
+
+				// AIn har ingen idle animation, spela springanimationen istället.
+				getOwner()->getAnimatedInstance()->SetAnimation(0, true);
 			}
 		}
 	}

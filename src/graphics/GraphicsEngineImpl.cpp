@@ -1276,8 +1276,8 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 			mShaderHandler->mBasicDeferredSkinnedSortedShader->SetPrevWorldViewProj(XMLoadFloat4x4(&mSkinnedSortedInstances[i]->prevWorld), mCamera->GetPreviousViewProj());
 
 			mShaderHandler->mBasicDeferredSkinnedSortedShader->SetBoneTransforms(
-				mSkinnedSortedInstances[i]->FinalLowerBodyTransforms.data(), mSkinnedSortedInstances[i]->FinalLowerBodyTransforms.size(),
-				mSkinnedSortedInstances[i]->FinalUpperBodyTransforms.data(), mSkinnedSortedInstances[i]->FinalUpperBodyTransforms.size());
+				mSkinnedSortedInstances[i]->FinalLowerBodyTransforms.data(), (UINT)mSkinnedSortedInstances[i]->FinalLowerBodyTransforms.size(),
+				mSkinnedSortedInstances[i]->FinalUpperBodyTransforms.data(), (UINT)mSkinnedSortedInstances[i]->FinalUpperBodyTransforms.size());
 
 			mShaderHandler->mBasicDeferredSkinnedSortedShader->SetRootBoneIndex(mSkinnedSortedInstances[i]->model->skinnedData.RootBoneIndex);
 
