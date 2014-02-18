@@ -285,31 +285,30 @@ void Menu::onResize(unsigned int width, unsigned int height)
 
 void Menu::onMouseMove(Vec3 mousePos)
 {
-	UINT lastHighlighted = 0;
-	bool newHighlighed = false;
-
-	for (UINT i = 0; i< m_pages[m_activePage].buttons.size(); i++)
+	UINT newSelected = selectedButton;
+	for (UINT i = 0; i < m_pages[m_activePage].buttons.size(); i++)
 	{
+		
+		m_pages[m_activePage].buttons[i]->onMouseMove(mousePos);
+
+		m_pages[m_activePage].buttons[i]->isHighlighted();
 		if (m_pages[m_activePage].buttons[i]->isHighlighted())
-			lastHighlighted = i;
-	}
-
-	int count = 0;
-	for (auto it = m_pages[m_activePage].buttons.begin(); it != m_pages[m_activePage].buttons.end(); ++it)
-	{
-		bool oldHighlighted = (*it)->isHighlighted();
-		(*it)->onMouseMove(mousePos);
-
-		if (!oldHighlighted && (*it)->isHighlighted())
 		{
-			selectedButton = count;
-			newHighlighed = true;
-			soundEngine->PlaySound("menu/button.wav", 0.5f);
+			newSelected = i;			
 		}
-		count++;
 	}
-	if (!newHighlighed)
-		m_pages[m_activePage].buttons[lastHighlighted]->setHighlighted(true);
+
+	if (newSelected != selectedButton)
+	{
+		selectedButton = newSelected;
+		soundEngine->PlaySound("menu/button.wav", 0.5f);
+	}
+	else
+	{
+		// no new button has been selected, highlight the last selected button again
+		m_pages[m_activePage].buttons[selectedButton]->setHighlighted(true);
+	}
+
 }
 void Menu::onMouseDown(Vec3 mousePos)
 {

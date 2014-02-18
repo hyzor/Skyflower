@@ -21,7 +21,7 @@ public:
 		this->path = path;
 		this->model = model;
 	};
-	virtual ~MorphAnimtation(){}
+	virtual ~MorphAnimtation();
 
 	void addedToEntity();
 	void update(float deltaTime);

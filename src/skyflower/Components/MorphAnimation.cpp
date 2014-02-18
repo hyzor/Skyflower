@@ -3,6 +3,12 @@
 // Must be included last!
 #include "shared/debug.h"
 
+MorphAnimtation::~MorphAnimtation()
+{
+	if (m_model)
+		getOwner()->getModules()->graphics->DeleteInstance(m_model);
+}
+
 void MorphAnimtation::addedToEntity()
 {
 	Vec3 pos = getOwner()->returnPos();
