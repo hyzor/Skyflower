@@ -36,6 +36,7 @@ public:
 	virtual void SetParticleAgeLimit(float particleAgeLimit) = 0;
 
 	virtual void SetParticleType(ParticleType particleType) = 0;
+	virtual void SetScale(XMFLOAT2 scale) = 0;
 };
 
 #endif

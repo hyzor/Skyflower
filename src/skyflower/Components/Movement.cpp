@@ -61,12 +61,14 @@ void Movement::addedToEntity() {
 	this->mParticleSystemRun->SetParticleType(ParticleType::PT_PARTICLE);
 	this->mParticleSystemRun->SetParticleAgeLimit(0.25f);
 	this->mParticleSystemRun->SetEmitFrequency(FLT_MAX);
+	this->mParticleSystemRun->SetScale(XMFLOAT2(4.0f, 4.0f));
 
 	this->mParticleSystemDizzy = getOwner()->getModules()->graphics->CreateParticleSystem();
 	this->mParticleSystemDizzy->SetActive(false);
 	this->mParticleSystemDizzy->SetParticleType(ParticleType::PT_BIRD);
 	this->mParticleSystemDizzy->SetParticleAgeLimit(3.75f);
 	this->mParticleSystemDizzy->SetEmitFrequency(1.0f / 2.0f);
+	this->mParticleSystemDizzy->SetScale(XMFLOAT2(2.5f, 2.5f));
 
 	requestMessage("StartMoveForward", &Movement::startMoveForward);
 	requestMessage("StartMoveBackward", &Movement::startMoveBackward);
