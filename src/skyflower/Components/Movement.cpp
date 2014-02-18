@@ -21,6 +21,8 @@
 #define JUMP_SPEED_FACTOR_FORWARD 0.0005f
 #define JUMP_SPEED_FACTOR_BACKWARD 0.0125f
 
+#define RUN_PARTICLE_EMIT_RATE (1.0f / 10.0f)
+
 static const char *fallingSounds[] = {
 	"player/falling1.wav"
 };
@@ -55,10 +57,10 @@ void Movement::addedToEntity() {
 	this->p = getOwner()->getPhysics();
 
 	this->mParticleSystemRun = getOwner()->getModules()->graphics->CreateParticleSystem();
-	this->mParticleSystemRun->SetActive(false);
+	this->mParticleSystemRun->SetActive(true);
 	this->mParticleSystemRun->SetParticleType(ParticleType::PT_PARTICLE);
 	this->mParticleSystemRun->SetParticleAgeLimit(0.25f);
-	this->mParticleSystemRun->SetEmitFrequency(1.0f / 10.0f);
+	this->mParticleSystemRun->SetEmitFrequency(FLT_MAX);
 
 	this->mParticleSystemDizzy = getOwner()->getModules()->graphics->CreateParticleSystem();
 	this->mParticleSystemDizzy->SetActive(false);
@@ -268,7 +270,9 @@ void Movement::update(float deltaTime)
 	Vec3 emitDirection = Vec3(cosf(-rot.Y + 3.14f / 2), 0, sinf(-rot.Y + 3.14f / 2)).Normalize();
 	float particleAcceleration = 10.0f;
 
-	this->mParticleSystemRun->SetActive(!(this->isInAir || !p->GetStates()->isMoving));
+	bool running = p->GetStates()->isMoving && !this->isInAir;
+
+	this->mParticleSystemRun->SetEmitFrequency(running? RUN_PARTICLE_EMIT_RATE : FLT_MAX);
 	this->mParticleSystemRun->SetEmitPos(XMFLOAT3(pos.X, pos.Y, pos.Z));
 	this->mParticleSystemRun->SetEmitDir(XMFLOAT3(emitDirection.X, emitDirection.Y, emitDirection.Z));
 	this->mParticleSystemRun->SetConstantAccel(XMFLOAT3(emitDirection.X * particleAcceleration, emitDirection.Y * particleAcceleration, emitDirection.Z * particleAcceleration));
