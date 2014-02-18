@@ -4,6 +4,7 @@
 Texture2DArray gTexArray : register(t0);
 
 Texture2D gLitScene : register(t1);
+Texture2D gSceneDepth : register(t2);
 
 SamplerState samLinear : register(s0);
 SamplerState samPoint : register(s1);
@@ -33,14 +34,35 @@ PixelOut main(GeoOut pIn)
 
 	pOut.Color = gTexArray.Sample(samLinear, float3(pIn.Tex, pIn.TexIndex)) * pIn.Color;
 
-	float realAlpha = pIn.Color.w - (1.0f - alpha);
-
-	if (realAlpha < 0.0f)
-		realAlpha = 0.0f;
-
 	// Alpha blending
 	if (pIn.BlendingMethod == ALPHA_BLENDING)
 	{
+		float realAlpha = pIn.Color.w - (1.0f - alpha);
+
+		float sceneDepth = gSceneDepth.Sample(samPoint, pIn.TexSpace).x;
+
+		sceneDepth = (pIn.zFar * pIn.zNear) / (pIn.zFar - sceneDepth * (pIn.zFar - pIn.zNear));
+
+		float zDiff = sceneDepth - pIn.Depth;
+
+		// TODO: Send in SoftParticleContrast and SoftParticleScale
+		// These are tweakable and should be in the range of 1.0f to 5.0f and 0.0f to 5.0f respectively
+		float SoftParticleContrast = 2.5f;
+		float SoftParticleScale = 0.15f;
+
+		float contrast = Contrast(zDiff * SoftParticleScale, SoftParticleContrast);
+
+		// If contrast * zDiff is negative, it means this particle is behind some opaque object
+		//if (contrast * zDiff <= 0.0f)
+		//discard;
+
+		realAlpha = realAlpha * contrast;
+
+		if (realAlpha < 0.0f)
+			realAlpha = 0.0f;
+
+		clip(realAlpha - 0.001f);
+
 		float3 alphaFloat3 = float3(realAlpha, realAlpha, realAlpha);
 		float3 alphaFloat3Inv = float3(1.0f - realAlpha, 1.0f - realAlpha, 1.0f - realAlpha);
 

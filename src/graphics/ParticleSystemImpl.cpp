@@ -34,6 +34,8 @@ ParticleSystemImpl::ParticleSystemImpl()
 
 	mFadeTime = 1.0f;
 	mBlendingMethod = 0;
+
+	mScale = XMFLOAT2(1.0f, 1.0f);
 }
 
 ParticleSystemImpl::~ParticleSystemImpl()
@@ -115,15 +117,17 @@ void ParticleSystemImpl::Draw(ID3D11DeviceContext* dc, const Camera& cam, ID3D11
 	mShader->SetTexArray(dc, mTexArraySRV);
 	mShader->SetRandomTex(dc, mRandomTexSRV);
 	mShader->SetTime(mGameTime, mTimeStep);
-	mShader->SetViewProj(cam.GetViewProjMatrix());
+	mShader->SetViewProj(cam.GetViewProjMatrix(), cam.GetViewMatrix());
 	mShader->SetPrevViewProj(cam.GetPreviousViewProj());
 	mShader->SetAccelConstant(mConstantAccelW);
 	mShader->SetParticleProperties(mParticleAgeLimit, mEmitFrequency);
 	mShader->SetParticleType(mParticleType);
 	mShader->SetEmitParticles(mActive);
 	mShader->SetParticleFadeTime(mFadeTime);
+	mShader->SetFarNearClipDistance(cam.GetFarZ(), cam.GetNearZ());
 
 	mShader->SetBlendingMethod(mBlendingMethod);
+	mShader->SetScale(mScale.x, mScale.y);
 
 	mShader->ActivateStreamShaders(dc);
 	mShader->UpdateStreamOutShaders(dc);
@@ -235,4 +239,9 @@ void ParticleSystemImpl::SetParticleFadeTime(float fadeTime)
 void ParticleSystemImpl::SetBlendingMethod(unsigned int blendingMethod)
 {
 	mBlendingMethod = blendingMethod;
+}
+
+void ParticleSystemImpl::SetScale(XMFLOAT2 scale)
+{
+	mScale = scale;
 }

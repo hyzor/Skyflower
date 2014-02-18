@@ -40,6 +40,8 @@ public:
 
 	void SetBlendingMethod(unsigned int blendingMethod);
 
+	void SetScale(XMFLOAT2 scale);
+
 	void SetParticleType(ParticleType particleType);
 
 	void Init(ID3D11Device* device,
@@ -90,6 +92,8 @@ private:
 	float mEmitFrequency;
 
 	UINT mParticleType;
+
+	XMFLOAT2 mScale;
 };
 
 #endif

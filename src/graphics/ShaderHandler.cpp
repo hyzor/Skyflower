@@ -2682,9 +2682,10 @@ bool ParticleSystemShader::SetActive(ID3D11DeviceContext* dc)
 }
 */
 
-void ParticleSystemShader::SetViewProj(XMMATRIX& viewProj)
+void ParticleSystemShader::SetViewProj(XMMATRIX& viewProj, XMMATRIX& view)
 {
 	mBufferCache.drawGSPerFrameBuffer.viewProj = XMMatrixTranspose(viewProj);
+	mBufferCache.drawGSPerFrameBuffer.view = XMMatrixTranspose(view);
 }
 
 void ParticleSystemShader::SetTexArray(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* texArray)
@@ -2744,6 +2745,7 @@ void ParticleSystemShader::UpdateDrawShaders(ID3D11DeviceContext* dc)
 
 	dc->PSSetShaderResources(0, 1, &mTexArray);
 	dc->PSSetShaderResources(1, 1, &mLitSceneTex);
+	dc->PSSetShaderResources(2, 1, &mDepthTex);
 }
 
 void ParticleSystemShader::UpdateStreamOutShaders(ID3D11DeviceContext* dc)
@@ -2834,6 +2836,23 @@ void ParticleSystemShader::SetParticleFadeTime(float fadeTime)
 void ParticleSystemShader::SetBlendingMethod(UINT blendingMethod)
 {
 	mBufferCache.drawGSPerFrameBuffer.blendingMethod = blendingMethod;
+}
+
+void ParticleSystemShader::SetDepthTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* depthTex)
+{
+	mDepthTex = depthTex;
+}
+
+void ParticleSystemShader::SetFarNearClipDistance(float zFar, float zNear)
+{
+	mBufferCache.drawGSPerFrameBuffer.farClipDistance = zFar;
+	mBufferCache.drawGSPerFrameBuffer.nearClipDistance = zNear;
+}
+
+void ParticleSystemShader::SetScale(float scaleX, float scaleY)
+{
+	mBufferCache.streamOutGSPerFrameBuffer.scaleX = scaleX;
+	mBufferCache.streamOutGSPerFrameBuffer.scaleY = scaleY;
 }
 
 BasicDeferredSkinnedSortedShader::BasicDeferredSkinnedSortedShader()
