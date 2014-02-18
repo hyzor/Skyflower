@@ -76,7 +76,11 @@ void Menu::init(GUI *g, int screenWidth, int screeenHeight, SoundEngine *sound)
 
 	// Settings page
 	MenuButton *back = new MenuButton(g, Vec3(30, 100), 240, 100, "button_back.png", "button_back_hover.png");
-	back->setOnClick([this]() { setActivePage(MenuPageMain); });
+	back->setOnClick([this]()
+	{
+		setActivePage(MenuPageMain);
+		m_pages[m_activePage].buttons.at(selectedButton)->setHighlighted(true);
+	});
 	m_pages[MenuPageSettings].buttons.push_back(back);
 
 	CheckBox *fullScreen = new CheckBox(g, Vec3(430, 450), 20, 20, "checkbox_unchecked.png", "checkbox_checked.png");
@@ -159,9 +163,13 @@ void Menu::keyPressed(unsigned short key)
 
 	if (enter)
 	{
+		m_pages[m_activePage].buttons.at(selectedButton)->setHighlighted(false);
 		m_pages[m_activePage].buttons.at(selectedButton)->pressed();
+
+		selectedButton = 0;
+		lastSelected = 0;
 	}
-	if (lastSelected != selectedButton)
+	else if (lastSelected != selectedButton)
 	{
 		m_pages[m_activePage].buttons.at(lastSelected)->setHighlighted(false);
 		m_pages[m_activePage].buttons.at(selectedButton)->setHighlighted(true);
@@ -220,6 +228,9 @@ void Menu::setVisible(bool visible)
 	}
 
 	selectedButton = 0;
+	
+	if (visible)
+		m_pages[m_activePage].buttons.at(selectedButton)->setHighlighted(true);
 
 	// Highlight the selected button
 	//guiPtr->GetGUIElement(m_pages[m_activePage].buttons.at(selectedButton)->getTextureIDs().at(0))->SetVisible(visible);
@@ -274,14 +285,31 @@ void Menu::onResize(unsigned int width, unsigned int height)
 
 void Menu::onMouseMove(Vec3 mousePos)
 {
+	UINT lastHighlighted = 0;
+	bool newHighlighed = false;
+
+	for (UINT i = 0; i< m_pages[m_activePage].buttons.size(); i++)
+	{
+		if (m_pages[m_activePage].buttons[i]->isHighlighted())
+			lastHighlighted = i;
+	}
+
+	int count = 0;
 	for (auto it = m_pages[m_activePage].buttons.begin(); it != m_pages[m_activePage].buttons.end(); ++it)
 	{
 		bool oldHighlighted = (*it)->isHighlighted();
 		(*it)->onMouseMove(mousePos);
 
 		if (!oldHighlighted && (*it)->isHighlighted())
+		{
+			selectedButton = count;
+			newHighlighed = true;
 			soundEngine->PlaySound("menu/button.wav", 0.5f);
+		}
+		count++;
 	}
+	if (!newHighlighed)
+		m_pages[m_activePage].buttons[lastHighlighted]->setHighlighted(true);
 }
 void Menu::onMouseDown(Vec3 mousePos)
 {
