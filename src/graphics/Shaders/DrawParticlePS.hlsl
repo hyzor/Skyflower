@@ -13,7 +13,8 @@ struct PixelOut
 	float4 Color : SV_Target0;
 	float4 Normal : SV_Target1;
 	float4 Specular : SV_Target2;
-	float2 Velocity : SV_target3;
+	float2 Velocity : SV_Target3;
+	float4 Background : SV_Target4;
 };
 
 PixelOut main(GeoOut pIn)
@@ -32,15 +33,26 @@ PixelOut main(GeoOut pIn)
 
 	pOut.Color = gTexArray.Sample(samLinear, float3(pIn.Tex, pIn.TexIndex)) * pIn.Color;
 
+	float realAlpha = pIn.Color.w - (1.0f - alpha);
+
+	if (realAlpha < 0.0f)
+		realAlpha = 0.0f;
+
 	// Alpha blending
 	if (pIn.BlendingMethod == ALPHA_BLENDING)
 	{
-		float3 alphaFloat3 = float3(pIn.Color.w, pIn.Color.w, pIn.Color.w);
-		float3 alphaFloat3Inv = float3(1.0f - pIn.Color.w, 1.0f - pIn.Color.w, 1.0f - pIn.Color.w);
+		float3 alphaFloat3 = float3(realAlpha, realAlpha, realAlpha);
+		float3 alphaFloat3Inv = float3(1.0f - realAlpha, 1.0f - realAlpha, 1.0f - realAlpha);
 
 		float3 colorOut = pOut.Color.xyz * alphaFloat3 + sceneColor.xyz * alphaFloat3Inv;
+		pOut.Background.xyz = colorOut;
 
-		pOut.Color.xyz = colorOut.xyz;
+		// Avoid using additive blending in light accumulation stage
+		// by always making sure the alpha value isn't 1.0f
+		if (realAlpha < 1.0f)
+			pOut.Background.w = realAlpha;
+		else
+			pOut.Background.w = 0.999f;
 	}
 
 	// Additive blending
@@ -48,20 +60,22 @@ PixelOut main(GeoOut pIn)
 	{
 		float3 colorOut = pOut.Color.xyz * float3(1.0f, 1.0f, 1.0f) + sceneColor.xyz * float3(1.0f, 1.0f, 1.0f);
 
-		pOut.Color.xyz = colorOut.xyz;
+		pOut.Background.xyz = colorOut.xyz;
+		pOut.Background.w = 1.0f;
+
+		// Fill the diffuse buffer with black color
+		pOut.Color.xyz = float3(0.0f, 0.0f, 0.0f);
 	}
 
 	// No blending
 	else
 	{
-	
+		pOut.Background = float4(0.0f, 0.0f, 0.0f, 1.0f);
 	}
 
 	// No shadow cast on it
 	pOut.Color.w = 1.0f;
 
-	// Not affected by lights
-	//pOut.Normal = float4(0.0f, 1.0f, 0.0f, 0.0f);
 	pOut.Normal.xyz = pIn.NormalW;
 	pOut.Normal.w = 0.0f;
 
@@ -69,6 +83,7 @@ PixelOut main(GeoOut pIn)
 
 	// Gamma correct color (make it linear)
 	pOut.Color.xyz = pow(pOut.Color.xyz, 2.2f);
+	pOut.Background.xyz = pow(pOut.Background.xyz, 2.2f);
 
 	float2 CurPosXY;
 	float2 PrevPosXY;

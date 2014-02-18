@@ -139,7 +139,6 @@ private:
 
 	DirectX::BoundingSphere mSceneBounds;
 
-
 	DeferredBuffers* mDeferredBuffers;
 	OrthoWindow* mOrthoWindow;
 
@@ -184,6 +183,11 @@ private:
 	SMAA* mSMAA;
 
 	FullscreenTriangle* mFullscreenTriangle;
+
+	bool mEnableAntiAliasing;
+
+	ID3D11Texture2D* mDepthStencilTextureCopy;
+	ID3D11ShaderResourceView* mDepthStencilSRVCopy;
 
 	//GenericSkinnedModelSorted* mTestSortedModel;
 };

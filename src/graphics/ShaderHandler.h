@@ -717,6 +717,8 @@ public:
 	void SetSSAOTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetVelocityTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
+	void SetBackgroundTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+
 	void SetDepthTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
 	void SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
@@ -725,6 +727,9 @@ public:
 	void SetFogProperties(int enableFogging, float heightFalloff, float heightOffset, float globalDensity, XMFLOAT4 fogColor);
 	void SetMotionBlurProperties(int enableMotionBlur);
 	void SetFpsValues(float curFps, float targetFps);
+
+	void SetSkipLighting(bool skipLighting);
+	void SetIsTransparencyPass(bool isTransparencyPass);
 
 	void UpdatePerObj(ID3D11DeviceContext* dc);
 	void UpdatePerFrame(ID3D11DeviceContext* dc);
@@ -762,7 +767,7 @@ private:
 
 		// Forms into a 4D vector
 		XMFLOAT3 gEyePosW;
-		float padding;
+		int isTransparencyPass;
 
 		int enableFogging;
 		float fogHeightFalloff, fogHeightOffset, fogGlobalDensity;
@@ -771,7 +776,7 @@ private:
 		int enableMotionBlur;
 		float curFPS;
 		float targetFPS;
-		int padding001;
+		int skipLighting;
 
 		XMMATRIX shadowTransform;
 		XMMATRIX cameraViewMatrix;

@@ -26,9 +26,14 @@ public:
 	static ID3D11DepthStencilState* mDisabledDSS;
 	static ID3D11DepthStencilState* mDepthStencilEnabledDSS;
 	static ID3D11DepthStencilState* mDepthDisabledStencilEnabledDSS;
+	static ID3D11DepthStencilState* mDepthDisabledStencilReplaceDSS;
+	static ID3D11DepthStencilState* mDepthDisabledStencilUseDSS;
+	static ID3D11DepthStencilState* mDepthStencilDisabledDSS;
+	static ID3D11DepthStencilState* mDepthEnabledStencilUseDSS;
 
 	static ID3D11BlendState* mDefaultBS;
 	static ID3D11BlendState* mAdditiveBS;
+	static ID3D11BlendState* mBlendBS;
 };
 
 #endif

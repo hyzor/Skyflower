@@ -31,7 +31,7 @@ cbuffer cLightBuffer : register(b0)
 	int padding8, padding9, padding10;
 
 	float3 gEyePosW;
-	float padding;
+	int gIsTransparencyPass;
 
 	int gEnableFogging;
 	float gFogHeightFalloff, gFogHeightOffset, gFogGlobalDensity;
@@ -41,7 +41,7 @@ cbuffer cLightBuffer : register(b0)
 	int gEnableMotionBlur;
 	float gCurFps;
 	float gTargetFps;
-	int padding001;
+	int gSkipLighting;
 
 	// Needs cleanup!
 	float4x4 gShadowTransform_PS; // Light: view * projection * toTexSpace
@@ -62,6 +62,7 @@ Texture2D gSpecularTexture : register(t2);
 Texture2D gVelocityTexture : register(t3);
 Texture2D gSSAOTexture : register(t4);
 Texture2D gDepthTexture : register(t5);
+Texture2D gBackgroundTexture : register(t6);
 
 SamplerState samLinear : register(s0);
 SamplerState samAnisotropic : register(s1);
@@ -94,6 +95,10 @@ PixelOut main(VertexOut pIn)
 	// which sets the inital lit diffuse color by the unlit diffuse color multiplied with
 	// the diffuseMultiplier
 	// (MAINLY FOR SKYBOX)
+
+	// TODO: This isn't needed anymore, switch this to Material ID instead (or something else more important).
+	// Maybe a single specular value (specular factor) to store in this component.
+	// Both these methods will remove the need of a specular buffer.
 	diffuseMultiplier = gNormalTexture.Sample(samLinear, pIn.Tex).w;
 
 	// World pos reconstruction
@@ -161,36 +166,42 @@ PixelOut main(VertexOut pIn)
 	pOut.LitColor = diffuse;
 
 	float4 ambient_Lights = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 diffuse_Lights = float4(diffuse.x*diffuseMultiplier, diffuse.y*diffuseMultiplier, diffuse.z*diffuseMultiplier, 0.0f);
+	float4 diffuse_Lights = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 specular_Lights = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+	if (gSkipLighting == 1)
+		diffuse_Lights = float4(diffuse.x, diffuse.y, diffuse.z, 0.0f);
 
 	float4 A, D, S;
 
 	float ambient_occlusion = gSSAOTexture.Sample(samLinear, pIn.Tex).x;
 
-	// Begin calculating lights
-	for (int i = 0; i < gDirLightCount; ++i)
+	if (gSkipLighting == 0)
 	{
-		ComputeDirectionalLight_Deferred_Ambient(specular, gDirLights[i], normal, toEye, A, D, S);
-		ambient_Lights += A * ambient_occlusion * shadowFactor;
-		diffuse_Lights += D * shadowFactor;
-		specular_Lights += S * shadowFactor;
-	}
+		// Begin calculating lights
+		for (int i = 0; i < gDirLightCount; ++i)
+		{
+			ComputeDirectionalLight_Deferred_Ambient(specular, gDirLights[i], normal, toEye, A, D, S);
+			ambient_Lights += A * ambient_occlusion * shadowFactor;
+			diffuse_Lights += D * shadowFactor;
+			specular_Lights += S * shadowFactor;
+		}
 
-	for (int j = 0; j < gPointLightCount; ++j)
-	{
-		ComputePointLight_Deferred_Ambient(specular, gPointLights[j], positionW, normal, toEye, A, D, S);
-		ambient_Lights += A * ambient_occlusion;
-		diffuse_Lights += D;
-		specular_Lights += S;
-	}
+		for (int j = 0; j < gPointLightCount; ++j)
+		{
+			ComputePointLight_Deferred_Ambient(specular, gPointLights[j], positionW, normal, toEye, A, D, S);
+			ambient_Lights += A * ambient_occlusion;
+			diffuse_Lights += D;
+			specular_Lights += S;
+		}
 
-	for (int k = 0; k < gSpotLightCount; ++k)
-	{
-		ComputeSpotLight_Deferred(specular, gSpotLights[k], positionW, normal, toEye, A, D, S);
-		ambient_Lights += A * ambient_occlusion;
-		diffuse_Lights += D;
-		specular_Lights += S;
+		for (int k = 0; k < gSpotLightCount; ++k)
+		{
+			ComputeSpotLight_Deferred(specular, gSpotLights[k], positionW, normal, toEye, A, D, S);
+			ambient_Lights += A * ambient_occlusion;
+			diffuse_Lights += D;
+			specular_Lights += S;
+		}
 	}
 
 	pOut.LitColor = float4(diffuse.xyz * (ambient_Lights.xyz + diffuse_Lights.xyz) + specular_Lights.xyz, 1.0f);
@@ -238,6 +249,28 @@ PixelOut main(VertexOut pIn)
 
 	pOut.LitColor.xyz = exposed;
 	*/
+
+	if (gIsTransparencyPass == 1)
+	{
+		float4 backgroundColor = gBackgroundTexture.Sample(samLinear, pIn.Tex);
+
+		// Perform alpha blending
+		if (backgroundColor.w != 1.0f)
+		{
+			float3 alphaFloat3 = float3(backgroundColor.w, backgroundColor.w, backgroundColor.w);
+			float3 alphaFloat3Inv = float3(1.0f - backgroundColor.w, 1.0f - backgroundColor.w, 1.0f - backgroundColor.w);
+
+			float3 colorOut = pOut.LitColor.xyz * alphaFloat3 + backgroundColor.xyz * alphaFloat3Inv;
+			pOut.LitColor.xyz = colorOut.xyz;
+		}
+
+		// Perform additive blending
+		else
+		{
+			float3 colorOut = pOut.LitColor.xyz * float3(1.0f, 1.0f, 1.0f) + backgroundColor.xyz * float3(1.0f, 1.0f, 1.0f);
+			pOut.LitColor.xyz = colorOut.xyz;
+		}
+	}
 
 	// Tone mapping
 	//pOut.LitColor.xyz = Uncharted2Tonemap(pOut.LitColor.xyz);

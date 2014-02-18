@@ -20,6 +20,7 @@ public:
 	ID3D11RenderTargetView* GetRenderTargetView() const;
 	ID3D11DepthStencilView* GetDepthStencilView() const;
 	ID3D11ShaderResourceView* GetDepthStencilSRView() const;
+	ID3D11Texture2D* GetDepthStencilBuffer() const;
 	D3D11_VIEWPORT GetScreenViewport() const;
 	IDXGISwapChain* GetSwapChain() const;
 
@@ -38,8 +39,8 @@ private:
 	bool mEnable4xMsaa;
 	UINT m4xMSAAQuality;
 
-	int* clientWidth;
-	int* clientHeight;
+// 	int* clientWidth;
+// 	int* clientHeight;
 };
 
 #endif
