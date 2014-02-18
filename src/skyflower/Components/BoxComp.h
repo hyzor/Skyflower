@@ -14,39 +14,20 @@ using namespace Cistron;
 
 class BoxComp : public Component
 {
-	public:
-		BoxComp(float speed) : Component("Box")
-		{
-			this->speed = speed;
+public:
+	BoxComp(float speed);
+	virtual ~BoxComp();
 
-			pNormal = Vec3(0, 1, 0);
-		}
+	void addedToEntity();
+	void removeFromEntity();
 
-		virtual ~BoxComp()
-		{
-		}
+	void update(float deltaTime);
 
-		void addedToEntity()
-		{
+	float GetSpeed();
 
-		}
-
-		void removeFromEntity()
-		{
-		}
-
-		void update(float deltaTime);
-
-		float GetSpeed()
-		{
-			return speed;
-		}
-	private:
-
-		float speed;
-
-		Vec3 pNormal;
+private:
+	float speed;
+	Vec3 pNormal;
 };
-
 
 #endif
