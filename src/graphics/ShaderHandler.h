@@ -1013,12 +1013,17 @@ public:
 	void ActivateDrawShaders(ID3D11DeviceContext* dc);
 	void ActivateStreamShaders(ID3D11DeviceContext* dc);
 
-	void SetViewProj(XMMATRIX& viewProj);
+	void SetViewProj(XMMATRIX& viewProj, XMMATRIX& view);
 	void SetPrevViewProj(XMMATRIX& prevViewProj);
 	void SetTexArray(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* texArray);
 	void SetRandomTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* randomTex);
 
 	void SetLitSceneTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* litSceneTex);
+	void SetDepthTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* depthTex);
+
+	void SetFarNearClipDistance(float zFar, float zNear);
+
+	void SetScale(float scaleX, float scaleY);
 
 	void SetEyePosW(XMFLOAT3 eyePosW);
 	void SetEmitProperties(XMFLOAT3 emitPosW, XMFLOAT3 emitDirW);
@@ -1059,8 +1064,10 @@ private:
 	struct DRAW_GS_PERFRAMEBUFFER
 	{
 		XMFLOAT3 eyePosW;
-		float padding;
+		float farClipDistance;
+		//float padding;
 
+		XMMATRIX view;
 		XMMATRIX viewProj;
 		XMMATRIX prevViewProj;
 
@@ -1068,7 +1075,8 @@ private:
 
 		UINT textureIndex;
 		UINT blendingMethod;
-		XMFLOAT2 paddingTex;
+		float nearClipDistance;
+		float paddingTex;
 	};
 
 	struct STREAMOUT_GS_PERFRAMEBUFFER
@@ -1086,7 +1094,10 @@ private:
 		UINT particleType;
 
 		UINT emitParticles;
-		float padding;
+		float scaleX;
+
+		float scaleY;
+		XMFLOAT3 paddingScale;
 	};
 
 	struct BUFFERCACHE
@@ -1123,6 +1134,7 @@ private:
 	ID3D11ShaderResourceView* mRandomTex;
 
 	ID3D11ShaderResourceView* mLitSceneTex;
+	ID3D11ShaderResourceView* mDepthTex;
 };
 #pragma endregion ParticleSystemShader
 

@@ -424,11 +424,12 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 		mParticlesTextureArray,
 		mRandom1DTexSRV,
 		1000);
-	testSystem1->SetEmitPos(XMFLOAT3(0.0f, 15.0f, 0.0f));
+	testSystem1->SetEmitPos(XMFLOAT3(0.0f, -5.0f, 0.0f));
 	testSystem1->SetConstantAccel(XMFLOAT3(0.0f, 7.8f, 0.0f));
 	testSystem1->SetParticleType(ParticleType::PT_FLARE1);
 	testSystem1->SetParticleAgeLimit(4.0f);
 	testSystem1->SetParticleFadeTime(4.0f);
+	testSystem1->SetScale(XMFLOAT2(5.0f, 5.0f));
 	testSystem1->SetBlendingMethod(BlendingMethods::ALPHA_BLENDING);
 	mParticleSystems.push_back(testSystem1);
 	*/
@@ -1377,6 +1378,13 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	// Set previously drawn lit scene as a texture to use in particle shader
 	mShaderHandler->mParticleSystemShader->SetLitSceneTex(mD3D->GetImmediateContext(), mDeferredBuffers->GetLitSceneSRV());
 
+	// I have to keep a copy of the depth/stencil buffer because the render target is set to use the buffer, while trying to send in the depth SRV to the shader.
+	// That's why I send in a copy of the SRV instead.
+	mD3D->GetImmediateContext()->CopyResource(mDepthStencilTextureCopy, mD3D->GetDepthStencilBuffer());
+	//mShaderHandler->mLightDeferredToTextureShader->SetDepthTexture(mD3D->GetImmediateContext(), mDepthStencilSRVCopy);
+
+	mShaderHandler->mParticleSystemShader->SetDepthTexture(mD3D->GetImmediateContext(), mDepthStencilSRVCopy);
+
 	for (UINT i = 0; i < mParticleSystems.size(); ++i)
 	{
 		if (mParticleSystems[i]->IsActive())
@@ -1388,6 +1396,7 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 
 	// Unbind lit scene texture from particle shader
 	mShaderHandler->mParticleSystemShader->SetLitSceneTex(mD3D->GetImmediateContext(), NULL);
+	mShaderHandler->mParticleSystemShader->SetDepthTexture(mD3D->GetImmediateContext(), NULL);
 	mShaderHandler->mParticleSystemShader->ActivateDrawShaders(mD3D->GetImmediateContext());
 	mShaderHandler->mParticleSystemShader->UpdateDrawShaders(mD3D->GetImmediateContext());
 
