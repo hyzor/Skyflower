@@ -24,5 +24,6 @@
 #include "Components/PointLightComp.h"
 #include "Components/SpotLightComp.h"
 #include "Components/DirectionalLightComp.h"
+#include "Components/MorphAnimation.h"
 
 #endif

@@ -40,6 +40,8 @@ public:
 
 	void SetBlendingMethod(unsigned int blendingMethod);
 
+	void SetScale(XMFLOAT2 scale);
+
 	void SetParticleType(ParticleType particleType);
 
 	void Init(ID3D11Device* device,
@@ -50,7 +52,7 @@ public:
 
 	void Reset();
 	void Update(float dt, float gameTime);
-	void Draw(ID3D11DeviceContext* dc, const Camera& cam);
+	void Draw(ID3D11DeviceContext* dc, const Camera& cam, ID3D11DepthStencilState* drawDepthStencilState);
 
 private:
 	void BuildVB(ID3D11Device* device);
@@ -90,6 +92,8 @@ private:
 	float mEmitFrequency;
 
 	UINT mParticleType;
+
+	XMFLOAT2 mScale;
 };
 
 #endif

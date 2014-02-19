@@ -51,8 +51,8 @@ Entity::Entity(const Modules *modules, EntityId id, EntityId relativeid, string 
 	ground = nullptr;
 	wall = nullptr;
 
-	if (isVisible)
-	{
+	//if (isVisible)
+	//{
 		if (!isAnimated)
 		{
 			this->modelInst = this->modules->graphics->CreateInstance(this->model, Vec3(this->pos.X, this->pos.Y, this->pos.Z));
@@ -109,7 +109,7 @@ Entity::Entity(const Modules *modules, EntityId id, EntityId relativeid, string 
 
 			this->AnimInst->SetAnimation(0, true);
 		}
-	}
+	//}
 	
 	if (this->isCollidible && !isAnimated)
 	{

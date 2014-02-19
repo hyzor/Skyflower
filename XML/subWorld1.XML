@@ -27,9 +27,9 @@
 			<Push />
 			<Pushable />
 			<Health maxHP = "100" />
-			<Throw />
 			<PointLight xPos="0.0" yPos="10.0" zPos="0.0" r="2.0" g="0.75" b="0.75" intensity="1.0" />
 			<Event script="player" />
+			<Throw haveAim="true"/>
 	</Entity>
 	
 	
@@ -61,9 +61,10 @@
 	
 	<Entity entityName="Rock" model="Models\Worlds\Subworld 1\Rock" id="12" isVisible="1" isCollidible="1" isAnimated="0" xPos="326.041811054" yPos="83.32834014" zPos="149.181274461" xRot="1.73764218889" yRot="-0.192779884652" zRot="-0.0324277093744" xScale="6.76847965241" yScale="6.76847965241" zScale="6.76847965241"/>
     <Entity entityName="Rock" model="Models\Worlds\Subworld 1\Rock" id="13" isVisible="1" isCollidible="1" isAnimated="0" xPos="301.101785755" yPos="77.6491530009" zPos="176.172195801" xRot="-0.169338101103" yRot="0.0" zRot="0.0" xScale="6.76847965241" yScale="6.76847965241" zScale="6.76847965241"/>
-    <Entity entityName="WoodBlock" model="Models\Checkpoint\Checkpoint_FINAL\checkpointBase" id="14" isVisible="1" isCollidible="0" isAnimated="0" xPos="290.030637847" yPos="78" zPos="152.252250723" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
+    <Entity entityName="WoodBlock" model="" id="14" isVisible="1" isCollidible="0" isAnimated="0" xPos="290.030637847" yPos="78" zPos="152.252250723" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
 		<Messenger />
         <Checkpoint />
+		<MorphAnimation path="Models/Checkpoint/Checkpoint_FINAL/" file="checkPoint.morph" />
     </Entity>
 	<Entity entityName="Goal" model="Models\Goal\goalSackAnimerad" id="1411" isVisible="1" isCollidible="0" isAnimated="1" xPos="565.370649948" yPos="116.5956517912" zPos="51.8543727491" xRot="0.0" yRot="-1.57" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
 		<Messenger />
@@ -101,7 +102,7 @@
 		<Throw />
 		<Health />
         <Movement speed="10"/>
-		<Event script="testAI" />
+		<!--Event script="testAI" /-->
     </Entity>
 	
 	<Entity entityName="spawnpoint" model="" id="511" isVisible="0" isCollidible="0" isAnimated="0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0"
@@ -153,5 +154,7 @@
     <Entity entityName="movingPlattform" model="Models\Worlds\Subworld 1\movingPlattform" id="10" isVisible="1" isCollidible="1" isAnimated="0" xPos="436" yPos="-274" zPos="165" xRot="0.0" yRot="1.5681321154" zRot="0.0" xScale="1.37679221438" yScale="1.37679221438" zScale="1.37679221438">
         <MoveTarget targetPosX="436" targetPosY="93" targetPosZ="165" duration="3" easingPower="3" continuous="0" />
     </Entity>
+	
+	<Entity entityName="aimMesh" model="Models\Throwable\Ball" id="5000" isVisible="0" isCollidible="0" isAnimated="0" xPos="10.0" yPos="20.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" />
 	
 </root>

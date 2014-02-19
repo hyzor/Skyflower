@@ -276,7 +276,7 @@ void LineChart::Draw(double time)
 		point = &m_renderDataPoints[i];
 		position = ((point->timeStamp - startTime) / m_timeSpan) * m_bitmap->width();
 
-		assert(point->value > 0.0);
+		//assert(point->value > 0.0);
 
 		if (i == m_renderDataPointStart) {
 			path.moveTo((SkScalar)position, (SkScalar)(m_bitmap->height() - point->value));

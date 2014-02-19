@@ -78,7 +78,7 @@ public:
 	void DeleteInstance(AnimatedInstance* ai);
 
 	MorphModelInstance* CreateMorphAnimatedInstance(std::string path, std::string file, Vec3 pos);
-	//void DeleteInstance(MorphModelInstance* mmi);
+	void DeleteInstance(MorphModelInstance* mmi);
 
 	Texture2D *CreateTexture2D(unsigned int width, unsigned int height);
 	void DeleteTexture2D(Texture2D *texture);
@@ -147,7 +147,6 @@ private:
 
 	DirectX::BoundingSphere mSceneBounds;
 
-
 	DeferredBuffers* mDeferredBuffers;
 	OrthoWindow* mOrthoWindow;
 
@@ -192,6 +191,11 @@ private:
 	SMAA* mSMAA;
 
 	FullscreenTriangle* mFullscreenTriangle;
+
+	bool mEnableAntiAliasing;
+
+	ID3D11Texture2D* mDepthStencilTextureCopy;
+	ID3D11ShaderResourceView* mDepthStencilSRVCopy;
 
 	//GenericSkinnedModelSorted* mTestSortedModel;
 };

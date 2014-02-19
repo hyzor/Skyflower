@@ -341,7 +341,7 @@ void Direct3D::OnResize(UINT width, UINT height)
 	}
 
 	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;			// How the texture will be used
-	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D10_BIND_SHADER_RESOURCE;	// Where the resource will be bound to the pipeline
+	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;	// Where the resource will be bound to the pipeline
 	depthStencilDesc.CPUAccessFlags = 0;					// Specify CPU access (Only GPU writes/reads to the depth/buffer)
 	depthStencilDesc.MiscFlags = 0;							// Optional flags
 
@@ -442,4 +442,9 @@ D3D11_VIEWPORT Direct3D::GetScreenViewport() const
 IDXGISwapChain* Direct3D::GetSwapChain() const
 {
 	return mSwapChain;
+}
+
+ID3D11Texture2D* Direct3D::GetDepthStencilBuffer() const
+{
+	return mDepthStencilBuffer;
 }

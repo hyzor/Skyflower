@@ -21,6 +21,8 @@
 #define JUMP_SPEED_FACTOR_FORWARD 0.0005f
 #define JUMP_SPEED_FACTOR_BACKWARD 0.0125f
 
+#define RUN_PARTICLE_EMIT_RATE (1.0f / 10.0f)
+
 static const char *fallingSounds[] = {
 	"player/falling1.wav"
 };
@@ -55,16 +57,18 @@ void Movement::addedToEntity() {
 	this->p = getOwner()->getPhysics();
 
 	this->mParticleSystemRun = getOwner()->getModules()->graphics->CreateParticleSystem();
-	this->mParticleSystemRun->SetActive(false);
+	this->mParticleSystemRun->SetActive(true);
 	this->mParticleSystemRun->SetParticleType(ParticleType::PT_PARTICLE);
 	this->mParticleSystemRun->SetParticleAgeLimit(0.25f);
-	this->mParticleSystemRun->SetEmitFrequency(1.0f / 10.0f);
+	this->mParticleSystemRun->SetEmitFrequency(FLT_MAX);
+	this->mParticleSystemRun->SetScale(XMFLOAT2(4.0f, 4.0f));
 
 	this->mParticleSystemDizzy = getOwner()->getModules()->graphics->CreateParticleSystem();
 	this->mParticleSystemDizzy->SetActive(false);
 	this->mParticleSystemDizzy->SetParticleType(ParticleType::PT_BIRD);
 	this->mParticleSystemDizzy->SetParticleAgeLimit(3.75f);
 	this->mParticleSystemDizzy->SetEmitFrequency(1.0f / 2.0f);
+	this->mParticleSystemDizzy->SetScale(XMFLOAT2(2.5f, 2.5f));
 
 	requestMessage("StartMoveForward", &Movement::startMoveForward);
 	requestMessage("StartMoveBackward", &Movement::startMoveBackward);
@@ -217,24 +221,81 @@ void Movement::update(float deltaTime)
 		}
 	}
 
+	AnimatedInstance *animatedInstance = getOwner()->getAnimatedInstance();
 
-	if (getOwnerId() == 1 && getOwner()->getAnimatedInstance())
+	if (animatedInstance)
 	{
-		Push *pushComponent = getOwner()->getComponent<Push *>("Push");
+		if (getOwnerId() == 1)
+		{
+			// Player animations
 
-		if ((this->isInAir && timeFalling > 0.3f) || p->GetStates()->isJumping)
-		{
-			getOwner()->getAnimatedInstance()->SetAnimation(1, false);
-		}
-		else if (pushComponent && !pushComponent->isPushingBox())
-		{
-			if (p->GetStates()->isMoving)
+			Push *pushComponent = getOwner()->getComponent<Push *>("Push");
+			Throw *throwComponent = getOwner()->getComponent<Throw *>("Throw");
+
+			if (animatedInstance->GetAnimation() == 7 && !animatedInstance->IsAnimationDone())
 			{
-				getOwner()->getAnimatedInstance()->SetAnimation(0, true);
+				// Do nothing, waiting for throw animation to finish.
+			}
+			else if (isDizzy)
+			{
+				// Dizzy
+				animatedInstance->SetAnimation(10, true);
+			}
+			else if ((this->isInAir && timeFalling > 0.3f) || p->GetStates()->isJumping)
+			{
+				if (animatedInstance->GetAnimation() != 8 && animatedInstance->GetAnimation() != 9)
+				{
+					if (animatedInstance->GetAnimation() != 1 || (animatedInstance->GetAnimation() == 1 && animatedInstance->IsAnimationDone()))
+					{
+						// Raise hands for fall
+						animatedInstance->SetAnimation(8, false);
+					}
+				}
+
+				if (animatedInstance->GetAnimation() == 8 && animatedInstance->IsAnimationDone())
+				{
+					// Fall
+					animatedInstance->SetAnimation(9, true);
+				}
+			}
+			else if (throwComponent && throwComponent->getIsHoldingThrowable())
+			{
+				// Holding ball
+				animatedInstance->SetAnimation(6, true);
+			}
+			else if (pushComponent && !pushComponent->isPushingBox())
+			{
+				if (p->GetStates()->isMoving)
+				{
+					// Run
+					animatedInstance->SetAnimation(0, true);
+				}
+				else
+				{
+					// Idle
+					animatedInstance->SetAnimation(4, true);
+				}
+			}
+		}
+		else if (getOwner()->getComponent<AI *>("AI"))
+		{
+			// AI animations
+
+			if (p->GetStates()->isJumping)
+			{
+				// Playing jump animation, do nothing.
+			}
+			else if (p->GetStates()->isMoving)
+			{
+				// Run
+				animatedInstance->SetAnimation(0, true);
 			}
 			else
 			{
-				getOwner()->getAnimatedInstance()->SetAnimation(4, true);
+				// Idle
+
+				// AIn har ingen idle animation, spela springanimationen istället.
+				animatedInstance->SetAnimation(0, true);
 			}
 		}
 	}
@@ -245,7 +306,9 @@ void Movement::update(float deltaTime)
 	Vec3 emitDirection = Vec3(cosf(-rot.Y + 3.14f / 2), 0, sinf(-rot.Y + 3.14f / 2)).Normalize();
 	float particleAcceleration = 10.0f;
 
-	this->mParticleSystemRun->SetActive(!(this->isInAir || !p->GetStates()->isMoving));
+	bool running = p->GetStates()->isMoving && !this->isInAir;
+
+	this->mParticleSystemRun->SetEmitFrequency(running? RUN_PARTICLE_EMIT_RATE : FLT_MAX);
 	this->mParticleSystemRun->SetEmitPos(XMFLOAT3(pos.X, pos.Y, pos.Z));
 	this->mParticleSystemRun->SetEmitDir(XMFLOAT3(emitDirection.X, emitDirection.Y, emitDirection.Z));
 	this->mParticleSystemRun->SetConstantAccel(XMFLOAT3(emitDirection.X * particleAcceleration, emitDirection.Y * particleAcceleration, emitDirection.Z * particleAcceleration));
@@ -268,16 +331,21 @@ void Movement::update(float deltaTime)
 
 	updateEntityPos(pos);
 
-	float d = (rot.Y - pRot.Y);
-	if (d > 3.14f)
-		d -= 3.14f*2;
-	else if (d < -3.14f)
-		d += 3.14f*2;
+	// Update player and AI rotation.
+	if (getOwnerId() == 1 || getOwner()->getComponent<AI *>("AI"))
+	{
+		float d = (rot.Y - pRot.Y);
 
+		if (d > 3.14f)
+			d -= 3.14f*2;
+		else if (d < -3.14f)
+			d += 3.14f*2;
 
-	Vec3 nRot = pRot + Vec3(0,d,0) * 14*deltaTime;
-	updateEntityRot(nRot);
-	pRot = nRot;
+		Vec3 nRot = pRot + Vec3(0,d,0) * 14 *deltaTime;
+
+		updateEntityRot(nRot);
+		pRot = nRot;
+	}
 }
 
 Vec3 Movement::GetLook()
@@ -390,7 +458,9 @@ void Movement::notInAir(Message const& msg)
 void Movement::Jump(Message const& msg)
 {
 	if (!getOwner()->ground && timeFalling > 0.3f)
+	{
 		return;
+	}
 	else if (canMove)
 	{
 		Vec3 pos = getEntityPos();
@@ -428,6 +498,22 @@ void Movement::Jump(Message const& msg)
 			}
 
 			owner->getModules()->sound->PlaySound(GetPlayerSoundFile("player/jump1.wav"), 1.0f, &pos.X);
+
+			AnimatedInstance *animatedInstance = owner->getAnimatedInstance();
+
+			if (animatedInstance)
+			{
+				if (getOwnerId() == 1)
+				{
+					// Play jump animation for player.
+					getOwner()->getAnimatedInstance()->SetAnimation(1, false);
+				}
+				else if (getOwner()->getComponent<AI *>("AI"))
+				{
+					// Play jump animation for AI.
+					getOwner()->getAnimatedInstance()->SetAnimation(5, false);
+				}
+			}
 		}
 	}
 }

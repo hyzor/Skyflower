@@ -17,6 +17,7 @@ public:
 		this->isBeingPickedUp = false;
 		this->isBeingThrown = false;
 		this->throwerId = -1;
+		this->targetPos = Vec3();
 	}
 	virtual ~Throwable() {};
 
@@ -31,8 +32,6 @@ public:
 	}
 
 	void setIsBeingThrown(bool state);
-	
-
 
 private:
 
@@ -40,8 +39,11 @@ private:
 	bool isBeingThrown;
 	EntityId throwerId;
 	PhysicsEntity* p;
+	Vec3 targetPos;
 
 	void update(float deltaTime);
+	void setTargetPos(Vec3 pos);
+	Vec3 getTargetPos();
 
 	void beingThrown(Message const & msg)
 	{

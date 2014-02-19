@@ -31,6 +31,7 @@ bool DeferredBuffers::Init(ID3D11Device* device, UINT width, UINT height)
 	formats[DeferredBuffersIndex::Specular] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	formats[DeferredBuffersIndex::Velocity] = DXGI_FORMAT_R8G8_UNORM;
 	//formats[DeferredBuffersIndex::LitScene] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	formats[DeferredBuffersIndex::Background] = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 	// Setup render target texture description
 	ZeroMemory(&textureDesc, sizeof(D3D11_TEXTURE2D_DESC));
@@ -102,6 +103,51 @@ bool DeferredBuffers::Init(ID3D11Device* device, UINT width, UINT height)
 	if (FAILED(hr))
 		return false;
 
+	// Background buffer
+// 	DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
+// 	textureDesc.Format = format;
+// 	hr = device->CreateTexture2D(&textureDesc, NULL, &mBackgroundRenderTargetTexture);
+// 	if (FAILED(hr))
+// 		return false;
+// 
+// 	renderTargetViewDesc.Format = format;
+// 	hr = device->CreateRenderTargetView(mBackgroundRenderTargetTexture, &renderTargetViewDesc, &mBackgroundRenderTargetView);
+// 	if (FAILED(hr))
+// 		return false;
+// 
+// 	shaderResourceViewDesc.Format = format;
+// 	hr = device->CreateShaderResourceView(mBackgroundRenderTargetTexture, &shaderResourceViewDesc, &mBackgroundShaderResourceView);
+// 	if (FAILED(hr))
+// 		return false;
+
+	// Create the depth/stencil buffer and view
+// 	D3D11_TEXTURE2D_DESC depthStencilDesc;
+// 	depthStencilDesc.Width = width;						// Texture width in texels
+// 	depthStencilDesc.Height = height;					// Texture height in texels
+// 	depthStencilDesc.MipLevels = 1;								// Number of mipmap levels
+// 	depthStencilDesc.ArraySize = 1;								// Number of textures in texture array
+// 	depthStencilDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;	// Texel format
+// 
+// 	// Set number of multisamples and quality level for the depth/stencil buffer
+// 	// This has to match swap chain MSAA values
+// 	depthStencilDesc.SampleDesc.Count = 1;
+// 	depthStencilDesc.SampleDesc.Quality = 0;
+// 
+// 	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;			// How the texture will be used
+// 	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D10_BIND_SHADER_RESOURCE;	// Where the resource will be bound to the pipeline
+// 	depthStencilDesc.CPUAccessFlags = 0;					// Specify CPU access (Only GPU writes/reads to the depth/buffer)
+// 	depthStencilDesc.MiscFlags = 0;							// Optional flags
+// 
+// 	hr = device->CreateTexture2D(&depthStencilDesc, 0, &mDepthStencilBuffer);
+// 
+// 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+// 	memset(&depthStencilViewDesc, 0, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
+// 	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+// 	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+// 	depthStencilViewDesc.Texture2D.MipSlice = 0;
+// 
+// 	hr = device->CreateDepthStencilView(mDepthStencilBuffer, &depthStencilViewDesc, &mDepthStencilView);
+
 	return true;
 }
 
@@ -124,7 +170,7 @@ void DeferredBuffers::ClearRenderTargets(ID3D11DeviceContext* dc, DirectX::XMFLO
 		dc->ClearRenderTargetView(mRenderTargetViewArray[i], color);
 	}
 
-	dc->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	//dc->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
 ID3D11ShaderResourceView* DeferredBuffers::GetSRV(int view)
@@ -160,6 +206,17 @@ void DeferredBuffers::Shutdown()
 			mRenderTargetTextureArray[i] = 0;
 		}
 	}
+
+	ReleaseCOM(mLitSceneRenderTargetTexture);
+	ReleaseCOM(mLitSceneRenderTargetView);
+	ReleaseCOM(mLitSceneShaderResourceView);
+
+// 	ReleaseCOM(mDepthStencilBuffer);
+// 	ReleaseCOM(mDepthStencilView);
+
+// 	ReleaseCOM(mBackgroundRenderTargetTexture);
+// 	ReleaseCOM(mBackgroundRenderTargetView);
+// 	ReleaseCOM(mBackgroundShaderResourceView);
 }
 
 ID3D11RenderTargetView* DeferredBuffers::GetRenderTarget(UINT bufferIndex)
@@ -181,3 +238,23 @@ ID3D11Texture2D* DeferredBuffers::GetLitSceneTexture2D()
 {
 	return mLitSceneRenderTargetTexture;
 }
+
+ID3D11RenderTargetView* DeferredBuffers::GetBackgroundRTV()
+{
+	return mLitSceneRenderTargetView;
+}
+
+ID3D11ShaderResourceView* DeferredBuffers::GetBackgroundSRV()
+{
+	return mLitSceneShaderResourceView;
+}
+
+ID3D11Texture2D* DeferredBuffers::GetBackgroundTexture2D()
+{
+	return mLitSceneRenderTargetTexture;
+}
+
+// ID3D11DepthStencilView* DeferredBuffers::GetDepthStencilView()
+// {
+// 	return mDepthStencilView;
+// }

@@ -4,8 +4,10 @@
 cbuffer cbPerFrame : register(b0)
 {
 	float3 gEyePosW;
-	float padding;
+	float gFarClipDistance;
+	//float padding;
 
+	float4x4 gView;
 	float4x4 gViewProj;
 	float4x4 gPrevViewProj;
 
@@ -13,7 +15,8 @@ cbuffer cbPerFrame : register(b0)
 
 	unsigned int gTextureIndex;
 	unsigned int gBlendingMethod;
-	float3 paddingTex;
+	float gNearClipDistance;
+	float paddingTex;
 };
 
 struct GeoOut
@@ -31,6 +34,10 @@ struct GeoOut
 	float3 NormalW : NORMALW;
 
 	unsigned int BlendingMethod : BLENDINGMETHOD;
+
+	float Depth : DEPTH;
+	float zFar : ZFAR;
+	float zNear : ZNEAR;
 };
 
 // The draw GS just expands points into camera facing quads.
@@ -77,10 +84,13 @@ void main(point VertexOut gin[1],
 		{
 			gout.PosH = mul(v[i], gViewProj);
 
+			gout.Depth = gout.PosH.z;
+			gout.zFar = gFarClipDistance;
+			gout.zNear = gNearClipDistance;
+
 			gout.CurPosH = gout.PosH;
 			gout.PrevPosH = mul(vPrev[i], gPrevViewProj);
 
-			//gout.NDCspace = gout.PosH.xy / gout.PosH.w;
 			float2 NDCspace = gout.PosH.xy / gout.PosH.w;
 
 			gout.NormalW = float3(0.0f, 1.0f, 0.0f);

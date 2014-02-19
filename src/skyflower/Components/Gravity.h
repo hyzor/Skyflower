@@ -12,61 +12,35 @@
 using namespace std;
 using namespace Cistron;
 
-class GravityComponent : public Component {
-
+class GravityComponent : public Component
+{
 public:
-	GravityComponent() : Component("Gravity")
-	{
-		this->enabled = true;
+	GravityComponent();
+	virtual ~GravityComponent();
 
-	}
-
-	virtual ~GravityComponent()
-	{
-	}
-
-	void addedToEntity()
-	{
-		this->p = getOwner()->getPhysics();
-
-		createRays();
-	}
-
-	void removeFromEntity()
-	{
-		this->p = NULL;
-	}
+	void addedToEntity();
+	void removeFromEntity();
 
 	void update(float deltaTime);
 
-	void setEnabled(bool enabled)
-	{
-		this->enabled = enabled;
-	}
+	void setEnabled(bool enabled);
+	bool isEnabled();
+	const Vec3 *GetGroundNormal();
 
-	bool isEnabled()
-	{
-		return this->enabled;
-	}
-
-	Triangle GetGroundTriangle();
+private:
+	float testMove(Ray r, Entity* e, Entity* &out);
+	void createRays();
+	void calculateGroundNormal(Entity* e, Entity* ground);
+	void sphereCollision(float dt);
 
 private:
 	PhysicsEntity* p;
 	bool enabled;
-	Triangle groundt;
+	Vec3 groundNormal;
+	bool foundGroundNormal;
 
 	vector<Ray> groundRays;
 	vector<Ray> wallRays;
-
-	float testMove(Ray r, Entity* e, Entity* &out);
-
-	void sphereCollision(float dt);
-
-
-	void createRays();
-
-	void createGroundTriangle(Entity* e, Entity* ground);
 };
 
 #endif

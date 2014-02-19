@@ -230,6 +230,11 @@ UINT AnimatedInstanceImpl::GetAnimation()
 	return model->mCurAnim;
 }
 
+bool AnimatedInstanceImpl::IsAnimationDone()
+{
+	return model->mInstance.animationDone;
+}
+
 XMMATRIX AnimatedInstanceImpl::GetWorld()
 {
 	return XMLoadFloat4x4(&modelWorld);

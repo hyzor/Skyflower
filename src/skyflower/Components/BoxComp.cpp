@@ -1,3 +1,6 @@
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 #include "shared/util.h"
 
 #include "Components/BoxComp.h"
@@ -7,36 +10,50 @@
 // Must be included last!
 #include "shared/debug.h"
 
-void BoxComp::update(float dt)
+BoxComp::BoxComp(float speed) : Component("Box")
+{
+	this->speed = speed;
+
+	pNormal = Vec3(0, 1, 0);
+}
+
+BoxComp::~BoxComp()
+{
+}
+
+void BoxComp::addedToEntity()
 {
 
+}
+
+void BoxComp::removeFromEntity()
+{
+}
+
+void BoxComp::update(float dt)
+{
 	//rotate box
-	Triangle gTriangle = getOwner()->getComponent<GravityComponent*>("Gravity")->GetGroundTriangle();
+	const Vec3 *groundNormal = getOwner()->getComponent<GravityComponent*>("Gravity")->GetGroundNormal();
 	Vec3 normal;
-	if (gTriangle.P1 != Vec3())
+
+	if (groundNormal)
 	{
-		normal = gTriangle.GetNormal();
+		normal = *groundNormal;
 		pNormal = normal;
 	}
 	else
+	{
 		normal = pNormal;
-
+	}
 
 	//räkna rotation längs med vectorn
-	Vec3 normalX = normal;
-	normalX.X = 0;
-	normalX.Normalize();
+	float rotx = asinf(Vec3(0.0f, normal.Y, normal.Z).Normalize().Y);
+	float rotz = asinf(Vec3(normal.X, normal.Y, 0.0f).Normalize().Y);
 
-	float rotx = asinf(normalX.Y);
-
-	Vec3 normalZ = normal;
-	normalZ.Z = 0;
-	normalZ.Normalize();
-
-	float rotz = asinf(normalZ.Y);
-
-	getOwner()->updateRot(Vec3(rotx - 3.14 / 2, getOwner()->returnRot().Y, -rotz + 3.14 / 2));
+	getOwner()->updateRot(Vec3(rotx - M_PI_2, getOwner()->returnRot().Y, -rotz + M_PI_2));
 }
 
-
-
+float BoxComp::GetSpeed()
+{
+	return speed;
+}

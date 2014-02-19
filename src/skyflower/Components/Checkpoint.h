@@ -25,9 +25,6 @@ public:
 	};
 	virtual ~Checkpoint() {};
 
-
-
-
 	// we are added to an Entity, and thus to the component system
 	void addedToEntity() {
 		//cout << "A checkpoint? was added to the system." << endl;

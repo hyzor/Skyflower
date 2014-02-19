@@ -75,7 +75,6 @@ private:
 	Collision *m_collision;
 	PotentialField *m_potentialField;
 	ScriptHandler *m_scriptHandler;
-	MorphModelInstance* skyflower;
 	EntityManager* m_entityManager;
 	GUI *m_GUI;
 	Menu *m_menu;

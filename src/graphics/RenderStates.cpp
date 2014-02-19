@@ -20,9 +20,14 @@ ID3D11DepthStencilState* RenderStates::mDefaultDSS = 0;
 ID3D11DepthStencilState* RenderStates::mDisabledDSS = 0;
 ID3D11DepthStencilState* RenderStates::mDepthStencilEnabledDSS = 0;
 ID3D11DepthStencilState* RenderStates::mDepthDisabledStencilEnabledDSS = 0;
+ID3D11DepthStencilState* RenderStates::mDepthDisabledStencilReplaceDSS = 0;
+ID3D11DepthStencilState* RenderStates::mDepthDisabledStencilUseDSS = 0;
+ID3D11DepthStencilState* RenderStates::mDepthStencilDisabledDSS = 0;
+ID3D11DepthStencilState* RenderStates::mDepthEnabledStencilUseDSS = 0;
 
 ID3D11BlendState* RenderStates::mDefaultBS = 0;
 ID3D11BlendState* RenderStates::mAdditiveBS = 0;
+ID3D11BlendState* RenderStates::mBlendBS = 0;
 
 void RenderStates::InitAll(ID3D11Device* device)
 {
@@ -247,7 +252,7 @@ void RenderStates::InitAll(ID3D11Device* device)
 
 	depthStencilEnabledDSSdesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 	depthStencilEnabledDSSdesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilEnabledDSSdesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilEnabledDSSdesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
 	depthStencilEnabledDSSdesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
 
 	device->CreateDepthStencilState(&depthStencilEnabledDSSdesc, &mDepthStencilEnabledDSS);
@@ -256,6 +261,98 @@ void RenderStates::InitAll(ID3D11Device* device)
 	depthStencilEnabledDSSdesc.DepthEnable = FALSE;
 
 	device->CreateDepthStencilState(&depthStencilEnabledDSSdesc, &mDepthDisabledStencilEnabledDSS);
+
+	// Depth disabled, stencil replace
+	D3D11_DEPTH_STENCIL_DESC depthDisabledStencilReplaceDSSdesc;
+	ZeroMemory(&depthDisabledStencilReplaceDSSdesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+	depthDisabledStencilReplaceDSSdesc.DepthEnable = FALSE;
+	depthDisabledStencilReplaceDSSdesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthDisabledStencilReplaceDSSdesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+	depthDisabledStencilReplaceDSSdesc.StencilEnable = TRUE;
+	depthDisabledStencilReplaceDSSdesc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+	depthDisabledStencilReplaceDSSdesc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+
+	depthDisabledStencilReplaceDSSdesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depthDisabledStencilReplaceDSSdesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	depthDisabledStencilReplaceDSSdesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
+	depthDisabledStencilReplaceDSSdesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+
+	depthDisabledStencilReplaceDSSdesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depthDisabledStencilReplaceDSSdesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	depthDisabledStencilReplaceDSSdesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
+	depthDisabledStencilReplaceDSSdesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+
+	device->CreateDepthStencilState(&depthDisabledStencilReplaceDSSdesc, &mDepthDisabledStencilReplaceDSS);
+
+	// Depth disabled, stencil use
+	D3D11_DEPTH_STENCIL_DESC depthDisabledStencilUseDSSdesc;
+	ZeroMemory(&depthDisabledStencilUseDSSdesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+	depthDisabledStencilUseDSSdesc.DepthEnable = FALSE;
+	depthDisabledStencilUseDSSdesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthDisabledStencilUseDSSdesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+	depthDisabledStencilUseDSSdesc.StencilEnable = TRUE;
+	depthDisabledStencilUseDSSdesc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+	depthDisabledStencilUseDSSdesc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+
+	depthDisabledStencilUseDSSdesc.FrontFace.StencilFunc = D3D11_COMPARISON_EQUAL;
+	depthDisabledStencilUseDSSdesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	depthDisabledStencilUseDSSdesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthDisabledStencilUseDSSdesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+
+	depthDisabledStencilUseDSSdesc.BackFace.StencilFunc = D3D11_COMPARISON_EQUAL;
+	depthDisabledStencilUseDSSdesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	depthDisabledStencilUseDSSdesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthDisabledStencilUseDSSdesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+
+	device->CreateDepthStencilState(&depthDisabledStencilUseDSSdesc, &mDepthDisabledStencilUseDSS);
+
+	// Depth disabled, stencil disabled
+	D3D11_DEPTH_STENCIL_DESC depthStencilDisabledDSSdesc;
+	ZeroMemory(&depthStencilDisabledDSSdesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+	depthStencilDisabledDSSdesc.DepthEnable = FALSE;
+	depthStencilDisabledDSSdesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthStencilDisabledDSSdesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+	depthStencilDisabledDSSdesc.StencilEnable = FALSE;
+	depthStencilDisabledDSSdesc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+	depthStencilDisabledDSSdesc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+
+	depthStencilDisabledDSSdesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depthStencilDisabledDSSdesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDisabledDSSdesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDisabledDSSdesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+
+	depthStencilDisabledDSSdesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depthStencilDisabledDSSdesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDisabledDSSdesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDisabledDSSdesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+
+	device->CreateDepthStencilState(&depthStencilDisabledDSSdesc, &mDepthStencilDisabledDSS);
+
+	// Depth enabled, stencil use
+	D3D11_DEPTH_STENCIL_DESC depthEnabledStencilUseDSSdesc;
+	ZeroMemory(&depthEnabledStencilUseDSSdesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+	depthEnabledStencilUseDSSdesc.DepthEnable = TRUE;
+	depthEnabledStencilUseDSSdesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthEnabledStencilUseDSSdesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+	depthEnabledStencilUseDSSdesc.StencilEnable = TRUE;
+	depthEnabledStencilUseDSSdesc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+	depthEnabledStencilUseDSSdesc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+
+	depthEnabledStencilUseDSSdesc.FrontFace.StencilFunc = D3D11_COMPARISON_EQUAL;
+	depthEnabledStencilUseDSSdesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	depthEnabledStencilUseDSSdesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthEnabledStencilUseDSSdesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+
+	depthEnabledStencilUseDSSdesc.BackFace.StencilFunc = D3D11_COMPARISON_EQUAL;
+	depthEnabledStencilUseDSSdesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	depthEnabledStencilUseDSSdesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthEnabledStencilUseDSSdesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+
+	device->CreateDepthStencilState(&depthEnabledStencilUseDSSdesc, &mDepthEnabledStencilUseDSS);
 
 	//-----------------------------------------------------------
 	// Blend states
@@ -274,6 +371,8 @@ void RenderStates::InitAll(ID3D11Device* device)
 	defaultBSdesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	defaultBSdesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
+	device->CreateBlendState(&defaultBSdesc, &mDefaultBS);
+
 	// Additive blend state
 	D3D11_BLEND_DESC additiveBSdesc;
 	ZeroMemory(&additiveBSdesc, sizeof(D3D11_BLEND_DESC));
@@ -287,6 +386,24 @@ void RenderStates::InitAll(ID3D11Device* device)
 	additiveBSdesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
 	additiveBSdesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	additiveBSdesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	device->CreateBlendState(&additiveBSdesc, &mAdditiveBS);
+
+	// Blend enabled
+	D3D11_BLEND_DESC blendBSdesc;
+	ZeroMemory(&blendBSdesc, sizeof(D3D11_BLEND_DESC));
+	blendBSdesc.AlphaToCoverageEnable = FALSE;
+	blendBSdesc.IndependentBlendEnable = FALSE;
+	blendBSdesc.RenderTarget[0].BlendEnable = TRUE;
+	blendBSdesc.RenderTarget[0].SrcBlend = D3D11_BLEND_BLEND_FACTOR;
+	blendBSdesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_BLEND_FACTOR;
+	blendBSdesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendBSdesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
+	blendBSdesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendBSdesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendBSdesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	device->CreateBlendState(&blendBSdesc, &mBlendBS);
 }
 
 void RenderStates::DestroyAll()
@@ -301,13 +418,19 @@ void RenderStates::DestroyAll()
 	ReleaseCOM(mSSAODepthSS);
 	ReleaseCOM(mAnisotropicSS);
 	ReleaseCOM(mComparisonSS);
+	ReleaseCOM(mPointClampedSS);
 
 	ReleaseCOM(mLessEqualDSS);
 	ReleaseCOM(mDefaultDSS);
 	ReleaseCOM(mDisabledDSS);
 	ReleaseCOM(mDepthStencilEnabledDSS);
 	ReleaseCOM(mDepthDisabledStencilEnabledDSS);
+	ReleaseCOM(mDepthDisabledStencilReplaceDSS);
+	ReleaseCOM(mDepthDisabledStencilUseDSS);
+	ReleaseCOM(mDepthStencilDisabledDSS);
+	ReleaseCOM(mDepthEnabledStencilUseDSS);
 
 	ReleaseCOM(mDefaultBS);
 	ReleaseCOM(mAdditiveBS);
+	ReleaseCOM(mBlendBS);
 }

@@ -6,6 +6,29 @@
 // Must be included last!
 #include "shared/debug.h"
 
+GravityComponent::GravityComponent() : Component("Gravity")
+{
+	this->enabled = true;
+}
+
+GravityComponent::~GravityComponent()
+{
+}
+
+void GravityComponent::addedToEntity()
+{
+	this->p = getOwner()->getPhysics();
+	groundNormal = Vec3(0.0f, 1.0f, 0.0f);
+	foundGroundNormal = false;
+
+	createRays();
+}
+
+void GravityComponent::removeFromEntity()
+{
+	this->p = NULL;
+}
+
 void GravityComponent::update(float dt)
 {
 	Vec3 pos = getEntityPos();
@@ -20,55 +43,75 @@ void GravityComponent::update(float dt)
 	getOwner()->wall = nullptr;
 	Entity *ground = nullptr;
 
-	for (int k = 0; k < (int)groundRays.size(); k++)
+	for (size_t k = 0; k < groundRays.size(); k++)
 	{
-		float t = testMove(groundRays[k], getOwner(), ground); //test feet and head
+		//test feet and head
+		float t = testMove(groundRays[k], getOwner(), ground);
+
 		//reset jump
 		if (t == -1)
 		{
 			Vec3 vel = getOwner()->mPhysicsEntity->GetVelocity();
+
 			if (vel.Y < 0)
 				vel = Vec3();
 
 			getOwner()->mPhysicsEntity->SetVelocity(vel);
 			getOwner()->mPhysicsEntity->GetStates()->isJumping = false;
 			getOwner()->mPhysicsEntity->GetStates()->isActiveProjectile = false;
+
 			sendMessageToEntity(getOwnerId(), "StopBeingThrown");
 		}
-		if (t == 1)
+		else if (t == 1)
 		{
 			getOwner()->mPhysicsEntity->SetVelocity(Vec3());
 			ground = nullptr;
 		}
 	}
-	getOwner()->changeRelative(ground);
 
+	getOwner()->changeRelative(ground);
 
 	for (size_t k = 0; k < wallRays.size(); k++)
 		testMove(wallRays[k], getOwner(), getOwner()->wall);
 
-
-
 	//activate event for ground
 	if (getOwner()->ground)
 	{
-		if(!getOwner()->hasComponents("Throwable")) // bollar kan inte trycka knappar
+		if (!getOwner()->hasComponents("Throwable")) // bollar kan inte trycka knappar
 			getEntityManager()->sendMessageToEntity("Ground", getOwner()->ground->fId);
+
 		//so that you can't jump while falling from something
 		getEntityManager()->sendMessageToEntity("notInAir", getOwnerId());
 	}
 	else
+	{
 		getEntityManager()->sendMessageToEntity("inAir", getOwnerId());
+	}
 
 	//activate event for wall
 	if (getOwner()->wall)
   		getEntityManager()->sendMessageToEntity("Wall", getOwner()->wall->fId);
 
-
 	sphereCollision(dt);
+	calculateGroundNormal(getOwner(), getOwner()->ground);
+}
 
-	createGroundTriangle(getOwner(), getOwner()->ground);
+void GravityComponent::setEnabled(bool enabled)
+{
+	this->enabled = enabled;
+}
 
+bool GravityComponent::isEnabled()
+{
+	return this->enabled;
+}
+
+const Vec3 *GravityComponent::GetGroundNormal()
+{
+	if (!foundGroundNormal)
+		return NULL;
+
+	return &groundNormal;
 }
 
 float GravityComponent::testMove(Ray r, Entity* e, Entity* &out)
@@ -198,9 +241,15 @@ void GravityComponent::createRays()
 	}
 }
 
-
-void GravityComponent::createGroundTriangle(Entity* e, Entity* ground)
+void GravityComponent::calculateGroundNormal(Entity* e, Entity* ground)
 {
+	foundGroundNormal = false;
+
+	if (!ground)
+	{
+		groundNormal = Vec3(0.0f, 1.0f, 0.0f);
+		return;
+	}
 
 	Vec3 pos = e->returnPos();
 
@@ -209,12 +258,6 @@ void GravityComponent::createGroundTriangle(Entity* e, Entity* ground)
 	Ray right = Ray(Vec3(3, 5, 3) + pos, Vec3(0, -10, 0));
 	Ray bottom = Ray(Vec3(0, 5, -3) + pos, Vec3(0, -10, 0));
 
-	if (!ground)
-	{
-		groundt = Triangle();
-		return;
-	}
-
 	//find collision for each ray
 	float tLeft = ground->collInst->Test(left);
 	float tRight = ground->collInst->Test(right);
@@ -222,10 +265,9 @@ void GravityComponent::createGroundTriangle(Entity* e, Entity* ground)
 
 	if (tLeft == 0 || tRight == 0 || tBottom == 0)
 	{
-		groundt = Triangle();
+		groundNormal = Vec3(0.0f, 1.0f, 0.0f);
 		return;
 	}
-
 
 	//calculate triangle
 	Vec3 pointL = left.GetDir();
@@ -240,14 +282,10 @@ void GravityComponent::createGroundTriangle(Entity* e, Entity* ground)
 	pointB *= tBottom;
 	pointB += bottom.GetPos();
 
-	groundt = Triangle(pointL, pointR, pointB);
-}
+	groundNormal = Triangle(pointL, pointR, pointB).GetNormal();
 
-Triangle GravityComponent::GetGroundTriangle()
-{
-	return groundt;
+	foundGroundNormal = true;
 }
-
 
 void GravityComponent::sphereCollision(float dt)
 {

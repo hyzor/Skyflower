@@ -12,7 +12,7 @@ class Throw : public Component {
 
 public:
 
-	Throw() : Component("Throw")
+	Throw(bool haveAim) : Component("Throw")
 	{
 		this->holdingEntityId = -1;
 		this->toPickUp = false;
@@ -20,6 +20,7 @@ public:
 		this->isHoldingThrowable = false;
 		this->toThrow = false;
 		this->isDizzy = false;
+		this->haveAim = haveAim;
 	}
 	virtual ~Throw() {};
 
@@ -94,6 +95,16 @@ public:
 		this->toPutDown = state;
 	}
 
+	bool getHaveAim()
+	{
+		return this->haveAim;
+	}
+
+	void setHaveAim(bool state)
+	{
+		this->haveAim = state;
+	}
+
 	void setIsHoldingThrowable(bool state)
 	{
 		this->isHoldingThrowable = state;
@@ -102,6 +113,17 @@ public:
 	void setToThrow(bool state)
 	{
 		this->toThrow = state;
+
+		if (state)
+		{
+			AnimatedInstance *animatedInstance = getOwner()->getAnimatedInstance();
+
+			if (getOwnerId() == 1 && animatedInstance)
+			{
+				// Play throw animation
+				animatedInstance->SetAnimation(7, false);
+			}
+		}
 	}
 
 	void setHoldingEntityId(EntityId id)
@@ -117,6 +139,7 @@ private:
 	bool toThrow;
 	EntityId holdingEntityId;
 	bool isDizzy;
+	bool haveAim;
 
 	void printToAll(Message const & msg)
 	{
@@ -173,18 +196,12 @@ private:
 	{
 		if (isHoldingThrowable)
 		{
-			/*setToPutDown(false);
+			setToPutDown(false);
 			setIsHoldingThrowable(false);
 			setToPickUp(false);
-			sendMessageToEntity(holdingEntityId, "Dropped");*/
+			sendMessageToEntity(holdingEntityId, "Dropped");
 		}
 	}
-
-	
-
-	
-
-
 
 	void setIsDizzy(Message const &msg)
 	{

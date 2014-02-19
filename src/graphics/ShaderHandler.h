@@ -717,6 +717,8 @@ public:
 	void SetSSAOTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetVelocityTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
+	void SetBackgroundTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
+
 	void SetDepthTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
 	void SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
@@ -725,6 +727,9 @@ public:
 	void SetFogProperties(int enableFogging, float heightFalloff, float heightOffset, float globalDensity, XMFLOAT4 fogColor);
 	void SetMotionBlurProperties(int enableMotionBlur);
 	void SetFpsValues(float curFps, float targetFps);
+
+	void SetSkipLighting(bool skipLighting);
+	void SetIsTransparencyPass(bool isTransparencyPass);
 
 	void UpdatePerObj(ID3D11DeviceContext* dc);
 	void UpdatePerFrame(ID3D11DeviceContext* dc);
@@ -762,7 +767,7 @@ private:
 
 		// Forms into a 4D vector
 		XMFLOAT3 gEyePosW;
-		float padding;
+		int isTransparencyPass;
 
 		int enableFogging;
 		float fogHeightFalloff, fogHeightOffset, fogGlobalDensity;
@@ -771,7 +776,7 @@ private:
 		int enableMotionBlur;
 		float curFPS;
 		float targetFPS;
-		int padding001;
+		int skipLighting;
 
 		XMMATRIX shadowTransform;
 		XMMATRIX cameraViewMatrix;
@@ -1008,12 +1013,17 @@ public:
 	void ActivateDrawShaders(ID3D11DeviceContext* dc);
 	void ActivateStreamShaders(ID3D11DeviceContext* dc);
 
-	void SetViewProj(XMMATRIX& viewProj);
+	void SetViewProj(XMMATRIX& viewProj, XMMATRIX& view);
 	void SetPrevViewProj(XMMATRIX& prevViewProj);
 	void SetTexArray(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* texArray);
 	void SetRandomTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* randomTex);
 
 	void SetLitSceneTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* litSceneTex);
+	void SetDepthTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* depthTex);
+
+	void SetFarNearClipDistance(float zFar, float zNear);
+
+	void SetScale(float scaleX, float scaleY);
 
 	void SetEyePosW(XMFLOAT3 eyePosW);
 	void SetEmitProperties(XMFLOAT3 emitPosW, XMFLOAT3 emitDirW);
@@ -1054,8 +1064,10 @@ private:
 	struct DRAW_GS_PERFRAMEBUFFER
 	{
 		XMFLOAT3 eyePosW;
-		float padding;
+		float farClipDistance;
+		//float padding;
 
+		XMMATRIX view;
 		XMMATRIX viewProj;
 		XMMATRIX prevViewProj;
 
@@ -1063,7 +1075,8 @@ private:
 
 		UINT textureIndex;
 		UINT blendingMethod;
-		XMFLOAT2 paddingTex;
+		float nearClipDistance;
+		float paddingTex;
 	};
 
 	struct STREAMOUT_GS_PERFRAMEBUFFER
@@ -1081,7 +1094,10 @@ private:
 		UINT particleType;
 
 		UINT emitParticles;
-		float padding;
+		float scaleX;
+
+		float scaleY;
+		XMFLOAT3 paddingScale;
 	};
 
 	struct BUFFERCACHE
@@ -1118,6 +1134,7 @@ private:
 	ID3D11ShaderResourceView* mRandomTex;
 
 	ID3D11ShaderResourceView* mLitSceneTex;
+	ID3D11ShaderResourceView* mDepthTex;
 };
 #pragma endregion ParticleSystemShader
 

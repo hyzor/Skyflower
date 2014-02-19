@@ -130,6 +130,9 @@
       <Filter>Source Files\Components</Filter>
     </ClCompile>
     <ClCompile Include="src\skyflower\Components\DirectionalLightComp.cpp">
+	  <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\skyflower\Components\MorphAnimation.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
   </ItemGroup>
@@ -258,6 +261,9 @@
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\skyflower\Components\DirectionalLightComp.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\Components\MorphAnimation.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>

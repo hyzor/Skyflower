@@ -8,7 +8,6 @@
 class AnimatedEntity
 {
 public:
-	AnimatedEntity(void);
 	AnimatedEntity(GenericSkinnedModel* model, XMFLOAT3 position);
 	~AnimatedEntity(void);
 
@@ -67,6 +66,7 @@ public:
 	UINT mCurAnim;
 
 	GenericSkinnedModelInstance mInstance;
+	bool mFirstAnimation;
 };
 
 #endif

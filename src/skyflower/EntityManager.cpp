@@ -885,7 +885,13 @@ bool EntityManager::loadXML(string xmlFile)
 				}
 				else if (componentName == "Throw")
 				{
-					Throw *t = new Throw();
+					bool haveAim = false;
+
+					attr = e->Attribute("haveAim");
+					if (attr != nullptr)
+						haveAim = e->BoolAttribute("haveAim");
+
+					Throw *t = new Throw(haveAim);
 					this->addComponent(entity, t);
 				}
 				else if (componentName == "Throwable")
@@ -1036,6 +1042,14 @@ bool EntityManager::loadXML(string xmlFile)
 
 					DirectionalLightComp* dlc = new DirectionalLightComp(color, dir, intensity);
 					this->addComponent(entity, dlc);
+				}
+				else if (componentName == "MorphAnimation")
+				{
+					string path = GetStringAttribute(e, "path", entityName, componentName);
+					string file = GetStringAttribute(e, "file", entityName, componentName);
+
+					MorphAnimation *m = new MorphAnimation(path, file);
+					this->addComponent(entity, m);
 				}
 				else
 				{
