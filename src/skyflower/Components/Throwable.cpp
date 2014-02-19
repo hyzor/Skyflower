@@ -30,7 +30,7 @@ void Throwable::update(float deltaTime)
 					Vec3 rot = getOwner()->returnRot();
 
 					//o = direction
-					Vec3 o = Vec3(cosf(-rot.Y - 3.14f / 2), 0, sinf(-rot.Y - 3.14f / 2)).Normalize() * 10;
+					Vec3 o = Vec3(cosf(-rot.Y - 3.14f / 2), 0, sinf(-rot.Y - 3.14f / 2)).Normalize() * 2.198f;
 
 					Collision *collision = getOwner()->getModules()->collision;
 					const std::vector<CollisionInstance *> &collisionInstances = collision->GetCollisionInstances();
@@ -108,8 +108,8 @@ void Throwable::update(float deltaTime)
 							Vec3 pos = entity->returnPos();
 							Vec3 rot = entity->returnRot();
 
-							Vec3 o = Vec3(cosf(-rot.Y - 3.14f / 2), 0, sinf(-rot.Y - 3.14f / 2)).Normalize() * 10;
-							o.Y = 5;
+							Vec3 o = Vec3(cosf(-rot.Y - 3.14f / 2), 0, sinf(-rot.Y - 3.14f / 2)).Normalize() * 2.198f;
+							o.Y = 5.423f;
 
 							getOwner()->updateRot(rot);
 
@@ -159,8 +159,8 @@ void Throwable::update(float deltaTime)
 								Vec3 pos = entity->returnPos();
 								Vec3 rot = entity->returnRot();
 
-								Vec3 o = Vec3(cosf(-rot.Y - 3.14f / 2), 0, sinf(-rot.Y - 3.14f / 2)).Normalize() * 10;
-								o.Y = 5;
+								Vec3 o = Vec3(cosf(-rot.Y - 3.14f / 2), 0, sinf(-rot.Y - 3.14f / 2)).Normalize() * 2.198f;
+								o.Y = 5.423f;
 
 								//prevent ball from flying through stuff.
 								Collision *collision = getOwner()->getModules()->collision;
