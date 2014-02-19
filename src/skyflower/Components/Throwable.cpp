@@ -185,6 +185,7 @@ void Throwable::update(float deltaTime)
 									z = -4;
 								}
 
+								/*
 								for (size_t i = 0; i < collisionInstances.size(); i++)
 								{
 									Vec3 p = pos + o;
@@ -205,6 +206,7 @@ void Throwable::update(float deltaTime)
 										break;
 									}
 								}
+								*/
 
 								getOwner()->getPhysics()->SetVelocity(Vec3());
 								updateEntityPos(pos + o);
