@@ -228,6 +228,7 @@ void Movement::update(float deltaTime)
 		if (getOwnerId() == 1)
 		{
 			// Player animations
+
 			Push *pushComponent = getOwner()->getComponent<Push *>("Push");
 			Throw *throwComponent = getOwner()->getComponent<Throw *>("Throw");
 
@@ -279,7 +280,12 @@ void Movement::update(float deltaTime)
 		else if (getOwner()->getComponent<AI *>("AI"))
 		{
 			// AI animations
-			if (p->GetStates()->isMoving)
+
+			if (p->GetStates()->isJumping)
+			{
+				// Playing jump animation, do nothing.
+			}
+			else if (p->GetStates()->isMoving)
 			{
 				// Run
 				animatedInstance->SetAnimation(0, true);
@@ -493,10 +499,20 @@ void Movement::Jump(Message const& msg)
 
 			owner->getModules()->sound->PlaySound(GetPlayerSoundFile("player/jump1.wav"), 1.0f, &pos.X);
 
-			if (getOwnerId() == 1 && owner->getAnimatedInstance())
+			AnimatedInstance *animatedInstance = owner->getAnimatedInstance();
+
+			if (animatedInstance)
 			{
-				// Play jump animation for player.
-				getOwner()->getAnimatedInstance()->SetAnimation(1, false);
+				if (getOwnerId() == 1)
+				{
+					// Play jump animation for player.
+					getOwner()->getAnimatedInstance()->SetAnimation(1, false);
+				}
+				else if (getOwner()->getComponent<AI *>("AI"))
+				{
+					// Play jump animation for AI.
+					getOwner()->getAnimatedInstance()->SetAnimation(5, false);
+				}
 			}
 		}
 	}
