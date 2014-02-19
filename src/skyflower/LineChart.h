@@ -6,11 +6,6 @@
 
 #include "graphics/GraphicsEngine.h"
 
-// skia needs Windows.h to be included.
-#include "shared/platform.h"
-#include <skia/SkCanvas.h>
-#include <skia/SkBitmap.h>
-
 struct LineChartDataPoint
 {
 	double timeStamp;
@@ -43,28 +38,6 @@ private:
 	size_t m_start;
 	size_t m_end;
 };
-
-class LineChartRendererSkia
-{
-public:
-	LineChartRendererSkia();
-	virtual ~LineChartRendererSkia();
-
-	void SetTargetValue(double targetValue);
-	void SetUnit(const std::string &unit);
-	void SetLabel(const std::string &label);
-
-	void Draw(const std::vector<const struct LineChartDataPoint> &dataPoints, Texture2D *texture);
-
-private:
-	SkCanvas *m_canvas;
-	SkBitmap *m_bitmap;
-
-	double m_targetValue;
-	std::string m_unit;
-	std::string m_label;
-};
-
 
 class LineChartRendererD3D
 {
