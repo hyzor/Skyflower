@@ -38,6 +38,7 @@
     <ClCompile Include="src\skyflower\Components\MoveTarget.cpp" />
     <ClCompile Include="src\skyflower\Components\PointLightComp.cpp" />
     <ClCompile Include="src\skyflower\Components\SpotLightComp.cpp" />
+    <ClCompile Include="src\skyflower\Components\Throw.cpp" />
     <ClCompile Include="src\skyflower\Components\Throwable.cpp" />
     <ClCompile Include="src\skyflower\Components\Touch.cpp" />
     <ClCompile Include="src\skyflower\CutScene.cpp" />
