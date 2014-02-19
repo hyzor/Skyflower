@@ -885,7 +885,13 @@ bool EntityManager::loadXML(string xmlFile)
 				}
 				else if (componentName == "Throw")
 				{
-					Throw *t = new Throw();
+					bool haveAim = false;
+
+					attr = e->Attribute("haveAim");
+					if (attr != nullptr)
+						haveAim = e->BoolAttribute("haveAim");
+
+					Throw *t = new Throw(haveAim);
 					this->addComponent(entity, t);
 				}
 				else if (componentName == "Throwable")

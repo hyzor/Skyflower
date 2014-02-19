@@ -12,7 +12,7 @@ class Throw : public Component {
 
 public:
 
-	Throw() : Component("Throw")
+	Throw(bool haveAim) : Component("Throw")
 	{
 		this->holdingEntityId = -1;
 		this->toPickUp = false;
@@ -20,6 +20,7 @@ public:
 		this->isHoldingThrowable = false;
 		this->toThrow = false;
 		this->isDizzy = false;
+		this->haveAim = haveAim;
 	}
 	virtual ~Throw() {};
 
@@ -94,6 +95,16 @@ public:
 		this->toPutDown = state;
 	}
 
+	bool getHaveAim()
+	{
+		return this->haveAim;
+	}
+
+	void setHaveAim(bool state)
+	{
+		this->haveAim = state;
+	}
+
 	void setIsHoldingThrowable(bool state)
 	{
 		this->isHoldingThrowable = state;
@@ -128,6 +139,7 @@ private:
 	bool toThrow;
 	EntityId holdingEntityId;
 	bool isDizzy;
+	bool haveAim;
 
 	void printToAll(Message const & msg)
 	{
@@ -190,12 +202,6 @@ private:
 			sendMessageToEntity(holdingEntityId, "Dropped");
 		}
 	}
-
-	
-
-	
-
-
 
 	void setIsDizzy(Message const &msg)
 	{
