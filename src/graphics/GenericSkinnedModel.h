@@ -51,6 +51,7 @@ struct GenericSkinnedModelInstance
 	UINT frameStart, frameEnd;
 	bool playAnimForward;
 	bool loop;
+	bool animationDone;
 
 	GenericSkinnedModelInstance();
 	void Update(float dt);

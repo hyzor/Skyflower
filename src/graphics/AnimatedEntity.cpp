@@ -115,6 +115,7 @@ void AnimatedEntity::SetAnimation(UINT index, bool loop)
 	mInstance.frameStart = mAnimations[index].FrameStart;
 	mInstance.frameEnd = mAnimations[index].FrameEnd;
 	mInstance.loop = loop;
+	mInstance.animationDone = false;
 
 	if (mAnimations[index].playForwards)
 		mInstance.playAnimForward = true;

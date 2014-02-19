@@ -34,6 +34,7 @@ public:
 	virtual Vec3 GetRotation() = 0;
 	virtual Vec3 GetScale() = 0;
 	virtual UINT GetAnimation() = 0;
+	virtual bool IsAnimationDone() = 0;
 
 	virtual void SetPosition(Vec3 pos) = 0;
 	virtual void SetRotation(Vec3 rot) = 0;

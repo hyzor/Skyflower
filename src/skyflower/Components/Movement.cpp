@@ -221,8 +221,9 @@ void Movement::update(float deltaTime)
 		}
 	}
 
+	AnimatedInstance *animatedInstance = getOwner()->getAnimatedInstance();
 
-	if (getOwner()->getAnimatedInstance())
+	if (animatedInstance)
 	{
 		if (getOwnerId() == 1)
 		{
@@ -231,20 +232,32 @@ void Movement::update(float deltaTime)
 
 			if ((this->isInAir && timeFalling > 0.3f) || p->GetStates()->isJumping)
 			{
-				// Jump
-				getOwner()->getAnimatedInstance()->SetAnimation(1, false);
+				if (animatedInstance->GetAnimation() != 8 && animatedInstance->GetAnimation() != 9)
+				{
+					if (animatedInstance->GetAnimation() != 1 || (animatedInstance->GetAnimation() == 1 && animatedInstance->IsAnimationDone()))
+					{
+						// Raise hands for fall
+						animatedInstance->SetAnimation(8, false);
+					}
+				}
+
+				if (animatedInstance->GetAnimation() == 8 && animatedInstance->IsAnimationDone())
+				{
+					// Fall
+					animatedInstance->SetAnimation(9, true);
+				}
 			}
 			else if (pushComponent && !pushComponent->isPushingBox())
 			{
 				if (p->GetStates()->isMoving)
 				{
 					// Run
-					getOwner()->getAnimatedInstance()->SetAnimation(0, true);
+					animatedInstance->SetAnimation(0, true);
 				}
 				else
 				{
 					// Idle
-					getOwner()->getAnimatedInstance()->SetAnimation(4, true);
+					animatedInstance->SetAnimation(4, true);
 				}
 			}
 		}
@@ -254,14 +267,14 @@ void Movement::update(float deltaTime)
 			if (p->GetStates()->isMoving)
 			{
 				// Run
-				getOwner()->getAnimatedInstance()->SetAnimation(0, true);
+				animatedInstance->SetAnimation(0, true);
 			}
 			else
 			{
 				// Idle
 
 				// AIn har ingen idle animation, spela springanimationen istället.
-				getOwner()->getAnimatedInstance()->SetAnimation(0, true);
+				animatedInstance->SetAnimation(0, true);
 			}
 		}
 	}
@@ -424,7 +437,9 @@ void Movement::notInAir(Message const& msg)
 void Movement::Jump(Message const& msg)
 {
 	if (!getOwner()->ground && timeFalling > 0.3f)
+	{
 		return;
+	}
 	else if (canMove)
 	{
 		Vec3 pos = getEntityPos();
@@ -462,6 +477,12 @@ void Movement::Jump(Message const& msg)
 			}
 
 			owner->getModules()->sound->PlaySound(GetPlayerSoundFile("player/jump1.wav"), 1.0f, &pos.X);
+
+			if (getOwnerId() == 1 && owner->getAnimatedInstance())
+			{
+				// Play jump animation for player.
+				getOwner()->getAnimatedInstance()->SetAnimation(1, false);
+			}
 		}
 	}
 }
