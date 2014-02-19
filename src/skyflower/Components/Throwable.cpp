@@ -149,6 +149,14 @@ void Throwable::update(float deltaTime)
 								//TODO Throwing in Physics!
 								p->FireProjectileAt(getOwner()->returnPos(), targetPos);
 								sendMessageToEntity(entity->fId, "isNotHoldingThrowable");
+
+								AnimatedInstance *animatedInstance = entity->getAnimatedInstance();
+
+								if (animatedInstance && entity->fId == 1)
+								{
+									// Play throw animation
+									animatedInstance->SetAnimation(7, false);
+								}
 							}
 							//if entity did not throw throwable, update throwable postition in front of entity
 							else if (isBeingPickedUp)
