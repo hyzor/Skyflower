@@ -1,9 +1,29 @@
 <root>
-    <Light entityName="spotLight1" id="3" isVisible="0" isCollidible="1" Type="spotLight " xPos="-84.3191001532" yPos="107.198923913" zPos="104.505588587" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
-    <Light entityName="group5|pasted__spotLight1" id="4" isVisible="0" isCollidible="1" Type="spotLight " xPos="-84.3191001532" yPos="107.198923913" zPos="104.505588587" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
-    <Light entityName="group6|pasted__spotLight1" id="5" isVisible="0" isCollidible="1" Type="spotLight " xPos="-84.3191001532" yPos="107.198923913" zPos="104.505588587" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
-    <Light entityName="spotLight2" id="6" isVisible="0" isCollidible="1" Type="spotLight " xPos="0.0" yPos="118.876711808" zPos="-0.0" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
-    <Light entityName="group7|pasted__spotLight2" id="7" isVisible="0" isCollidible="1" Type="spotLight " xPos="0.0" yPos="118.876711808" zPos="-0.0" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
-    <Light entityName="group8|pasted__spotLight2" id="8" isVisible="0" isCollidible="1" Type="spotLight " xPos="-12.280406184" yPos="136.65840384" zPos="-1.04695454775" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
-    <Light entityName="group9|pasted__group8|pasted__pasted__spotLight2" id="9" isVisible="0" isCollidible="1" Type="spotLight " xPos="-12.280406184" yPos="136.65840384" zPos="-1.04695454775" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
+    <Light entityName="spotLight1" id="3" isVisible="0" isCollidible="1" Type="spotLight ">
+		<spotLight xPos="-84.3191001532" yPos="107.198923913" zPos="104.505588587" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
+	</Light>
+	
+    <Light entityName="group5|pasted__spotLight1" id="4" isVisible="0" isCollidible="1" Type="spotLight ">
+		<spotLight xPos="-84.3191001532" yPos="107.198923913" zPos="104.505588587" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
+	</Light>
+	
+    <Light entityName="group6|pasted__spotLight1" id="5" isVisible="0" isCollidible="1" Type="spotLight ">
+		<spotLight xPos="-84.3191001532" yPos="107.198923913" zPos="104.505588587" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
+	</Light>
+	
+    <Light entityName="spotLight2" id="6" isVisible="0" isCollidible="1" Type="spotLight ">
+		<spotLight xPos="0.0" yPos="118.876711808" zPos="-0.0" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
+	</Light>
+	
+    <Light entityName="group7|pasted__spotLight2" id="7" isVisible="0" isCollidible="1" Type="spotLight ">
+		<spotLight xPos="0.0" yPos="118.876711808" zPos="-0.0" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
+	</Light>
+	
+    <Light entityName="group8|pasted__spotLight2" id="8" isVisible="0" isCollidible="1" Type="spotLight ">
+		<spotLight xPos="-12.280406184" yPos="136.65840384" zPos="-1.04695454775" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
+	</Light>
+	
+    <Light entityName="group9|pasted__group8|pasted__pasted__spotLight2" id="9" isVisible="0" isCollidible="1" Type="spotLight ">
+		<spotLight xPos="-12.280406184" yPos="136.65840384" zPos="-1.04695454775" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
+	</Light>
 </root>

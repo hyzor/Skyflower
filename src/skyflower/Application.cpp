@@ -99,10 +99,10 @@ void Application::Start()
 	levelHandler->init(m_entityManager);
 
 	// Load Hub Level
-	levelHandler->queue(4);
-	levelHandler->loadQueued();
-// 	levelHandler->queue(4);
-// 	levelHandler->loadQueued();
+	//levelHandler->queue(4);
+	//levelHandler->loadQueued();
+ 	levelHandler->queue(4);
+ 	levelHandler->loadQueued();
 
 	//m_entityManager->sendMessageToEntity("ActivateListener", "player");
 	m_graphicsEngine->UpdateSceneData();
