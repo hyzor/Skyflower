@@ -79,6 +79,8 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 		delete mParticleSystems[i];
 	}
 
+	ReleaseCOM(mLineVertexBuffer);
+
 	delete mSky;
 	delete mShadowMap;
 	delete mCamera;
@@ -88,6 +90,7 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 	delete mInputLayouts;
 	RenderStates::DestroyAll();
 
+    delete mSpriteFontMonospace;
 	delete mSpriteFont;
 	delete mSpriteBatch;
 	delete mShaderHandler;
@@ -198,6 +201,8 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\SkyPS.cso", "SkyPS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\NormalMapSkinnedVS.cso", "NormalMapSkinnedVS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\NormalMapSkinnedPS.cso", "NormalMapSkinnedPS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\LineVS.cso", "LineVS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\LinePS.cso", "LinePS", mD3D->GetDevice());
 
 	// Shadow mapping
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\ShadowBuildVS.cso", "ShadowBuildVS", mD3D->GetDevice());
@@ -269,6 +274,9 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mNormalSkinned->BindShaders(
 		mShaderHandler->GetVertexShader("NormalMapSkinnedVS"),
 		mShaderHandler->GetPixelShader("NormalMapSkinnedPS"));
+	mShaderHandler->mLineShader->BindShaders(
+		mShaderHandler->GetVertexShader("LineVS"),
+		mShaderHandler->GetPixelShader("LinePS"));
 	mShaderHandler->mBasicDeferredShader->BindShaders(
 		mShaderHandler->GetVertexShader("BasicDeferredVS"),
 		mShaderHandler->GetPixelShader("BasicDeferredPS"));
@@ -353,6 +361,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 
 	// Now create all the input layouts
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("BasicVS"), InputLayoutDesc::PosNormalTex, COUNT_OF(InputLayoutDesc::PosNormalTex), &mInputLayouts->PosNormalTex);
+	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("LineVS"), InputLayoutDesc::Position2D, COUNT_OF(InputLayoutDesc::Position2D), &mInputLayouts->Position2D);
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("SkyVS"), InputLayoutDesc::Position, COUNT_OF(InputLayoutDesc::Position), &mInputLayouts->Position);
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("NormalMapSkinnedVS"),
 		InputLayoutDesc::PosNormalTexTanSkinned,
@@ -366,6 +375,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mBasicShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTex);
 	mShaderHandler->mSkyShader->Init(mD3D->GetDevice(), mInputLayouts->Position);
 	mShaderHandler->mNormalSkinned->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTanSkinned);
+	mShaderHandler->mLineShader->Init(mD3D->GetDevice(), mInputLayouts->Position2D);
 	mShaderHandler->mBasicDeferredShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTex);
 	mShaderHandler->mBasicDeferredSkinnedShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTanSkinned);
 	mShaderHandler->mLightDeferredShader->Init(mD3D->GetDevice(), mInputLayouts->PosTex);
@@ -411,10 +421,13 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 		mFullscreenTriangle);
 
 	std::string fontPath = mResourceDir + "myfile.spritefont";
-	std::wstring fontPathW(fontPath.begin(), fontPath.end());
+    std::string fontPathMonospace = mResourceDir + "monospace_8.spritefont";
+    std::wstring fontPathW(fontPath.begin(), fontPath.end());
+    std::wstring fontPatMonospacehW(fontPathMonospace.begin(), fontPathMonospace.end());
 
-	mSpriteBatch = new SpriteBatch(mD3D->GetImmediateContext());
-	mSpriteFont = new SpriteFont(mD3D->GetDevice(), fontPathW.c_str());
+    mSpriteBatch = new SpriteBatch(mD3D->GetImmediateContext());
+    mSpriteFont = new SpriteFont(mD3D->GetDevice(), fontPathW.c_str());
+    mSpriteFontMonospace = new SpriteFont(mD3D->GetDevice(), fontPatMonospacehW.c_str());
 
 	// Create orthogonal window
 	mOrthoWindow = new OrthoWindow();
@@ -508,6 +521,19 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 
 	mCurFPS = 0.0f;
 	mTargetFPS = 60.0f;
+
+
+	mLineVertexBufferSize = 4096;
+
+	D3D11_BUFFER_DESC bufferDesc;
+	bufferDesc.ByteWidth = (UINT)(sizeof(float) * 2 * mLineVertexBufferSize);
+	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	bufferDesc.MiscFlags = 0;
+	bufferDesc.StructureByteStride = 0;
+
+	mD3D->GetDevice()->CreateBuffer(&bufferDesc, NULL, &mLineVertexBuffer);
 
 	return true;
 }
@@ -1079,9 +1105,9 @@ void GraphicsEngineImpl::DeleteInstance(MorphModelInstance* mmi)
 	delete m;
 }
 
-Texture2D *GraphicsEngineImpl::CreateTexture2D(unsigned int width, unsigned int height)
+Texture2D *GraphicsEngineImpl::CreateTexture2D(unsigned int width, unsigned int height, bool renderable)
 {
-	Texture2DImpl *texture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8G8B8A8_UNORM, false);
+	Texture2DImpl *texture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8G8B8A8_UNORM, renderable);
  
 	return (Texture2D *)texture;
 }
@@ -1734,4 +1760,84 @@ Vec3 GraphicsEngineImpl::GetMorphAnimWeigth(unsigned index)
 	}
 	else
 		return Vec3::Zero();
+}
+
+void GraphicsEngineImpl::ClearTexture(Texture2D *texture, const float color[4])
+{
+    assert(texture->IsRenderable());
+
+    Texture2DImpl *textureImpl = (Texture2DImpl *)texture;
+    mD3D->GetImmediateContext()->ClearRenderTargetView(textureImpl->GetRenderTargetView(), color);
+}
+
+void GraphicsEngineImpl::PrintTextMonospaceToTexture(Texture2D *texture, const std::string &text, const int position[2])
+{
+    assert(texture->IsRenderable());
+
+    Texture2DImpl *textureImpl = (Texture2DImpl *)texture;
+    ID3D11RenderTargetView *renderTarget = textureImpl->GetRenderTargetView();
+    D3D11_VIEWPORT viewport;
+
+    viewport.TopLeftX = 0;
+    viewport.TopLeftY = 0;
+    viewport.Width = (float)texture->GetWidth();
+    viewport.Height = (float)texture->GetHeight();
+    viewport.MinDepth = 0.0f;
+    viewport.MaxDepth = 1.0f;
+
+    mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
+    mD3D->GetImmediateContext()->RSSetViewports(1, &viewport);
+
+    std::wstring textWide(text.begin(), text.end());
+    mSpriteFontMonospace->DrawString(mSpriteBatch, textWide.c_str(), XMFLOAT2((float)position[0], (float)position[1]));
+}
+
+void GraphicsEngineImpl::DrawLines(Texture2D *texture, const float *data, size_t count, const XMFLOAT3X3 &transformation, const float color[4])
+{
+	assert(texture->IsRenderable());
+
+	if (count > mLineVertexBufferSize)
+		printf("GraphicsEngineImpl::DrawLines, count is too damn high!\n");
+
+	size_t clampedCount = std::min(count, mLineVertexBufferSize);
+
+	// Update vertex buffer
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	mD3D->GetImmediateContext()->Map(mLineVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	memcpy(mappedResource.pData, data, sizeof(float) * 2 * clampedCount);
+	mD3D->GetImmediateContext()->Unmap(mLineVertexBuffer, 0);
+
+	mShaderHandler->mLineShader->SetTransformation(transformation);
+	mShaderHandler->mLineShader->SetColor(XMFLOAT4(color[0], color[1], color[2], color[3]));
+	mShaderHandler->mLineShader->SetFramebufferSize(XMFLOAT2((float)texture->GetWidth(), (float)texture->GetHeight()));
+
+	mShaderHandler->mLineShader->Update(mD3D->GetImmediateContext());
+	mShaderHandler->mLineShader->SetActive(mD3D->GetImmediateContext());
+
+    D3D11_VIEWPORT viewport;
+    viewport.TopLeftX = 0;
+    viewport.TopLeftY = 0;
+    viewport.Width = (float)texture->GetWidth();
+    viewport.Height = (float)texture->GetHeight();
+    viewport.MinDepth = 0.0f;
+    viewport.MaxDepth = 1.0f;
+
+	ID3D11RenderTargetView *renderTarget = ((Texture2DImpl *)texture)->GetRenderTargetView();
+	UINT stride = sizeof(float) * 2;
+	UINT offset = 0;
+
+    mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
+    mD3D->GetImmediateContext()->RSSetViewports(1, &viewport);
+
+	mD3D->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
+	mD3D->GetImmediateContext()->IASetVertexBuffers(0, 1, &mLineVertexBuffer, &stride, &offset);
+	mD3D->GetImmediateContext()->Draw((UINT)clampedCount, 0);
+}
+
+void GraphicsEngineImpl::ResetRenderTargetAndViewport()
+{
+	ID3D11RenderTargetView *renderTarget = mD3D->GetRenderTargetView();
+	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, mD3D->GetDepthStencilView());
+	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
 }

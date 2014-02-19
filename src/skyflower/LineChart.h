@@ -2,7 +2,11 @@
 #define SKYFLOWER_CHART_H
 
 #include <string>
+#include <vector>
 
+#include "graphics/GraphicsEngine.h"
+
+// skia needs Windows.h to be included.
 #include "shared/platform.h"
 #include <skia/SkCanvas.h>
 #include <skia/SkBitmap.h>
@@ -13,49 +17,76 @@ struct LineChartDataPoint
 	double value;
 };
 
-class LineChart
+class LineChartData
 {
 public:
-	LineChart(size_t maximumDataPoints);
-	virtual ~LineChart();
+	LineChartData(size_t maximumDataPoints);
+	virtual ~LineChartData();
 
-	void SetSize(unsigned int width, unsigned int height);
-	void SetTimeSpan(double timeSpan, double resolution);
-	void SetTargetValue(double targetValue);
-	void SetUnit(const std::string &unit);
-	void SetLabel(const std::string &label);
-
-	unsigned int GetWidth() const;
-	unsigned int GetHeight() const;
-	const void *GetPixels() const;
+	bool IsFull() const;
+	bool IsEmpty() const;
 
 	void AddDataPoint(double timeStamp, double value);
 	void ClearDataPoints();
 
-	void Draw(double time);
+	// The newest data points are pushed first.
+	void PushDataPoints(double startTime, double endTime, double resolution, std::vector<const struct LineChartDataPoint> &output) const;
+
+private:
+	size_t Increment(size_t n) const;
+	size_t Decrement(size_t n) const;
+
+private:
+	// Mirrored circular buffer for all data points.
+	struct LineChartDataPoint *m_buffer;
+	size_t m_capacity;
+	size_t m_start;
+	size_t m_end;
+};
+
+class LineChartRendererSkia
+{
+public:
+	LineChartRendererSkia();
+	virtual ~LineChartRendererSkia();
+
+	void SetTargetValue(double targetValue);
+	void SetUnit(const std::string &unit);
+	void SetLabel(const std::string &label);
+
+	void Draw(const std::vector<const struct LineChartDataPoint> &dataPoints, Texture2D *texture);
 
 private:
 	SkCanvas *m_canvas;
 	SkBitmap *m_bitmap;
 
-	double m_timeSpan;
-	double m_resolution;
 	double m_targetValue;
-
 	std::string m_unit;
 	std::string m_label;
+};
 
-	// Circular buffer for all data points.
-	struct LineChartDataPoint *m_dataPoints;
-	size_t m_dataPointCapacity;
-	size_t m_dataPointStart;
-	size_t m_dataPointEnd;
 
-	// Circular buffer for data points to be rendered.
-	struct LineChartDataPoint *m_renderDataPoints;
-	size_t m_renderDataPointCapacity;
-	size_t m_renderDataPointStart;
-	size_t m_renderDataPointEnd;
+class LineChartRendererD3D
+{
+public:
+	LineChartRendererD3D(GraphicsEngine *graphicsEngine);
+	virtual ~LineChartRendererD3D();
+
+	void SetTargetValue(double targetValue);
+	void SetUnit(const std::string &unit);
+	void SetLabel(const std::string &label);
+
+	void Draw(const std::vector<const struct LineChartDataPoint> &dataPoints, Texture2D *texture);
+
+private:
+	GraphicsEngine *m_graphicsEngine;
+
+	size_t m_bufferSize;
+	float *m_buffer;
+
+	double m_targetValue;
+	std::string m_unit;
+	std::string m_label;
 };
 
 #endif

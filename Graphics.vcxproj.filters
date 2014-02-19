@@ -430,6 +430,12 @@
     <FxCompile Include="src\graphics\Shaders\SMAAEdgeDetectionVS.hlsl">
       <Filter>Shaders\SMAA\First pass</Filter>
     </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\LinePS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\LineVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\graphics\Shaders\LightDef.hlsli">

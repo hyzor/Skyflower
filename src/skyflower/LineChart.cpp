@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 
+// skia needs Windows.h to be included.
 #include "shared/platform.h"
 #include <skia/SkRect.h>
 #include <skia/SkCanvas.h>
@@ -12,10 +13,23 @@
 #include <skia/SkTypeface.h>
 #include <skia/SkXfermode.h>
 
+#include <DirectXMath.h>
+
 #include "LineChart.h"
 
 // Must be included last!
 #include "shared/debug.h"
+
+static size_t NextPowerOfTwo(size_t n)
+{
+	size_t k = 1;
+
+	while (k < n) {
+		k *= 2;
+	}
+
+	return k;
+}
 
 static double lerp(double x, double y, double a)
 {
@@ -24,210 +38,149 @@ static double lerp(double x, double y, double a)
 	return x * (1.0 - a) + y * a;
 }
 
-LineChart::LineChart(size_t maximumDataPoints)
+LineChartData::LineChartData(size_t maximumDataPoints)
+{
+	assert(maximumDataPoints > 0);
+
+	m_capacity = NextPowerOfTwo(maximumDataPoints);
+	m_buffer = new struct LineChartDataPoint[m_capacity];
+	m_start = 0;
+	m_end = 0;
+}
+
+LineChartData::~LineChartData()
+{
+	delete[] m_buffer;
+}
+
+bool LineChartData::IsFull() const
+{
+	return m_end == (m_start ^ m_capacity);
+}
+
+bool LineChartData::IsEmpty() const
+{
+	return m_end == m_start;
+}
+
+void LineChartData::AddDataPoint(double timeStamp, double value)
+{
+	// assert dataPoint.timeStamp > m_dataPoints[m_dataPointEnd - 1].timeStamp?
+
+	m_buffer[m_end & (m_capacity - 1)].timeStamp = timeStamp;
+	m_buffer[m_end & (m_capacity - 1)].value = value;
+
+	if (IsFull()) {
+		m_start = Increment(m_start);
+	}
+
+	m_end = Increment(m_end);
+}
+
+void LineChartData::ClearDataPoints()
+{
+	m_start = 0;
+	m_end = 0;
+}
+
+void LineChartData::PushDataPoints(double startTime, double endTime, double resolution, std::vector<const struct LineChartDataPoint> &output) const
+{
+	assert(output.size() == 0);
+
+	if (IsEmpty()) {
+		return;
+	}
+
+	const struct LineChartDataPoint *dataPoint;
+	// Floor the endTime so we can get a stable selection of data points through time (if resolution is appropriately selected).
+	double nextSelection = ceil(endTime);
+
+	size_t capacity = output.capacity();
+
+	for (size_t i = Decrement(m_end); i != m_start; i = Decrement(i)) {
+		dataPoint = &m_buffer[i & (m_capacity - 1)];
+
+		if (dataPoint->timeStamp < startTime) {
+ 			break;
+		}
+
+		if (dataPoint->timeStamp <= nextSelection) {
+			output.push_back(*dataPoint);
+			nextSelection -= resolution;
+		}
+	}
+
+	if (output.capacity() != capacity) {
+		printf("new capacity is %i, old capacity was %i\n", output.capacity(), capacity);
+	}
+}
+
+size_t LineChartData::Increment(size_t n) const
+{
+	return (n + 1) & (2 * m_capacity - 1);
+}
+
+size_t LineChartData::Decrement(size_t n) const
+{
+	return (n - 1) & (2 * m_capacity - 1);
+}
+
+
+LineChartRendererSkia::LineChartRendererSkia()
 {
 	m_bitmap = NULL;
 	m_canvas = NULL;
 
-	m_timeSpan = 30.0;
-	m_resolution = 1.0 / 60.0;
 	m_targetValue = 0.0;
-
 	m_unit = "";
 	m_label = "";
-
-	m_dataPoints = new struct LineChartDataPoint[maximumDataPoints];
-	m_dataPointCapacity = maximumDataPoints;
-	m_dataPointStart = 0;
-	m_dataPointEnd = 0;
-
-	m_renderDataPoints = NULL;
 }
 
-LineChart::~LineChart()
-{
-	delete[] m_dataPoints;
-
-	if (m_renderDataPoints)
-		delete[] m_renderDataPoints;
-
-	if (m_canvas)
-		delete m_canvas;
-	if (m_bitmap)
-		delete m_bitmap;
-}
-
-void LineChart::SetSize(unsigned int width, unsigned int height)
+LineChartRendererSkia::~LineChartRendererSkia()
 {
 	if (m_canvas)
 		delete m_canvas;
 	if (m_bitmap)
 		delete m_bitmap;
-
-	m_bitmap = new SkBitmap();
-	m_bitmap->setConfig(SkBitmap::kARGB_8888_Config, width, height);
-	m_bitmap->allocPixels();
-
-	m_canvas = new SkCanvas(*m_bitmap);
 }
 
-void LineChart::SetTimeSpan(double timeSpan, double resolution)
-{
-	assert(timeSpan > 0.0);
-	assert(resolution > 0.0);
-
-	m_timeSpan = timeSpan;
-	m_resolution = resolution;
-
-	if (m_renderDataPoints)
-		delete[] m_renderDataPoints;
-
-	size_t size = (size_t)ceil(m_timeSpan / m_resolution);
-	m_renderDataPoints = new struct LineChartDataPoint[size];
-	m_renderDataPointCapacity = size;
-	m_renderDataPointStart = 0;
-	m_renderDataPointEnd = 0;
-
-#if 0
-	// Fill m_renderDataPoints with points to render.
-	const struct LineChartDataPoint *previousRenderDataPoint = NULL;
-	const struct LineChartDataPoint *previousDataPoint = NULL;
-	double difference, alpha, value;
-
-	for (size_t i = m_dataPointStart; i != m_dataPointEnd; i = (i + 1) % m_dataPointCapacity) {
-		if (m_dataPoints[i].timeStamp < m_dataPoints[m_dataPointEnd].timeStamp - timeSpan) {
-			continue;
-		}
-		if (previousRenderDataPoint && m_dataPoints[i].timeStamp < previousRenderDataPoint->timeStamp + m_resolution) {
-			continue;
-		}
-
-		value = m_dataPoints[i].value;
-
-		if (i != m_dataPointStart) {
-			previousDataPoint = &m_dataPoints[(i == 0? m_dataPointCapacity - 1 : i - 1)];
-		}
-
-		if (previousDataPoint) {
-			// Interpolate the value.
-			difference = m_dataPoints[i].timeStamp - previousDataPoint->timeStamp;
-			alpha = ((previousRenderDataPoint->timeStamp + m_resolution) - previousDataPoint->timeStamp) / (difference + DBL_EPSILON);
-			value = lerp(previousDataPoint->value, m_dataPoints[i].value, alpha);
-		}
-
-		m_renderDataPoints[m_renderDataPointEnd].timeStamp = (previousRenderDataPoint? previousRenderDataPoint->timeStamp + m_resolution : m_dataPoints[i].timeStamp);
-		m_renderDataPoints[m_renderDataPointEnd].value = value;
-
-		previousRenderDataPoint = &m_renderDataPoints[m_renderDataPointEnd];
-
-		m_renderDataPointEnd = (m_renderDataPointEnd + 1) % m_renderDataPointCapacity;
-
-		if (m_renderDataPointEnd == m_renderDataPointStart) {
-			m_renderDataPointStart = (m_renderDataPointStart + 1) % m_renderDataPointCapacity;
-		}
-	}
-#endif
-}
-
-void LineChart::SetTargetValue(double targetValue)
+void LineChartRendererSkia::SetTargetValue(double targetValue)
 {
 	m_targetValue = targetValue;
 }
 
-void LineChart::SetUnit(const std::string &unit)
+void LineChartRendererSkia::SetUnit(const std::string &unit)
 {
 	m_unit = unit;
 }
 
-void LineChart::SetLabel(const std::string &label)
+void LineChartRendererSkia::SetLabel(const std::string &label)
 {
 	m_label = label;
 }
 
-unsigned int LineChart::GetWidth() const
+void LineChartRendererSkia::Draw(const std::vector<const struct LineChartDataPoint> &dataPoints, Texture2D *texture)
 {
-	assert(m_bitmap);
+	unsigned int width = texture->GetWidth();
+	unsigned int height = texture->GetHeight();
 
-	return (unsigned int)m_bitmap->width();
-}
+	if (!m_canvas || (m_bitmap->width() != width || m_bitmap->height() != height)) {
+		if (m_canvas)
+			delete m_canvas;
+		if (m_bitmap)
+			delete m_bitmap;
 
-unsigned int LineChart::GetHeight() const
-{
-	assert(m_bitmap);
+		m_bitmap = new SkBitmap();
+		m_bitmap->setConfig(SkBitmap::kARGB_8888_Config, width, height);
+		m_bitmap->allocPixels();
 
-	return (unsigned int)m_bitmap->height();
-}
+		m_canvas = new SkCanvas(*m_bitmap);
 
-const void *LineChart::GetPixels() const
-{
-	assert(m_bitmap);
-
-	return m_bitmap->getPixels();
-}
-
-void LineChart::AddDataPoint(double timeStamp, double value)
-{
-	const struct LineChartDataPoint *previousDataPoint = NULL;
-
-	if (m_dataPointStart != m_dataPointEnd) {
-		previousDataPoint = &m_dataPoints[(m_dataPointEnd == 0? m_dataPointCapacity - 1 : m_dataPointEnd - 1)];
+		printf("allocated skia bitmap\n");
 	}
 
-	m_dataPoints[m_dataPointEnd].timeStamp = timeStamp;
-	m_dataPoints[m_dataPointEnd].value = value;
-
-	m_dataPointEnd = (m_dataPointEnd + 1) % m_dataPointCapacity;
-
-	if (m_dataPointEnd == m_dataPointStart) {
-		m_dataPointStart = (m_dataPointStart + 1) % m_dataPointCapacity;
-	}
-
-	// Add the data point to the render set if needed.
-	size_t previousRenderDataPointIndex = (m_renderDataPointEnd == 0? m_renderDataPointCapacity - 1 : m_renderDataPointEnd - 1);
-	double pointTimeStamp, pointValue;
-	//double difference, alpha;
-
-	// FIXME: We might need to insert several render data points.
-
-	pointTimeStamp = (m_renderDataPointEnd == m_renderDataPointStart? timeStamp : m_renderDataPoints[previousRenderDataPointIndex].timeStamp + m_resolution);
-
-	if (timeStamp >= pointTimeStamp) {
-		pointValue = value;
-
-#if 0
-		if (previousDataPoint) {
-			// Interpolate the value.
-			difference = timeStamp - previousDataPoint->timeStamp;
-			alpha = (pointTimeStamp - previousDataPoint->timeStamp) / (difference + DBL_EPSILON);
-			pointValue = lerp(previousDataPoint->value, value, alpha);
-		}
-#endif
-
-		m_renderDataPoints[m_renderDataPointEnd].timeStamp = pointTimeStamp;
-		m_renderDataPoints[m_renderDataPointEnd].value = pointValue;
-
-		m_renderDataPointEnd = (m_renderDataPointEnd + 1) % m_renderDataPointCapacity;
-
-		if (m_renderDataPointEnd == m_renderDataPointStart) {
-			m_renderDataPointStart = (m_renderDataPointStart + 1) % m_renderDataPointCapacity;
-		}
-	}
-}
-
-void LineChart::ClearDataPoints()
-{
-	m_dataPointStart = 0;
-	m_dataPointEnd = 0;
-
-	m_renderDataPointStart = 0;
-	m_renderDataPointEnd = 0;
-}
-
-void LineChart::Draw(double time)
-{
 	assert(m_canvas);
 	assert(m_bitmap);
-	assert(m_renderDataPoints);
 
 	// Clear the canvas with transparency.
 	m_canvas->clear(SK_ColorTRANSPARENT);
@@ -237,7 +190,7 @@ void LineChart::Draw(double time)
 	backgroundPaint.setColor(SkColorSetARGB(128, 0, 0, 0));
 	backgroundPaint.setStyle(SkPaint::kFill_Style);
 	backgroundPaint.setXfermodeMode(SkXfermode::kSrcOver_Mode);
-	m_canvas->drawRect(SkRect::MakeXYWH(0.0f, 0.0f, (SkScalar)m_bitmap->width(), (SkScalar)m_bitmap->height()), backgroundPaint);
+	m_canvas->drawRect(SkRect::MakeXYWH(0.0f, 0.0f, (SkScalar)width, (SkScalar)height), backgroundPaint);
 
 	SkPaint textPaint;
 	textPaint.setColor(SkColorSetARGB(255, 255, 255, 255));
@@ -253,14 +206,17 @@ void LineChart::Draw(double time)
 
 	// Draw the label.
 	textPaint.setTextAlign(SkPaint::kRight_Align);
-	m_canvas->drawText(m_label.c_str(), m_label.length(), (SkScalar)m_bitmap->width(), 9.0f, textPaint);
+	m_canvas->drawText(m_label.c_str(), m_label.length(), (SkScalar)width, 9.0f, textPaint);
 
 	// Only draw the background and label if we don't have any points to render.
-	if (m_renderDataPointStart == m_renderDataPointEnd) {
+	if (dataPoints.size() == 0) {
+		texture->UploadData(m_bitmap->getPixels());
 		return;
 	}
 
-	double startTime = time - m_timeSpan;
+	double startTime = dataPoints.back().timeStamp;
+	double endTime = dataPoints.front().timeStamp;
+	double timeSpan = endTime - startTime;
 
 	const struct LineChartDataPoint *point;
 	SkPath path;
@@ -271,18 +227,20 @@ void LineChart::Draw(double time)
 	int count = 0;
 
 	double position;
+	bool first = true;
 
-	for (size_t i = m_renderDataPointStart; i != m_renderDataPointEnd; i = (i + 1) % m_renderDataPointCapacity) {
-		point = &m_renderDataPoints[i];
-		position = ((point->timeStamp - startTime) / m_timeSpan) * m_bitmap->width();
+	for (auto iter = dataPoints.begin(); iter != dataPoints.end(); iter++) {
+		point = &(*iter);
+		position = ((point->timeStamp - startTime) / timeSpan) * width;
 
 		//assert(point->value > 0.0);
 
-		if (i == m_renderDataPointStart) {
-			path.moveTo((SkScalar)position, (SkScalar)(m_bitmap->height() - point->value));
+		if (first) {
+			first = false;
+			path.moveTo((SkScalar)position, (SkScalar)(height - point->value));
 		}
 		else {
-			path.lineTo((SkScalar)position, (SkScalar)(m_bitmap->height() - point->value));
+			path.lineTo((SkScalar)position, (SkScalar)(height - point->value));
 		}
 
 		maxValue = std::max(maxValue, point->value);
@@ -305,14 +263,14 @@ void LineChart::Draw(double time)
 	double drawRange = drawMax + padding;
 
 	// Scale the path to fit the canvas.
-	double scale = m_bitmap->height() / drawRange;
-	double pixelPadding = m_bitmap->height() * -(scale - 1.0);
+	double scale = height / drawRange;
+	double pixelPadding = height * -(scale - 1.0);
 	SkMatrix transformation;
 	transformation.setScale(1.0f, (SkScalar)scale);
 	transformation.postTranslate(0.0f, (SkScalar)pixelPadding);
 	path.transform(transformation);
 
-	double targetLinePosition = (m_bitmap->height() - m_targetValue) * scale + pixelPadding;
+	double targetLinePosition = (height - m_targetValue) * scale + pixelPadding;
 
 	// Draw the target value line.
 	SkPaint linePaint;
@@ -320,7 +278,7 @@ void LineChart::Draw(double time)
 	linePaint.setStyle(SkPaint::kStroke_Style);
 	linePaint.setStrokeWidth(1.0f);
 	//linePaint.setXfermodeMode(SkXfermode::kSrcOver_Mode);
-	m_canvas->drawLine(0.0f, (SkScalar)targetLinePosition, (SkScalar)m_bitmap->width(), (SkScalar)targetLinePosition, linePaint);
+	m_canvas->drawLine(0.0f, (SkScalar)targetLinePosition, (SkScalar)width, (SkScalar)targetLinePosition, linePaint);
 
 	// Draw the actual data point lines.
 	SkPaint pathPaint;
@@ -357,10 +315,8 @@ void LineChart::Draw(double time)
 	stringStream << "Avg:" << std::fixed << (totalValue / count) << m_unit;
 	std::string averageValueString = stringStream.str();
 
-	size_t lastRenderDataPointIndex = (m_renderDataPointEnd == 0? m_renderDataPointCapacity - 1 : m_renderDataPointEnd - 1);
-
 	stringStream.str("");
-	stringStream << "Cur:" << std::fixed << m_renderDataPoints[lastRenderDataPointIndex].value << m_unit;
+	stringStream << "Cur:" << std::fixed << dataPoints.back().value << m_unit;
 	std::string currentValueString = stringStream.str();
 
 	// Draw the labels.
@@ -379,11 +335,172 @@ void LineChart::Draw(double time)
 	textPaint.setTextAlign(SkPaint::kRight_Align);
 
 	// Draw the target label at the end of the chart just above the target line.
-	//m_canvas->drawText(targetValueString.c_str(), targetValueString.length(), (float)m_bitmap->width(), (float)(targetLinePosition - (textPadding / 2.0)), textPaint);
+	//m_canvas->drawText(targetValueString.c_str(), targetValueString.length(), (float)width, (float)(targetLinePosition - (textPadding / 2.0)), textPaint);
 
 	/*
 	// Draw the high and low values.
-	m_canvas->drawText(highValueString.c_str(), highValueString.length(), (SkScalar)m_bitmap->width(), 9.0f, textPaint);
-	m_canvas->drawText(lowValueString.c_str(), lowValueString.length(), (SkScalar)m_bitmap->width(), m_bitmap->height() - 1.0f, textPaint);
+	m_canvas->drawText(highValueString.c_str(), highValueString.length(), (SkScalar)width, 9.0f, textPaint);
+	m_canvas->drawText(lowValueString.c_str(), lowValueString.length(), (SkScalar)width, height - 1.0f, textPaint);
 	*/
+
+	texture->UploadData(m_bitmap->getPixels());
+}
+
+
+LineChartRendererD3D::LineChartRendererD3D(GraphicsEngine *graphicsEngine)
+{
+	assert(graphicsEngine);
+
+	m_graphicsEngine = graphicsEngine;
+
+	m_bufferSize = 0;
+	m_buffer = NULL;
+
+	m_targetValue = 0.0;
+	m_unit = "";
+	m_label = "";
+}
+
+LineChartRendererD3D::~LineChartRendererD3D()
+{
+	if (m_buffer)
+		delete[] m_buffer;
+}
+
+void LineChartRendererD3D::SetTargetValue(double targetValue)
+{
+	m_targetValue = targetValue;
+}
+
+void LineChartRendererD3D::SetUnit(const std::string &unit)
+{
+	m_unit = unit;
+}
+
+void LineChartRendererD3D::SetLabel(const std::string &label)
+{
+	m_label = label;
+}
+
+void LineChartRendererD3D::Draw(const std::vector<const struct LineChartDataPoint> &dataPoints, Texture2D *texture)
+{
+	assert(texture->IsRenderable());
+
+	float backgroundColor[4] = {0.0f, 0.0f, 0.0f, 0.5f};
+	m_graphicsEngine->ClearTexture(texture, backgroundColor);
+
+	// FIXME: Print m_label. (We have no way to set text alignment)
+
+	// Only draw the background and label if we don't have any points to render.
+	if (dataPoints.size() == 0) {
+		return;
+	}
+
+	if (!m_buffer || m_bufferSize < dataPoints.size() * 2) {
+		if (m_buffer)
+			delete[] m_buffer;
+
+		m_bufferSize = (size_t)((dataPoints.size() * 2) * 1.5f);
+		m_buffer = new float[m_bufferSize];
+	}
+
+	unsigned int width = texture->GetWidth();
+	unsigned int height = texture->GetHeight();
+
+	double startTime = dataPoints.back().timeStamp;
+	double endTime = dataPoints.front().timeStamp;
+	double timeSpan = endTime - startTime;
+
+	double maxValue = DBL_MIN;
+	double minValue = DBL_MAX;
+	double totalValue = 0.0;
+	int count = 0;
+
+	const struct LineChartDataPoint *point;
+	double x, y;
+
+	for (auto iter = dataPoints.begin(); iter != dataPoints.end(); iter++) {
+		point = &(*iter);
+		x = ((point->timeStamp - startTime) / timeSpan) * width;
+		y = point->value;
+
+		m_buffer[count * 2 + 0] = (float)x;
+		m_buffer[count * 2 + 1] = (float)y;
+
+		maxValue = std::max(maxValue, point->value);
+		minValue = std::min(minValue, point->value);
+		
+		count++;
+		totalValue += point->value;
+	}
+
+	assert(count > 0);
+
+	//printf("drawing %d samples, maxValue=%.1f, minValue=%.1f, lastValue=%.1f\n", count, maxValue, minValue, value);
+
+	// Add some padding to the top and bottom of the chart.
+	double drawMax = std::max(maxValue, m_targetValue);
+	//double drawMin = std::min(minValue, targetValue);
+	double drawMin = 0.0;
+	double padding = (drawMax - drawMin) * 0.1;
+	//double drawRange = (drawMax + padding) + (drawMin - padding);
+	double drawRange = drawMax + padding;
+
+	// Scale the path to fit the canvas.
+	double yScale = height / drawRange;
+	double pixelPadding = height * -(yScale - 1.0);
+
+	XMMATRIX transformation = XMMatrixMultiply(XMMatrixTranslation(0.0f, (float)pixelPadding, 0.0f), XMMatrixScaling(1.0f, (float)yScale, 1.0f));
+	XMFLOAT3X3 transformationMatrix;
+	XMStoreFloat3x3(&transformationMatrix, transformation);
+
+	// Draw the target line.
+	float targetLine[4] = {0.0f, (float)m_targetValue, (float)width, (float)m_targetValue};
+	float lineColor[4] = {1.0f, 0.47f, 0.0f, 1.0f};
+	m_graphicsEngine->DrawLines(texture, targetLine, 2, transformationMatrix, lineColor);
+
+	// Draw the data points.
+	lineColor[0] = 0.0f;
+	lineColor[1] = 0.8f;
+	lineColor[2] = 1.0f;
+	lineColor[3] = 1.0f;
+	m_graphicsEngine->DrawLines(texture, m_buffer, count, transformationMatrix, lineColor);
+
+	// Draw the labels
+	std::stringstream stringStream;
+	stringStream.precision(1);
+
+	stringStream << std::fixed << m_targetValue << m_unit;
+	std::string targetValueString = stringStream.str();
+
+	stringStream.str("");
+	stringStream << "Min:" << std::fixed << minValue << m_unit;
+	std::string minValueString = stringStream.str();
+
+	stringStream.str("");
+	stringStream << "Max:" << std::fixed << maxValue << m_unit;
+	std::string maxValueString = stringStream.str();
+
+	stringStream.str("");
+	stringStream << "Avg:" << std::fixed << (totalValue / count) << m_unit;
+	std::string averageValueString = stringStream.str();
+
+	stringStream.str("");
+	stringStream << "Cur:" << std::fixed << dataPoints.front().value << m_unit;
+	std::string currentValueString = stringStream.str();
+
+	int textPadding = 10;
+	int textPosition[2] = {0, 0};
+
+	m_graphicsEngine->Begin2D();
+
+	m_graphicsEngine->PrintTextMonospaceToTexture(texture, currentValueString, textPosition);
+	textPosition[1] += textPadding;
+	m_graphicsEngine->PrintTextMonospaceToTexture(texture, averageValueString, textPosition);
+	textPosition[1] += textPadding;
+	m_graphicsEngine->PrintTextMonospaceToTexture(texture, minValueString, textPosition);
+	textPosition[1] += textPadding;
+	m_graphicsEngine->PrintTextMonospaceToTexture(texture, maxValueString, textPosition);
+
+	m_graphicsEngine->End2D();
 }
