@@ -789,6 +789,19 @@ bool EntityManager::loadXML(string xmlFile)
 				Button* btn = new Button(toggle);
 				this->addComponent(entity, btn);
 			}
+			else if (componentName == "WallButton")
+			{
+				Vec3 dir;
+				attr = e->Attribute("xDir");
+				if (attr != nullptr)
+					dir.X = e->FloatAttribute("xDir");
+				attr = e->Attribute("zDir");
+				if (attr != nullptr)
+					dir.Z = e->FloatAttribute("zDir");
+
+				WallButton* btn = new WallButton(dir);
+				this->addComponent(entity, btn);
+			}
 			else if (componentName == "Checkpoint")
 			{
 				Vec3 spawnpoint = Vec3(xPos, yPos, zPos);

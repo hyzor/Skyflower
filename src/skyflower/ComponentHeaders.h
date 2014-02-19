@@ -25,5 +25,6 @@
 #include "Components/SpotLightComp.h"
 #include "Components/DirectionalLightComp.h"
 #include "Components/MorphAnimation.h"
+#include "Components/WallButton.h"
 
 #endif
