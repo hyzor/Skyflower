@@ -36,19 +36,23 @@ PixelOut main(VertexOut pIn)
 {
 	PixelOut pOut;
 
+	pOut.Color = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	pOut.Normal = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	pOut.Specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	pOut.Velocity = float2(0.0f, 0.0f);
+
 	float shadowFactor = 1.0f;
 
 	if (type == 0 || type == 2)
 	{
-		int cascadeIndex;
+		int cascadeIndex = 0;
 		int nrOfCascades = gNrOfCascades;
-		float shadowFactor1 = 0.0f;
 		float depth = pIn.Depth;
 		float4 shadowPosH1 = pIn.ShadowPosH1;
 		float4 shadowPosH2 = pIn.ShadowPosH2;
 		float4 shadowPosH3 = pIn.ShadowPosH3;
 
-			//If current depth is beyond the furthest depth, dont shadow it
+		//If current depth is beyond the furthest depth, dont shadow it
 		if (depth > gFarDepths.x && nrOfCascades == 1)
 			shadowFactor = 1.0f;
 		if (depth > gFarDepths.y && nrOfCascades == 2)

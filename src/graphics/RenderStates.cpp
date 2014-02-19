@@ -84,9 +84,9 @@ void RenderStates::InitAll(ID3D11Device* device)
 
 	D3D11_RASTERIZER_DESC depthBiasFarRSdesc;
 	ZeroMemory(&depthBiasFarRSdesc, sizeof(D3D11_RASTERIZER_DESC));
-	depthBiasFarRSdesc.DepthBias = 100000;
+	depthBiasFarRSdesc.DepthBias = 10000;
 	depthBiasFarRSdesc.DepthBiasClamp = 0.0f;
-	depthBiasFarRSdesc.SlopeScaledDepthBias = 1.0f;
+	depthBiasFarRSdesc.SlopeScaledDepthBias = 2.0f;
 	depthBiasFarRSdesc.FillMode = D3D11_FILL_SOLID;
 	depthBiasFarRSdesc.CullMode = D3D11_CULL_BACK;
 

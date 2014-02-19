@@ -1289,15 +1289,21 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 				mShadowMap->GetLightView(),
 				mShadowMap->GetLightProj());
 
+			mShaderHandler->mBasicDeferredShader->SetEyeSpaceTransform(this->mCamera->GetViewMatrix());
+			mShaderHandler->mBasicDeferredShader->SetNrOfCascades(this->mCascadedShadows->GetNrOfCascades());
+
 			for (UINT cIndex = 0; cIndex < this->mCascadedShadows->GetNrOfCascades(); cIndex++)
 			{
 				currCasc = mCascadedShadows->GetCascade(cIndex);
 
 				if (currCasc)
 				{
-					mShaderHandler->mBasicDeferredShader->SetCascadeVars(mD3D->GetImmediateContext(), currCasc->getDepthMapSRV(),  
-						this->mCamera->GetViewMatrix(), currCasc->GetLightView(), currCasc->GetLightProj(), currCasc->GetShadowTransform(), 
-						currCasc->GetSplitDepthNear(), currCasc->GetSplitDepthFar(), cIndex, this->mCascadedShadows->GetNrOfCascades());
+					mShaderHandler->mBasicDeferredShader->SetCascadeTex(mD3D->GetImmediateContext(), currCasc->getDepthMapSRV(), cIndex);
+					mShaderHandler->mBasicDeferredShader->SetCascadeTransformAndDepths(
+						currCasc->GetShadowTransform(), 
+						currCasc->GetSplitDepthNear(), 
+						currCasc->GetSplitDepthFar(), 
+						cIndex);
 				}
 			}
 

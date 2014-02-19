@@ -144,8 +144,8 @@ void CameraControllImpl::onMouseMove(float mouseX, float mouseY)
 	}
 	if (targetPitch > 1)
 		targetPitch = 1;
-	else if (targetPitch < -0.1f)
-		targetPitch = -0.1f;  
+	else if (targetPitch < -0.5f)
+		targetPitch = -0.5f;  
 
 }
 

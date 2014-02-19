@@ -1308,17 +1308,18 @@ void BasicDeferredShader::SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderRes
 	dc->PSSetShaderResources(0, 1, &tex);
 }
 
-void BasicDeferredShader::SetCascadeVars(
-	ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex,
-	const XMMATRIX& view, const XMMATRIX& lightSpace,
-	const XMMATRIX& shadowProj, const XMMATRIX& shadowTransform, float nearDepth,
-	float farDepth, int index, int nrOfCascades)
+void BasicDeferredShader::SetCascadeTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex, int index)
 {
 	dc->PSSetShaderResources(index + SHADOWMAP_SR_REG_OFFSET, 1, &tex);
+}
 
-	mBufferCache.vsPerObjBuffer.worldView = XMMatrixTranspose(view);
-	mBufferCache.vsPerObjBuffer.lightSpace = XMMatrixTranspose(lightSpace);
-	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixIdentity();
+void BasicDeferredShader::SetEyeSpaceTransform(const XMMATRIX& view)
+{
+	mBufferCache.vsPerObjBuffer.toEyeSpace = XMMatrixTranspose(view);
+}
+
+void BasicDeferredShader::SetCascadeTransformAndDepths(const XMMATRIX& shadowTransform, float nearDepth, float farDepth, int index)
+{
 	mBufferCache.vsPerObjBuffer.shadowTransforms[index] = XMMatrixTranspose(shadowTransform);
 
 	if (index == 0)
@@ -1338,7 +1339,10 @@ void BasicDeferredShader::SetCascadeVars(
 		mBufferCache.psPerObjBuffer.farDepths.z = farDepth;
 	else if (index == 3)
 		mBufferCache.psPerObjBuffer.farDepths.w = farDepth;
+}
 
+void BasicDeferredShader::SetNrOfCascades(int nrOfCascades)
+{
 	mBufferCache.psPerObjBuffer.nrOfCascades = nrOfCascades;
 }
 
@@ -1378,7 +1382,7 @@ void BasicDeferredShader::UpdatePerObj(ID3D11DeviceContext* dc)
 
 void BasicDeferredShader::SetShadowTransformLightViewProj(XMMATRIX& shadowTransform, XMMATRIX& lightView, XMMATRIX& lightProj)
 {
-	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
+	//mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
 }
 
 void BasicDeferredShader::SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
@@ -1513,6 +1517,44 @@ void BasicDeferredSkinnedShader::SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11Sh
 	dc->PSSetShaderResources(0, 1, &tex);
 }
 
+void BasicDeferredSkinnedShader::SetCascadeTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex, int index)
+{
+	dc->PSSetShaderResources(index + SHADOWMAP_SR_REG_OFFSET, 1, &tex);
+}
+
+void BasicDeferredSkinnedShader::SetEyeSpaceTransform(const XMMATRIX& view)
+{
+	mBufferCache.vsPerObjBuffer.toEyeSpace = XMMatrixTranspose(view);
+}
+
+void BasicDeferredSkinnedShader::SetCascadeTransformAndDepths(const XMMATRIX& shadowTransform, float nearDepth, float farDepth, int index)
+{
+	mBufferCache.vsPerObjBuffer.shadowTransforms[index] = XMMatrixTranspose(shadowTransform);
+
+	if (index == 0)
+		mBufferCache.psPerObjBuffer.nearDepths.x = nearDepth;
+	else if (index == 1)
+		mBufferCache.psPerObjBuffer.nearDepths.y = nearDepth;
+	else if (index == 2)
+		mBufferCache.psPerObjBuffer.nearDepths.z = nearDepth;
+	else if (index == 3)
+		mBufferCache.psPerObjBuffer.nearDepths.w = nearDepth;
+
+	if (index == 0)
+		mBufferCache.psPerObjBuffer.farDepths.x = farDepth;
+	else if (index == 1)
+		mBufferCache.psPerObjBuffer.farDepths.y = farDepth;
+	else if (index == 2)
+		mBufferCache.psPerObjBuffer.farDepths.z = farDepth;
+	else if (index == 3)
+		mBufferCache.psPerObjBuffer.farDepths.w = farDepth;
+}
+
+void BasicDeferredSkinnedShader::SetNrOfCascades(int nrOfCascades)
+{
+	mBufferCache.psPerObjBuffer.nrOfCascades = nrOfCascades;
+}
+
 void BasicDeferredSkinnedShader::SetBoneTransforms(const XMFLOAT4X4 boneTransforms[], UINT numTransforms)
 {
 	for (UINT i = 0; i < numTransforms; ++i)
@@ -1589,7 +1631,7 @@ void BasicDeferredSkinnedShader::SetShadowMapTexture(ID3D11DeviceContext* dc, ID
 
 void BasicDeferredSkinnedShader::SetShadowTransform(XMMATRIX& shadowTransform)
 {
-	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
+//	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
 }
 
 void BasicDeferredSkinnedShader::SetPrevWorldViewProj(XMMATRIX& prevWorld, XMMATRIX& prevViewProj)

@@ -36,7 +36,7 @@ PixelOut main(VertexOut pIn)
 	//pOut.Position = float4(pIn.PosW, 1.0f);
 
 	// Bake shadow factor into color w component
-	float shadowFactor = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
+	float shadowFactor = 1.0f;//CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
 
 	pOut.Color.w = shadowFactor;
 
