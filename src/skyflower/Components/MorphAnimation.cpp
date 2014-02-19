@@ -10,8 +10,14 @@ void MorphAnimation::addedToEntity()
 	Vec3 scale = getOwner()->returnScale();
 
 	m_model = getOwner()->getModules()->graphics->CreateMorphAnimatedInstance(path, model, Vec3());
-
 	m_model->Set(pos, rot, scale, Vec3(0.0f, 0.0f, 0.0f));
+	m_model->SetVisibility(getOwner()->returnVisible());
+}
+
+void MorphAnimation::removeFromEntity()
+{
+	if (m_model)
+		getOwner()->getModules()->graphics->DeleteInstance(m_model);
 }
 
 void MorphAnimation::update(float dt)

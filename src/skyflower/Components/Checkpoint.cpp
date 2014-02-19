@@ -21,7 +21,7 @@ void Checkpoint::update(float dt)
 	if (cp.Test(player))
 		getEntityManager()->sendMessageToEntity("Checkpoint", getOwnerId());
 
-	MorphAnimation *animation = getOwner()->getComponent<MorphAnimtation*>("MorphAnimation");
+	MorphAnimation *animation = getOwner()->getComponent<MorphAnimation*>("MorphAnimation");
 
 	if (getOwner()->getComponent<MorphAnimation*>("MorphAnimation")->getWeights() == Vec3(1.0f, 0.0f, 0.0f))
 		getOwner()->getComponent<MorphAnimation*>("MorphAnimation")->startMorphing(Vec3(0.0f, 1.0f, 0.0f), 1.0f);
