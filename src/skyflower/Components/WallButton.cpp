@@ -1,19 +1,18 @@
-#include "Components/Button.h"
+#include "Components/WallButton.h"
 #include "EntityManager.h"
 
 // Must be included last!
 #include "shared/debug.h"
 
-void Button::update(float dt)
+void WallButton::update(float dt)
 {
 	//run first update
 	if (first)
 	{
 		moveTo = getOwner()->getRelativePos();
 		startPos = moveTo;
-		downPos = Vec3(0, -getEntityScale().Y, 0);
+		downPos = dir*getEntityScale();
 		first = false;
-		down = true;
 	}
 
 
@@ -49,37 +48,23 @@ void Button::update(float dt)
 	}
 
 	//move button animation
-	getOwner()->updateRelativePos(getOwner()->getRelativePos() + (moveTo - getOwner()->getRelativePos()) * 10 * dt / getEntityScale().Y);
+	getOwner()->updateRelativePos(getOwner()->getRelativePos() + (moveTo - getOwner()->getRelativePos()) * 10 * dt / (getEntityScale()*Vec3(1, 0, 1)).Length());
 }
 
-void Button::Activate(Message const& msg)
+void WallButton::Activate(Message const& msg)
 {
 	if (activated <= 0)
 		moveTo = startPos + downPos;
 
-	activated = 0.2f;
+	activated = 1.5f;
 }
 
-void Button::Deactivate()
+void WallButton::Deactivate()
 {
-	if(!toggle)
-		moveTo = startPos;
-	else
-	{
-		if (down)
-		{
-			moveTo = startPos + downPos*0.7f;
-			down = false;
-		}
-		else
-		{
-			moveTo = startPos;
-			down = true;
-		}
-	}
+	moveTo = startPos;
 }
 
-bool Button::isDown()
+bool WallButton::isDown()
 {
-	return (((startPos + downPos) - getOwner()->getRelativePos()).Length() < getEntityScale().Y *0.69f);
+	return (((startPos + downPos) - getOwner()->getRelativePos()).Length() < (getEntityScale()*Vec3(1,0,1)).Length() *0.69f);
 }

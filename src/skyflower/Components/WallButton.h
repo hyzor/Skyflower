@@ -1,5 +1,5 @@
-#ifndef BUTTON_H
-#define BUTTON_H
+#ifndef WALLBUTTON_H
+#define WALLBUTTON_H
 
 #include "Cistron.h"
 #include <string>
@@ -12,24 +12,24 @@
 using namespace std;
 using namespace Cistron;
 
-class Button : public Component {
+class WallButton : public Component {
 
 public:
 
 	// constructor - age is fixed at creation time
-	Button(bool toggle) : Component("Button")
+	WallButton(Vec3 dir) : Component("WallButton")
 	{
 		activated = 0;
 		act = false;
 		first = true;
-		this->toggle = toggle;
+		this->dir = dir;
 	};
-	virtual ~Button() {};
+	virtual ~WallButton() {};
 
 	// we are added to an Entity, and thus to the component system
 	void addedToEntity()
 	{
-		requestMessage("Ground", &Button::Activate);
+		requestMessage("Wall", &WallButton::Activate);
 	}
 
 	void sendAMessage(string message)
@@ -53,9 +53,8 @@ private:
 	Vec3 startPos;
 	Vec3 downPos;
 	bool first;
-	
-	bool toggle;
-	bool down;
+
+	Vec3 dir;
 
 
 };

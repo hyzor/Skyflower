@@ -80,7 +80,7 @@ public:
 	MorphModelInstance* CreateMorphAnimatedInstance(std::string path, std::string file, Vec3 pos);
 	void DeleteInstance(MorphModelInstance* mmi);
 
-	Texture2D *CreateTexture2D(unsigned int width, unsigned int height);
+	Texture2D *CreateTexture2D(unsigned int width, unsigned int height, bool renderable = false);
 	void DeleteTexture2D(Texture2D *texture);
 
 	ParticleSystem *CreateParticleSystem();
@@ -108,6 +108,12 @@ public:
 	void SetSSAOParameters(float radius, float projection_factor, float bias, float contrast, float sigma);
 	void SetMorphAnimWeigth(unsigned index, Vec3 weight);
 	Vec3 GetMorphAnimWeigth(unsigned index);
+
+	void ClearTexture(Texture2D *texture, const float color[4]);
+	void PrintTextMonospaceToTexture(Texture2D *texture, const std::string &text, const int position[2]);
+	void DrawLines(Texture2D *texture, const float *data, size_t count, const XMFLOAT3X3 &transformation, const float color[4]);
+
+	void ResetRenderTargetAndViewport();
 
 private:
 	Direct3D* mD3D;
@@ -144,6 +150,7 @@ private:
 
 	SpriteBatch* mSpriteBatch;
 	SpriteFont* mSpriteFont;
+	SpriteFont* mSpriteFontMonospace;
 
 	DirectX::BoundingSphere mSceneBounds;
 
@@ -198,6 +205,9 @@ private:
 	ID3D11ShaderResourceView* mDepthStencilSRVCopy;
 
 	//GenericSkinnedModelSorted* mTestSortedModel;
+
+	size_t mLineVertexBufferSize;
+	ID3D11Buffer *mLineVertexBuffer;
 };
 
 #endif

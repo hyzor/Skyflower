@@ -1422,6 +1422,37 @@ struct Shader
 	UINT Type;
 };
 
+#pragma region LineShader
+class LineShader : public IShader
+{
+public:
+	LineShader();
+	~LineShader();
+
+	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
+	bool SetActive(ID3D11DeviceContext* dc);
+
+	void Update(ID3D11DeviceContext* dc);
+
+	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+
+	void SetTransformation(const XMFLOAT3X3 &transformation);
+	void SetFramebufferSize(const XMFLOAT2 &framebufferSize);
+	void SetColor(const XMFLOAT4 &color);
+
+private:
+	struct PS_CPEROBJECT
+	{
+		XMMATRIX transformation;
+		XMMATRIX projection;
+		XMFLOAT4 color;
+	};
+
+	ID3D11Buffer* ps_cPerObjectBuffer;
+	PS_CPEROBJECT ps_cPerObjectVariables;
+};
+#pragma endregion LineShader
+
 // Loads compiled shader objects
 class ShaderHandler
 {
@@ -1463,6 +1494,7 @@ public:
 	ParticleSystemShader* mParticleSystemShader;
 	LightDeferredShader* mLightDeferredToTextureShader;
 	BasicDeferredSkinnedSortedShader* mBasicDeferredSkinnedSortedShader;
+	LineShader* mLineShader;
 
 	// SMAA
 	SMAAColorEdgeDetectionShader* mSMAAColorEdgeDetectionShader;
