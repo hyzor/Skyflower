@@ -111,7 +111,27 @@ void Movement::update(float deltaTime)
 	GravityComponent *gravity = getOwner()->getComponent<GravityComponent*>("Gravity");
 
 	if (isInAir)
+	{
 		timeFalling += deltaTime;
+		for (int j = 0; j < getEntityManager()->getNrOfEntities(); j++)
+		{
+			Entity* entity = getEntityManager()->getEntity(getEntityManager()->getEntityId(j));
+
+			if (entity->hasComponents("AI"))
+			{
+				if (entity->sphere != NULL && getOwner()->sphere != NULL && entity->sphere->Test(*getOwner()->sphere))
+				{
+					Vec3 AIPos = entity->returnPos();
+					Vec3 entityPos = getOwner()->returnPos();
+					if (entityPos.Y > AIPos.Y)
+					{
+						sendMessageToEntity(entity->fId, "isDizzy");
+					}
+				}
+			}
+		}
+	}
+
 
 	if (gravity && !gravity->isEnabled())
 	{

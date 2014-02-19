@@ -26,7 +26,6 @@ void Push::addedToEntity()
 	requestMessage("isHoldingThrowable", &Push::setCanNotPush);
 	requestMessage("isNotHoldingThrowable", &Push::setCanPush);
 	requestMessage("beingPushed", &Push::beingPushed);
-
 }
 
 void Push::removeFromEntity()
@@ -167,8 +166,8 @@ void Push::push(Entity* target)
 	{
 		if (getOwner()->sphere && e->sphere)
 		{
-			//are two entities colliding?
-			if (colliding(e) && canPush)
+			//are two entities colliding, can they push and are they not dizzy
+			if (colliding(e) && canPush && !getOwner()->getComponent<Movement*>("Movement")->getIsDizzy())
 			{
 				Vec3 dir = (e->returnPos() - getOwner()->returnPos());
 				dir.Y = 0;

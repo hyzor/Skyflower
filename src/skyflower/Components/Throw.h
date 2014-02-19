@@ -113,17 +113,6 @@ public:
 	void setToThrow(bool state)
 	{
 		this->toThrow = state;
-
-		if (state)
-		{
-			AnimatedInstance *animatedInstance = getOwner()->getAnimatedInstance();
-
-			if (getOwnerId() == 1 && animatedInstance)
-			{
-				// Play throw animation
-				animatedInstance->SetAnimation(7, false);
-			}
-		}
 	}
 
 	void setHoldingEntityId(EntityId id)
