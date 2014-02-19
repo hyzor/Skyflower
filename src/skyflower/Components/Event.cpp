@@ -300,7 +300,7 @@ int Event::IsDown(lua_State* L)
 	
 	if (n >= 1)
 	{
-		Entity* entityTarget = entityManager->getEntity(lua_tointeger(L, 1));
+		Entity* entityTarget = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
 
 		if(entityTarget->hasComponents("Button"))
 			ret = entityTarget->getComponent<Button*>("Button")->isDown();
