@@ -58,23 +58,31 @@ end
 
 --btnStair script--
 -------------------
+function load_btnStair(id)
+	StartUpdate()
+end
+
 
 stairdown = true
-function activated_btnStair(id)
-	if stairdown then
-		MoveToTarget(20)
-		MoveToTarget(80)
-		MoveToTarget(23)
-		MoveToTarget(10)
-		MoveToTarget(90)
-		stairdown = false
+function update_btnStair(id, dt)
+	if IsDown(id) then
+		if stairdown then
+			MoveToTarget(20)
+			MoveToTarget(80)
+			MoveToTarget(23)
+			MoveToTarget(10)
+			MoveToTarget(90)
+			stairdown = false
+		end
 	else
-		MoveToSpawn(20)
-		MoveToSpawn(80)
-		MoveToSpawn(23)
-		MoveToSpawn(10)
-		MoveToSpawn(90)
-		stairdown = true
+		if not stairdown then
+			MoveToSpawn(20)
+			MoveToSpawn(80)
+			MoveToSpawn(23)
+			MoveToSpawn(10)
+			MoveToSpawn(90)
+			stairdown = true
+		end
 	end
 end
 

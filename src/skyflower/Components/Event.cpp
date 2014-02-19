@@ -292,6 +292,24 @@ int Event::IsActivator(lua_State* L)
 	return 1;
 }
 
+int Event::IsDown(lua_State* L)
+{
+	int n = lua_gettop(L);
+	
+	bool ret = false;
+	
+	if (n >= 1)
+	{
+		Entity* entityTarget = entityManager->getEntity(lua_tointeger(L, 1));
+
+		if(entityTarget->hasComponents("Button"))
+			ret = entityTarget->getComponent<Button*>("Button")->isDown();
+	}
+
+	lua_pushboolean(L, ret);
+	return 1;
+}
+
 int Event::SetTarget(lua_State* L)
 {
 	int n = lua_gettop(L);

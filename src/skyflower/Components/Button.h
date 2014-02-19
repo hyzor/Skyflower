@@ -18,11 +18,12 @@ class Button : public Component {
 public:
 
 	// constructor - age is fixed at creation time
-	Button() : Component("Button")
+	Button(bool toggle) : Component("Button")
 	{
 		activated = 0;
 		act = false;
 		first = true;
+		this->toggle = toggle;
 	};
 	virtual ~Button() {};
 
@@ -37,6 +38,7 @@ public:
 		sendMessage(message);
 	}
 
+	bool isDown();
 
 	void update(float dt);
 private:
@@ -52,7 +54,9 @@ private:
 	Vec3 startPos;
 	Vec3 downPos;
 	bool first;
-
+	
+	bool toggle;
+	bool down;
 
 
 };
