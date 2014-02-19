@@ -229,6 +229,7 @@ void Movement::update(float deltaTime)
 		{
 			// Player animations
 			Push *pushComponent = getOwner()->getComponent<Push *>("Push");
+			Throw *throwComponent = getOwner()->getComponent<Throw *>("Throw");
 
 			if ((this->isInAir && timeFalling > 0.3f) || p->GetStates()->isJumping)
 			{
@@ -246,6 +247,11 @@ void Movement::update(float deltaTime)
 					// Fall
 					animatedInstance->SetAnimation(9, true);
 				}
+			}
+			else if (throwComponent && throwComponent->getIsHoldingThrowable())
+			{
+				// Holding ball
+				animatedInstance->SetAnimation(6, true);
 			}
 			else if (pushComponent && !pushComponent->isPushingBox())
 			{
