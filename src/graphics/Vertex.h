@@ -119,6 +119,8 @@ public:
 class InputLayouts
 {
 public:
+	InputLayouts();
+	~InputLayouts();
 	//static void InitAll(ID3D11Device* device);
 	static void DestroyAll();
 

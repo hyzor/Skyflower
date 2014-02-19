@@ -65,8 +65,8 @@ private:
 
 	D3D11_VIEWPORT mViewport;
 
-	ID3D11RenderTargetView* mRenderTargetView;
-	ID3D11Texture2D* mRenderTargetTexture;
+	//ID3D11RenderTargetView* mRenderTargetView;
+	//ID3D11Texture2D* mRenderTargetTexture;
 
 	bool CreateShadowMap(ID3D11Device* device, UINT width, UINT height);
 };
