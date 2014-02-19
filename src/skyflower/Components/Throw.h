@@ -173,10 +173,10 @@ private:
 	{
 		if (isHoldingThrowable)
 		{
-			/*setToPutDown(false);
+			setToPutDown(false);
 			setIsHoldingThrowable(false);
 			setToPickUp(false);
-			sendMessageToEntity(holdingEntityId, "Dropped");*/
+			sendMessageToEntity(holdingEntityId, "Dropped");
 		}
 	}
 
