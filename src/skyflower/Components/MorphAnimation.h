@@ -11,19 +11,21 @@
 using namespace std;
 using namespace Cistron;
 
-class MorphAnimtation : public Component
+class MorphAnimation : public Component
 {
 public:
-	MorphAnimtation(string path, string model) : Component("MorphAnimation")
+	MorphAnimation(string path, string model) : Component("MorphAnimation")
 	{
-		isMorphing = false;
-		speed = 0.0f;
 		this->path = path;
 		this->model = model;
+		m_model = NULL;
+		isMorphing = false;
+		speed = 0.0f;
 	};
-	virtual ~MorphAnimtation(){}
+	virtual ~MorphAnimation(){}
 
 	void addedToEntity();
+	void removeFromEntity();
 	void update(float deltaTime);
 	void startMorphing(Vec3 targetWeight, float speed);
 	void setWeights(Vec3 weight);

@@ -903,7 +903,7 @@ bool EntityManager::loadXML(string xmlFile)
 					string path = GetStringAttribute(e, "path", entityName, componentName);
 					string file = GetStringAttribute(e, "file", entityName, componentName);
 
-					MorphAnimtation *m = new MorphAnimtation(path, file);
+					MorphAnimation *m = new MorphAnimation(path, file);
 					this->addComponent(entity, m);
 					
 				}

@@ -51,7 +51,7 @@ public:
 	virtual void DeleteInstance(AnimatedInstance* ai) = 0;
 
 	virtual MorphModelInstance* CreateMorphAnimatedInstance(std::string path, std::string file, Vec3 pos) = 0;
-	//virtual void DeleteInstance(MorphModelInstance* mmi) = 0;
+	virtual void DeleteInstance(MorphModelInstance* mmi) = 0;
 
 	virtual void addDirLight(Vec3 color, Vec3 direction, float intensity) = 0;
 	virtual void addPointLight(Vec3 color, Vec3 Position, float intensity) = 0;

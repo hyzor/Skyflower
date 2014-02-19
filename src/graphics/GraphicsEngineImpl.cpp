@@ -1034,7 +1034,39 @@ MorphModelInstance* GraphicsEngineImpl::CreateMorphAnimatedInstance(std::string 
 
 	return (m);
 }
- 
+
+void GraphicsEngineImpl::DeleteInstance(MorphModelInstance* mmi)
+{
+	MorphModelInstanceImpl* m = (MorphModelInstanceImpl*)mmi;
+	bool found = false;
+	int index = -1;
+	for (unsigned int i = 0; i < mMorphInstances.size(); i++)
+	{
+		if (m == mMorphInstances[i])
+			index = i;
+		else if (m->model == mMorphInstances[i]->model)
+			found = true;
+	}
+
+	if (index != -1)
+		mMorphInstances.erase(mMorphInstances.begin() + index);
+
+	if (!found) //delete model if no other instance uses it
+	{
+		for (std::vector<MorphModel*>::iterator it = mMorphModels.begin(); it != mMorphModels.end(); it++)
+		{
+			if (*it == m->model)
+			{
+				mMorphModels.erase(it);
+				break;
+			}
+		}
+		delete m->model;
+	}
+
+	delete m;
+}
+
 Texture2D *GraphicsEngineImpl::CreateTexture2D(unsigned int width, unsigned int height)
 {
 	Texture2DImpl *texture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8G8B8A8_UNORM, false);

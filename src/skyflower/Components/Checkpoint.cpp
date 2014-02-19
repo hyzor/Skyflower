@@ -21,20 +21,19 @@ void Checkpoint::update(float dt)
 	if (cp.Test(player))
 		getEntityManager()->sendMessageToEntity("Checkpoint", getOwnerId());
 
-	MorphAnimtation *animation = getOwner()->getComponent<MorphAnimtation*>("MorphAnimation");
+	MorphAnimation *animation = getOwner()->getComponent<MorphAnimation*>("MorphAnimation");
 
-	if (animation && animation->getWeights() == Vec3(1.0f, 0.0f, 0.0f))
-		animation->startMorphing(Vec3(0.0f, 1.0f, 0.0f), 1.0f);
+	if (getOwner()->getComponent<MorphAnimation*>("MorphAnimation")->getWeights() == Vec3(1.0f, 0.0f, 0.0f))
+		getOwner()->getComponent<MorphAnimation*>("MorphAnimation")->startMorphing(Vec3(0.0f, 1.0f, 0.0f), 1.0f);
 }
 
 void Checkpoint::Activate(Message const& msg)
 {
 	if (activated <= 0)
 	{
-		MorphAnimtation *animation = getOwner()->getComponent<MorphAnimtation*>("MorphAnimation");
 
-		if (animation && getEntityManager()->getEntity(1)->spawnpos != spawnpoint)
-			animation->startMorphing(Vec3(1, 0, 0), 3.0f);
+		if (getEntityManager()->getEntity(1)->spawnpos != spawnpoint)
+			getOwner()->getComponent<MorphAnimation*>("MorphAnimation")->startMorphing(Vec3(1, 0, 0), 3.0f);
 
 		getEntityManager()->getEntity(1)->spawnpos = spawnpoint; // set player spawn
 		getEntityManager()->sendMessageToEntity("Activated", getOwnerId()); //event managment
