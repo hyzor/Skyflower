@@ -8,6 +8,14 @@ GraphicsEngineImpl::GraphicsEngineImpl()
 {
 	mRandom1DTexSRV = nullptr;
 	mParticlesTextureArray = nullptr;
+
+	mPointLights = new PLight[MAXPLIGHTS];
+	mDirLights = new DLight[MAXDLIGHTS];
+	mSpotLights = new SLight[MAXSLIGHTS];
+
+	mPointLightsCount = 0;
+	mDirLightsCount = 0;
+	mSpotLightsCount = 0;
 }
 
 GraphicsEngineImpl::~GraphicsEngineImpl()
@@ -98,8 +106,14 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 	delete mSMAA;
 	delete mFullscreenTriangle;
 
+
 	mD3D->Shutdown();
 	delete mD3D;
+
+
+	delete [] mPointLights;
+	delete [] mDirLights;
+	delete [] mSpotLights;
 }
 
 bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::string &resourceDir)
@@ -483,7 +497,8 @@ void GraphicsEngineImpl::DrawScene()
 	// Draw scene to shadowmap
 	mD3D->GetImmediateContext()->RSSetState(RenderStates::mDepthBiasRS); // This rasterizer state fixes shadow acne
 	mShadowMap->BindDsvAndSetNullRenderTarget(mD3D->GetImmediateContext());
-	mShadowMap->BuildShadowTransform(mDirLights.at(0), mSceneBounds);
+	if(mDirLightsCount > 0)
+		mShadowMap->BuildShadowTransform(mDirLights[0], mSceneBounds);
 	//mShadowMap->DrawSceneToShadowMap(mInstances, mAnimatedInstances, mD3D->GetImmediateContext(), mShaderHandler->mShadowShader, mShaderHandler->mSkinnedShadowShader);
 	mShadowMap->DrawSceneToShadowMap(mInstances, mAnimatedInstances, mMorphInstances, mD3D->GetImmediateContext(), mShaderHandler->mShadowShader, mShaderHandler->mSkinnedShadowShader, mShaderHandler->mShadowMorphShader);
 
@@ -1230,15 +1245,15 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	//---------------------------------------------------------------------------------------
 	mShaderHandler->mLightDeferredToTextureShader->SetActive(mD3D->GetImmediateContext());
 	mShaderHandler->mLightDeferredToTextureShader->SetEyePosW(mCamera->GetPosition());
-	mShaderHandler->mLightDeferredToTextureShader->SetPointLights(mD3D->GetImmediateContext(), (UINT)mPointLights.size(), mPointLights.data());
-	mShaderHandler->mLightDeferredToTextureShader->SetDirLights(mD3D->GetImmediateContext(), (UINT)mDirLights.size(), mDirLights.data());
-	mShaderHandler->mLightDeferredToTextureShader->SetSpotLights(mD3D->GetImmediateContext(), (UINT)mSpotLights.size(), mSpotLights.data());
+	mShaderHandler->mLightDeferredToTextureShader->SetPLights(mD3D->GetImmediateContext(), (UINT)mPointLightsCount, mPointLights);
+	mShaderHandler->mLightDeferredToTextureShader->SetDirLights(mD3D->GetImmediateContext(), (UINT)mDirLightsCount, mDirLights);
+	mShaderHandler->mLightDeferredToTextureShader->SetSLights(mD3D->GetImmediateContext(), (UINT)mSpotLightsCount, mSpotLights);
 	mShaderHandler->mLightDeferredToTextureShader->SetShadowTransform(mShadowMap->GetShadowTransform());
 	mShaderHandler->mLightDeferredToTextureShader->SetCameraViewProjMatrix(mCamera->GetViewMatrix(), mCamera->GetProjMatrix());
 	mShaderHandler->mLightDeferredToTextureShader->SetLightWorldViewProj(mShadowMap->GetLightWorld(), mShadowMap->GetLightView(), mShadowMap->GetLightProj());
 
 	// TODO: Instead of hard coding these properties, get them from some modifiable settings collection
-	mShaderHandler->mLightDeferredToTextureShader->SetFogProperties(1, 0.0195f, -125.0f, 0.105f, XMFLOAT4(0.86f, 0.86f, 0.9f, 1.0f));//XMFLOAT4(0.85f, 0.85f, 0.85f, 1.0f));
+	mShaderHandler->mLightDeferredToTextureShader->SetFogProperties(0, 0.0195f, -125.0f, 0.105f, XMFLOAT4(0.86f, 0.86f, 0.9f, 1.0f));//XMFLOAT4(0.85f, 0.85f, 0.85f, 1.0f));
 	mShaderHandler->mLightDeferredToTextureShader->SetMotionBlurProperties(1);
 	mShaderHandler->mLightDeferredToTextureShader->SetFpsValues(mCurFPS, mTargetFPS);
 
@@ -1395,69 +1410,71 @@ void GraphicsEngineImpl::UpdateSceneData()
 	    mSceneBounds.Radius = sqrtf(extent.x*extent.x + extent.y*extent.y + extent.z*extent.z);
 }
 
-void GraphicsEngineImpl::addDirLight(Vec3 color, Vec3 direction, float intensity)
+DirectionalLight* GraphicsEngineImpl::addDirLight(Vec3 color, Vec3 direction, float intensity)
 {
-	DirectionalLight dirLight;
-	ZeroMemory(&dirLight, sizeof(DirectionalLight));
+	DirectionalLight* dl = new DirectionalLightImpl(&(mDirLights[mDirLightsCount]));
+	mDirLightsCount++;
 
 	color.X = pow(color.X, 2.2f);
 	color.Y = pow(color.Y, 2.2f);
 	color.Z = pow(color.Z, 2.2f);
 
-	dirLight.Ambient = XMFLOAT4(intensity / 10.0f, intensity / 10.0f, intensity / 10.0f, 1.0f);
-	dirLight.Diffuse = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
-	dirLight.Direction = XMFLOAT3(direction.X, direction.Y, direction.Z);
-	dirLight.Specular = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
+	dl->SetAmbient(Vec3(intensity / 10.0f, intensity / 10.0f, intensity / 10.0f));
+	dl->SetDiffuse(color);
+	dl->SetDirection(direction);
+	dl->SetSpecular(color);
 
-	//XMFLOAT3 gammaCorrected = XMFLOAT3(dirLight.Diffuse.x, dirLight.Diffuse.y, dirLight.Diffuse.z);
-	//gammaCorrected = pow(gammaCorrected, 2.2f)
 
-	mDirLights.push_back(dirLight);
+	return dl;
 }
 
-void GraphicsEngineImpl::addPointLight(Vec3 color, Vec3 position, float intensity)
+PointLight* GraphicsEngineImpl::addPointLight(Vec3 color, Vec3 position, float intensity)
 {
-	PointLight pointLight;
-	ZeroMemory(&pointLight, sizeof(PointLight));
+	PointLight* pl = new PointLightImpl(&(mPointLights[mPointLightsCount]));
+	mPointLightsCount++;
 
 	color.X = pow(color.X, 2.2f);
 	color.Y = pow(color.Y, 2.2f);
 	color.Z = pow(color.Z, 2.2f);
 
-	pointLight.Position = XMFLOAT3(position.X, position.Y, position.Z);
-	pointLight.Ambient = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
-	pointLight.Specular = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
-	pointLight.Diffuse = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
-	pointLight.Attenuation = XMFLOAT3(intensity / 100.0f, intensity / 100.0f, intensity / 100.0f);
-	pointLight.Range = 250.0f;
-	mPointLights.push_back(pointLight);
+	pl->SetPosition(position);
+	pl->SetAmbient(color);
+	pl->SetSpecular(color);
+	pl->SetDiffuse(color);
+	pl->SetAttenuation(Vec3(intensity / 100.0f, intensity / 100.0f, intensity / 100.0f));
+	pl->SetRange(250.0f);
+
+
+	return pl;
 }
 
-void GraphicsEngineImpl::addSpotLight(Vec3 color, Vec3 direction, Vec3 position, float angle)
+SpotLight* GraphicsEngineImpl::addSpotLight(Vec3 color, Vec3 direction, Vec3 position, float angle)
 {
-	SpotLight spotLight;
-	ZeroMemory(&spotLight, sizeof(SpotLight));
+	SpotLight* sl = new SpotLightImpl(&(mSpotLights[mSpotLightsCount]));
+	mSpotLightsCount++;
 
 	color.X = pow(color.X, 2.2f);
 	color.Y = pow(color.Y, 2.2f);
 	color.Z = pow(color.Z, 2.2f);
 
-	spotLight.Ambient = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
-	spotLight.Diffuse = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
-	spotLight.Specular = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
-	spotLight.Attenuation = XMFLOAT3(1.0f, 0.0f, 0.0f);
-	spotLight.Spot = angle;
-	spotLight.Range = 500.0f;
-	spotLight.Position = XMFLOAT3(position.X, position.Y, position.Z);
-	spotLight.Direction = XMFLOAT3(direction.X, direction.Y, direction.Z);
-	mSpotLights.push_back(spotLight);
+	sl->SetAmbient(color);
+	sl->SetDiffuse(color);
+	sl->SetSpecular(color);
+	sl->SetAttenuation(Vec3(1.0f, 0.0f, 0.0f));
+	sl->SetSpot(angle);
+	sl->SetRange(500.0f);
+	sl->SetPosition(position);
+	sl->SetDirection(direction);
+
+
+	return sl;
 }
 
 void GraphicsEngineImpl::clearLights()
 {
-	mSpotLights.clear();
-	mDirLights.clear();
-	mPointLights.clear();
+	//mSpotLights.clear();
+	//mDirLights.clear();
+	//mPointLights.clear();
 }
 
 

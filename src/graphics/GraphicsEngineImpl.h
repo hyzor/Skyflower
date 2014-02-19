@@ -33,6 +33,10 @@
 #include "External/SMAA/AreaTex.h"
 #include "FullscreenTriangle.h"
 
+#define MAXPLIGHTS 20
+#define MAXDLIGHTS 5
+#define MAXSLIGHTS 10
+
 const float fovY = 0.785398f; // 0.25f * MathHelper::pi
 const float zNear = 1.0f;
 const float zFar = 10000.0f;
@@ -86,9 +90,9 @@ public:
 
 	void UpdateSceneData();
 
-	void addDirLight(Vec3 color, Vec3 direction, float intensity);
-	void addPointLight(Vec3 color, Vec3 Position, float intensity);
-	void addSpotLight(Vec3 color, Vec3 direction, Vec3 Position, float angle);
+	DirectionalLight* addDirLight(Vec3 color, Vec3 direction, float intensity);
+	PointLight* addPointLight(Vec3 color, Vec3 Position, float intensity);
+	SpotLight* addSpotLight(Vec3 color, Vec3 direction, Vec3 Position, float angle);
 
 	void clearLights();
 
@@ -125,9 +129,13 @@ private:
 	std::vector<MorphModel*> mMorphModels;
 	std::vector<MorphModelInstanceImpl*> mMorphInstances;
 
-	std::vector<PointLight> mPointLights;
-	std::vector<DirectionalLight> mDirLights;
-	std::vector<SpotLight> mSpotLights;
+	PLight* mPointLights;
+	DLight* mDirLights;
+	SLight* mSpotLights;
+
+	int mPointLightsCount;
+	int mDirLightsCount;
+	int mSpotLightsCount;
 
 	Sky* mSky;
 	ShadowMap* mShadowMap;

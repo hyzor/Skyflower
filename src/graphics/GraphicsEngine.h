@@ -3,6 +3,7 @@
 
 #include "CameraController.h"
 #include "Instance.h"
+#include "LightDef.h"
 #include "Texture2D.h"
 #include "ParticleSystem.h"
 #include <string>
@@ -53,9 +54,9 @@ public:
 	virtual MorphModelInstance* CreateMorphAnimatedInstance(std::string path, std::string file, Vec3 pos) = 0;
 	//virtual void DeleteInstance(MorphModelInstance* mmi) = 0;
 
-	virtual void addDirLight(Vec3 color, Vec3 direction, float intensity) = 0;
-	virtual void addPointLight(Vec3 color, Vec3 Position, float intensity) = 0;
-	virtual void addSpotLight(Vec3 color, Vec3 direction, Vec3 Position, float angle) = 0;
+	virtual DirectionalLight* addDirLight(Vec3 color, Vec3 direction, float intensity) = 0;
+	virtual PointLight* addPointLight(Vec3 color, Vec3 Position, float intensity) = 0;
+	virtual SpotLight* addSpotLight(Vec3 color, Vec3 direction, Vec3 Position, float angle) = 0;
 	virtual void clearLights() = 0;
 
 	virtual CameraController *CreateCameraController() = 0;

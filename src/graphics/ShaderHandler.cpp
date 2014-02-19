@@ -455,21 +455,21 @@ void BasicShader::UpdatePerFrame(ID3D11DeviceContext* dc)
 	dataPtr3->gEyePosW = mBufferCache.psPerFrameBuffer.gEyePosW;
 	dataPtr3->padding = 0.0f;
 
-	dataPtr3->numPointLights = mBufferCache.psPerFrameBuffer.numPointLights;
+	dataPtr3->numPLights = mBufferCache.psPerFrameBuffer.numPLights;
 	dataPtr3->padding5 = 0;
 	dataPtr3->padding6 = 0;
 	dataPtr3->padding7 = 0;
 
-	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numPointLights; ++j)
-		dataPtr3->pointLights[j] = mBufferCache.psPerFrameBuffer.pointLights[j];
+	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numPLights; ++j)
+		dataPtr3->PLights[j] = mBufferCache.psPerFrameBuffer.PLights[j];
 
-	dataPtr3->numSpotLights = mBufferCache.psPerFrameBuffer.numSpotLights;
+	dataPtr3->numSLights = mBufferCache.psPerFrameBuffer.numSLights;
 	dataPtr3->padding8 = 0;
 	dataPtr3->padding9 = 0;
 	dataPtr3->padding10 = 0;
 
-	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numSpotLights; ++j)
-		dataPtr3->spotLights[j] = mBufferCache.psPerFrameBuffer.spotLights[j];
+	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numSLights; ++j)
+		dataPtr3->SLights[j] = mBufferCache.psPerFrameBuffer.SLights[j];
 
 	dc->Unmap(ps_cPerFrameBuffer, 0);
 
@@ -521,15 +521,15 @@ bool BasicShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pS
 	return true;
 }
 
-void BasicShader::SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, PointLight pointLights[])
+void BasicShader::SetPLights(ID3D11DeviceContext* dc, UINT numPLights, PLight PLights[])
 {
-	mBufferCache.psPerFrameBuffer.numPointLights = numPointLights;
+	mBufferCache.psPerFrameBuffer.numPLights = numPLights;
 
-	for (UINT i = 0; i < numPointLights; ++i)
-		mBufferCache.psPerFrameBuffer.pointLights[i] = pointLights[i];
+	for (UINT i = 0; i < numPLights; ++i)
+		mBufferCache.psPerFrameBuffer.PLights[i] = PLights[i];
 }
 
-void BasicShader::SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DirectionalLight dirLights[])
+void BasicShader::SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DLight dirLights[])
 {
 	mBufferCache.psPerFrameBuffer.numDirLights = numDirLights;
 
@@ -544,12 +544,12 @@ void BasicShader::SetShadowTransform(ID3D11DeviceContext* dc, const XMMATRIX& sh
 
 #pragma endregion BasicShaderEnd
 
-void BasicShader::SetSpotLights(ID3D11DeviceContext* dc, UINT numSpotLights, SpotLight spotLights[])
+void BasicShader::SetSLights(ID3D11DeviceContext* dc, UINT numSLights, SLight SLights[])
 {
-	mBufferCache.psPerFrameBuffer.numSpotLights = numSpotLights;
+	mBufferCache.psPerFrameBuffer.numSLights = numSLights;
 
-	for (UINT i = 0; i < numSpotLights; ++i)
-		mBufferCache.psPerFrameBuffer.spotLights[i] = spotLights[i];
+	for (UINT i = 0; i < numSLights; ++i)
+		mBufferCache.psPerFrameBuffer.SLights[i] = SLights[i];
 }
 
 #pragma endregion BasicShader
@@ -778,15 +778,15 @@ void NormalMappedSkinned::SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderReso
 	dc->PSSetShaderResources(2, 1, &tex);
 }
 
-void NormalMappedSkinned::SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, PointLight pointLights[])
+void NormalMappedSkinned::SetPLights(ID3D11DeviceContext* dc, UINT numPLights, PLight PLights[])
 {
-	mBufferCache.psPerFrameBuffer.numPointLights = numPointLights;
+	mBufferCache.psPerFrameBuffer.numPLights = numPLights;
 
-	for (UINT i = 0; i < numPointLights; ++i)
-		mBufferCache.psPerFrameBuffer.pointLights[i] = pointLights[i];
+	for (UINT i = 0; i < numPLights; ++i)
+		mBufferCache.psPerFrameBuffer.PLights[i] = PLights[i];
 }
 
-void NormalMappedSkinned::SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DirectionalLight dirLights[])
+void NormalMappedSkinned::SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DLight dirLights[])
 {
 	mBufferCache.psPerFrameBuffer.numDirLights = numDirLights;
 
@@ -863,21 +863,21 @@ void NormalMappedSkinned::UpdatePerFrame(ID3D11DeviceContext* dc)
 	dataPtr3->gEyePosW = mBufferCache.psPerFrameBuffer.gEyePosW;
 	dataPtr3->padding = 0.0f;
 
-	dataPtr3->numPointLights = mBufferCache.psPerFrameBuffer.numPointLights;
+	dataPtr3->numPLights = mBufferCache.psPerFrameBuffer.numPLights;
 	dataPtr3->padding5 = 0;
 	dataPtr3->padding6 = 0;
 	dataPtr3->padding7 = 0;
 
-	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numPointLights; ++j)
-		dataPtr3->pointLights[j] = mBufferCache.psPerFrameBuffer.pointLights[j];
+	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numPLights; ++j)
+		dataPtr3->PLights[j] = mBufferCache.psPerFrameBuffer.PLights[j];
 
-	dataPtr3->numSpotLights = mBufferCache.psPerFrameBuffer.numSpotLights;
+	dataPtr3->numSLights = mBufferCache.psPerFrameBuffer.numSLights;
 	dataPtr3->padding8 = 0;
 	dataPtr3->padding9 = 0;
 	dataPtr3->padding10 = 0;
 
-	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numSpotLights; ++j)
-		dataPtr3->spotLights[j] = mBufferCache.psPerFrameBuffer.spotLights[j];
+	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numSLights; ++j)
+		dataPtr3->SLights[j] = mBufferCache.psPerFrameBuffer.SLights[j];
 
 	dc->Unmap(ps_cPerFrameBuffer, 0);
 
@@ -1033,13 +1033,13 @@ void NormalMappedSkinned::SetWorldViewProjTex(ID3D11DeviceContext* dc, XMMATRIX&
 	mBufferCache.vsBuffer.texTransform = XMMatrixTranspose(texTransform);
 }
 
-void NormalMappedSkinned::SetSpotLights(ID3D11DeviceContext* dc, UINT numSpotLights, SpotLight spotLights[])
+void NormalMappedSkinned::SetSLights(ID3D11DeviceContext* dc, UINT numSLights, SLight SLights[])
 {
-	mBufferCache.psPerFrameBuffer.numSpotLights = numSpotLights;
+	mBufferCache.psPerFrameBuffer.numSLights = numSLights;
 
-	for (UINT i = 0; i < numSpotLights; ++i)
+	for (UINT i = 0; i < numSLights; ++i)
 	{
-		mBufferCache.psPerFrameBuffer.spotLights[i] = spotLights[i];
+		mBufferCache.psPerFrameBuffer.SLights[i] = SLights[i];
 	}
 }
 void NormalMappedSkinned::SetShadowStransform(ID3D11DeviceContext* dc, XMMATRIX& shadowTransform)
@@ -1576,15 +1576,15 @@ bool LightDeferredShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelSh
 	return true;
 }
 
-void LightDeferredShader::SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, PointLight pointLights[])
+void LightDeferredShader::SetPLights(ID3D11DeviceContext* dc, UINT numPLights, PLight PLights[])
 {
-	mBufferCache.psPerFrameBuffer.numPointLights = numPointLights;
+	mBufferCache.psPerFrameBuffer.numPLights = numPLights;
 
-	for (UINT i = 0; i < numPointLights; ++i)
-		mBufferCache.psPerFrameBuffer.pointLights[i] = pointLights[i];
+	for (UINT i = 0; i < numPLights; ++i)
+		mBufferCache.psPerFrameBuffer.PLights[i] = PLights[i];
 }
 
-void LightDeferredShader::SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DirectionalLight dirLights[])
+void LightDeferredShader::SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DLight dirLights[])
 {
 	mBufferCache.psPerFrameBuffer.numDirLights = numDirLights;
 
@@ -1592,12 +1592,12 @@ void LightDeferredShader::SetDirLights(ID3D11DeviceContext* dc, UINT numDirLight
 		mBufferCache.psPerFrameBuffer.dirLights[i] = dirLights[i];
 }
 
-void LightDeferredShader::SetSpotLights(ID3D11DeviceContext* dc, UINT numSpotLights, SpotLight spotLights[])
+void LightDeferredShader::SetSLights(ID3D11DeviceContext* dc, UINT numSLights, SLight SLights[])
 {
-	mBufferCache.psPerFrameBuffer.numSpotLights = numSpotLights;
+	mBufferCache.psPerFrameBuffer.numSLights = numSLights;
 
-	for (UINT i = 0; i < numSpotLights; ++i)
-		mBufferCache.psPerFrameBuffer.spotLights[i] = spotLights[i];
+	for (UINT i = 0; i < numSLights; ++i)
+		mBufferCache.psPerFrameBuffer.SLights[i] = SLights[i];
 }
 
 LightDeferredShader::LightDeferredShader()
@@ -1755,21 +1755,21 @@ void LightDeferredShader::UpdatePerFrame(ID3D11DeviceContext* dc)
 // 	dataPtr3->gEyePosW = mBufferCache.psPerFrameBuffer.gEyePosW;
 // 	dataPtr3->padding = 0.0f;
 // 
-// 	dataPtr3->numPointLights = mBufferCache.psPerFrameBuffer.numPointLights;
+// 	dataPtr3->numPLights = mBufferCache.psPerFrameBuffer.numPLights;
 // 	dataPtr3->padding5 = 0;
 // 	dataPtr3->padding6 = 0;
 // 	dataPtr3->padding7 = 0;
 // 
-// 	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numPointLights; ++j)
-// 		dataPtr3->pointLights[j] = mBufferCache.psPerFrameBuffer.pointLights[j];
+// 	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numPLights; ++j)
+// 		dataPtr3->PLights[j] = mBufferCache.psPerFrameBuffer.PLights[j];
 // 
-// 	dataPtr3->numSpotLights = mBufferCache.psPerFrameBuffer.numSpotLights;
+// 	dataPtr3->numSLights = mBufferCache.psPerFrameBuffer.numSLights;
 // 	dataPtr3->padding8 = 0;
 // 	dataPtr3->padding9 = 0;
 // 	dataPtr3->padding10 = 0;
 // 
-// 	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numSpotLights; ++j)
-// 		dataPtr3->spotLights[j] = mBufferCache.psPerFrameBuffer.spotLights[j];
+// 	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numSLights; ++j)
+// 		dataPtr3->SLights[j] = mBufferCache.psPerFrameBuffer.SLights[j];
 // 
 // 	dataPtr3->shadowTransform = mBufferCache.psPerFrameBuffer.shadowTransform;
 // 	dataPtr3->cameraViewMatrix = mBufferCache.psPerFrameBuffer.cameraViewMatrix;

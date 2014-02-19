@@ -62,6 +62,12 @@ public:
 		lua_register(sh->L, "MoveToTarget", Event::MoveToTarget);
 		lua_register(sh->L, "MoveToSpawn", Event::MoveToSpawn);
 		lua_register(sh->L, "SetContinous", Event::SetContinous);
+
+		// Lights
+		lua_register(sh->L, "Lit", Event::Lit);
+		lua_register(sh->L, "Unlit", Event::Unlit);
+		lua_register(sh->L, "IsLit", Event::IsLit);
+		lua_register(sh->L, "IsUnlit", Event::IsUnlit);
 	};
 
 	// we are added to an Entity, and thus to the component system
@@ -132,6 +138,11 @@ private:
 	static int MoveToTarget(lua_State* L);
 	static int MoveToSpawn(lua_State* L);
 	static int SetContinous(lua_State* L);
+
+	static int Lit(lua_State* L);
+	static int Unlit(lua_State* L);
+	static int IsLit(lua_State* L);
+	static int IsUnlit(lua_State* L);
 };
 
 #endif

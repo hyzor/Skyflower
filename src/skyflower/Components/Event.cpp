@@ -540,3 +540,128 @@ int Event::CanThrow(lua_State* L)
 
 	return 1;
 }
+
+int Event::Lit(lua_State* L)
+{
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+		float time = 0.5f;
+		if (n >= 2)
+			time = (float)lua_tonumber(L, 2);
+
+		PointLightComp* plc = entity->getComponent<PointLightComp*>("PointLight");
+		DirectionalLightComp* dlc = entity->getComponent<DirectionalLightComp*>("DirectionalLight");
+		SpotLightComp* slc = entity->getComponent<SpotLightComp*>("SpotLight");
+
+		if (plc)
+			plc->lit(time);
+		if (dlc)
+			dlc->lit(time);
+		if (slc)
+			slc->lit(time);
+	}
+
+
+	return 0;
+}
+
+int Event::Unlit(lua_State* L)
+{
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+		float time = 0.5f;
+		if (n >= 2)
+			time = (float)lua_tonumber(L, 2);
+
+		PointLightComp* plc = entity->getComponent<PointLightComp*>("PointLight");
+		DirectionalLightComp* dlc = entity->getComponent<DirectionalLightComp*>("DirectionalLight");
+		SpotLightComp* slc = entity->getComponent<SpotLightComp*>("SpotLight");
+
+		if (plc)
+			plc->unlit(time);
+		if (dlc)
+			dlc->unlit(time);
+		if (slc)
+			slc->unlit(time);
+	}
+
+
+	return 0;
+}
+
+
+int Event::IsLit(lua_State* L)
+{
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+
+		PointLightComp* plc = entity->getComponent<PointLightComp*>("PointLight");
+		DirectionalLightComp* dlc = entity->getComponent<DirectionalLightComp*>("DirectionalLight");
+		SpotLightComp* slc = entity->getComponent<SpotLightComp*>("SpotLight");
+
+		bool lit = false;
+		if (plc)
+		{
+			if (plc->isLit())
+				lit = true;
+		}
+		if (dlc)
+		{
+			if (dlc->isLit())
+				lit = true;
+		}
+		if (slc)
+		{
+			if (slc->isLit())
+				lit = true;
+		}
+
+		lua_pushboolean(L, lit);
+		return 1;
+	}
+
+	lua_pushboolean(L, false);
+	return 1;
+}
+
+int Event::IsUnlit(lua_State* L)
+{
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+
+		PointLightComp* plc = entity->getComponent<PointLightComp*>("PointLight");
+		DirectionalLightComp* dlc = entity->getComponent<DirectionalLightComp*>("DirectionalLight");
+		SpotLightComp* slc = entity->getComponent<SpotLightComp*>("SpotLight");
+
+		bool lit = false;
+		if (plc)
+		{
+			if (plc->isUnlit())
+				lit = true;
+		}
+		if (dlc)
+		{
+			if (dlc->isUnlit())
+				lit = true;
+		}
+		if (slc)
+		{
+			if (slc->isUnlit())
+				lit = true;
+		}
+
+		lua_pushboolean(L, lit);
+		return 1;
+	}
+
+	lua_pushboolean(L, false);
+	return 1;
+}

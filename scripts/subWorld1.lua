@@ -21,6 +21,28 @@ function cutscene_intro()
 	AddPoint(60, 30, 0, -90, 20, 1)
 end
 
+--player script--
+-----------------
+
+function load_player(id)
+	StartUpdate()
+end
+
+function update_player(id, dt)
+	--player light
+	if IsLit(id) then
+		Unlit(id, 1)
+	elseif IsUnlit(id) then
+		Lit(id, 1)
+	end
+	
+	--sun
+	if IsLit(201) then
+		Unlit(201, 10)
+	elseif IsUnlit(201) then
+		Lit(201, 10)
+	end
+end
 
 --platform_start script--
 -------------------------

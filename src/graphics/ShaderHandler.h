@@ -112,9 +112,9 @@ public:
 	void SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* shadowMap);
 	void SetShadowTransform(ID3D11DeviceContext* dc, const XMMATRIX& shadowTransform);
 
-	void SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, PointLight pointLights[]);
-	void SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DirectionalLight dirLights[]);
-	void SetSpotLights(ID3D11DeviceContext* dc, UINT numSpotLights, SpotLight spotLights[]);
+	void SetPLights(ID3D11DeviceContext* dc, UINT numPLights, PLight PLights[]);
+	void SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DLight dirLights[]);
+	void SetSLights(ID3D11DeviceContext* dc, UINT numSLights, SLight SLights[]);
 
 	void UpdatePerObj(ID3D11DeviceContext* dc);
 	void UpdatePerFrame(ID3D11DeviceContext* dc);
@@ -139,22 +139,22 @@ private:
 
 	struct PS_CPERFRAMEBUFFER
 	{
-		PointLight pointLights[MAX_POINT_LIGHTS];
+		PLight PLights[MAX_POINT_LIGHTS];
 
 		// 16 bytes
-		UINT numPointLights;
+		UINT numPLights;
 		int padding2, padding3, padding4;
 
-		DirectionalLight dirLights[MAX_DIR_LIGHTS];
+		DLight dirLights[MAX_DIR_LIGHTS];
 
 		// 16 bytes
 		UINT numDirLights;
 		int padding5, padding6, padding7;
 
-		SpotLight spotLights[MAX_SPOT_LIGHTS];
+		SLight SLights[MAX_SPOT_LIGHTS];
 
 		// 16 bytes
-		UINT numSpotLights;
+		UINT numSLights;
 		int padding8, padding9, padding10;
 
 		// Forms into a 4D vector
@@ -282,9 +282,9 @@ public:
 	void SetNormalMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
-	void SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, PointLight pointLights[]);
-	void SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DirectionalLight dirLights[]);
-	void SetSpotLights(ID3D11DeviceContext* dc, UINT numSpotLights, SpotLight spotLights[]);
+	void SetPLights(ID3D11DeviceContext* dc, UINT numPLights, PLight PLights[]);
+	void SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DLight dirLights[]);
+	void SetSLights(ID3D11DeviceContext* dc, UINT numSLights, SLight SLights[]);
 
 	void SetBoneTransforms(ID3D11DeviceContext* dc, const XMFLOAT4X4 boneTransforms[], UINT numTransforms);
 
@@ -318,22 +318,22 @@ private:
 
 	struct PS_CPERFRAMEBUFFER
 	{
-		PointLight pointLights[MAX_POINT_LIGHTS];
+		PLight PLights[MAX_POINT_LIGHTS];
 
 		// 16 bytes
-		UINT numPointLights;
+		UINT numPLights;
 		int padding2, padding3, padding4;
 
-		DirectionalLight dirLights[MAX_DIR_LIGHTS];
+		DLight dirLights[MAX_DIR_LIGHTS];
 
 		// 16 bytes
 		UINT numDirLights;
 		int padding5, padding6, padding7;
 
-		SpotLight spotLights[MAX_SPOT_LIGHTS];
+		SLight SLights[MAX_SPOT_LIGHTS];
 
 		// 16 bytes
-		UINT numSpotLights;
+		UINT numSLights;
 		int padding8, padding9, padding10;
 
 		// Forms into a 4D vector
@@ -706,9 +706,9 @@ public:
 	void SetCameraWorldMatrix(XMMATRIX& camWorldMatrix);
 	void SetLightWorldViewProj(XMMATRIX& lightWorld, XMMATRIX& lightView, XMMATRIX& lightProj);
 
-	void SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, PointLight pointLights[]);
-	void SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DirectionalLight dirLights[]);
-	void SetSpotLights(ID3D11DeviceContext* dc, UINT numSpotLights, SpotLight spotLights[]);
+	void SetPLights(ID3D11DeviceContext* dc, UINT numPLights, PLight PLights[]);
+	void SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DLight dirLights[]);
+	void SetSLights(ID3D11DeviceContext* dc, UINT numSLights, SLight SLights[]);
 
 	void SetDiffuseTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetNormalTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
@@ -742,22 +742,22 @@ private:
 
 	struct PS_CPERFRAMEBUFFER
 	{
-		PointLight pointLights[MAX_POINT_LIGHTS];
+		PLight PLights[MAX_POINT_LIGHTS];
 
 		// 16 bytes
-		UINT numPointLights;
+		UINT numPLights;
 		int padding2, padding3, padding4;
 
-		DirectionalLight dirLights[MAX_DIR_LIGHTS];
+		DLight dirLights[MAX_DIR_LIGHTS];
 
 		// 16 bytes
 		UINT numDirLights;
 		int padding5, padding6, padding7;
 
-		SpotLight spotLights[MAX_SPOT_LIGHTS];
+		SLight SLights[MAX_SPOT_LIGHTS];
 
 		// 16 bytes
-		UINT numSpotLights;
+		UINT numSLights;
 		int padding8, padding9, padding10;
 
 		// Forms into a 4D vector

@@ -38,6 +38,7 @@
     <ClCompile Include="src\graphics\GraphicsEngine.cpp" />
     <ClCompile Include="src\graphics\GraphicsEngineImpl.cpp" />
     <ClCompile Include="src\graphics\InstanceImpl.cpp" />
+    <ClCompile Include="src\graphics\LightDefImpl.cpp" />
     <ClCompile Include="src\graphics\MathHelper.cpp" />
     <ClCompile Include="src\graphics\MorphModel.cpp" />
     <ClCompile Include="src\graphics\OrthoWindow.cpp" />
@@ -77,6 +78,7 @@
     <ClInclude Include="src\graphics\Instance.h" />
     <ClInclude Include="src\graphics\InstanceImpl.h" />
     <ClInclude Include="src\graphics\LightDef.h" />
+    <ClInclude Include="src\graphics\LightDefImpl.h" />
     <ClInclude Include="src\graphics\MathHelper.h" />
     <ClInclude Include="src\graphics\MorphModel.h" />
     <ClInclude Include="src\graphics\OrthoWindow.h" />

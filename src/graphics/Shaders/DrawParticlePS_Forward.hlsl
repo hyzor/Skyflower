@@ -13,16 +13,16 @@ SamplerState samLinear : register(s0);
 
 cbuffer cbPerFrame : register(b0)
 {
-	PointLight gPointLights[MAX_POINT_LIGHTS];
-	int gPointLightCount;
+	PLight gPLights[MAX_POINT_LIGHTS];
+	int gPLightCount;
 	float3 padding1;
 
-	DirectionalLight gDirLights[MAX_DIR_LIGHTS];
+	DLight gDirLights[MAX_DIR_LIGHTS];
 	int gDirLightCount;
 	float3 padding2;
 
-	SpotLight gSpotLights[MAX_SPOT_LIGHTS];
-	int gSpotLightCount;
+	SLight gSLights[MAX_SPOT_LIGHTS];
+	int gSLightCount;
 	float3 padding3;
 
 	float3 gEyePosW;
@@ -52,7 +52,7 @@ float4 main(GeoOut pIn) : SV_TARGET
 	//--------------------------------------------------------
 
 	float4 litColor = texColor;
-	if (gPointLightCount > 0 || gDirLightCount > 0)
+	if (gPLightCount > 0 || gDirLightCount > 0)
 	{
 		// Initialize values
 		float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -63,9 +63,9 @@ float4 main(GeoOut pIn) : SV_TARGET
 		//shadow[0] = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
 
 		float4 A, D, S;
-		for (int j = 0; j < gPointLightCount; ++j)
+		for (int j = 0; j < gPLightCount; ++j)
 		{
-			ComputePointLight(gMaterial, gPointLights[j], pIn.PosW, pIn.NormalW, toEye, A, D, S);
+			ComputePLight(gMaterial, gPLights[j], pIn.PosW, pIn.NormalW, toEye, A, D, S);
 
 			ambient += A;
 			diffuse += D;
@@ -74,16 +74,16 @@ float4 main(GeoOut pIn) : SV_TARGET
 		[unroll]
 		for (int k = 0; k < 1; ++k)
 		{
-			ComputeDirectionalLight(gMaterial, gDirLights[k], pIn.NormalW, toEye, A, D, S);
+			ComputeDLight(gMaterial, gDirLights[k], pIn.NormalW, toEye, A, D, S);
 
 			ambient += A;
 			diffuse += * D;
 			specular += * S;
 		}
 
-		for (int i = 0; i < gSpotLightCount; ++i)
+		for (int i = 0; i < gSLightCount; ++i)
 		{
-			ComputeSpotLight(gMaterial, gSpotLights[i], pIn.PosW, pIn.NormalW, toEye, A, D, S);
+			ComputeSLight(gMaterial, gSLights[i], pIn.PosW, pIn.NormalW, toEye, A, D, S);
 			ambient += A;
 			diffuse += D;
 			specular += S;

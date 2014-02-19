@@ -651,7 +651,7 @@ bool EntityManager::loadXML(string xmlFile)
 		// Make the element name lower case.
 		std::transform(elemName.begin(), elemName.end(), elemName.begin(), ::tolower);
 
-		if (elemName == "light")
+		if (elemName == "light2")
 		{
 			// The element is a light.
 
@@ -897,6 +897,145 @@ bool EntityManager::loadXML(string xmlFile)
 				{
 					Touch* t = new Touch();
 					this->addComponent(entity, t);
+				}
+				else if (componentName == "PointLight")
+				{
+					Vec3 rpos;
+					Vec3 color;
+					float intensity = 1.0f;
+
+					attr = e->Attribute("xPos");
+					if (attr != nullptr)
+						rpos.X = e->FloatAttribute("xPos");
+
+					attr = e->Attribute("yPos");
+					if (attr != nullptr)
+						rpos.Y = e->FloatAttribute("yPos");
+
+					attr = e->Attribute("zPos");
+					if (attr != nullptr)
+						rpos.Z = e->FloatAttribute("zPos");
+
+					attr = e->Attribute("r");
+					if (attr != nullptr)
+						color.X = e->FloatAttribute("r");
+
+					attr = e->Attribute("g");
+					if (attr != nullptr)
+						color.Y = e->FloatAttribute("g");
+
+					attr = e->Attribute("b");
+					if (attr != nullptr)
+						color.Z = e->FloatAttribute("b");
+
+					attr = e->Attribute("intensity");
+					if (attr != nullptr)
+						intensity = e->FloatAttribute("intensity");
+
+					PointLightComp* plc = new PointLightComp(rpos, color, intensity);
+					this->addComponent(entity, plc);
+				}
+				else if (componentName == "SpotLight")
+				{
+					Vec3 rpos;
+					Vec3 color;
+					Vec3 dir;
+					float angle = 1.0f;
+
+					attr = e->Attribute("xPos");
+					if (attr != nullptr)
+						rpos.X = e->FloatAttribute("xPos");
+
+					attr = e->Attribute("yPos");
+					if (attr != nullptr)
+						rpos.Y = e->FloatAttribute("yPos");
+
+					attr = e->Attribute("zPos");
+					if (attr != nullptr)
+						rpos.Z = e->FloatAttribute("zPos");
+					
+
+
+					attr = e->Attribute("xDir");
+					if (attr != nullptr)
+						dir.X = e->FloatAttribute("xDir");
+
+					attr = e->Attribute("yDir");
+					if (attr != nullptr)
+						dir.Y = e->FloatAttribute("yDir");
+
+					attr = e->Attribute("zDir");
+					if (attr != nullptr)
+						dir.Z = e->FloatAttribute("zDir");
+
+
+
+					attr = e->Attribute("r");
+					if (attr != nullptr)
+						color.X = e->FloatAttribute("r");
+
+					attr = e->Attribute("g");
+					if (attr != nullptr)
+						color.Y = e->FloatAttribute("g");
+
+					attr = e->Attribute("b");
+					if (attr != nullptr)
+						color.Z = e->FloatAttribute("b");
+
+
+
+					attr = e->Attribute("angle");
+					if (attr != nullptr)
+						angle = e->FloatAttribute("angle");
+
+
+
+					SpotLightComp* slc = new SpotLightComp(rpos, color, angle, dir);
+					this->addComponent(entity, slc);
+				}
+				else if (componentName == "DirectionalLight")
+				{
+					Vec3 color;
+					Vec3 dir;
+					float intensity = 1.0f;
+
+
+					attr = e->Attribute("xDir");
+					if (attr != nullptr)
+						dir.X = e->FloatAttribute("xDir");
+
+					attr = e->Attribute("yDir");
+					if (attr != nullptr)
+						dir.Y = e->FloatAttribute("yDir");
+
+					attr = e->Attribute("zDir");
+					if (attr != nullptr)
+						dir.Z = e->FloatAttribute("zDir");
+
+
+
+					attr = e->Attribute("r");
+					if (attr != nullptr)
+						color.X = e->FloatAttribute("r");
+
+					attr = e->Attribute("g");
+					if (attr != nullptr)
+						color.Y = e->FloatAttribute("g");
+
+					attr = e->Attribute("b");
+					if (attr != nullptr)
+						color.Z = e->FloatAttribute("b");
+
+
+
+					attr = e->Attribute("intensity");
+					if (attr != nullptr)
+						intensity = e->FloatAttribute("intensity");
+
+
+
+					DirectionalLightComp* dlc = new DirectionalLightComp(color, dir, intensity);
+					this->addComponent(entity, dlc);
 				}
 				else
 				{

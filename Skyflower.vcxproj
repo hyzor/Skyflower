@@ -25,6 +25,7 @@
     <ClCompile Include="src\skyflower\Components\BoxComp.cpp" />
     <ClCompile Include="src\skyflower\Components\Button.cpp" />
     <ClCompile Include="src\skyflower\Components\Checkpoint.cpp" />
+    <ClCompile Include="src\skyflower\Components\DirectionalLightComp.cpp" />
     <ClCompile Include="src\skyflower\Components\Event.cpp" />
     <ClCompile Include="src\skyflower\Components\Footsteps.cpp" />
     <ClCompile Include="src\skyflower\Components\Goal.cpp" />
@@ -34,6 +35,8 @@
     <ClCompile Include="src\skyflower\Components\Listener.cpp" />
     <ClCompile Include="src\skyflower\Components\Movement.cpp" />
     <ClCompile Include="src\skyflower\Components\MoveTarget.cpp" />
+    <ClCompile Include="src\skyflower\Components\PointLightComp.cpp" />
+    <ClCompile Include="src\skyflower\Components\SpotLightComp.cpp" />
     <ClCompile Include="src\skyflower\Components\Throwable.cpp" />
     <ClCompile Include="src\skyflower\Components\Touch.cpp" />
     <ClCompile Include="src\skyflower\CutScene.cpp" />
@@ -65,6 +68,7 @@
     <ClInclude Include="src\skyflower\Components\BoxComp.h" />
     <ClInclude Include="src\skyflower\Components\Button.h" />
     <ClInclude Include="src\skyflower\Components\Checkpoint.h" />
+    <ClInclude Include="src\skyflower\Components\DirectionalLightComp.h" />
     <ClInclude Include="src\skyflower\Components\Event.h" />
     <ClInclude Include="src\skyflower\Components\Footsteps.h" />
     <ClInclude Include="src\skyflower\Components\Goal.h" />
@@ -75,9 +79,11 @@
     <ClInclude Include="src\skyflower\Components\Messenger.h" />
     <ClInclude Include="src\skyflower\Components\Movement.h" />
     <ClInclude Include="src\skyflower\Components\MoveTarget.h" />
+    <ClInclude Include="src\skyflower\Components\PointLightComp.h" />
     <ClInclude Include="src\skyflower\Components\Push.h" />
     <ClInclude Include="src\skyflower\Components\Pushable.h" />
     <ClInclude Include="src\skyflower\Components\Rotating.h" />
+    <ClInclude Include="src\skyflower\Components\SpotLightComp.h" />
     <ClInclude Include="src\skyflower\Components\Throw.h" />
     <ClInclude Include="src\skyflower\Components\Throwable.h" />
     <ClInclude Include="src\skyflower\Components\Touch.h" />
