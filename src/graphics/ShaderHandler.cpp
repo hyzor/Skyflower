@@ -1058,7 +1058,10 @@ SkinnedShadowShader::SkinnedShadowShader()
 
 SkinnedShadowShader::~SkinnedShadowShader()
 {
-
+	if (vs_cBuffer)
+		vs_cBuffer->Release();
+	if (vs_cSkinnedBuffer)
+		vs_cSkinnedBuffer->Release();
 }
 
 bool SkinnedShadowShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
@@ -1204,6 +1207,8 @@ BasicDeferredShader::~BasicDeferredShader()
 {
 	if (vs_cPerObjBuffer)
 		vs_cPerObjBuffer->Release();
+	if (ps_cPerObjBuffer)
+		ps_cPerObjBuffer->Release();
 }
 
 bool BasicDeferredShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -1364,7 +1369,12 @@ BasicDeferredSkinnedShader::BasicDeferredSkinnedShader()
 
 BasicDeferredSkinnedShader::~BasicDeferredSkinnedShader()
 {
-
+	if (vs_cPerObjBuffer)
+		vs_cPerObjBuffer->Release();
+	if (vs_cSkinnedBuffer)
+		vs_cSkinnedBuffer->Release();
+	if (ps_cPerObjBuffer)
+		ps_cPerObjBuffer->Release();
 }
 
 bool BasicDeferredSkinnedShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -2551,6 +2561,9 @@ ParticleSystemShader::~ParticleSystemShader()
 
 	if (streamOut_GS_PerFrameBuffer)
 		streamOut_GS_PerFrameBuffer->Release();
+
+	if (draw_VS_InitBuffer)
+		draw_VS_InitBuffer->Release();
 }
 
 bool ParticleSystemShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)

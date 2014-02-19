@@ -104,3 +104,13 @@ void InputLayouts::CreateInputLayout(ID3D11Device* device,
 {
 	device->CreateInputLayout(layoutDesc, layoutDescSize, shader->Buffer->GetBufferPointer(), shader->Buffer->GetBufferSize(), inputLayout);
 }
+
+InputLayouts::InputLayouts()
+{
+
+}
+
+InputLayouts::~InputLayouts()
+{
+
+}

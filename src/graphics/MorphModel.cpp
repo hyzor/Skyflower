@@ -285,6 +285,8 @@ MorphModel::MorphModel(ID3D11Device* device, TextureManager* textureMgr, const s
 
 MorphModel::~MorphModel()
 {
+	ReleaseCOM(mVertexBuffer);
+	ReleaseCOM(mIndexBuffer);
 }
 
 void MorphModel::Draw(ID3D11DeviceContext* dc)
