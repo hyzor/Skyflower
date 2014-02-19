@@ -26,9 +26,6 @@ public:
 
 	void addedToEntity()
 	{
-		Vec3 temp = getEntityPos();
-		this->getOwner()->sphere = new Sphere(temp.X, temp.Y, temp.Z, 5);
-
 		this->p = getOwner()->getPhysics();
 		requestMessage("beingPushed", &Pushable::beingPushed);
 		requestMessage("stopBeingPushed", &Pushable::stopBeingPushed);
@@ -53,6 +50,7 @@ public:
 			{
 				sendMessageToEntity(getOwnerId(), "StartMoving");
 				this->isPushed = false;
+				this->p->GetStates()->isBeingPushed = false;
 			}
 		}
 	}
@@ -74,12 +72,14 @@ private:
 			this->p->GetStates()->isBeingPushed = true;
 			//stop the entity from moving, except for the push
 			sendMessageToEntity(getOwnerId(), "StopMoving");
+			sendMessageToEntity(getOwnerId(), "DropThrowable");
 		}
 	}
 
 	void stopBeingPushed(Message const& msg)
 	{
 		this->isPushed = false;
+		this->p->GetStates()->isBeingPushed = false;
 		sendMessageToEntity(getOwnerId(), "StartMoving");
 	}
 

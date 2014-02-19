@@ -16,8 +16,8 @@ public:
 	// constructor - age is fixed at creation time
 	Health(int maxHP) : Component("Health")
 	{ 
-		this->health = maxHP;
-		this->maxHP = maxHP;
+		this->health = 100;
+		this->maxHP = 100;
 	};
 	virtual ~Health() {};
 
@@ -53,11 +53,7 @@ private:
 	int health;
 	int maxHP;
 
-	void Respawn(Message const& msg)
-	{
-		updateEntityPos(getOwner()->spawnpos);
-		health = maxHP;
-	}
+	void Respawn(Message const& msg);
 };
 
 #endif

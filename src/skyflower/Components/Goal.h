@@ -20,26 +20,29 @@ public:
 	// constructor - age is fixed at creation time
 	Goal() : Component("Goal")
 	{
+		activated = 0.0f;
 	};
 	virtual ~Goal() {};
 
 	// we are added to an Entity, and thus to the component system
 	void addedToEntity()
 	{
-		requestMessage("Ground", &Goal::Finished);
+		requestMessage("Ground", &Goal::Activate);
+		requestMessage("Wall", &Goal::Activate);
+		requestMessage("Goal", &Goal::Activate);
 	}
 
 	void sendAMessage(string message)
 	{
 		sendMessage(message);
 	}
-
+	void update(float dt);
 private:
+	void Activate(Message const& msg);
 
-	void Finished(Message const& msg)
-	{
-		sendMessageToEntity(this->getOwnerId(), "Goal");
-	}
+	void Deactivate();
+
+	float activated;
 };
 
 #endif

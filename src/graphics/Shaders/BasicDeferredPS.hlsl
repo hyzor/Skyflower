@@ -36,73 +36,100 @@ PixelOut main(VertexOut pIn)
 {
 	PixelOut pOut;
 
-	// Sample color from texture
-	if(type == 0)
-		pOut.Color = gDiffuseMap.Sample(samAnisotropic, pIn.Tex);
-	else
-		pOut.Color = gMaterial.Diffuse;
+	float shadowFactor = 1.0f;
 
-	if(type == 1)
-		pOut.Normal = float4(pIn.NormalW, 1.0f);
-	else
+	if (type == 0 || type == 2)
+	{
+		int cascadeIndex;
+		int nrOfCascades = gNrOfCascades;
+		float shadowFactor1 = 0.0f;
+		float depth = pIn.Depth;
+		float4 shadowPosH1 = pIn.ShadowPosH1;
+		float4 shadowPosH2 = pIn.ShadowPosH2;
+		float4 shadowPosH3 = pIn.ShadowPosH3;
+
+			//If current depth is beyond the furthest depth, dont shadow it
+		if (depth > gFarDepths.x && nrOfCascades == 1)
+			shadowFactor = 1.0f;
+		if (depth > gFarDepths.y && nrOfCascades == 2)
+			shadowFactor = 1.0f;
+		if (depth > gFarDepths.z && nrOfCascades == 3)
+			shadowFactor = 1.0f;
+
+		//Compare the depth of current pixel in camera space and compare to given near and far depths
+		//to decide appropriate index of cascade to sample from
+		if (depth > gNearDepths.x && depth < gFarDepths.x)
+		{
+			cascadeIndex = 0;
+		}
+		else if (depth > gNearDepths.y && depth < gFarDepths.y && nrOfCascades > 1)
+		{
+			cascadeIndex = 1;
+		}
+		else if (depth > gNearDepths.z && depth < gFarDepths.z && nrOfCascades > 2)
+		{
+			cascadeIndex = 2;
+		}
+
+		if (cascadeIndex == 0)
+		{
+			shadowFactor = CalcShadowFactor(samShadow, gShadowMap1, shadowPosH1); //Cascade 1
+		}
+		else if (cascadeIndex == 1)
+		{
+			shadowFactor = CalcShadowFactor(samShadow, gShadowMap2, shadowPosH2); //Cascade 2
+		}
+		else if (cascadeIndex == 2)
+		{
+			shadowFactor = CalcShadowFactor(samShadow, gShadowMap3, shadowPosH3); //Cascade 3
+		}
+
+	}
+
+	if (type == 0) //textured
+	{
+		// Sample color from texture
+		pOut.Color = gDiffuseMap.Sample(samAnisotropic, pIn.Tex);
+
 		pOut.Normal = float4(pIn.NormalW, 0.0f);
 
-	pOut.Specular = gMaterial.Specular;
+		pOut.Specular = gMaterial.Specular;
+
+		// Bake shadow factor into color w component
+		//float shadowFactor = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
+
+		pOut.Color.w = shadowFactor;
+	}
+	else if (type == 1) //cloud
+	{
+		pOut.Color = gMaterial.Diffuse;
+
+		pOut.Normal = float4(pIn.NormalW, 1.0f);
+
+		pOut.Specular = gMaterial.Specular;
+
+		pOut.Color.w = 1.0f;
+
+	}
+	else if (type == 2) //no texture
+	{
+		pOut.Color = gMaterial.Diffuse;
+
+		pOut.Normal = float4(pIn.NormalW, 0.0f);
+
+		pOut.Specular = gMaterial.Specular;
+
+		// Bake shadow factor into color w component
+		//float shadowFactor = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
+
+		pOut.Color.w = shadowFactor;
+	}
 
 	//pOut.Position = float4(pIn.PosW, 1.0f);
 
-	int cascadeIndex;
-	int nrOfCascades = gNrOfCascades;
-	float shadowFactor = 0.0f;
-	float depth = pIn.Depth;
-	float4 shadowPosH1 = pIn.ShadowPosH1;
-	float4 shadowPosH2 = pIn.ShadowPosH2;
-	float4 shadowPosH3 = pIn.ShadowPosH3;
-
-
-	//If current depth is beyond the furthest depth, dont shadow it
-	if (depth > gFarDepths.x && nrOfCascades == 1)
-		shadowFactor = 1.0f;
-	if (depth > gFarDepths.y && nrOfCascades == 2)
-		shadowFactor = 1.0f;
-	if (depth > gFarDepths.z && nrOfCascades == 3)
-			shadowFactor = 1.0f;
-
-	//Compare the depth of current pixel in camera space and compare to given near and far depths
-	//to decide appropriate index of cascade to sample from
-	if (depth > gNearDepths.x && depth < gFarDepths.x)
-	{
-		cascadeIndex = 0;
-	}
-	else if (depth > gNearDepths.y && depth < gFarDepths.y && nrOfCascades > 1)
-	{
-		cascadeIndex = 1;
-	}
-	else if (depth > gNearDepths.z && depth < gFarDepths.z && nrOfCascades > 2)
-	{
-		cascadeIndex = 2;
-	}
-
-	if (cascadeIndex == 0)
-	{
-		shadowFactor = CalcShadowFactor(samShadow, gShadowMap1, shadowPosH1); //Cascade 1
-	}
-	else if (cascadeIndex == 1)
-	{
-		shadowFactor = CalcShadowFactor(samShadow, gShadowMap2, shadowPosH2); //Cascade 2
-	}
-	else if (cascadeIndex == 2)
-	{
-		shadowFactor = CalcShadowFactor(samShadow, gShadowMap3, shadowPosH3); //Cascade 3
-	}
-
-	// Bake shadow factor into color w component
-	//shadowFactor = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
-
-	if (type == 1)
-		pOut.Color.w = 1.0f;
-	else
-		pOut.Color.w = shadowFactor;
+	
+	// Gamma correct color (make it linear)
+	pOut.Color.xyz = pow(pOut.Color.xyz, 2.2f);
 
 	//pOut.Velocity = ((pIn.CurPosH - pIn.PrevPosH) / 2.0f).xy;
 	//pOut.Velocity = pIn.Velocity;

@@ -41,6 +41,13 @@ public:
 	float GetSpeed();
 	void SetSpeed(float speed);
 
+	Vec3 GetLook();
+
+	bool IsDizzy()
+	{
+		return isDizzy;
+	}
+
 private:
 	void startMoveForward(Message const& msg);
 	void startMoveBackward(Message const& msg);
@@ -56,6 +63,8 @@ private:
 	void notInAir(Message const& msg);
 	void Jump(Message const& msg);
 	void StopJump(Message const& msg);
+	void setIsDizzy(Message const& msg);
+	void dizzyTimer(float deltaTime);
 
 private:
 	PhysicsEntity* p;
@@ -73,7 +82,14 @@ private:
 	float walkAngle;
 	float timeFalling;
 	JumpDirection mInitialJumpDir;
-	ParticleSystem *mParticleSystem;
+	float dizzyMaxTimer;
+	float dizzyCounter;
+	bool isDizzy;
+	Vec3 pRot;
+
+	ParticleSystem *mParticleSystemRun;
+	ParticleSystem *mParticleSystemDizzy;
+	float mParticleSystemDizzyAngle;
 
 	void DoJumpStuff(float &speed);
 };

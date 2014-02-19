@@ -247,7 +247,7 @@ float AnimEvaluator::GetDuration(UINT frameStart, UINT frameEnd)
 
 	return framesDuration;
 }
-
+/*
 UINT AnimEvaluator::GetFrameIndexAt(float time)
 {
 	time *= mTicksPerSecond;
@@ -265,34 +265,10 @@ UINT AnimEvaluator::GetFrameIndexAt(float time)
 
 	return frameIndex;
 }
-
+*/
 UINT AnimEvaluator::GetFrameIndexAt( float time, UINT frameStart, UINT frameEnd )
 {
-	UINT nrOfFrames = (frameEnd - frameStart) + 1;
-	float framesDuration = (float)nrOfFrames * (mDuration / static_cast<float>(Transforms.size()));
-
-	time *= mTicksPerSecond;
-
-	float _time = 0.0f;
-	if (framesDuration > 0.0)
-		_time = fmod(time, framesDuration);
-
-	float percent = _time / framesDuration;
-
-	if (!PlayAnimationForward)
-		percent = (percent - 1.0f) * -1.0f;
-
-	UINT frameIndex = static_cast<UINT>((static_cast<float>(nrOfFrames) * percent));
-
-	frameIndex += (frameStart - 1);
-
-	if (frameIndex+1 > frameEnd)
-		int test = 0;
-
-	if (frameIndex+1 < frameStart)
-		int test = 0;
-
-	return frameIndex;
+	return GetFrameIndexAt(time, frameStart, frameEnd, PlayAnimationForward);
 }
 
 UINT AnimEvaluator::GetFrameIndexAt( float time, UINT frameStart, UINT frameEnd, bool playAnimForward )
@@ -316,6 +292,7 @@ UINT AnimEvaluator::GetFrameIndexAt( float time, UINT frameStart, UINT frameEnd,
 	UINT frameIndex = static_cast<UINT>((static_cast<float>(nrOfFrames) * percent));
 
 	frameIndex += (frameStart - 1);
+	frameIndex = min(frameIndex, (UINT)Transforms.size() - 1);
 
 	return frameIndex;
 }
@@ -523,5 +500,7 @@ UINT SkinnedData::GetAnimationIndex( const std::string& name )
 
 float SkinnedData::GetAnimationDuration(UINT animationIndex, UINT frameStart, UINT frameEnd)
 {
+	assert(animationIndex < Animations.size());
+
 	return Animations[animationIndex].GetDuration(frameStart, frameEnd);
 }

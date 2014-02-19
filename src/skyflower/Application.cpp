@@ -74,6 +74,7 @@ void Application::Start()
 	modules.collision = m_collision;
 	modules.potentialField = m_potentialField;
 	modules.script = m_scriptHandler;
+	modules.gui = m_GUI;
 	
 	m_backgroundMusicMenu.push_back("music/ants.opus");
 
@@ -89,7 +90,7 @@ void Application::Start()
 	});
 
 	// Start playing some background music for the menu.
-	m_backgroundMusic->SetVolume(0.05f);
+	m_backgroundMusic->SetVolume(0.25f);
 	setBackgroundMusicList(m_backgroundMusicMenu);
 
 	m_entityManager = new EntityManager("../../XML/", &modules);
@@ -98,8 +99,8 @@ void Application::Start()
 	levelHandler->init(m_entityManager);
 
 	// Load Hub Level
-	levelHandler->queue(0);
-	levelHandler->LoadQueued();
+	levelHandler->queue(4);
+	levelHandler->loadQueued();
 
 	//m_entityManager->sendMessageToEntity("ActivateListener", "player");
 	m_graphicsEngine->UpdateSceneData();
@@ -151,17 +152,15 @@ void Application::Start()
 
 	//startTime = GetTime();
 
+	m_cutscene = new CutScene(m_entityManager->modules->script, m_camera);
+
+	int loadingScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "Menygrafik\\fyraTreRatio.png");
+	m_GUI->GetGUIElement(loadingScreen)->SetVisible(false);
+
 	mGameTime = 0.0;
 	m_oldTime = GetTime();
 	mStartTime = GetTime();
 	m_quit = false;
-
-	changeGameState(GameState::cutScene);
-	cs = new CutScene(m_entityManager->modules->script, m_camera);
-	cs->play();
-
-	int loadingScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "Menygrafik\\fyraTreRatio.png");
-	m_GUI->GetGUIElement(loadingScreen)->SetVisible(false);
 
 	while(!m_quit)
 	{
@@ -200,7 +199,6 @@ void Application::Start()
 			playerListener->setVolume(volume);
 			m_oldVolume = volume;
 		}
-
 		switch (gameState)
 		{
 		case GameState::game:
@@ -235,21 +233,20 @@ void Application::Start()
 			m_GUI->Draw();
 			m_graphicsEngine->Present();
 
-			levelHandler->LoadQueued();
+			levelHandler->loadQueued();
 			m_graphicsEngine->Clear();
 			m_graphicsEngine->UpdateSceneData();
-			m_oldTime = GetTime();
-			m_GUI->GetGUIElement(loadingScreen)->SetVisible(false);
-			changeGameState(GameState::cutScene);
 
-			cs->play();
+			m_GUI->GetGUIElement(loadingScreen)->SetVisible(false);
+
+			m_oldTime = GetTime();
 		}
 	}
 	
 	//m_graphicsEngine->DeleteTexture2D(memoryChartTexture);
 	//m_graphicsEngine->DeleteTexture2D(frameTimeChartTexture);
 
-	delete cs;
+	delete m_cutscene;
 	delete m_menu;
 	m_GUI->Destroy();
 	delete m_GUI;
@@ -305,7 +302,7 @@ void Application::updateMenu(float dt)
 
 		// Set if mouse is inverted based on if it's been checked in menu
 		m_camera->SetInverted(m_menu->getSettings()._mouseInverted);
-		if (cs->isPlaying())
+		if (m_cutscene->isPlaying())
 			changeGameState(GameState::cutScene);
 		else
 			changeGameState(GameState::game);
@@ -321,11 +318,11 @@ void Application::updateCutScene(float dt)
 	m_graphicsEngine->UpdateScene(dt, (float)mGameTime);
 	m_graphicsEngine->DrawScene();
 
-	cs->update(dt);
+	m_cutscene->update(dt);
 
 	if (m_menu->isActive())
 		changeGameState(GameState::menu);
-	if (!cs->isPlaying())
+	if (!m_cutscene->isPlaying())
 	{
 		changeGameState(GameState::game);
 	}
@@ -343,6 +340,11 @@ void Application::updateGame(float dt, float gameTime)
 	m_graphicsEngine->UpdateScene(dt, gameTime);
 	m_graphicsEngine->DrawScene();
 	m_entityManager->update(dt);
+
+	m_camera->Rotate(m_camera->GetYaw(), m_camera->GetPitch());
+
+	if (m_cutscene->isPlaying())
+		changeGameState(GameState::cutScene);
 
 	if (m_menu->isActive())
 		changeGameState(GameState::menu);
@@ -429,6 +431,7 @@ void Application::OnWindowActivate()
 	{
 		m_inputHandler->SetMouseCapture(true);
 		m_window->SetCursorVisibility(false);
+		m_oldTime = GetTime();
 	}
 }
 
@@ -500,20 +503,18 @@ void Application::OnKeyDown(unsigned short key)
 		m_GUI->GetGUIElement(m_fpsChartID)->SetVisible(m_showCharts);
 		m_GUI->GetGUIElement(m_memChartID)->SetVisible(m_showCharts);
 		break;
+	case 'N':
+		g_quakeSounds = !g_quakeSounds;
+		break;
 	case 'R':
 		m_graphicsEngine->clearLights();
-		levelHandler->queue(4);
+		levelHandler->queue(0);
 		m_entityManager->loadXML("subWorld1Lights.XML");
-		if (!cs->isPlaying())
-		{
-			cs->play();
-			changeGameState(GameState::cutScene);
-		}
 			
 		break;
 	case VK_SPACE:
-		if (cs->isPlaying())
-			cs->stop(); 
+		if (m_cutscene->isPlaying())
+			m_cutscene->stop();
 	case 'P':
 		m_graphicsEngine->SetPostProcessingEffects(m_graphicsEngine->GetPostProcessingEffects() ^ POST_PROCESSING_SSAO);
 		break;

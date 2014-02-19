@@ -29,15 +29,18 @@
     <ClCompile Include="src\graphics\d3dUtilities.cpp" />
     <ClCompile Include="src\graphics\DeferredBuffers.cpp" />
     <ClCompile Include="src\graphics\Direct3D.cpp" />
+    <ClCompile Include="src\graphics\FullscreenTriangle.cpp" />
     <ClCompile Include="src\graphics\GenericMesh.cpp" />
     <ClCompile Include="src\graphics\GenericModel.cpp" />
     <ClCompile Include="src\graphics\GenericObjectLoader.cpp" />
     <ClCompile Include="src\graphics\GenericSkinnedMesh.cpp" />
     <ClCompile Include="src\graphics\GenericSkinnedModel.cpp" />
+    <ClCompile Include="src\graphics\GenericSkinnedModelSorted.cpp" />
     <ClCompile Include="src\graphics\GeometryGenerator.cpp" />
     <ClCompile Include="src\graphics\GraphicsEngine.cpp" />
     <ClCompile Include="src\graphics\GraphicsEngineImpl.cpp" />
     <ClCompile Include="src\graphics\InstanceImpl.cpp" />
+    <ClCompile Include="src\graphics\LightDefImpl.cpp" />
     <ClCompile Include="src\graphics\MathHelper.cpp" />
     <ClCompile Include="src\graphics\MorphModel.cpp" />
     <ClCompile Include="src\graphics\OrthoWindow.cpp" />
@@ -46,7 +49,9 @@
     <ClCompile Include="src\graphics\ShaderHandler.cpp" />
     <ClCompile Include="src\graphics\Shadowmap.cpp" />
     <ClCompile Include="src\graphics\SkinnedData.cpp" />
+    <ClCompile Include="src\graphics\SkinnedDataSorted.cpp" />
     <ClCompile Include="src\graphics\Sky.cpp" />
+    <ClCompile Include="src\graphics\SMAA.cpp" />
     <ClCompile Include="src\graphics\Texture2DImpl.cpp" />
     <ClCompile Include="src\graphics\TextureManager.cpp" />
     <ClCompile Include="src\graphics\Vertex.cpp" />
@@ -62,17 +67,22 @@
     <ClInclude Include="src\graphics\d3dUtilities.h" />
     <ClInclude Include="src\graphics\DeferredBuffers.h" />
     <ClInclude Include="src\graphics\Direct3D.h" />
+    <ClInclude Include="src\graphics\External\SMAA\AreaTex.h" />
+    <ClInclude Include="src\graphics\External\SMAA\SearchTex.h" />
+    <ClInclude Include="src\graphics\FullscreenTriangle.h" />
     <ClInclude Include="src\graphics\GenericMesh.h" />
     <ClInclude Include="src\graphics\GenericModel.h" />
     <ClInclude Include="src\graphics\GenericObjectLoader.h" />
     <ClInclude Include="src\graphics\GenericSkinnedMesh.h" />
     <ClInclude Include="src\graphics\GenericSkinnedModel.h" />
+    <ClInclude Include="src\graphics\GenericSkinnedModelSorted.h" />
     <ClInclude Include="src\graphics\GeometryGenerator.h" />
     <ClInclude Include="src\graphics\GraphicsEngine.h" />
     <ClInclude Include="src\graphics\GraphicsEngineImpl.h" />
     <ClInclude Include="src\graphics\Instance.h" />
     <ClInclude Include="src\graphics\InstanceImpl.h" />
     <ClInclude Include="src\graphics\LightDef.h" />
+    <ClInclude Include="src\graphics\LightDefImpl.h" />
     <ClInclude Include="src\graphics\MathHelper.h" />
     <ClInclude Include="src\graphics\MorphModel.h" />
     <ClInclude Include="src\graphics\OrthoWindow.h" />
@@ -82,7 +92,9 @@
     <ClInclude Include="src\graphics\ShaderHandler.h" />
     <ClInclude Include="src\graphics\Shadowmap.h" />
     <ClInclude Include="src\graphics\SkinnedData.h" />
+    <ClInclude Include="src\graphics\SkinnedDataSorted.h" />
     <ClInclude Include="src\graphics\Sky.h" />
+    <ClInclude Include="src\graphics\SMAA.h" />
     <ClInclude Include="src\graphics\Texture2D.h" />
     <ClInclude Include="src\graphics\Texture2DImpl.h" />
     <ClInclude Include="src\graphics\TextureManager.h" />
@@ -120,6 +132,12 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="src\graphics\Shaders\BasicDeferredSkinnedVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\BasicDeferredSkinnedSortedVS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
@@ -177,6 +195,12 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
     </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\DrawParticlePS_Forward.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
     <FxCompile Include="src\graphics\Shaders\DrawParticleVS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
@@ -190,6 +214,12 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
     <FxCompile Include="src\graphics\Shaders\LightDeferredPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\LightDeferredPS_ToTexture.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -226,6 +256,66 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
     <FxCompile Include="src\graphics\Shaders\DrawParticlePS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SMAABlendingWeightCalculationsPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SMAABlendingWeightCalculationsVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SMAAColorEdgeDetectionPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SMAADepthEdgeDetectionPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SMAAEdgeDetectionVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SMAALumaEdgeDetectionPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SMAANeighborhoodBlendingPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SMAANeighborhoodBlendingVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SMAAResolvePS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\SMAASeparatePS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
@@ -339,6 +429,10 @@
       <FileType>Document</FileType>
     </None>
     <None Include="src\graphics\Shaders\ParticleSystemShared.hlsli" />
+    <None Include="src\graphics\Shaders\Shared.hlsli" />
+    <None Include="src\graphics\Shaders\SMAA\SMAA_Shared.hlsli">
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9B38121D-8D9E-45A3-AEE4-483D762F930F}</ProjectGuid>

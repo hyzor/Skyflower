@@ -33,7 +33,7 @@ public:
 	XMMATRIX GetLightView() const;
 	XMMATRIX GetLightProj() const;
 
-	void BuildShadowTransform(const DirectionalLight& light, const DirectX::BoundingSphere& sceneBounds);
+	void BuildShadowTransform(const DLight& light, const DirectX::BoundingSphere& sceneBounds);
 
 	void DrawSceneToShadowMap(
 		const std::vector<ModelInstanceImpl*>& modelInstances,
@@ -45,7 +45,7 @@ public:
 	void DrawSceneToShadowMap(
 		const std::vector<ModelInstanceImpl*>& modelInstances,
 		const std::vector<AnimatedInstanceImpl*>& mAnimatedInstances,
-		const std::vector<MorphModelInstance*>& mMorphInstances,
+		const std::vector<MorphModelInstanceImpl*>& mMorphInstances,
 		ID3D11DeviceContext* deviceContext,
 		ShadowShader* shadowShader,
 		SkinnedShadowShader* skinnedShadowShader,

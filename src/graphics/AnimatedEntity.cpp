@@ -3,11 +3,6 @@
 // Must be included last!
 #include "shared/debug.h"
 
-AnimatedEntity::AnimatedEntity( void )
-{
-
-}
-
 AnimatedEntity::AnimatedEntity(GenericSkinnedModel* model, XMFLOAT3 position)
 {
 	mInstance.model = model;
@@ -21,6 +16,7 @@ AnimatedEntity::AnimatedEntity(GenericSkinnedModel* model, XMFLOAT3 position)
 	this->Position = position;
 	this->Scale = XMFLOAT3(1, 1, 1);
 	this->Rotation = 0.0f;
+	mFirstAnimation = true;
 
 	SetPosition(position);
 }
@@ -111,13 +107,15 @@ void AnimatedEntity::RotateXYZ(XMFLOAT3 rot, float yaw, XMVECTOR Up)
 
 void AnimatedEntity::SetAnimation(UINT index, bool loop)
 {
-	if (index == mCurAnim)
+	if (index == mCurAnim && !mFirstAnimation)
 		return;
 
+	//mInstance.AnimationIndex = index;
 	mInstance.TimePos = 0.0f;
 	mInstance.frameStart = mAnimations[index].FrameStart;
 	mInstance.frameEnd = mAnimations[index].FrameEnd;
 	mInstance.loop = loop;
+	mInstance.animationDone = false;
 
 	if (mAnimations[index].playForwards)
 		mInstance.playAnimForward = true;
@@ -125,6 +123,7 @@ void AnimatedEntity::SetAnimation(UINT index, bool loop)
 		mInstance.playAnimForward = false;
 	
 	mCurAnim = index;
+	mFirstAnimation = false;
 }
 
 void AnimatedEntity::Draw(ID3D11DeviceContext* dc, Camera* cam, NormalMappedSkinned* shader, XMMATRIX &world)

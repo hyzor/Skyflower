@@ -4,9 +4,6 @@
 #include "EntityManager.h"
 #include <vector>
 
-#include <future>
-#include <thread>
-
 #define levelHandler LevelHandler::GetInstance() 
 
 class LevelHandler
@@ -15,19 +12,19 @@ class LevelHandler
 public:
 	struct Level
 	{
-		int _id;
-		bool _completed;
-		char* _path;
-		Level(int id, char* path) : _id(id), _path(path), _completed(false) {}
+		int id;
+		bool completed;
+		char* path;
+		Level(int id, char* path) : id(id), path(path), completed(false) {}
 	};
 	static LevelHandler* GetInstance();
 	virtual ~LevelHandler();
-	void init(EntityManager *entityManager); 
+	void init(EntityManager* const entityManager); 
 
 	// Check if map has been completed before.
 	bool isCompleted(int id) const; 
 
-	// Queue a new map. Call LoadQueued() to load the map
+	// Queue a new map. Call loadQueued() to load the map
 	void queue(int id); 
 
 	// Number of completed levels.
@@ -43,26 +40,26 @@ public:
 	int currentLevel() const; 
 
 	// Returns true if a level is currently queued.
-	bool hasQueuedLevel();
+	bool hasQueuedLevel() const;
 
 	// Load a queued level. Call queue() to queue a level.
-	void LoadQueued();
+	void loadQueued();
 
 	// Returns true if a level is currently loading. Useful when loading on a seperate thread.
-	bool isLoading();
+	bool isLoading() const;
 
 private:
-	
-	bool queued; // If a level is queued it will load at the end of the frame
-	int queueID; // Id of the queued level
-	bool loading;;
 	LevelHandler();
-	void loadQueued(int id);
-	
+
 	static LevelHandler *instance;
-	int _current; // Current level id
-	EntityManager *_entityManager; // Pointer to the entities
-	vector<Level> _levels; // Levels
+
+	bool m_hasQueued; // If a level is queued it will load at the end of the frame
+	int m_queueID; // Id of the queued level
+	bool m_loading;;
+	int m_current; // Current level id
+	vector<Level>  m_levels; // Levels
+
+	EntityManager *m_entityManager; // Pointer to the entities
 
 };
 

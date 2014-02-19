@@ -1,6 +1,6 @@
 <root>
     <Light entityName="pointLight1" id="29" isVisible="0" isCollidible="0" Type="pointLight ">
-        <pointLight  xPos="30.0649071653" yPos="75.5006955665" zPos="-41.3847354091" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
+        <pointLight  xPos="0.0" yPos="0.0" zPos="0.0" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
     </Light>
     <Light entityName="pointLight2" id="30" isVisible="0" isCollidible="0" Type="pointLight ">
         <pointLight  xPos="529.965116974" yPos="161.313973318" zPos="50.4737227476" r="1.0" g="1.0" b="1.0" intensity="1.0"/>

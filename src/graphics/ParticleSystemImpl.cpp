@@ -31,6 +31,11 @@ ParticleSystemImpl::ParticleSystemImpl()
 	mEmitFrequency = 0.005f;
 	mParticleAgeLimit = 1.0f;
 	mParticleType = ParticleType::PT_FLARE0;
+
+	mFadeTime = 1.0f;
+	mBlendingMethod = 0;
+
+	mScale = XMFLOAT2(1.0f, 1.0f);
 }
 
 ParticleSystemImpl::~ParticleSystemImpl()
@@ -98,7 +103,7 @@ void ParticleSystemImpl::Update(float dt, float gameTime)
 	mAge += dt;
 }
 
-void ParticleSystemImpl::Draw(ID3D11DeviceContext* dc, const Camera& cam)
+void ParticleSystemImpl::Draw(ID3D11DeviceContext* dc, const Camera& cam, ID3D11DepthStencilState* drawDepthStencilState)
 {
 	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
@@ -112,11 +117,17 @@ void ParticleSystemImpl::Draw(ID3D11DeviceContext* dc, const Camera& cam)
 	mShader->SetTexArray(dc, mTexArraySRV);
 	mShader->SetRandomTex(dc, mRandomTexSRV);
 	mShader->SetTime(mGameTime, mTimeStep);
-	mShader->SetViewProj(cam.GetViewProjMatrix());
+	mShader->SetViewProj(cam.GetViewProjMatrix(), cam.GetViewMatrix());
+	mShader->SetPrevViewProj(cam.GetPreviousViewProj());
 	mShader->SetAccelConstant(mConstantAccelW);
 	mShader->SetParticleProperties(mParticleAgeLimit, mEmitFrequency);
 	mShader->SetParticleType(mParticleType);
 	mShader->SetEmitParticles(mActive);
+	mShader->SetParticleFadeTime(mFadeTime);
+	mShader->SetFarNearClipDistance(cam.GetFarZ(), cam.GetNearZ());
+
+	mShader->SetBlendingMethod(mBlendingMethod);
+	mShader->SetScale(mScale.x, mScale.y);
 
 	mShader->ActivateStreamShaders(dc);
 	mShader->UpdateStreamOutShaders(dc);
@@ -151,9 +162,10 @@ void ParticleSystemImpl::Draw(ID3D11DeviceContext* dc, const Camera& cam)
 	std::swap(mDrawVB, mStreamOutVB);
 
 	// Restore depth buffer
-	dc->OMSetDepthStencilState(0, 0);
+	dc->OMSetDepthStencilState(drawDepthStencilState, 1);
 	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	dc->OMSetBlendState(RenderStates::mAdditiveBS, blendFactor, 0xffffffff);
+	//dc->OMSetBlendState(RenderStates::mAdditiveBS, blendFactor, 0xffffffff);
+	dc->OMSetBlendState(RenderStates::mDefaultBS, blendFactor, 0xffffffff);
 
 	// Now draw the update particle system we just streamed out
 	// Use DrawParticleVS, DrawParticleGS and DrawParticlePS
@@ -217,4 +229,19 @@ void ParticleSystemImpl::SetParticleType(ParticleType particleType)
 		mParticleType = particleType;
 	else
 		particleType = ParticleType::PT_FLARE0;
+}
+
+void ParticleSystemImpl::SetParticleFadeTime(float fadeTime)
+{
+	mFadeTime = fadeTime;
+}
+
+void ParticleSystemImpl::SetBlendingMethod(unsigned int blendingMethod)
+{
+	mBlendingMethod = blendingMethod;
+}
+
+void ParticleSystemImpl::SetScale(XMFLOAT2 scale)
+{
+	mScale = scale;
 }

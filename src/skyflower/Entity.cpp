@@ -51,8 +51,8 @@ Entity::Entity(const Modules *modules, EntityId id, EntityId relativeid, string 
 	ground = nullptr;
 	wall = nullptr;
 
-	if (isVisible)
-	{
+	//if (isVisible)
+	//{
 		if (!isAnimated)
 		{
 			this->modelInst = this->modules->graphics->CreateInstance(this->model, Vec3(this->pos.X, this->pos.Y, this->pos.Z));
@@ -109,7 +109,7 @@ Entity::Entity(const Modules *modules, EntityId id, EntityId relativeid, string 
 
 			this->AnimInst->SetAnimation(0, true);
 		}
-	}
+	//}
 	
 	if (this->isCollidible && !isAnimated)
 	{
@@ -124,13 +124,7 @@ Entity::Entity(const Modules *modules, EntityId id, EntityId relativeid, string 
 		field = nullptr;
 	}
 
-	this->sphere = new Sphere(pos, 1.5f);
-
-	/*if (this->type == "player" || this->type == "AI") //fungerar inte
-	{
-		cout << "creating sphere!" << this->type << endl;
-		this->sphere = new Sphere(pos.X, pos.Y, pos.Z, 4);
-	}*/
+	this->sphere = new Sphere(pos, 0);
 
 }
 Entity::~Entity() {
@@ -196,9 +190,7 @@ bool Entity::isFinalized() {
 
 
 // finalize the Entity
-void Entity::finalize() {
-
-	
+void Entity::finalize() {	
 
 	// we're done
 	fFinalized = true;
@@ -312,26 +304,6 @@ void Entity::registerRequest(RequestId reqId, RegisteredComponent reg) {
 		fLocalRequests.resize(reqId+1);
 	}
 	fLocalRequests[reqId].push_back(reg);
-}
-
-
-// track a local request
-void Entity::trackRequest(RequestId reqId, Component *component) {
-
-	// find in global request list
-	for (unsigned i = 0; i < fLocalRequests[reqId].size(); ++i) {
-		if (fLocalRequests[reqId][i].component->getId() == component->getId()) fLocalRequests[reqId][i].trackMe = true;
-	}
-}
-
-
-void Entity::sendAMessageToAll(string message)
-{
-	//fins the first component in the entity with the name "Messenger"
-	if (this->fComponents.count("Messenger") != 0)
-	{
-		this->fComponents["Messenger"].front()->sendMessage(message);
-	}
 }
 
 void Entity::sendMessageToEntity(string message, EntityId id)

@@ -16,6 +16,8 @@ public:
 	{
 		this->isBeingPickedUp = false;
 		this->isBeingThrown = false;
+		this->throwerId = -1;
+		this->targetPos = Vec3();
 	}
 	virtual ~Throwable() {};
 
@@ -23,9 +25,10 @@ public:
 	{
 		requestMessage("beingThrown", &Throwable::beingThrown);
 		requestMessage("stopBeingThrown", &Throwable::stopBeingThrown);
+		requestMessage("Dropped", &Throwable::dropped);
 
-		Vec3 temp = getEntityPos();
-		this->getOwner()->sphere = new Sphere(temp.X, temp.Y, temp.Z, 5);
+		this->p = getOwner()->getPhysics();
+		getOwner()->sphere->Radius = 3.5f; // Throwable size
 	}
 
 	void setIsBeingThrown(bool state);
@@ -34,8 +37,13 @@ private:
 
 	bool isBeingPickedUp;
 	bool isBeingThrown;
+	EntityId throwerId;
+	PhysicsEntity* p;
+	Vec3 targetPos;
 
 	void update(float deltaTime);
+	void setTargetPos(Vec3 pos);
+	Vec3 getTargetPos();
 
 	void beingThrown(Message const & msg)
 	{
@@ -45,6 +53,11 @@ private:
 	void stopBeingThrown(Message const & msg)
 	{
 		this->isBeingThrown = false;
+	}
+
+	void dropped(Message const & msg)
+	{
+		this->isBeingPickedUp = false;
 	}
 };
 

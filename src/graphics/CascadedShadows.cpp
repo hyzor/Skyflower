@@ -69,7 +69,7 @@ void CascadedShadows::SetNearFarFitMethod(NEAR_FAR_FIT_METHOD method)
 	this->mNearFarFitMethod = method;
 }
 
-void CascadedShadows::CreateLightFrustums(const DirectionalLight& light, const BoundingSphere& sceneBounds, const BoundingBox& sceneBB, const Camera* cam)
+void CascadedShadows::CreateLightFrustums(const DLight& light, const BoundingSphere& sceneBounds, const BoundingBox& sceneBB, const Camera* cam)
 {
 	XMMATRIX P;
 	XMVECTOR lightOrtographicMin = gVecFLTMAX, lightOrtographicMax = gVecFLTMIN; //Values used as input to create light space frustum
@@ -96,12 +96,6 @@ void CascadedShadows::CreateLightFrustums(const DirectionalLight& light, const B
 		XMVECTOR v = XMLoadFloat3( &temp[i] );
 		sceneBBPointsLightSpace[i] = XMVector3Transform(v, lightView);
 	}
-
-
-	//split = (1.0f / this->mNrOfCascades); // For now, split each frustum equally
-
-	//intervalBegin = 0.0f;
-	//intervalEnd = split * camRange;
 
 	for (UINT i = 0; i < this->mCascades.size(); i++)
 	{
@@ -213,16 +207,10 @@ void CascadedShadows::CreateLightFrustums(const DirectionalLight& light, const B
 				nearPlane, farPlane);
 
 			this->mCascades.at(i)->SetShadowMatrices(lightView, P, lightPos);
-			
-
 
 			//Set the depths of the intervals to later use these to determine correct cascade to sample from
 			this->mCascades.at(i)->SetSplitDepthNear(intervalBegin);
-			this->mCascades.at(i)->SetSplitDepthFar(intervalEnd);
-
-			//Increment beginning and end equally to create the next subfrustum
-			//intervalBegin += split * camRange;
-			//intervalEnd += split * camRange;
+			this->mCascades.at(i)->SetSplitDepthFar(intervalEnd);;
 		}
 	}
 		
@@ -232,7 +220,7 @@ void CascadedShadows::CreateLightFrustums(const DirectionalLight& light, const B
 void CascadedShadows::RenderSceneToCascades(
 	const std::vector<ModelInstanceImpl*>& modelInstances,
 	const std::vector<AnimatedInstanceImpl*>& mAnimatedInstances,
-	const std::vector<MorphModelInstance*>& mMorphInstances,
+	const std::vector<MorphModelInstanceImpl*>& mMorphInstances,
 	ID3D11DeviceContext* deviceContext,
 	ShadowShader* shadowShader,
 	SkinnedShadowShader* skinnedShadowShader,

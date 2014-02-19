@@ -4,14 +4,19 @@
 cbuffer cbPerFrame : register(b0)
 {
 	float3 gEyePosW;
-	float padding;
+	float gFarClipDistance;
+	//float padding;
 
+	float4x4 gView;
 	float4x4 gViewProj;
+	float4x4 gPrevViewProj;
 
 	float4 gQuadTexC[4];
 
 	unsigned int gTextureIndex;
-	float3 paddingTex;
+	unsigned int gBlendingMethod;
+	float gNearClipDistance;
+	float paddingTex;
 };
 
 struct GeoOut
@@ -20,6 +25,19 @@ struct GeoOut
 	float4 Color : COLOR;
 	float2 Tex   : TEXCOORD;
 	unsigned int TexIndex : TEXINDEX;
+	//float2 NDCspace : NDCSPACE;
+	float2 TexSpace : TEXSPACE;
+
+	float4 CurPosH : CURPOSH;
+	float4 PrevPosH : PREVPOSH;
+
+	float3 NormalW : NORMALW;
+
+	unsigned int BlendingMethod : BLENDINGMETHOD;
+
+	float Depth : DEPTH;
+	float zFar : ZFAR;
+	float zNear : ZNEAR;
 };
 
 // The draw GS just expands points into camera facing quads.
@@ -49,6 +67,13 @@ void main(point VertexOut gin[1],
 		v[2] = float4(gin[0].PosW - halfWidth*right - halfHeight*up, 1.0f);
 		v[3] = float4(gin[0].PosW - halfWidth*right + halfHeight*up, 1.0f);
 
+		// Previous frame positions
+		float4 vPrev[4];
+		vPrev[0] = float4(gin[0].PrevPosW + halfWidth*right - halfHeight*up, 1.0f);
+		vPrev[1] = float4(gin[0].PrevPosW + halfWidth*right + halfHeight*up, 1.0f);
+		vPrev[2] = float4(gin[0].PrevPosW - halfWidth*right - halfHeight*up, 1.0f);
+		vPrev[3] = float4(gin[0].PrevPosW - halfWidth*right + halfHeight*up, 1.0f);
+
 		//
 		// Transform quad vertices to world space and output 
 		// them as a triangle strip.
@@ -58,9 +83,27 @@ void main(point VertexOut gin[1],
 		for (int i = 0; i < 4; ++i)
 		{
 			gout.PosH = mul(v[i], gViewProj);
+
+			gout.Depth = gout.PosH.z;
+			gout.zFar = gFarClipDistance;
+			gout.zNear = gNearClipDistance;
+
+			gout.CurPosH = gout.PosH;
+			gout.PrevPosH = mul(vPrev[i], gPrevViewProj);
+
+			float2 NDCspace = gout.PosH.xy / gout.PosH.w;
+
+			gout.NormalW = float3(0.0f, 1.0f, 0.0f);
+
+			gout.TexSpace.x = 0.5f * NDCspace.x + 0.5f;
+			gout.TexSpace.y = -0.5f * NDCspace.y + 0.5f;
+
 			gout.Tex = gQuadTexC[i].xy;
 			gout.Color = gin[0].Color;
 			gout.TexIndex = gin[0].Type - 1;
+
+			gout.BlendingMethod = gBlendingMethod;
+
 			triStream.Append(gout);
 		}
 	}

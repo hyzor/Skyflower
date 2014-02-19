@@ -11,27 +11,33 @@ class CutScene
 public:
 	struct WayPoint
 	{
-		Vec3 _position;
-		float _yaw;
-		float _pitch;
-		float _time;
-		WayPoint() { _position = Vec3(); _yaw = 0.0f; _pitch = 0.0f; _time = 0.0f; }
+		Vec3 position;
+		float yaw;
+		float pitch;
+		float time;
+		WayPoint() { this->position = Vec3(); this->yaw = 0.0f; this->pitch = 0.0f; this->time = 0.0f; }
 		
 		WayPoint(Vec3 position, float yaw, float pitch, float time)
-			: _position(position), _yaw(yaw), _pitch(pitch), _time(time) {}
+			: position(position), yaw(yaw), pitch(pitch), time(time) {}
 	};
 
 	CutScene(ScriptHandler* sh, CameraController* camera);
-	void play();
+	void play(string name);
 
 	static void Register(ScriptHandler* sh)
 	{
 		lua_register(sh->L, "AddPoint", CutScene::AddPoint);
 		lua_register(sh->L, "SetCamera", CutScene::SetCamera);
+		lua_register(sh->L, "CutScenePlay", CutScene::play);
+		lua_register(sh->L, "CutSceneIsPlaying", CutScene::isPlaying);
+		lua_register(sh->L, "GetCameraPos", CutScene::getCameraPos);
+		lua_register(sh->L, "GetYawPitch", CutScene::getCameraYawPitch);
 	};
 
 	void update(float dt);
+	
 	bool isPlaying() const { return !done; }
+	void clear();
 	void stop();
 public:
 	static CutScene* self;
@@ -45,10 +51,15 @@ private:
 	float mCurrentYaw;
 	float mCurrentPitch;
 	bool done;
+	void translateYawPitch(float& yaw, float& pitch);
+
 private:
 	static int AddPoint(lua_State* L);
 	static int SetCamera(lua_State* L);
-
+	static int isPlaying(lua_State *L);
+	static int play(lua_State *L);
+	static int getCameraPos(lua_State *L);
+	static int getCameraYawPitch(lua_State *L);
 };
 
 

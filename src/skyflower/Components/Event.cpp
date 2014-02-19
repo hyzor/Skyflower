@@ -1,5 +1,6 @@
 #include "Components/Event.h"
 #include "EntityManager.h"
+#include "Components/Throw.h"
 
 // Must be included last!
 #include "shared/debug.h"
@@ -14,7 +15,7 @@ void Event::addedToEntity() {
 
 	requestMessage("Activated", &Event::Activated);
 	requestMessage("Deactivated", &Event::Deactivated);
-	requestMessage("Goal", &Event::Goal);
+	//requestMessage("Goal", &Event::Goal);
 
 	
 }
@@ -174,7 +175,6 @@ int Event::Spawn(lua_State* L)
 		entityManager->sendMessageToEntity("Respawn", spawnId);
 	}
 
-
 	return 0;
 }
 
@@ -222,6 +222,68 @@ int Event::IsActivated(lua_State* L)
 		Entity* entityTarget = entityManager->getEntity(targetId);
 
 		lua_pushboolean(L, entityTarget->getComponent<Event*>("Event")->isActivated());
+		return 1;
+	}
+
+
+	lua_pushboolean(L, self->isActivated());
+	return 1;
+}
+
+int Event::IsActivator(lua_State* L)
+{
+	int n = lua_gettop(L);
+
+	
+	if (n >= 2 && lua_isnumber(L, 2)) //check for id
+	{
+		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+		Entity* entityTarget = entityManager->getEntity((EntityId)lua_tointeger(L, 2));
+
+		bool ret = false;
+		if (entity->ground == entityTarget)
+			ret = true;
+		else if (entity->wall == entityTarget)
+			ret = true;
+		else
+		{
+			Touch* t = entity->getComponent<Touch*>("Touch");
+			if (t)
+				if (t->activator == entityTarget)
+					ret = true;
+		}
+
+		lua_pushboolean(L, ret);
+		return 1;
+	}
+	else if (n >= 2 && lua_isstring(L, 2)) //check for component
+	{
+		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+		std::string comp = lua_tostring(L, 2);
+
+		bool ret = false;
+		if (entity->ground)
+		{
+			if (entity->ground->hasComponents(comp))
+				ret = true;
+		}
+		else if (entity->wall)
+		{
+			if (entity->wall->hasComponents(comp))
+				ret = true;
+		}
+		else
+		{
+			Touch* t = entity->getComponent<Touch*>("Touch");
+			if (t)
+			if (t->activator)
+			{
+				if(t->activator->hasComponents(comp))
+					ret = true;
+			}
+		}
+
+		lua_pushboolean(L, ret);
 		return 1;
 	}
 
@@ -307,7 +369,7 @@ int Event::CanPush(lua_State* L)
 		Entity* entityAi = entityManager->getEntity(aiId);
 		Entity* entityTarget = entityManager->getEntity(targetId);
 
-		lua_pushboolean(L, entityAi->getComponent<Push*>("Push")->canPush(entityTarget));
+		lua_pushboolean(L, entityAi->getComponent<Push*>("Push")->colliding(entityTarget));
 		return 1;
 	}
 
@@ -429,4 +491,177 @@ int Event::SetContinous(lua_State* L)
 	}
 
 	return 0;
+}
+
+
+int Event::PickUp(lua_State* L)
+{
+	int n = lua_gettop(L);
+	assert(n == 1);
+
+	Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+
+	entityManager->sendMessageToEntity("PickUp", entity->fId);
+
+
+	return 0;
+}
+
+
+int Event::CanPick(lua_State* L)
+{
+	return 0;
+}
+
+int Event::sThrow(lua_State* L)
+{
+	int n = lua_gettop(L);
+	assert(n == 1);
+
+	Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+
+	entityManager->sendMessageToEntity("Throw", entity->fId);
+
+	return 0;
+}
+
+int Event::CanThrow(lua_State* L)
+{
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+
+		if (n == 1)
+			lua_pushboolean(L, entity->getComponent<Throw*>("Throw")->getIsHoldingThrowable());
+		else
+			lua_pushboolean(L, entity->getComponent<Throw*>("Throw")->getHoldingEntityId() == lua_tointeger(L, 2));
+	}
+
+	return 1;
+}
+
+int Event::Lit(lua_State* L)
+{
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+		float time = 0.5f;
+		if (n >= 2)
+			time = (float)lua_tonumber(L, 2);
+
+		PointLightComp* plc = entity->getComponent<PointLightComp*>("PointLight");
+		DirectionalLightComp* dlc = entity->getComponent<DirectionalLightComp*>("DirectionalLight");
+		SpotLightComp* slc = entity->getComponent<SpotLightComp*>("SpotLight");
+
+		if (plc)
+			plc->lit(time);
+		if (dlc)
+			dlc->lit(time);
+		if (slc)
+			slc->lit(time);
+	}
+
+
+	return 0;
+}
+
+int Event::Unlit(lua_State* L)
+{
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+		float time = 0.5f;
+		if (n >= 2)
+			time = (float)lua_tonumber(L, 2);
+
+		PointLightComp* plc = entity->getComponent<PointLightComp*>("PointLight");
+		DirectionalLightComp* dlc = entity->getComponent<DirectionalLightComp*>("DirectionalLight");
+		SpotLightComp* slc = entity->getComponent<SpotLightComp*>("SpotLight");
+
+		if (plc)
+			plc->unlit(time);
+		if (dlc)
+			dlc->unlit(time);
+		if (slc)
+			slc->unlit(time);
+	}
+
+
+	return 0;
+}
+
+
+int Event::IsLit(lua_State* L)
+{
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+
+		PointLightComp* plc = entity->getComponent<PointLightComp*>("PointLight");
+		DirectionalLightComp* dlc = entity->getComponent<DirectionalLightComp*>("DirectionalLight");
+		SpotLightComp* slc = entity->getComponent<SpotLightComp*>("SpotLight");
+
+		bool lit = false;
+		if (plc)
+		{
+			if (plc->isLit())
+				lit = true;
+		}
+		if (dlc)
+		{
+			if (dlc->isLit())
+				lit = true;
+		}
+		if (slc)
+		{
+			if (slc->isLit())
+				lit = true;
+		}
+
+		lua_pushboolean(L, lit);
+		return 1;
+	}
+
+	lua_pushboolean(L, false);
+	return 1;
+}
+
+int Event::IsUnlit(lua_State* L)
+{
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+
+		PointLightComp* plc = entity->getComponent<PointLightComp*>("PointLight");
+		DirectionalLightComp* dlc = entity->getComponent<DirectionalLightComp*>("DirectionalLight");
+		SpotLightComp* slc = entity->getComponent<SpotLightComp*>("SpotLight");
+
+		bool lit = false;
+		if (plc)
+		{
+			if (plc->isUnlit())
+				lit = true;
+		}
+		if (dlc)
+		{
+			if (dlc->isUnlit())
+				lit = true;
+		}
+		if (slc)
+		{
+			if (slc->isUnlit())
+				lit = true;
+		}
+
+		lua_pushboolean(L, lit);
+		return 1;
+	}
+
+	lua_pushboolean(L, false);
+	return 1;
 }

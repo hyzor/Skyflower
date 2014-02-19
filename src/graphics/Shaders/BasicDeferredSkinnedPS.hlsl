@@ -40,6 +40,9 @@ PixelOut main(VertexOut pIn)
 
 	pOut.Color.w = shadowFactor;
 
+	// Gamma correct color (make it linear)
+	pOut.Color.xyz = pow(pOut.Color.xyz, 2.2f);
+
 	float2 CurPosXY;
 	float2 PrevPosXY;
 

@@ -10,32 +10,33 @@ char* levels[] = {
 	"testWorld",
 	"testWorld2",
 	"testExport",
-	"subWorld1"
+	"subWorld1",
+	"subworld2"
 };
 
-#define LEVEL_COUNT 5
+#define LEVEL_COUNT 6
 
 LevelHandler *LevelHandler::instance = nullptr;
 
 LevelHandler::LevelHandler()
 {
-	this->_entityManager = NULL;
-	this->_current = 0;
-	this->loading = false;
-	this->queued = false;
-	this->queueID = 0;
+	this->m_entityManager = NULL;
+	this->m_current = 0;
+	this->m_loading = false;
+	this->m_hasQueued = false;
+	this->m_queueID = 0;
 }
 
 LevelHandler::~LevelHandler(){}
 
 void LevelHandler::init(EntityManager *entityManager)
 {
-	this->_entityManager = entityManager;
+	this->m_entityManager = entityManager;
 	
 	for (unsigned int i = 0; i < LEVEL_COUNT; i++)
 	{
 		Level curr(i, levels[i]);
-		this->_levels.push_back(curr);
+		this->m_levels.push_back(curr);
 	}
 }
 LevelHandler* LevelHandler::GetInstance()
@@ -46,26 +47,26 @@ LevelHandler* LevelHandler::GetInstance()
 }
 void LevelHandler::queue(int id)
 {
-	queued = true;
-	queueID = id;
+	m_hasQueued = true;
+	m_queueID = id;
 }
 
 bool LevelHandler::isCompleted(int id) const
 {	
-	return _levels.at(id)._completed;
+	return m_levels.at(id).completed;
 }
 
 void LevelHandler::levelCompleted()
 {
-	_levels.at(_current)._completed = true;
+	m_levels.at(m_current).completed = true;
 }
 
 int LevelHandler::completedCount() const
 {
 	int completed = 0;
-	for (unsigned int i = 0; i < _levels.size(); i++)
+	for (unsigned int i = 0; i < m_levels.size(); i++)
 	{
-		if (_levels.at(i)._completed)
+		if (m_levels.at(i).completed)
 		{
 			completed++;
 		}
@@ -75,65 +76,58 @@ int LevelHandler::completedCount() const
 
 int LevelHandler::levelCount() const
 {
-	return (int)this->_levels.size();
+	return (int)this->m_levels.size();
 }
 
 int LevelHandler::currentLevel() const
 {
-	return this->_current;
+	return this->m_current;
 }
 
-void LevelHandler::LoadQueued()
+void LevelHandler::loadQueued()
 {
-	loading = true;
-	loadQueued(queueID);
-}
-
-void LevelHandler::loadQueued(int id)
-{
-	queued = false;
+	m_hasQueued = false;
 	printf("Thread started\n");
 
 	//get all entities to remove later
 	std::vector<Entity*> old;
-	int nrEntities = _entityManager->getNrOfEntities();
+	int nrEntities = m_entityManager->getNrOfEntities();
 	for (int i = 0; i < nrEntities; i++)
 	{
-		Entity* remove = _entityManager->getEntityByIndex(0);
+		Entity* remove = m_entityManager->getEntityByIndex(0);
 		old.push_back(remove);
-		_entityManager->removeEntity(remove);
+		m_entityManager->removeEntity(remove);
 	}
 
 	//load new entities
-	std::string xmlfile = _levels.at(queueID)._path;
+	std::string xmlfile = m_levels.at(m_queueID).path;
 	xmlfile += ".xml";
-	_entityManager->loadXML(xmlfile);
-	_current = queueID;
+	m_entityManager->loadXML(xmlfile);
+	m_current = m_queueID;
 
 	//remove old entities
 	for (unsigned int i = 0; i < old.size(); i++)
 		delete old[i];
 
 	//load lua file
-	std::string luafile = _levels.at(queueID)._path;
+	std::string luafile = m_levels.at(m_queueID).path;
 	luafile += ".lua";
-	_entityManager->modules->script->Run(luafile);
+	m_entityManager->modules->script->Run(luafile);
 
 	//run loaded function
-	Event::entityManager = _entityManager;
-	lua_getglobal(_entityManager->modules->script->L, "loaded");
-	lua_pcall(_entityManager->modules->script->L, 0, 0, 0);
+	Event::entityManager = m_entityManager;
+	lua_getglobal(m_entityManager->modules->script->L, "loaded");
+	lua_pcall(m_entityManager->modules->script->L, 0, 0, 0);
 
-
-	loading = false;
+	m_loading = false;
 }
 
-bool LevelHandler::hasQueuedLevel()
+bool LevelHandler::hasQueuedLevel() const
 {
-	return queued;
+	return m_hasQueued;
 }
 
-bool LevelHandler::isLoading()
+bool LevelHandler::isLoading() const
 {
-	return loading;
+	return m_loading;
 }

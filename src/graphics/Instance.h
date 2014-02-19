@@ -34,6 +34,7 @@ public:
 	virtual Vec3 GetRotation() = 0;
 	virtual Vec3 GetScale() = 0;
 	virtual UINT GetAnimation() = 0;
+	virtual bool IsAnimationDone() = 0;
 
 	virtual void SetPosition(Vec3 pos) = 0;
 	virtual void SetRotation(Vec3 rot) = 0;
@@ -47,4 +48,23 @@ public:
 
 };
 
+class DLL_API MorphModelInstance
+{
+public:
+	virtual ~MorphModelInstance() {};
+
+	virtual bool IsVisible() const = 0;
+	virtual Vec3 GetPosition() const = 0;
+	virtual Vec3 GetRotation() const = 0;
+	virtual Vec3 GetScale() const = 0;
+	virtual Vec3 GetWeights() const = 0;
+
+	virtual void Set(Vec3 pos, Vec3 rot, Vec3 scale, Vec3 weights) = 0;
+	virtual void SetVisibility(bool visible) = 0;
+	virtual void SetPosition(Vec3 pos) = 0;
+	virtual void SetRotation(Vec3 rot) = 0;
+	virtual void SetScale(Vec3 scale) = 0;
+	virtual void SetWeights(Vec3 weights) = 0;
+	
+};
 #endif

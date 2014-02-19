@@ -9,7 +9,7 @@
 // Suffixes: L (Local), W (World), V (View), H (Homogeneous)
 
 // Keep mirrored with C++ implementation (LightDef.h)
-struct PointLight
+struct PLight
 {
 	float4 Ambient;
 	float4 Diffuse;
@@ -22,7 +22,7 @@ struct PointLight
 	float Padding;
 };
 
-struct DirectionalLight
+struct DLight
 {
 	float4 Ambient;
 	float4 Diffuse;
@@ -32,7 +32,7 @@ struct DirectionalLight
 	float Padding;
 };
 
-struct SpotLight
+struct SLight
 {
 	float4 Ambient;
 	float4 Diffuse;
@@ -59,9 +59,9 @@ struct Material
 //=============================================================================
 // Point light
 //=============================================================================
-void ComputePointLight(
+void ComputePLight(
 	Material mat,		// Material
-	PointLight light,	// Point light source
+	PLight light,	// Point light source
 	float3 pos,			// Surface position
 	float3 normal,		// Surface normal
 	float3 toEye,		// Surface point being lit to the eye
@@ -111,9 +111,9 @@ void ComputePointLight(
 	specular *= atten;
 }
 
-void ComputePointLight_Deferred(
+void ComputePLight_Deferred(
 	float4 specular,		// Material (specular)
-	PointLight light,	// Point light source
+	PLight light,	// Point light source
 	float3 pos,			// Surface position
 	float3 normal,		// Surface normal
 	float3 toEye,		// Surface point being lit to the eye
@@ -162,9 +162,9 @@ void ComputePointLight_Deferred(
 	specularOut *= atten;
 }
 
-void ComputePointLight_Deferred_Ambient(
+void ComputePLight_Deferred_Ambient(
 	float4 specular,		// Material (specular)
-	PointLight light,	// Point light source
+	PLight light,	// Point light source
 	float3 pos,			// Surface position
 	float3 normal,		// Surface normal
 	float3 toEye,		// Surface point being lit to the eye
@@ -219,9 +219,9 @@ void ComputePointLight_Deferred_Ambient(
 //=============================================================================
 // Directional light
 //=============================================================================
-void ComputeDirectionalLight(
+void ComputeDLight(
 	Material mat,
-	DirectionalLight light,
+	DLight light,
 	float3 normal,
 	float3 toEye,
 
@@ -252,9 +252,9 @@ void ComputeDirectionalLight(
 	}
 }
 
-void ComputeDirectionalLight_Deferred(
+void ComputeDLight_Deferred(
 	float4 specular,
-	DirectionalLight light,
+	DLight light,
 	float3 normal,
 	float3 toEye,
 
@@ -284,9 +284,9 @@ void ComputeDirectionalLight_Deferred(
 	}
 }
 
-void ComputeDirectionalLight_Deferred_Ambient(
+void ComputeDLight_Deferred_Ambient(
 	float4 specular,
-	DirectionalLight light,
+	DLight light,
 	float3 normal,
 	float3 toEye,
 
@@ -322,9 +322,9 @@ void ComputeDirectionalLight_Deferred_Ambient(
 //=============================================================================
 // Spot light
 //=============================================================================
-void ComputeSpotLight(
+void ComputeSLight(
 	Material mat,
-	SpotLight light,
+	SLight light,
 	float3 pos,
 	float3 normal,
 	float3 toEye,
@@ -367,7 +367,7 @@ void ComputeSpotLight(
 		specular = specFactor * mat.Specular * light.Specular;
 	}
 
-	// Scale by spotlight factor
+	// Scale by SLight factor
 	float spot = pow(max(dot(-lightVec, light.Direction), 0.0f), light.Spot);
 
 	// Scale by attenuation factor
@@ -378,9 +378,9 @@ void ComputeSpotLight(
 	specular *= attenuation;
 }
 
-void ComputeSpotLight_Deferred(
+void ComputeSLight_Deferred(
 	float4 specular,
-	SpotLight light,
+	SLight light,
 	float3 pos,
 	float3 normal,
 	float3 toEye,
@@ -423,7 +423,7 @@ void ComputeSpotLight_Deferred(
 		specularOut = specFactor * specular * light.Specular;
 	}
 
-	// Scale by spotlight factor
+	// Scale by SLight factor
 	float spot = pow(max(dot(-lightVec, light.Direction), 0.0f), light.Spot);
 
 	// Scale by attenuation factor

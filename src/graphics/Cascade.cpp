@@ -239,7 +239,7 @@ void Cascade::DrawSceneToShadowMap(
 
 void Cascade::DrawSceneToShadowMap(const std::vector<ModelInstanceImpl*>& modelInstances,
 	const std::vector<AnimatedInstanceImpl*>& mAnimatedInstances,
-	const std::vector<MorphModelInstance*>& mMorphInstances,
+	const std::vector<MorphModelInstanceImpl*>& mMorphInstances,
 	ID3D11DeviceContext* deviceContext,
 	ShadowShader* shadowShader,
 	SkinnedShadowShader* skinnedShadowShader,

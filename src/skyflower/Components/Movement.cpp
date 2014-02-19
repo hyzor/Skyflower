@@ -21,6 +21,8 @@
 #define JUMP_SPEED_FACTOR_FORWARD 0.0005f
 #define JUMP_SPEED_FACTOR_BACKWARD 0.0125f
 
+#define RUN_PARTICLE_EMIT_RATE (1.0f / 10.0f)
+
 static const char *fallingSounds[] = {
 	"player/falling1.wav"
 };
@@ -38,7 +40,13 @@ Movement::Movement(float speed) : Component("Movement")
 	this->walkAngle = 0.0f;
 	this->timeFalling = 0.0f;
 	this->mInitialJumpDir = None;
-	this->mParticleSystem = NULL;
+	this->dizzyMaxTimer = 2.0f;
+	this->isDizzy = false;
+	this->yaw = 0;
+
+	this->mParticleSystemRun = NULL;
+	this->mParticleSystemDizzy = NULL;
+	mParticleSystemDizzyAngle = 0.0f;
 }
 
 Movement::~Movement()
@@ -48,10 +56,19 @@ Movement::~Movement()
 void Movement::addedToEntity() {
 	this->p = getOwner()->getPhysics();
 
-	this->mParticleSystem = getOwner()->getModules()->graphics->CreateParticleSystem();
-	this->mParticleSystem->SetParticleType(ParticleType::PT_PARTICLE);
-	this->mParticleSystem->SetParticleAgeLimit(0.25f);
-	this->mParticleSystem->SetEmitFrequency(1.0f / 10.0f);
+	this->mParticleSystemRun = getOwner()->getModules()->graphics->CreateParticleSystem();
+	this->mParticleSystemRun->SetActive(true);
+	this->mParticleSystemRun->SetParticleType(ParticleType::PT_PARTICLE);
+	this->mParticleSystemRun->SetParticleAgeLimit(0.25f);
+	this->mParticleSystemRun->SetEmitFrequency(FLT_MAX);
+	this->mParticleSystemRun->SetScale(XMFLOAT2(4.0f, 4.0f));
+
+	this->mParticleSystemDizzy = getOwner()->getModules()->graphics->CreateParticleSystem();
+	this->mParticleSystemDizzy->SetActive(false);
+	this->mParticleSystemDizzy->SetParticleType(ParticleType::PT_BIRD);
+	this->mParticleSystemDizzy->SetParticleAgeLimit(3.75f);
+	this->mParticleSystemDizzy->SetEmitFrequency(1.0f / 2.0f);
+	this->mParticleSystemDizzy->SetScale(XMFLOAT2(2.5f, 2.5f));
 
 	requestMessage("StartMoveForward", &Movement::startMoveForward);
 	requestMessage("StartMoveBackward", &Movement::startMoveBackward);
@@ -71,14 +88,18 @@ void Movement::addedToEntity() {
 
 	requestMessage("Jump", &Movement::Jump);
 	requestMessage("StopJump", &Movement::StopJump);
+
+	requestMessage("isDizzy", &Movement::setIsDizzy);
 }
 
 void Movement::removeFromEntity()
 {
 	this->p = NULL;
 
-	getOwner()->getModules()->graphics->DeleteParticleSystem(this->mParticleSystem);
-	this->mParticleSystem = NULL;
+	getOwner()->getModules()->graphics->DeleteParticleSystem(this->mParticleSystemRun);
+	getOwner()->getModules()->graphics->DeleteParticleSystem(this->mParticleSystemDizzy);
+	this->mParticleSystemRun = NULL;
+	this->mParticleSystemDizzy = NULL;
 }
 
 void Movement::update(float deltaTime)
@@ -118,15 +139,16 @@ void Movement::update(float deltaTime)
 		if (!health->isAlive())
 		{
 			sendMessageToEntity(this->getOwnerId(), "Respawn");
-			p->SetVelocity(Vec3(0, 0, 0));
-			health->setHealth(100);
 			return;
 		}
 	}
 
 	//float walkAngle = 0.0f;
-
-	if (canMove)
+	if (isDizzy)
+	{
+		dizzyTimer(deltaTime);
+	}
+	else if (canMove)
 	{
 		if (this->isMovingForward) {
 			if (this->isMovingLeft) {
@@ -167,10 +189,7 @@ void Movement::update(float deltaTime)
 				if (tot < -180)
 					tot += 360;
 
-				if (tot > 0)
-					walkAngle += std::abs(tot) * deltaTime * 7;
-				else
-					walkAngle -= std::abs(tot) * deltaTime * 7;
+				walkAngle += tot * deltaTime * 14;
 			}
 			else
 				walkAngle = targetRot;
@@ -191,10 +210,10 @@ void Movement::update(float deltaTime)
 			}
 
 			// If the player is moving, rotate it to match the camera's direction.
-			if (getOwnerId() == 1)
-			{
+			//if (getOwner()->hasComponents("AI"))
+			//{
 				rot = Vec3(0.0f, -this->yaw + DegreesToRadians(90.0f + walkAngle), 0.0f);
-			}
+			//}
 		}
 		else
 		{
@@ -202,46 +221,154 @@ void Movement::update(float deltaTime)
 		}
 	}
 
-	if (getOwnerId() == 1 && getOwner()->getAnimatedInstance())
-	{
-		Push *pushComponent = getOwner()->getComponent<Push *>("Push");
+	AnimatedInstance *animatedInstance = getOwner()->getAnimatedInstance();
 
-		if ((this->isInAir && timeFalling > 0.3f) || p->GetStates()->isJumping)
+	if (animatedInstance)
+	{
+		if (getOwnerId() == 1)
 		{
-			getOwner()->getAnimatedInstance()->SetAnimation(1, false);
-		}
-		else if (pushComponent && !pushComponent->isPushingBox())
-		{
-			if (p->GetStates()->isMoving)
+			// Player animations
+
+			Push *pushComponent = getOwner()->getComponent<Push *>("Push");
+			Throw *throwComponent = getOwner()->getComponent<Throw *>("Throw");
+
+			if (animatedInstance->GetAnimation() == 7 && !animatedInstance->IsAnimationDone())
 			{
-				getOwner()->getAnimatedInstance()->SetAnimation(0, true);
+				// Do nothing, waiting for throw animation to finish.
+			}
+			else if (isDizzy)
+			{
+				// Dizzy
+				animatedInstance->SetAnimation(10, true);
+			}
+			else if ((this->isInAir && timeFalling > 0.3f) || p->GetStates()->isJumping)
+			{
+				if (animatedInstance->GetAnimation() != 8 && animatedInstance->GetAnimation() != 9)
+				{
+					if (animatedInstance->GetAnimation() != 1 || (animatedInstance->GetAnimation() == 1 && animatedInstance->IsAnimationDone()))
+					{
+						// Raise hands for fall
+						animatedInstance->SetAnimation(8, false);
+					}
+				}
+
+				if (animatedInstance->GetAnimation() == 8 && animatedInstance->IsAnimationDone())
+				{
+					// Fall
+					animatedInstance->SetAnimation(9, true);
+				}
+			}
+			else if (throwComponent && throwComponent->getIsHoldingThrowable())
+			{
+				// Holding ball
+				animatedInstance->SetAnimation(6, true);
+			}
+			else if (pushComponent && !pushComponent->isPushingBox())
+			{
+				if (p->GetStates()->isMoving)
+				{
+					// Run
+					animatedInstance->SetAnimation(0, true);
+				}
+				else
+				{
+					// Idle
+					animatedInstance->SetAnimation(4, true);
+				}
+			}
+		}
+		else if (getOwner()->getComponent<AI *>("AI"))
+		{
+			// AI animations
+
+			if (p->GetStates()->isJumping)
+			{
+				// Playing jump animation, do nothing.
+			}
+			else if (p->GetStates()->isMoving)
+			{
+				// Run
+				animatedInstance->SetAnimation(0, true);
 			}
 			else
 			{
-				getOwner()->getAnimatedInstance()->SetAnimation(4, true);
+				// Idle
+
+				// AIn har ingen idle animation, spela springanimationen istället.
+				animatedInstance->SetAnimation(0, true);
 			}
 		}
 	}
 
 	this->p->ApplyVelocityToPos(pos);
 
-	// Update particle system
+	// Update run particle system.
 	Vec3 emitDirection = Vec3(cosf(-rot.Y + 3.14f / 2), 0, sinf(-rot.Y + 3.14f / 2)).Normalize();
 	float particleAcceleration = 10.0f;
 
-	this->mParticleSystem->SetActive(!(this->isInAir || !p->GetStates()->isMoving));
-	this->mParticleSystem->SetEmitPos(XMFLOAT3(pos.X, pos.Y, pos.Z));
-	this->mParticleSystem->SetEmitDir(XMFLOAT3(emitDirection.X, emitDirection.Y, emitDirection.Z));
-	this->mParticleSystem->SetConstantAccel(XMFLOAT3(emitDirection.X * particleAcceleration, emitDirection.Y * particleAcceleration, emitDirection.Z * particleAcceleration));
+	bool running = p->GetStates()->isMoving && !this->isInAir;
+
+	this->mParticleSystemRun->SetEmitFrequency(running? RUN_PARTICLE_EMIT_RATE : FLT_MAX);
+	this->mParticleSystemRun->SetEmitPos(XMFLOAT3(pos.X, pos.Y, pos.Z));
+	this->mParticleSystemRun->SetEmitDir(XMFLOAT3(emitDirection.X, emitDirection.Y, emitDirection.Z));
+	this->mParticleSystemRun->SetConstantAccel(XMFLOAT3(emitDirection.X * particleAcceleration, emitDirection.Y * particleAcceleration, emitDirection.Z * particleAcceleration));
+
+	// Update dizzy particle system.
+	this->mParticleSystemDizzy->SetActive(isDizzy);
+
+	if (isDizzy)
+	{
+		mParticleSystemDizzyAngle += DegreesToRadians(135.0f) * deltaTime;
+
+		if (mParticleSystemDizzyAngle > XM_2PI)
+			mParticleSystemDizzyAngle -= XM_2PI;
+
+		Vec3 headPosition = pos + Vec3(0.0f, 10.0f, 0.0f);
+		Vec3 particleSystemPosition = headPosition + Vec3(cosf(mParticleSystemDizzyAngle), 0.0f, sinf(mParticleSystemDizzyAngle)) * 3.0f;
+
+		this->mParticleSystemDizzy->SetEmitPos(XMFLOAT3(particleSystemPosition.X, particleSystemPosition.Y, particleSystemPosition.Z));
+	}
 
 	updateEntityPos(pos);
-	updateEntityRot(rot);
+
+	// Update player and AI rotation.
+	if (getOwnerId() == 1 || getOwner()->getComponent<AI *>("AI"))
+	{
+		float d = (rot.Y - pRot.Y);
+
+		if (d > 3.14f)
+			d -= 3.14f*2;
+		else if (d < -3.14f)
+			d += 3.14f*2;
+
+		Vec3 nRot = pRot + Vec3(0,d,0) * 14 *deltaTime;
+
+		updateEntityRot(nRot);
+		pRot = nRot;
+	}
+}
+
+Vec3 Movement::GetLook()
+{
+	return this->camLook;
 }
 
 void Movement::setCamera(Vec3 look, Vec3 right, Vec3 up)
 {
-	if (p)
+	//if (p)
 	{
+		Vec3 lookY = look;
+		lookY.Y = 0;
+		lookY.Normalize();
+
+		yaw = asinf(lookY.X);
+		if (lookY.Z > 0)
+			yaw = -yaw - 3.14f/2;
+		else
+			yaw = yaw + 3.14f - 3.14f / 2;
+
+		float pitch = -asinf(look.Y);
+
 		this->camLook = look;
 	}
 }
@@ -331,43 +458,63 @@ void Movement::notInAir(Message const& msg)
 void Movement::Jump(Message const& msg)
 {
 	if (!getOwner()->ground && timeFalling > 0.3f)
+	{
 		return;
-
-	Vec3 pos = getEntityPos();
-
-	float forwardJumpSpeed = 0.0f;
-
-	if (this->isMovingBackward || this->isMovingForward || this->isMovingLeft || this->isMovingRight)
-	{
-		forwardJumpSpeed = this->speed;
 	}
-
-	if (p->Jump(pos, forwardJumpSpeed))
+	else if (canMove)
 	{
-		//Remember the direction faced when starting the jump
-		if (this->isMovingForward)
-			this->mInitialJumpDir = Forward;
-		else if (this->isMovingBackward)
-			this->mInitialJumpDir = Backward;
-		else if (this->isMovingLeft)
-			this->mInitialJumpDir = Left;
-		else if (this->isMovingRight)
-			this->mInitialJumpDir = Right;
-		else
-			this->mInitialJumpDir = None;
+		Vec3 pos = getEntityPos();
 
-		updateEntityPos(pos);
+		float forwardJumpSpeed = 0.0f;
 
-		Entity *owner = getOwner();
-		GravityComponent *gravity = owner->getComponent<GravityComponent*>("Gravity");
-
-		if (gravity)
+		if (this->isMovingBackward || this->isMovingForward || this->isMovingLeft || this->isMovingRight)
 		{
-			gravity->setEnabled(false);
-			this->timeUntilGravityEnable = MAX_JUMP_KEY_TIME;
+			forwardJumpSpeed = this->speed;
 		}
 
-		owner->getModules()->sound->PlaySound(GetPlayerSoundFile("player/jump1.wav"), 1.0f, &pos.X);
+		if (p->Jump(pos, forwardJumpSpeed))
+		{
+			//Remember the direction faced when starting the jump
+			if (this->isMovingForward)
+				this->mInitialJumpDir = Forward;
+			else if (this->isMovingBackward)
+				this->mInitialJumpDir = Backward;
+			else if (this->isMovingLeft)
+				this->mInitialJumpDir = Left;
+			else if (this->isMovingRight)
+				this->mInitialJumpDir = Right;
+			else
+				this->mInitialJumpDir = None;
+
+			updateEntityPos(pos);
+
+			Entity *owner = getOwner();
+			GravityComponent *gravity = owner->getComponent<GravityComponent*>("Gravity");
+
+			if (gravity)
+			{
+				gravity->setEnabled(false);
+				this->timeUntilGravityEnable = MAX_JUMP_KEY_TIME;
+			}
+
+			owner->getModules()->sound->PlaySound(GetPlayerSoundFile("player/jump1.wav"), 1.0f, &pos.X);
+
+			AnimatedInstance *animatedInstance = owner->getAnimatedInstance();
+
+			if (animatedInstance)
+			{
+				if (getOwnerId() == 1)
+				{
+					// Play jump animation for player.
+					getOwner()->getAnimatedInstance()->SetAnimation(1, false);
+				}
+				else if (getOwner()->getComponent<AI *>("AI"))
+				{
+					// Play jump animation for AI.
+					getOwner()->getAnimatedInstance()->SetAnimation(5, false);
+				}
+			}
+		}
 	}
 }
 
@@ -460,4 +607,22 @@ void Movement::DoJumpStuff(float &jSpeed)
 		}
 		break;
 	}
+}
+
+void Movement::dizzyTimer(float deltaTime)
+{
+	this->dizzyCounter += deltaTime;
+	if (this->dizzyCounter >= this->dizzyMaxTimer)
+	{
+		this->canMove = true;
+		this->isDizzy = false;
+		sendMessageToEntity(getOwnerId(), "notDizzy");
+	}
+}
+
+void Movement::setIsDizzy(Message const &msg)
+{
+	this->isDizzy = true;
+	this->dizzyCounter = 0;
+	this->canMove = false;
 }

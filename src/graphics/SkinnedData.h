@@ -106,8 +106,8 @@ public:
 	AnimEvaluator(): mLastTime(0.0f), mTicksPerSecond(0.0f), mDuration(0.0f), PlayAnimationForward(true), AnimationIndexer(0) {}
 	AnimEvaluator(const aiAnimation* anim);
 	void Evaluate(float time, std::map<std::string, SkinData::Bone*>& bones);
-	std::vector<XMFLOAT4X4>& GetTransforms(float dt) { return Transforms[GetFrameIndexAt(dt)]; }
-	UINT GetFrameIndexAt(float time);
+	//std::vector<XMFLOAT4X4>& GetTransforms(float dt) { return Transforms[GetFrameIndexAt(dt)]; }
+	//UINT GetFrameIndexAt(float time);
 
 	float GetDuration(UINT frameStart, UINT frameEnd);
 
@@ -136,7 +136,7 @@ public:
 class SkinnedData
 {
 public:
-	SkinnedData(): Skeleton(0), CurrentAnimIndex(-1) {}
+	SkinnedData(): Skeleton(0), CurrentAnimIndex(0) {}
 	~SkinnedData();
 
 	bool SetAnimIndex(UINT animIndex);
@@ -147,17 +147,17 @@ public:
 	void UpdateTransforms(SkinData::Bone* node);
 
 	// Get transforms for use in vertex shader
-	std::vector<XMFLOAT4X4>& GetTransforms(float dt) { return Animations[CurrentAnimIndex].GetTransforms(dt); }
+	//std::vector<XMFLOAT4X4>& GetTransforms(float dt) { return Animations[CurrentAnimIndex].GetTransforms(dt); }
 
 	// Get transforms (animIndex as a parameter to be able to share SkinnedData)
-	std::vector<XMFLOAT4X4>& GetTransforms(float dt, UINT animIndex) { return Animations[animIndex].GetTransforms(dt); }
+	//std::vector<XMFLOAT4X4>& GetTransforms(float dt, UINT animIndex) { return Animations[animIndex].GetTransforms(dt); }
 
 	// Get transforms (animIndex as a parameter to be able to share SkinnedData) with key frame intervals
 	std::vector<XMFLOAT4X4>& GetTransforms(float dt, UINT animIndex, UINT frameStart, UINT frameEnd) { return Animations[animIndex].GetTransforms(dt, frameStart, frameEnd); }
 
 	// Get transforms (animIndex as a parameter to be able to share SkinnedData) with key frame intervals and animation forward/backward
 	std::vector<XMFLOAT4X4>& GetTransforms(float dt, UINT animIndex, UINT frameStart, UINT frameEnd, bool playAnimForward) 
-	{ return Animations[animIndex].GetTransforms(dt, frameStart, frameEnd, playAnimForward); }
+	{ assert(animIndex < Animations.size()); return Animations[animIndex].GetTransforms(dt, frameStart, frameEnd, playAnimForward); }
 
 	UINT GetAnimationIndex() const { return CurrentAnimIndex; }
 	UINT GetAnimationIndex(const std::string& name);

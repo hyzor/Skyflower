@@ -42,6 +42,7 @@ public:
 		lua_register(sh->L, "StartUpdate", Event::StartUpdate);
 		lua_register(sh->L, "InRange", Event::InRange);
 		lua_register(sh->L, "IsActivated", Event::IsActivated);
+		lua_register(sh->L, "IsActivator", Event::IsActivator);
 
 		//AI
 		lua_register(sh->L, "SetTarget", Event::SetTarget);
@@ -51,11 +52,22 @@ public:
 		lua_register(sh->L, "Push", Event::push);
 		lua_register(sh->L, "PushAll", Event::pushAll);
 		lua_register(sh->L, "SetSpeed", Event::SetSpeed);
+		//Throw
+		lua_register(sh->L, "PickUp", Event::PickUp);
+		lua_register(sh->L, "CanPick", Event::CanPick);
+		lua_register(sh->L, "Throw", Event::sThrow);
+		lua_register(sh->L, "CanThrow", Event::CanThrow);
 
 		// MoveTarget component
 		lua_register(sh->L, "MoveToTarget", Event::MoveToTarget);
 		lua_register(sh->L, "MoveToSpawn", Event::MoveToSpawn);
 		lua_register(sh->L, "SetContinous", Event::SetContinous);
+
+		// Lights
+		lua_register(sh->L, "Lit", Event::Lit);
+		lua_register(sh->L, "Unlit", Event::Unlit);
+		lua_register(sh->L, "IsLit", Event::IsLit);
+		lua_register(sh->L, "IsUnlit", Event::IsUnlit);
 	};
 
 	// we are added to an Entity, and thus to the component system
@@ -91,11 +103,11 @@ private:
 
 	void Deactivated(Message const& msg);
 
-	void Goal(Message const& msg)
+	/*void Goal(Message const& msg)
 	{
 		//TO DO
 		//cout << "GOAL" << endl;
-	}
+	}*/
 
 	static int PlaySound(lua_State* L);
 	static int Jump(lua_State* L);
@@ -108,6 +120,7 @@ private:
 	static int StopUpdate(lua_State* L);
 	static int InRange(lua_State* L);
 	static int IsActivated(lua_State* L);
+	static int IsActivator(lua_State* L);
 
 	static int SetTarget(lua_State* L);
 	static int IsTouching(lua_State* L);
@@ -117,9 +130,19 @@ private:
 	static int pushAll(lua_State* L);
 	static int SetSpeed(lua_State* L);
 
+	static int PickUp(lua_State* L);
+	static int CanPick(lua_State* L);
+	static int sThrow(lua_State* L);
+	static int CanThrow(lua_State* L);
+
 	static int MoveToTarget(lua_State* L);
 	static int MoveToSpawn(lua_State* L);
 	static int SetContinous(lua_State* L);
+
+	static int Lit(lua_State* L);
+	static int Unlit(lua_State* L);
+	static int IsLit(lua_State* L);
+	static int IsUnlit(lua_State* L);
 };
 
 #endif

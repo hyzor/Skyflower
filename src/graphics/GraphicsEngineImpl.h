@@ -26,13 +26,27 @@
 #include "OrthoWindow.h"
 #include "Texture2DImpl.h"
 
-#include "MorphModel.h"
-
 #include "ParticleSystemImpl.h"
+
+#include "GenericSkinnedModelSorted.h"
+
+#include "SMAA.h"
+#include "External/SMAA/AreaTex.h"
+#include "FullscreenTriangle.h"
+
+#define MAXPLIGHTS 20
+#define MAXDLIGHTS 5
+#define MAXSLIGHTS 10
 
 const float fovY = 0.785398f; // 0.25f * MathHelper::pi
 const float zNear = 1.0f;
 const float zFar = 1000.0f;
+
+static const enum BlendingMethods
+{
+	ALPHA_BLENDING = 0,
+	ADDITIVE_BLENDING
+};
 
 class GraphicsEngineImpl : public GraphicsEngine
 {
@@ -64,21 +78,26 @@ public:
 	AnimatedInstance* CreateAnimatedInstance(std::string file);
 	void DeleteInstance(AnimatedInstance* ai);
 
+	MorphModelInstance* CreateMorphAnimatedInstance(std::string path, std::string file, Vec3 pos);
+	void DeleteInstance(MorphModelInstance* mmi);
+
 	Texture2D *CreateTexture2D(unsigned int width, unsigned int height);
 	void DeleteTexture2D(Texture2D *texture);
 
 	ParticleSystem *CreateParticleSystem();
 	void DeleteParticleSystem(ParticleSystem *particleSystem);
 
+	//void CreateMorphInstance(std::string file);
+
 	void UpdateSceneData();
 
-	void addDirLight(Vec3 color, Vec3 direction, float intensity);
-	void addPointLight(Vec3 color, Vec3 Position, float intensity);
-	void addSpotLight(Vec3 color, Vec3 direction, Vec3 Position, float angle);
+	DirectionalLight* addDirLight(Vec3 color, Vec3 direction, float intensity);
+	PointLight* addPointLight(Vec3 color, Vec3 Position, float intensity);
+	SpotLight* addSpotLight(Vec3 color, Vec3 direction, Vec3 Position, float angle);
 
 	void clearLights();
 
-	void printText(wchar_t* text, int x, int y, Vec3 color = Vec3::Zero(), float scale = 1.0f);
+	void printText(std::string text, int x, int y, Vec3 color = Vec3::Zero(), float scale = 1.0f);
 	void Clear();
 
 	void SetFullscreen(bool fullscreen);
@@ -88,6 +107,8 @@ public:
 	void SetPostProcessingEffects(unsigned int effects);
 	void SetDepthOfFieldFocusPlanes(float nearBlurryPlane, float nearSharpPlane, float farSharpPlane, float farBlurryPlane);
 	void SetSSAOParameters(float radius, float projection_factor, float bias, float contrast, float sigma);
+	void SetMorphAnimWeigth(unsigned index, Vec3 weight);
+	Vec3 GetMorphAnimWeigth(unsigned index);
 
 private:
 	Direct3D* mD3D;
@@ -107,11 +128,15 @@ private:
 	std::vector<AnimatedInstanceImpl*> mAnimatedInstances;
 
 	std::vector<MorphModel*> mMorphModels;
-	std::vector<MorphModelInstance*> mMorphInstances;
+	std::vector<MorphModelInstanceImpl*> mMorphInstances;
 
-	std::vector<PointLight> mPointLights;
-	std::vector<DirectionalLight> mDirLights;
-	std::vector<SpotLight> mSpotLights;
+	PLight* mPointLights;
+	DLight* mDirLights;
+	SLight* mSpotLights;
+
+	int mPointLightsCount;
+	int mDirLightsCount;
+	int mSpotLightsCount;
 
 	Sky* mSky;
 	ShadowMap* mShadowMap;
@@ -124,7 +149,6 @@ private:
 
 	DirectX::BoundingSphere mSceneBounds;
 	DirectX::BoundingBox mSceneBB;
-
 
 	DeferredBuffers* mDeferredBuffers;
 	OrthoWindow* mOrthoWindow;
@@ -161,6 +185,22 @@ private:
 
 	float mCurFPS;
 	float mTargetFPS;
+
+	// Skinned model with upper body and lower body test
+	//GenericSkinnedModelSortedInstance* mSkinnedSortedTestInstance;
+	std::vector<GenericSkinnedModelSortedInstance*> mSkinnedSortedInstances;
+	std::map<std::string, GenericSkinnedModelSorted*> mSkinnedSortedModels;
+
+	SMAA* mSMAA;
+
+	FullscreenTriangle* mFullscreenTriangle;
+
+	bool mEnableAntiAliasing;
+
+	ID3D11Texture2D* mDepthStencilTextureCopy;
+	ID3D11ShaderResourceView* mDepthStencilSRVCopy;
+
+	//GenericSkinnedModelSorted* mTestSortedModel;
 };
 
 #endif

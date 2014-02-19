@@ -79,12 +79,35 @@ GenericSkinnedModel::~GenericSkinnedModel(void)
 {
 }
 
+
+GenericSkinnedModelInstance::GenericSkinnedModelInstance()
+{
+	model = NULL;
+	isVisible = false;
+	AnimationName = "";
+	AnimationIndex = 0;
+	TimePos = 0.0f;
+	frameStart = 0;
+	frameEnd = 0;
+	playAnimForward = true;
+	loop = true;
+	animationDone = false;
+}
+
 void GenericSkinnedModelInstance::Update(float dt)
 {
 	TimePos += dt;
 
 	if (!loop)
-		TimePos = min(TimePos, model->skinnedData.GetAnimationDuration(AnimationIndex, frameStart, frameEnd));
+	{
+		float animationDuration = model->skinnedData.GetAnimationDuration(AnimationIndex, frameStart, frameEnd);
+
+		if (TimePos > animationDuration)
+		{
+			TimePos = animationDuration;
+			animationDone = true;
+		}
+	}
 
 	FinalTransforms = model->skinnedData.GetTransforms(TimePos, AnimationIndex, frameStart, frameEnd, playAnimForward);
 }

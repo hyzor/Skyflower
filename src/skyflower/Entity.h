@@ -34,12 +34,42 @@ class Entity {
 		Entity(const Modules *modules, EntityId id, EntityId relativeid, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
 			 float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated);
 		virtual ~Entity();
-		void sendPosToComponent();
+		
+		Entity* ground;				//a pointer to the ground the entity stands on, if it stands on something		
+		Entity* wall;				//a pointer to the wall the entity is colliding with, if it is colliding with a wall
+		EntityId relativeid;
+		EntityId fId;
+		Sphere *sphere;				
+		Vec3 spawnpos;
+		CollisionInstance* collInst;
+		Field* field;
+		PhysicsEntity* mPhysicsEntity;
+
+
+		void updatePos(Vec3 pos);
 		void update(float deltaTime);
+		void changeRelative(Entity* ground);
+		void updateRelativePos(Vec3 pos);
+		void updateRot(Vec3 rot);
+		void ActiveteField(bool b);
+		void updateScale(Vec3 scale);
+		void updateVisible(bool isVisible);
+		void setIsActive(bool status);
+
+		bool returnVisible();
+		bool getIsActive();
+		bool hasComponents(string name);
+
+		Vec3 returnPos();
+		Vec3 returnRot();
+		Vec3 returnScale();
+		Vec3 getRelativePos();
 
 		const Modules *getModules();
 		PhysicsEntity* getPhysics();
 		string getType();
+		AnimatedInstance *getAnimatedInstance();
+		CollisionInstance* returnCollision();
 
 		template <typename T>
 		T getComponent(string Type)
@@ -49,45 +79,6 @@ class Entity {
 			else
 				return NULL;
 		}
-		bool hasComponents(string name);
-
-		Vec3 returnPos();
-		Vec3 spawnpos;
-		CollisionInstance* collInst;
-		Field* field;
-
-		//a pointer to the ground the entity stands on, if it stands on something
-		Entity* ground; 
-		//a pointer to the wall the entity is colliding with, if it is colliding with a wall
-		Entity* wall;
-		Sphere *sphere;
-
-		EntityId relativeid;
-
-		void updatePos(Vec3 pos);
-
-
-		void changeRelative(Entity* ground);
-		void updateRelativePos(Vec3 pos);
-		Vec3 getRelativePos();
-		AnimatedInstance *getAnimatedInstance();
-
-		void updateRot(Vec3 rot);
-
-		PhysicsEntity* mPhysicsEntity;
-		EntityId fId;
-
-		void ActiveteField(bool b);
-		Vec3 returnRot();
-		Vec3 returnScale();
-		bool returnVisible();
-		bool getIsActive();
-		CollisionInstance* returnCollision();
-		void updateScale(Vec3 scale);
-		void updateVisible(bool isVisible);
-		void setIsActive(bool status);
-
-
 
 	private:
 
@@ -98,10 +89,11 @@ class Entity {
 		string model;
 		bool isVisible;
 		bool isActive;
-		ModelInstance* modelInst;
-		AnimatedInstance* AnimInst;
 		bool isAnimated;
 		bool isCollidible;
+		ModelInstance* modelInst;
+		AnimatedInstance* AnimInst;
+		const Modules *modules;
 
 		/**
 		 * COMPONENT MANAGEMENT
@@ -153,22 +145,12 @@ class Entity {
 		 * LOGGING
 		 */
 
-		// track a request
-		void trackRequest(RequestId, Component*);
-
-
 		// Entity manager is our friend
 		friend class EntityManager;
 
-		// Functions we made
-		void sendAMessageToAll(string message);
+		// Private functions we made
 		void sendMessageToEntity(string message, EntityId id);
-
 		EntityId getEntityId();
-
-
-
-		const Modules *modules;
 };
 
 

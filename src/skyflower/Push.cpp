@@ -8,6 +8,9 @@
 
 Push::Push() : Component("Push")
 {
+	this->canPush = true;
+	this->isColliding = false;
+	this->resetSpeed = false;
 }
 
 Push::~Push()
@@ -20,9 +23,10 @@ void Push::addedToEntity()
 
 	//requestMessage("inAir", &Push::stopPush);
 	requestMessage("Wall", &Push::stopPush);
+	requestMessage("isHoldingThrowable", &Push::setCanNotPush);
+	requestMessage("isNotHoldingThrowable", &Push::setCanPush);
+	requestMessage("beingPushed", &Push::beingPushed);
 
-	Vec3 temp = getEntityPos();
-	this->getOwner()->sphere = new Sphere(temp.X, temp.Y, temp.Z, 5);
 }
 
 void Push::removeFromEntity()
@@ -32,13 +36,13 @@ void Push::removeFromEntity()
 void Push::update(float dt)
 {
 	//push box
-	Entity *pusher = getOwner();
-	Entity *pushedObject = pusher->wall;
+	Entity* pusher = getOwner();
+	Entity* pushedObject = pusher->wall;
 	bool isPushingBox = false;
 
-	if (pushedObject != nullptr)
+	if (pushedObject)
 	{
-		if (pushedObject->hasComponents("Box"))
+		if (pushedObject->hasComponents("Box") && canPush)
 		{
 			isPushingBox = true;
 
@@ -80,7 +84,17 @@ void Push::update(float dt)
 				rotation.Y = DegreesToRadians(90.0f + 90.0f * sign);
 			}
 
-			pushedObject->updatePos(pushedObjectPos + dir * dt * pushedObject->getComponent<Movement*>("Movement")->GetSpeed());
+
+			//check if entity is holding
+			bool p = true;
+			Throw* throwcomp = pusher->getComponent<Throw*>("Throw");
+			if(throwcomp)
+				if (throwcomp->getIsHoldingThrowable())
+					p = false;
+
+			if(p)
+				pushedObject->updatePos(pushedObjectPos + dir * dt * pushedObject->getComponent<Movement*>("Movement")->GetSpeed());
+			
 			pusher->updateRot(rotation);
 
 			EntityId pusherId = getOwnerId();
@@ -96,7 +110,23 @@ void Push::update(float dt)
 
 	m_isPushingBox = isPushingBox;
 
+
+	//reset the entity to normal speed
+	if (resetSpeed)
+	{
+		Movement* mov = getOwner()->getComponent<Movement*>("Movement");
+		mov->SetSpeed(mov->GetSpeed()+80*dt); //accelerate speed 40*dt
+		if (mov->GetSpeed() >= pSpeed)
+		{
+			resetSpeed = false;
+			mov->SetSpeed(pSpeed);
+		}
+	}
+
 	//pushAll();
+
+	isColliding = false;
+
 }
 
 void Push::stopPush(Message const& msg)
@@ -105,9 +135,28 @@ void Push::stopPush(Message const& msg)
 		getEntityManager()->sendMessageToEntity("stopBeingPushed", getOwnerId());
 }
 
-bool Push::canPush(Entity* target)
+bool Push::colliding(Entity* target)
 {
-	return target->sphere->Test(*getOwner()->sphere);
+	if (!target->getPhysics()->GetStates()->isBeingPushed && (target->sphere->Test(*getOwner()->sphere) || isColliding))
+	{
+		isColliding = false;
+		//get owner look vector
+		Vec3 rot = getOwner()->returnRot();
+		Vec3 look = Vec3(cosf(-rot.Y - 3.14f / 2), 0, sinf(-rot.Y - 3.14f / 2)).Normalize();
+		look.Normalize();
+
+		//get direction to target
+		Vec3 dir = target->returnPos() - getOwner()->returnPos();
+		dir.Y = 0;
+		dir.Normalize();
+
+		//se if owner looks at target
+		float dot = look.Dot(dir);
+		if (dot > 0.6f)
+			return true;
+	}
+
+	return false;
 }
 
 void Push::push(Entity* target)
@@ -119,13 +168,13 @@ void Push::push(Entity* target)
 		if (getOwner()->sphere && e->sphere)
 		{
 			//are two entities colliding?
-			if (canPush(e))
+			if (colliding(e) && canPush)
 			{
-				Vec3 dir = (e->returnPos() - getOwner()->returnPos()).Normalize();
+				Vec3 dir = (e->returnPos() - getOwner()->returnPos());
+				dir.Y = 0;
+				dir.Normalize();
 
-				//if (this->fEntitys[i]->getType() == "player" || this->fEntitys[j]->getType() == "player")
-
-				//if "i" is moving and can push, and that "j" is pushable
+				//if this entity is moving and can push, and that the other entity is pushable
 				if (getOwner()->getPhysics()->GetStates()->isMoving && e->hasComponents("Pushable"))
 				{
 					e->getPhysics()->SetPushDirection(dir * 10);
@@ -133,6 +182,15 @@ void Push::push(Entity* target)
 
 					Vec3 position = e->returnPos();
 					e->getModules()->sound->PlaySound("push.wav", 1.0f, &position.X);
+
+					//slow entity for 1 sec after push
+					Movement* mov = getOwner()->getComponent<Movement*>("Movement");
+					if (mov)
+					{
+						pSpeed = mov->GetSpeed();
+						mov->SetSpeed(5);
+						resetSpeed = true;
+					}
 				}
 			}
 		}
@@ -148,4 +206,19 @@ void Push::pushAll()
 bool Push::isPushingBox()
 {
 	return m_isPushingBox;
+}
+
+void Push::setCanPush(Message const& msg)
+{
+	this->canPush = true;
+}
+
+void Push::setCanNotPush(Message const& msg)
+{
+	this->canPush = false;
+}
+
+void Push::beingPushed(Message const& msg)
+{
+	this->isColliding = true;
 }

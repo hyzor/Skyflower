@@ -25,6 +25,15 @@ ShaderHandler::ShaderHandler()
 	mDeferredMorphShader = new BasicDeferredMorphShader();
 	mShadowMorphShader = new ShadowMorphShader();
 	mParticleSystemShader = new ParticleSystemShader();
+	mLightDeferredToTextureShader = new LightDeferredShader();
+	mBasicDeferredSkinnedSortedShader = new BasicDeferredSkinnedSortedShader();
+
+	// SMAA
+	mSMAAColorEdgeDetectionShader = new SMAAColorEdgeDetectionShader();
+	mSMAADepthEdgeDetectionShader = new SMAADepthEdgeDetectionShader();
+	mSMAALumaEdgeDetectionShader = new SMAALumaEdgeDetectionShader();
+	mSMAABlendingWeightCalculationsShader = new SMAABlendingWeightCalculationsShader();
+	mSMAANeighborhoodBlendingShader = new SMAANeighborhoodBlendingShader();
 }
 
 ShaderHandler::~ShaderHandler()
@@ -75,6 +84,16 @@ ShaderHandler::~ShaderHandler()
 	delete mDeferredMorphShader;
 	delete mShadowMorphShader;
 	delete mParticleSystemShader;
+	delete mLightDeferredToTextureShader;
+
+	delete mBasicDeferredSkinnedSortedShader;
+
+	// SMAA
+	delete mSMAAColorEdgeDetectionShader;
+	delete mSMAADepthEdgeDetectionShader;
+	delete mSMAALumaEdgeDetectionShader;
+	delete mSMAABlendingWeightCalculationsShader;
+	delete mSMAANeighborhoodBlendingShader;
 }
 
 void ShaderHandler::LoadCompiledVertexShader(LPCWSTR fileName, char* name, ID3D11Device* device)
@@ -436,21 +455,21 @@ void BasicShader::UpdatePerFrame(ID3D11DeviceContext* dc)
 	dataPtr3->gEyePosW = mBufferCache.psPerFrameBuffer.gEyePosW;
 	dataPtr3->padding = 0.0f;
 
-	dataPtr3->numPointLights = mBufferCache.psPerFrameBuffer.numPointLights;
+	dataPtr3->numPLights = mBufferCache.psPerFrameBuffer.numPLights;
 	dataPtr3->padding5 = 0;
 	dataPtr3->padding6 = 0;
 	dataPtr3->padding7 = 0;
 
-	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numPointLights; ++j)
-		dataPtr3->pointLights[j] = mBufferCache.psPerFrameBuffer.pointLights[j];
+	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numPLights; ++j)
+		dataPtr3->PLights[j] = mBufferCache.psPerFrameBuffer.PLights[j];
 
-	dataPtr3->numSpotLights = mBufferCache.psPerFrameBuffer.numSpotLights;
+	dataPtr3->numSLights = mBufferCache.psPerFrameBuffer.numSLights;
 	dataPtr3->padding8 = 0;
 	dataPtr3->padding9 = 0;
 	dataPtr3->padding10 = 0;
 
-	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numSpotLights; ++j)
-		dataPtr3->spotLights[j] = mBufferCache.psPerFrameBuffer.spotLights[j];
+	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numSLights; ++j)
+		dataPtr3->SLights[j] = mBufferCache.psPerFrameBuffer.SLights[j];
 
 	dc->Unmap(ps_cPerFrameBuffer, 0);
 
@@ -502,15 +521,15 @@ bool BasicShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pS
 	return true;
 }
 
-void BasicShader::SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, PointLight pointLights[])
+void BasicShader::SetPLights(ID3D11DeviceContext* dc, UINT numPLights, PLight PLights[])
 {
-	mBufferCache.psPerFrameBuffer.numPointLights = numPointLights;
+	mBufferCache.psPerFrameBuffer.numPLights = numPLights;
 
-	for (UINT i = 0; i < numPointLights; ++i)
-		mBufferCache.psPerFrameBuffer.pointLights[i] = pointLights[i];
+	for (UINT i = 0; i < numPLights; ++i)
+		mBufferCache.psPerFrameBuffer.PLights[i] = PLights[i];
 }
 
-void BasicShader::SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DirectionalLight dirLights[])
+void BasicShader::SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DLight dirLights[])
 {
 	mBufferCache.psPerFrameBuffer.numDirLights = numDirLights;
 
@@ -525,12 +544,12 @@ void BasicShader::SetShadowTransform(ID3D11DeviceContext* dc, const XMMATRIX& sh
 
 #pragma endregion BasicShaderEnd
 
-void BasicShader::SetSpotLights(ID3D11DeviceContext* dc, UINT numSpotLights, SpotLight spotLights[])
+void BasicShader::SetSLights(ID3D11DeviceContext* dc, UINT numSLights, SLight SLights[])
 {
-	mBufferCache.psPerFrameBuffer.numSpotLights = numSpotLights;
+	mBufferCache.psPerFrameBuffer.numSLights = numSLights;
 
-	for (UINT i = 0; i < numSpotLights; ++i)
-		mBufferCache.psPerFrameBuffer.spotLights[i] = spotLights[i];
+	for (UINT i = 0; i < numSLights; ++i)
+		mBufferCache.psPerFrameBuffer.SLights[i] = SLights[i];
 }
 
 #pragma endregion BasicShader
@@ -759,15 +778,15 @@ void NormalMappedSkinned::SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderReso
 	dc->PSSetShaderResources(2, 1, &tex);
 }
 
-void NormalMappedSkinned::SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, PointLight pointLights[])
+void NormalMappedSkinned::SetPLights(ID3D11DeviceContext* dc, UINT numPLights, PLight PLights[])
 {
-	mBufferCache.psPerFrameBuffer.numPointLights = numPointLights;
+	mBufferCache.psPerFrameBuffer.numPLights = numPLights;
 
-	for (UINT i = 0; i < numPointLights; ++i)
-		mBufferCache.psPerFrameBuffer.pointLights[i] = pointLights[i];
+	for (UINT i = 0; i < numPLights; ++i)
+		mBufferCache.psPerFrameBuffer.PLights[i] = PLights[i];
 }
 
-void NormalMappedSkinned::SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DirectionalLight dirLights[])
+void NormalMappedSkinned::SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DLight dirLights[])
 {
 	mBufferCache.psPerFrameBuffer.numDirLights = numDirLights;
 
@@ -844,21 +863,21 @@ void NormalMappedSkinned::UpdatePerFrame(ID3D11DeviceContext* dc)
 	dataPtr3->gEyePosW = mBufferCache.psPerFrameBuffer.gEyePosW;
 	dataPtr3->padding = 0.0f;
 
-	dataPtr3->numPointLights = mBufferCache.psPerFrameBuffer.numPointLights;
+	dataPtr3->numPLights = mBufferCache.psPerFrameBuffer.numPLights;
 	dataPtr3->padding5 = 0;
 	dataPtr3->padding6 = 0;
 	dataPtr3->padding7 = 0;
 
-	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numPointLights; ++j)
-		dataPtr3->pointLights[j] = mBufferCache.psPerFrameBuffer.pointLights[j];
+	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numPLights; ++j)
+		dataPtr3->PLights[j] = mBufferCache.psPerFrameBuffer.PLights[j];
 
-	dataPtr3->numSpotLights = mBufferCache.psPerFrameBuffer.numSpotLights;
+	dataPtr3->numSLights = mBufferCache.psPerFrameBuffer.numSLights;
 	dataPtr3->padding8 = 0;
 	dataPtr3->padding9 = 0;
 	dataPtr3->padding10 = 0;
 
-	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numSpotLights; ++j)
-		dataPtr3->spotLights[j] = mBufferCache.psPerFrameBuffer.spotLights[j];
+	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numSLights; ++j)
+		dataPtr3->SLights[j] = mBufferCache.psPerFrameBuffer.SLights[j];
 
 	dc->Unmap(ps_cPerFrameBuffer, 0);
 
@@ -1014,13 +1033,13 @@ void NormalMappedSkinned::SetWorldViewProjTex(ID3D11DeviceContext* dc, XMMATRIX&
 	mBufferCache.vsBuffer.texTransform = XMMatrixTranspose(texTransform);
 }
 
-void NormalMappedSkinned::SetSpotLights(ID3D11DeviceContext* dc, UINT numSpotLights, SpotLight spotLights[])
+void NormalMappedSkinned::SetSLights(ID3D11DeviceContext* dc, UINT numSLights, SLight SLights[])
 {
-	mBufferCache.psPerFrameBuffer.numSpotLights = numSpotLights;
+	mBufferCache.psPerFrameBuffer.numSLights = numSLights;
 
-	for (UINT i = 0; i < numSpotLights; ++i)
+	for (UINT i = 0; i < numSLights; ++i)
 	{
-		mBufferCache.psPerFrameBuffer.spotLights[i] = spotLights[i];
+		mBufferCache.psPerFrameBuffer.SLights[i] = SLights[i];
 	}
 }
 void NormalMappedSkinned::SetShadowStransform(ID3D11DeviceContext* dc, XMMATRIX& shadowTransform)
@@ -1591,15 +1610,15 @@ bool LightDeferredShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelSh
 	return true;
 }
 
-void LightDeferredShader::SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, PointLight pointLights[])
+void LightDeferredShader::SetPLights(ID3D11DeviceContext* dc, UINT numPLights, PLight PLights[])
 {
-	mBufferCache.psPerFrameBuffer.numPointLights = numPointLights;
+	mBufferCache.psPerFrameBuffer.numPLights = numPLights;
 
-	for (UINT i = 0; i < numPointLights; ++i)
-		mBufferCache.psPerFrameBuffer.pointLights[i] = pointLights[i];
+	for (UINT i = 0; i < numPLights; ++i)
+		mBufferCache.psPerFrameBuffer.PLights[i] = PLights[i];
 }
 
-void LightDeferredShader::SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DirectionalLight dirLights[])
+void LightDeferredShader::SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DLight dirLights[])
 {
 	mBufferCache.psPerFrameBuffer.numDirLights = numDirLights;
 
@@ -1607,12 +1626,12 @@ void LightDeferredShader::SetDirLights(ID3D11DeviceContext* dc, UINT numDirLight
 		mBufferCache.psPerFrameBuffer.dirLights[i] = dirLights[i];
 }
 
-void LightDeferredShader::SetSpotLights(ID3D11DeviceContext* dc, UINT numSpotLights, SpotLight spotLights[])
+void LightDeferredShader::SetSLights(ID3D11DeviceContext* dc, UINT numSLights, SLight SLights[])
 {
-	mBufferCache.psPerFrameBuffer.numSpotLights = numSpotLights;
+	mBufferCache.psPerFrameBuffer.numSLights = numSLights;
 
-	for (UINT i = 0; i < numSpotLights; ++i)
-		mBufferCache.psPerFrameBuffer.spotLights[i] = spotLights[i];
+	for (UINT i = 0; i < numSLights; ++i)
+		mBufferCache.psPerFrameBuffer.SLights[i] = SLights[i];
 }
 
 LightDeferredShader::LightDeferredShader()
@@ -1693,7 +1712,7 @@ bool LightDeferredShader::SetActive(ID3D11DeviceContext* dc)
 	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
 	dc->PSSetSamplers(1, 1, &RenderStates::mAnisotropicSS);
 	dc->PSSetSamplers(2, 1, &RenderStates::mComparisonSS);
-	dc->PSSetSamplers(3, 1, &RenderStates::mPointSS);
+	dc->PSSetSamplers(3, 1, &RenderStates::mPointClampedSS);
 
 	return true;
 }
@@ -1770,21 +1789,21 @@ void LightDeferredShader::UpdatePerFrame(ID3D11DeviceContext* dc)
 // 	dataPtr3->gEyePosW = mBufferCache.psPerFrameBuffer.gEyePosW;
 // 	dataPtr3->padding = 0.0f;
 // 
-// 	dataPtr3->numPointLights = mBufferCache.psPerFrameBuffer.numPointLights;
+// 	dataPtr3->numPLights = mBufferCache.psPerFrameBuffer.numPLights;
 // 	dataPtr3->padding5 = 0;
 // 	dataPtr3->padding6 = 0;
 // 	dataPtr3->padding7 = 0;
 // 
-// 	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numPointLights; ++j)
-// 		dataPtr3->pointLights[j] = mBufferCache.psPerFrameBuffer.pointLights[j];
+// 	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numPLights; ++j)
+// 		dataPtr3->PLights[j] = mBufferCache.psPerFrameBuffer.PLights[j];
 // 
-// 	dataPtr3->numSpotLights = mBufferCache.psPerFrameBuffer.numSpotLights;
+// 	dataPtr3->numSLights = mBufferCache.psPerFrameBuffer.numSLights;
 // 	dataPtr3->padding8 = 0;
 // 	dataPtr3->padding9 = 0;
 // 	dataPtr3->padding10 = 0;
 // 
-// 	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numSpotLights; ++j)
-// 		dataPtr3->spotLights[j] = mBufferCache.psPerFrameBuffer.spotLights[j];
+// 	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numSLights; ++j)
+// 		dataPtr3->SLights[j] = mBufferCache.psPerFrameBuffer.SLights[j];
 // 
 // 	dataPtr3->shadowTransform = mBufferCache.psPerFrameBuffer.shadowTransform;
 // 	dataPtr3->cameraViewMatrix = mBufferCache.psPerFrameBuffer.cameraViewMatrix;
@@ -1869,6 +1888,21 @@ void LightDeferredShader::SetFpsValues(float curFps, float targetFps)
 {
 	mBufferCache.psPerFrameBuffer.curFPS = curFps;
 	mBufferCache.psPerFrameBuffer.targetFPS = targetFps;
+}
+
+void LightDeferredShader::SetBackgroundTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(6, 1, &tex);
+}
+
+void LightDeferredShader::SetSkipLighting(bool skipLighting)
+{
+	mBufferCache.psPerFrameBuffer.skipLighting = skipLighting;
+}
+
+void LightDeferredShader::SetIsTransparencyPass(bool isTransparencyPass)
+{
+	mBufferCache.psPerFrameBuffer.isTransparencyPass = isTransparencyPass;
 }
 
 SkyDeferredShader::SkyDeferredShader()
@@ -2682,9 +2716,10 @@ bool ParticleSystemShader::SetActive(ID3D11DeviceContext* dc)
 }
 */
 
-void ParticleSystemShader::SetViewProj(XMMATRIX& viewProj)
+void ParticleSystemShader::SetViewProj(XMMATRIX& viewProj, XMMATRIX& view)
 {
 	mBufferCache.drawGSPerFrameBuffer.viewProj = XMMatrixTranspose(viewProj);
+	mBufferCache.drawGSPerFrameBuffer.view = XMMatrixTranspose(view);
 }
 
 void ParticleSystemShader::SetTexArray(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* texArray)
@@ -2713,6 +2748,8 @@ void ParticleSystemShader::SetTime(float gameTime, float dt)
 {
 	mBufferCache.streamOutGSPerFrameBuffer.gameTime = gameTime;
 	mBufferCache.streamOutGSPerFrameBuffer.timeStep = dt;
+
+	mBufferCache.drawVSInitBuffer.timeStep = dt;
 }
 
 void ParticleSystemShader::UpdateDrawShaders(ID3D11DeviceContext* dc)
@@ -2741,6 +2778,8 @@ void ParticleSystemShader::UpdateDrawShaders(ID3D11DeviceContext* dc)
 	dc->VSGetConstantBuffers(0, 1, &draw_VS_InitBuffer);
 
 	dc->PSSetShaderResources(0, 1, &mTexArray);
+	dc->PSSetShaderResources(1, 1, &mLitSceneTex);
+	dc->PSSetShaderResources(2, 1, &mDepthTex);
 }
 
 void ParticleSystemShader::UpdateStreamOutShaders(ID3D11DeviceContext* dc)
@@ -2772,6 +2811,7 @@ void ParticleSystemShader::ActivateDrawShaders(ID3D11DeviceContext* dc)
 	dc->PSSetShader(mDrawParticlePS, nullptr, 0);
 
 	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
+	dc->PSSetSamplers(1, 1, &RenderStates::mPointClampedSS);
 }
 
 void ParticleSystemShader::ActivateStreamShaders(ID3D11DeviceContext* dc)
@@ -2807,7 +2847,913 @@ void ParticleSystemShader::SetParticleType(UINT particleType)
 	mBufferCache.streamOutGSPerFrameBuffer.particleType = particleType;
 }
 
+void ParticleSystemShader::SetLitSceneTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* litSceneTex)
+{
+	mLitSceneTex = litSceneTex;
+}
+
+void ParticleSystemShader::SetPrevViewProj(XMMATRIX& prevViewProj)
+{
+	mBufferCache.drawGSPerFrameBuffer.prevViewProj = XMMatrixTranspose(prevViewProj);
+}
+
 void ParticleSystemShader::SetEmitParticles(bool emitParticles)
 {
 	mBufferCache.streamOutGSPerFrameBuffer.emitParticles = (emitParticles? 1 : 0);
 }
+
+void ParticleSystemShader::SetParticleFadeTime(float fadeTime)
+{
+	mBufferCache.drawVSInitBuffer.fadeTime = fadeTime;
+}
+
+void ParticleSystemShader::SetBlendingMethod(UINT blendingMethod)
+{
+	mBufferCache.drawGSPerFrameBuffer.blendingMethod = blendingMethod;
+}
+
+void ParticleSystemShader::SetDepthTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* depthTex)
+{
+	mDepthTex = depthTex;
+}
+
+void ParticleSystemShader::SetFarNearClipDistance(float zFar, float zNear)
+{
+	mBufferCache.drawGSPerFrameBuffer.farClipDistance = zFar;
+	mBufferCache.drawGSPerFrameBuffer.nearClipDistance = zNear;
+}
+
+void ParticleSystemShader::SetScale(float scaleX, float scaleY)
+{
+	mBufferCache.streamOutGSPerFrameBuffer.scaleX = scaleX;
+	mBufferCache.streamOutGSPerFrameBuffer.scaleY = scaleY;
+}
+
+BasicDeferredSkinnedSortedShader::BasicDeferredSkinnedSortedShader()
+{
+
+}
+
+BasicDeferredSkinnedSortedShader::~BasicDeferredSkinnedSortedShader()
+{
+	if (vs_cPerObjBuffer)
+		vs_cPerObjBuffer->Release();
+
+	if (vs_cSkinnedBuffer)
+		vs_cSkinnedBuffer->Release();
+
+	if (ps_cPerObjBuffer)
+		ps_cPerObjBuffer->Release();
+}
+
+bool BasicDeferredSkinnedSortedShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
+{
+	//------------------------
+	// Vertex shader buffer
+	//------------------------
+	ZeroMemory(&vs_cPerObjBufferVariables, sizeof(VS_CPEROBJBUFFER));
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC cbDesc;
+	cbDesc.ByteWidth = sizeof(VS_CPEROBJBUFFER);
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA InitData;
+	InitData.pSysMem = &vs_cPerObjBufferVariables;
+	InitData.SysMemPitch = 0;
+	InitData.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	device->CreateBuffer(&cbDesc, &InitData, &vs_cPerObjBuffer);
+
+	// SKINNED BUFFER
+	ZeroMemory(&vs_cSkinnedBufferVariables, sizeof(VS_CSKINNEDBUFFER));
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC cbSkinDesc;
+	cbSkinDesc.ByteWidth = sizeof(VS_CSKINNEDBUFFER);
+	cbSkinDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbSkinDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbSkinDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbSkinDesc.MiscFlags = 0;
+	cbSkinDesc.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA SkinInitData;
+	SkinInitData.pSysMem = &vs_cSkinnedBufferVariables;
+	SkinInitData.SysMemPitch = 0;
+	SkinInitData.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	device->CreateBuffer(&cbSkinDesc, &SkinInitData, &vs_cSkinnedBuffer);
+
+	//------------------------
+	// Pixel shader buffers
+	//------------------------
+	// PER OBJECT BUFFER
+	ZeroMemory(&ps_cPerObjBufferVariables, sizeof(PS_CPEROBJBUFFER));
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC cbDesc2;
+	cbDesc2.ByteWidth = sizeof(PS_CPEROBJBUFFER);
+	cbDesc2.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc2.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc2.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc2.MiscFlags = 0;
+	cbDesc2.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA InitData2;
+	InitData2.pSysMem = &ps_cPerObjBufferVariables;
+	InitData2.SysMemPitch = 0;
+	InitData2.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	device->CreateBuffer(&cbDesc2, &InitData2, &ps_cPerObjBuffer);
+
+	mInputLayout = inputLayout;
+
+	return true;
+}
+
+bool BasicDeferredSkinnedSortedShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
+{
+	mVertexShader = vShader;
+	mPixelShader = pShader;
+
+	return true;
+}
+
+bool BasicDeferredSkinnedSortedShader::SetActive(ID3D11DeviceContext* dc)
+{
+	// Set vertex layout and primitive topology
+	dc->IASetInputLayout(mInputLayout);
+
+	// Set active shaders
+	dc->VSSetShader(mVertexShader, nullptr, 0);
+	dc->PSSetShader(mPixelShader, nullptr, 0);
+
+	dc->PSSetSamplers(0, 1, &RenderStates::mLinearSS);
+	dc->PSSetSamplers(1, 1, &RenderStates::mAnisotropicSS);
+	dc->PSSetSamplers(2, 1, &RenderStates::mComparisonSS);
+
+	return true;
+}
+
+void BasicDeferredSkinnedSortedShader::SetWorldViewProjTex(XMMATRIX& world, XMMATRIX& viewProj, XMMATRIX& tex)
+{
+	mBufferCache.vsPerObjBuffer.world = XMMatrixTranspose(world);
+	mBufferCache.vsPerObjBuffer.worldViewProj = XMMatrixTranspose(XMMatrixMultiply(world, viewProj));
+	mBufferCache.vsPerObjBuffer.worldInvTranspose = XMMatrixTranspose(MathHelper::InverseTranspose(world));
+	mBufferCache.vsPerObjBuffer.texTransform = XMMatrixScaling(1.0f, 1.0f, 1.0f);
+}
+
+void BasicDeferredSkinnedSortedShader::SetPrevWorldViewProj(XMMATRIX& prevWorld, XMMATRIX& prevViewProj)
+{
+	mBufferCache.vsPerObjBuffer.prevWorldViewProj = XMMatrixTranspose(XMMatrixMultiply(prevWorld, prevViewProj));
+}
+
+void BasicDeferredSkinnedSortedShader::SetMaterial(const Material& mat)
+{
+	mBufferCache.psPerObjBuffer.mat = mat;
+}
+
+void BasicDeferredSkinnedSortedShader::SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(0, 1, &tex);
+}
+
+void BasicDeferredSkinnedSortedShader::SetBoneTransforms(const XMFLOAT4X4 lowerBodyTransforms[], UINT numLowerBodyTransforms, const XMFLOAT4X4 upperBodyTransforms[], UINT numUpperBodyTransforms)
+{
+	for (UINT i = 0; i < numLowerBodyTransforms; ++i)
+	{
+		mBufferCache.vsSkinnedBuffer.lowerBodyTransforms[i] = XMLoadFloat4x4(&lowerBodyTransforms[i]);
+		mBufferCache.vsSkinnedBuffer.lowerBodyTransforms[i] = XMMatrixTranspose(mBufferCache.vsSkinnedBuffer.lowerBodyTransforms[i]);
+	}
+
+	mBufferCache.vsSkinnedBuffer.numLowerBodyBoneTransforms = numLowerBodyTransforms;
+
+	for (UINT i = 0; i < numUpperBodyTransforms; ++i)
+	{
+		mBufferCache.vsSkinnedBuffer.upperBodyTransforms[i] = XMLoadFloat4x4(&upperBodyTransforms[i]);
+		mBufferCache.vsSkinnedBuffer.upperBodyTransforms[i] = XMMatrixTranspose(mBufferCache.vsSkinnedBuffer.upperBodyTransforms[i]);
+	}
+
+	mBufferCache.vsSkinnedBuffer.numUpperBodyBoneTransforms = numUpperBodyTransforms;
+}
+
+void BasicDeferredSkinnedSortedShader::UpdatePerObj(ID3D11DeviceContext* dc)
+{
+	// Update constant shader buffers using our cache
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	// Vertex shader per obj buffer
+	dc->Map(vs_cPerObjBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	VS_CPEROBJBUFFER* dataPtr = (VS_CPEROBJBUFFER*)mappedResource.pData;
+
+	*dataPtr = mBufferCache.vsPerObjBuffer;
+
+	dc->Unmap(vs_cPerObjBuffer, 0);
+
+	dc->VSSetConstantBuffers(0, 1, &vs_cPerObjBuffer);
+
+	// Vertex shader per obj skinned buffer
+	dc->Map(vs_cSkinnedBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	VS_CSKINNEDBUFFER* dataPtr3 = (VS_CSKINNEDBUFFER*)mappedResource.pData;
+
+	*dataPtr3 = mBufferCache.vsSkinnedBuffer;
+
+	dc->Unmap(vs_cSkinnedBuffer, 0);
+
+	dc->VSSetConstantBuffers(1, 1, &vs_cSkinnedBuffer);
+
+	// Pixel shader per obj buffer
+	dc->Map(ps_cPerObjBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	PS_CPEROBJBUFFER* dataPtr2 = (PS_CPEROBJBUFFER*)mappedResource.pData;
+
+	*dataPtr2 = mBufferCache.psPerObjBuffer;
+
+	dc->Unmap(ps_cPerObjBuffer, 0);
+
+	dc->PSSetConstantBuffers(0, 1, &ps_cPerObjBuffer);
+}
+
+void BasicDeferredSkinnedSortedShader::SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(1, 1, &tex);
+}
+
+void BasicDeferredSkinnedSortedShader::SetShadowTransform(XMMATRIX& shadowTransform)
+{
+	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
+}
+
+void BasicDeferredSkinnedSortedShader::SetRootBoneIndex(UINT rootBoneIndex)
+{
+	mBufferCache.vsSkinnedBuffer.rootBoneIndex = rootBoneIndex;
+}
+
+#pragma region SMAA
+#pragma region SMAAColorEdgeDetectionShader
+SMAAColorEdgeDetectionShader::SMAAColorEdgeDetectionShader()
+{
+
+}
+
+SMAAColorEdgeDetectionShader::~SMAAColorEdgeDetectionShader()
+{
+	if (VS_PerFrameBuffer)
+		VS_PerFrameBuffer->Release();
+}
+
+bool SMAAColorEdgeDetectionShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
+{
+	HRESULT hr;
+
+	//------------------------
+	// Vertex shader buffer
+	//------------------------
+	ZeroMemory(&VS_PerFrameBufferVariables, sizeof(VS_PERFRAMEBUFFER));
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC cbDesc;
+	cbDesc.ByteWidth = sizeof(VS_PERFRAMEBUFFER);
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA InitData;
+	InitData.pSysMem = &VS_PerFrameBufferVariables;
+	InitData.SysMemPitch = 0;
+	InitData.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	hr = device->CreateBuffer(&cbDesc, &InitData, &VS_PerFrameBuffer);
+
+	if (FAILED(hr))
+		return false;
+
+	mInputLayout = inputLayout;
+
+	return true;
+}
+
+bool SMAAColorEdgeDetectionShader::SetActive(ID3D11DeviceContext* dc)
+{
+	// Set vertex layout and primitive topology
+	dc->IASetInputLayout(mInputLayout);
+
+	// Set active shaders
+	dc->VSSetShader(mVertexShader, nullptr, 0);
+	dc->PSSetShader(mPixelShader, nullptr, 0);
+
+	dc->PSSetSamplers(0, 1, &RenderStates::mPointClampedSS);
+
+	return true;
+}
+
+void SMAAColorEdgeDetectionShader::UpdatePerFrame(ID3D11DeviceContext* dc)
+{
+	// Update constant shader buffers using our cache
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	// Vertex shader per obj buffer
+	dc->Map(VS_PerFrameBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	VS_PERFRAMEBUFFER* dataPtr = (VS_PERFRAMEBUFFER*)mappedResource.pData;
+
+	*dataPtr = mBufferCache.VS_PerFrameBuffer;
+
+	dc->Unmap(VS_PerFrameBuffer, 0);
+
+	dc->VSSetConstantBuffers(0, 1, &VS_PerFrameBuffer);
+}
+
+bool SMAAColorEdgeDetectionShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
+{
+	mVertexShader = vShader;
+	mPixelShader = pShader;
+
+	return true;
+}
+
+void SMAAColorEdgeDetectionShader::SetScreenDimensions(UINT screenHeight, UINT screenWidth)
+{
+	mBufferCache.VS_PerFrameBuffer.screenHeight = screenHeight;
+	mBufferCache.VS_PerFrameBuffer.screenWidth = screenWidth;
+}
+
+void SMAAColorEdgeDetectionShader::SetColorTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(0, 1, &tex);
+}
+
+void SMAAColorEdgeDetectionShader::SetPredicationTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(1, 1, &tex);
+}
+#pragma endregion SMAAColorEdgeDetectionShader
+
+#pragma region SMAADepthEdgeDetectionShader
+SMAADepthEdgeDetectionShader::SMAADepthEdgeDetectionShader()
+{
+
+}
+
+SMAADepthEdgeDetectionShader::~SMAADepthEdgeDetectionShader()
+{
+	if (VS_PerFrameBuffer)
+		VS_PerFrameBuffer->Release();
+
+	if (PS_PerFrameBuffer)
+		PS_PerFrameBuffer->Release();
+}
+
+bool SMAADepthEdgeDetectionShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
+{
+	HRESULT hr;
+
+	//------------------------
+	// Vertex shader buffer
+	//------------------------
+	ZeroMemory(&VS_PerFrameBufferVariables, sizeof(VS_PERFRAMEBUFFER));
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC cbDesc;
+	cbDesc.ByteWidth = sizeof(VS_PERFRAMEBUFFER);
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA InitData;
+	InitData.pSysMem = &VS_PerFrameBufferVariables;
+	InitData.SysMemPitch = 0;
+	InitData.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	hr = device->CreateBuffer(&cbDesc, &InitData, &VS_PerFrameBuffer);
+
+	if (FAILED(hr))
+		return false;
+
+	//------------------------
+	// Pixel shader buffer
+	//------------------------
+	ZeroMemory(&PS_PerFrameBufferVariables, sizeof(PS_PERFRAMEBUFFER));
+
+	// Fill in a buffer description.
+	//D3D11_BUFFER_DESC cbDesc;
+	cbDesc.ByteWidth = sizeof(PS_PERFRAMEBUFFER);
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	//D3D11_SUBRESOURCE_DATA InitData;
+	InitData.pSysMem = &PS_PerFrameBufferVariables;
+	InitData.SysMemPitch = 0;
+	InitData.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	hr = device->CreateBuffer(&cbDesc, &InitData, &PS_PerFrameBuffer);
+
+	if (FAILED(hr))
+		return false;
+
+	mInputLayout = inputLayout;
+
+	return true;
+}
+
+bool SMAADepthEdgeDetectionShader::SetActive(ID3D11DeviceContext* dc)
+{
+	// Set vertex layout and primitive topology
+	dc->IASetInputLayout(mInputLayout);
+
+	// Set active shaders
+	dc->VSSetShader(mVertexShader, nullptr, 0);
+	dc->PSSetShader(mPixelShader, nullptr, 0);
+
+	dc->PSSetSamplers(0, 1, &RenderStates::mLinearClampedSS);
+
+	return true;
+}
+
+void SMAADepthEdgeDetectionShader::UpdatePerFrame(ID3D11DeviceContext* dc)
+{
+	// Update constant shader buffers using our cache
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	// Vertex shader frame buffer
+	dc->Map(VS_PerFrameBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	VS_PERFRAMEBUFFER* dataPtr = (VS_PERFRAMEBUFFER*)mappedResource.pData;
+
+	*dataPtr = mBufferCache.VS_PerFrameBuffer;
+
+	dc->Unmap(VS_PerFrameBuffer, 0);
+
+	dc->VSSetConstantBuffers(0, 1, &VS_PerFrameBuffer);
+
+	// Update constant shader buffers using our cache
+	//D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	// Pixel shader framebuffer
+	dc->Map(PS_PerFrameBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	PS_PERFRAMEBUFFER* dataPtr2 = (PS_PERFRAMEBUFFER*)mappedResource.pData;
+
+	*dataPtr2 = mBufferCache.PS_PerFrameBuffer;
+
+	dc->Unmap(PS_PerFrameBuffer, 0);
+
+	dc->PSSetConstantBuffers(0, 1, &PS_PerFrameBuffer);
+}
+
+bool SMAADepthEdgeDetectionShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
+{
+	mVertexShader = vShader;
+	mPixelShader = pShader;
+
+	return true;
+}
+
+void SMAADepthEdgeDetectionShader::SetScreenDimensions(UINT screenHeight, UINT screenWidth)
+{
+	mBufferCache.VS_PerFrameBuffer.screenWidth = screenWidth;
+	mBufferCache.VS_PerFrameBuffer.screenHeight = screenHeight;
+	mBufferCache.PS_PerFrameBuffer.screenWidth = screenWidth;
+	mBufferCache.PS_PerFrameBuffer.screenHeight = screenHeight;
+}
+
+void SMAADepthEdgeDetectionShader::SetDepthTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(0, 1, &tex);
+}
+#pragma endregion SMAADepthEdgeDetectionShader
+
+#pragma region SMAALumaEdgeDetectionShader
+SMAALumaEdgeDetectionShader::SMAALumaEdgeDetectionShader()
+{
+
+}
+
+SMAALumaEdgeDetectionShader::~SMAALumaEdgeDetectionShader()
+{
+	if (VS_PerFrameBuffer)
+		VS_PerFrameBuffer->Release();
+}
+
+bool SMAALumaEdgeDetectionShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
+{
+	HRESULT hr;
+
+	//------------------------
+	// Vertex shader buffer
+	//------------------------
+	ZeroMemory(&VS_PerFrameBufferVariables, sizeof(VS_PERFRAMEBUFFER));
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC cbDesc;
+	cbDesc.ByteWidth = sizeof(VS_PERFRAMEBUFFER);
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA InitData;
+	InitData.pSysMem = &VS_PerFrameBufferVariables;
+	InitData.SysMemPitch = 0;
+	InitData.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	hr = device->CreateBuffer(&cbDesc, &InitData, &VS_PerFrameBuffer);
+
+	if (FAILED(hr))
+		return false;
+
+	mInputLayout = inputLayout;
+
+	return true;
+}
+
+bool SMAALumaEdgeDetectionShader::SetActive(ID3D11DeviceContext* dc)
+{
+	// Set vertex layout and primitive topology
+	dc->IASetInputLayout(mInputLayout);
+
+	// Set active shaders
+	dc->VSSetShader(mVertexShader, nullptr, 0);
+	dc->PSSetShader(mPixelShader, nullptr, 0);
+
+	dc->PSSetSamplers(0, 1, &RenderStates::mPointClampedSS);
+
+	return true;
+}
+
+void SMAALumaEdgeDetectionShader::UpdatePerFrame(ID3D11DeviceContext* dc)
+{
+	// Update constant shader buffers using our cache
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	// Vertex shader per obj buffer
+	dc->Map(VS_PerFrameBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	VS_PERFRAMEBUFFER* dataPtr = (VS_PERFRAMEBUFFER*)mappedResource.pData;
+
+	*dataPtr = mBufferCache.VS_PerFrameBuffer;
+
+	dc->Unmap(VS_PerFrameBuffer, 0);
+
+	dc->VSSetConstantBuffers(0, 1, &VS_PerFrameBuffer);
+}
+
+bool SMAALumaEdgeDetectionShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
+{
+	mVertexShader = vShader;
+	mPixelShader = pShader;
+
+	return true;
+}
+
+void SMAALumaEdgeDetectionShader::SetScreenDimensions(UINT screenHeight, UINT screenWidth)
+{
+	mBufferCache.VS_PerFrameBuffer.screenWidth = screenWidth;
+	mBufferCache.VS_PerFrameBuffer.screenHeight = screenHeight;
+}
+
+void SMAALumaEdgeDetectionShader::SetColorTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(0, 1, &tex);
+}
+
+void SMAALumaEdgeDetectionShader::SetPredicationTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(1, 1, &tex);
+}
+#pragma endregion SMAALumaEdgeDetectionShader
+
+#pragma region SMAABlendingWeightCalculationsShader
+SMAABlendingWeightCalculationsShader::SMAABlendingWeightCalculationsShader()
+{
+
+}
+
+SMAABlendingWeightCalculationsShader::~SMAABlendingWeightCalculationsShader()
+{
+	if (VS_PerFrameBuffer)
+		VS_PerFrameBuffer->Release();
+
+	if (PS_PerFrameBuffer)
+		PS_PerFrameBuffer->Release();
+}
+
+bool SMAABlendingWeightCalculationsShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
+{
+	HRESULT hr;
+
+	//------------------------
+	// Vertex shader buffer
+	//------------------------
+	ZeroMemory(&VS_PerFrameBufferVariables, sizeof(VS_PERFRAMEBUFFER));
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC cbDesc;
+	cbDesc.ByteWidth = sizeof(VS_PERFRAMEBUFFER);
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA InitData;
+	InitData.pSysMem = &VS_PerFrameBufferVariables;
+	InitData.SysMemPitch = 0;
+	InitData.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	hr = device->CreateBuffer(&cbDesc, &InitData, &PS_PerFrameBuffer);
+
+	if (FAILED(hr))
+		return false;
+
+	//------------------------
+	// Pixel shader buffer
+	//------------------------
+	ZeroMemory(&PS_PerFrameBufferVariables, sizeof(PS_PERFRAMEBUFFER));
+
+	// Fill in a buffer description.
+	//D3D11_BUFFER_DESC cbDesc;
+	cbDesc.ByteWidth = sizeof(PS_PERFRAMEBUFFER);
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	//D3D11_SUBRESOURCE_DATA InitData;
+	InitData.pSysMem = &PS_PerFrameBufferVariables;
+	InitData.SysMemPitch = 0;
+	InitData.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	hr = device->CreateBuffer(&cbDesc, &InitData, &VS_PerFrameBuffer);
+	
+	if (FAILED(hr))
+		return false;
+
+	mInputLayout = inputLayout;
+
+	return true;
+}
+
+bool SMAABlendingWeightCalculationsShader::SetActive(ID3D11DeviceContext* dc)
+{
+	// Set vertex layout and primitive topology
+	dc->IASetInputLayout(mInputLayout);
+
+	// Set active shaders
+	dc->VSSetShader(mVertexShader, nullptr, 0);
+	dc->PSSetShader(mPixelShader, nullptr, 0);
+	
+	dc->PSSetSamplers(0, 1, &RenderStates::mLinearClampedSS);
+
+	return true;
+}
+
+void SMAABlendingWeightCalculationsShader::UpdatePerFrame(ID3D11DeviceContext* dc)
+{
+	// Update constant shader buffers using our cache
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	// Vertex shader per obj buffer
+	dc->Map(VS_PerFrameBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	VS_PERFRAMEBUFFER* dataPtr = (VS_PERFRAMEBUFFER*)mappedResource.pData;
+
+	*dataPtr = mBufferCache.VS_PerFrameBuffer;
+
+	dc->Unmap(VS_PerFrameBuffer, 0);
+
+	dc->VSSetConstantBuffers(0, 1, &VS_PerFrameBuffer);
+
+	// Update constant shader buffers using our cache
+	//D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	// Pixel shader framebuffer
+	dc->Map(PS_PerFrameBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	PS_PERFRAMEBUFFER* dataPtr2 = (PS_PERFRAMEBUFFER*)mappedResource.pData;
+
+	*dataPtr2 = mBufferCache.PS_PerFrameBuffer;
+
+	dc->Unmap(PS_PerFrameBuffer, 0);
+
+	dc->PSSetConstantBuffers(0, 1, &PS_PerFrameBuffer);
+}
+
+bool SMAABlendingWeightCalculationsShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
+{
+	mVertexShader = vShader;
+	mPixelShader = pShader;
+
+	return true;
+}
+
+void SMAABlendingWeightCalculationsShader::SetScreenDimensions(UINT screenHeight, UINT screenWidth)
+{
+	mBufferCache.VS_PerFrameBuffer.screenWidth = screenWidth;
+	mBufferCache.VS_PerFrameBuffer.screenHeight = screenHeight;
+	mBufferCache.PS_PerFrameBuffer.screenWidth = screenWidth;
+	mBufferCache.PS_PerFrameBuffer.screenHeight = screenHeight;
+}
+
+void SMAABlendingWeightCalculationsShader::SetEdgesTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(0, 1, &tex);
+}
+
+void SMAABlendingWeightCalculationsShader::SetAreaTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(1, 1, &tex);
+}
+
+void SMAABlendingWeightCalculationsShader::SetSearchTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(2, 1, &tex);
+}
+#pragma endregion SMAABlendingWeightCalculationsShader
+
+#pragma region SMAANeighborhoodBlendingShader
+SMAANeighborhoodBlendingShader::SMAANeighborhoodBlendingShader()
+{
+
+}
+
+SMAANeighborhoodBlendingShader::~SMAANeighborhoodBlendingShader()
+{
+	if (VS_PerFrameBuffer)
+		VS_PerFrameBuffer->Release();
+
+	if (PS_PerFrameBuffer)
+		PS_PerFrameBuffer->Release();
+}
+
+bool SMAANeighborhoodBlendingShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
+{
+	HRESULT hr;
+
+	//------------------------
+	// Vertex shader buffer
+	//------------------------
+	ZeroMemory(&VS_PerFrameBufferVariables, sizeof(VS_PERFRAMEBUFFER));
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC cbDesc;
+	cbDesc.ByteWidth = sizeof(VS_PERFRAMEBUFFER);
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA InitData;
+	InitData.pSysMem = &VS_PerFrameBufferVariables;
+	InitData.SysMemPitch = 0;
+	InitData.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	hr = device->CreateBuffer(&cbDesc, &InitData, &VS_PerFrameBuffer);
+
+	if (FAILED(hr))
+		return false;
+
+	//------------------------
+	// Pixel shader buffer
+	//------------------------
+	ZeroMemory(&PS_PerFrameBufferVariables, sizeof(PS_PERFRAMEBUFFER));
+
+	// Fill in a buffer description.
+	//D3D11_BUFFER_DESC cbDesc;
+	cbDesc.ByteWidth = sizeof(PS_PERFRAMEBUFFER);
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	//D3D11_SUBRESOURCE_DATA InitData;
+	InitData.pSysMem = &PS_PerFrameBufferVariables;
+	InitData.SysMemPitch = 0;
+	InitData.SysMemSlicePitch = 0;
+
+	// Now create the buffer
+	hr = device->CreateBuffer(&cbDesc, &InitData, &PS_PerFrameBuffer);
+
+	if (FAILED(hr))
+		return false;
+
+	mInputLayout = inputLayout;
+
+	return true;
+}
+
+bool SMAANeighborhoodBlendingShader::SetActive(ID3D11DeviceContext* dc)
+{
+	// Set vertex layout and primitive topology
+	dc->IASetInputLayout(mInputLayout);
+
+	// Set active shaders
+	dc->VSSetShader(mVertexShader, nullptr, 0);
+	dc->PSSetShader(mPixelShader, nullptr, 0);
+
+	dc->PSSetSamplers(0, 1, &RenderStates::mLinearClampedSS);
+
+	return true;
+}
+
+void SMAANeighborhoodBlendingShader::UpdatePerFrame(ID3D11DeviceContext* dc)
+{
+	// Update constant shader buffers using our cache
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	// Vertex shader per obj buffer
+	dc->Map(VS_PerFrameBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	VS_PERFRAMEBUFFER* dataPtr = (VS_PERFRAMEBUFFER*)mappedResource.pData;
+
+	*dataPtr = mBufferCache.VS_PerFrameBuffer;
+
+	dc->Unmap(VS_PerFrameBuffer, 0);
+
+	dc->VSSetConstantBuffers(0, 1, &VS_PerFrameBuffer);
+
+	// Update constant shader buffers using our cache
+	//D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	// Pixel shader framebuffer
+	dc->Map(PS_PerFrameBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	PS_PERFRAMEBUFFER* dataPtr2 = (PS_PERFRAMEBUFFER*)mappedResource.pData;
+
+	*dataPtr2 = mBufferCache.PS_PerFrameBuffer;
+
+	dc->Unmap(PS_PerFrameBuffer, 0);
+
+	dc->PSSetConstantBuffers(0, 1, &PS_PerFrameBuffer);
+}
+
+bool SMAANeighborhoodBlendingShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
+{
+	mVertexShader = vShader;
+	mPixelShader = pShader;
+
+	return true;
+}
+
+void SMAANeighborhoodBlendingShader::SetScreenDimensions(UINT screenHeight, UINT screenWidth)
+{
+	mBufferCache.VS_PerFrameBuffer.screenWidth = screenWidth;
+	mBufferCache.VS_PerFrameBuffer.screenHeight = screenHeight;
+	mBufferCache.PS_PerFrameBuffer.screenWidth = screenWidth;
+	mBufferCache.PS_PerFrameBuffer.screenHeight = screenHeight;
+}
+
+void SMAANeighborhoodBlendingShader::SetColorTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(0, 1, &tex);
+}
+
+void SMAANeighborhoodBlendingShader::SetBlendTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(1, 1, &tex);
+}
+
+void SMAANeighborhoodBlendingShader::SetVelocityTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
+{
+	dc->PSSetShaderResources(2, 1, &tex);
+}
+#pragma endregion SMAANeighborhoodBlendingShader
+#pragma endregion SMAA

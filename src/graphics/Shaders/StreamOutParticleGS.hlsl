@@ -17,7 +17,10 @@ cbuffer cbPerFrame
 	unsigned int gParticleType;
 	
 	bool emitParticles;
-	float padding;
+	float gScaleX;
+
+	float gScaleY;
+	float3 paddingScale;
 };
 
 // Random texture used to generate random numbers in shaders.
@@ -54,7 +57,7 @@ void main(point Particle gIn[1], inout PointStream<Particle> ptStream)
 			Particle p;
 			p.InitialPosW = gEmitPosW.xyz;
 			p.InitialVelW = 4.0f*vRandom;
-			p.SizeW = float2(3.0f, 3.0f);
+			p.SizeW = float2(gScaleX, gScaleY);
 			p.Age = 0.0f;
 			p.Type = gParticleType;
 

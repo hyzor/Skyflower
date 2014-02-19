@@ -15,6 +15,8 @@ void Input::addedToEntity()
 {
 	Entity *owner = getOwner();
 	owner->getModules()->input->AddListener(this);
+
+	getOwner()->sphere->Radius = 3.5f; //only player uses input
 }
 
 void Input::removeFromEntity()
@@ -38,12 +40,6 @@ void Input::OnKeyDown(unsigned short key)
 		break;
 	case 'D':
 		sendMessageToEntity(this->getOwnerId(), "StartMoveRight");
-		break;
-	case 'T':
-		sendMessageToEntity(this->getOwnerId(), "Throw");
-		break;
-	case 'Y':
-		sendMessageToEntity(this->getOwnerId(), "PickUpOrDown");
 		break;
 	case VK_SPACE:
 		sendMessageToEntity(this->getOwnerId(), "Jump");
@@ -69,11 +65,38 @@ void Input::OnKeyUp(unsigned short key)
 	case 'D':
 		sendMessageToEntity(this->getOwnerId(), "StopMoveRight");
 		break;
-	case 'T':
-		sendMessageToEntity(this->getOwnerId(), "StopThrow");
-		break;
 	case VK_SPACE:
 		sendMessageToEntity(this->getOwnerId(), "StopJump");
+		break;
+	default:
+		break;
+	}
+}
+
+void Input::OnMouseButtonDown(enum MouseButton button)
+{
+	switch (button)
+	{
+	case MouseButtonLeft:
+		sendMessageToEntity(this->getOwnerId(), "Throw");
+		break;
+	case MouseButtonRight:
+		sendMessageToEntity(this->getOwnerId(), "PickUpStart");
+		break;
+	default:
+		break;
+	}
+}
+
+void Input::OnMouseButtonUp(enum MouseButton button)
+{
+	switch (button)
+	{
+	case MouseButtonLeft:
+		sendMessageToEntity(this->getOwnerId(), "StopThrow");
+		break;
+	case MouseButtonRight:
+		sendMessageToEntity(this->getOwnerId(), "PickUpStop");
 		break;
 	default:
 		break;

@@ -60,12 +60,12 @@ public:
 	void SetNearFarFitMethod(NEAR_FAR_FIT_METHOD nearFarMethod);
 
 	//Create the different light frustums using currently selected methods
-	void CreateLightFrustums(const DirectionalLight& light, const BoundingSphere& sceneBounds, const BoundingBox& sceneBB, const Camera* cam);
+	void CreateLightFrustums(const DLight& light, const BoundingSphere& sceneBounds, const BoundingBox& sceneBB, const Camera* cam);
 
 	void RenderSceneToCascades(
 		const std::vector<ModelInstanceImpl*>& modelInstances,
 		const std::vector<AnimatedInstanceImpl*>& mAnimatedInstances,
-		const std::vector<MorphModelInstance*>& mMorphInstances,
+		const std::vector<MorphModelInstanceImpl*>& mMorphInstances,
 		ID3D11DeviceContext* deviceContext,
 		ShadowShader* shadowShader,
 		SkinnedShadowShader* skinnedShadowShader,

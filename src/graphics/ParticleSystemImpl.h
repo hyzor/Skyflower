@@ -33,8 +33,14 @@ public:
 
 	void SetConstantAccel(XMFLOAT3 accelW);
 
+	void SetParticleFadeTime(float fadeTime);
+
 	void SetEmitFrequency(float emitFrequency);
 	void SetParticleAgeLimit(float particleAgeLimit);
+
+	void SetBlendingMethod(unsigned int blendingMethod);
+
+	void SetScale(XMFLOAT2 scale);
 
 	void SetParticleType(ParticleType particleType);
 
@@ -46,7 +52,7 @@ public:
 
 	void Reset();
 	void Update(float dt, float gameTime);
-	void Draw(ID3D11DeviceContext* dc, const Camera& cam);
+	void Draw(ID3D11DeviceContext* dc, const Camera& cam, ID3D11DepthStencilState* drawDepthStencilState);
 
 private:
 	void BuildVB(ID3D11Device* device);
@@ -67,6 +73,10 @@ private:
 
 	XMFLOAT3 mConstantAccelW;
 
+	float mFadeTime;
+
+	UINT mBlendingMethod;
+
 	ParticleSystemShader* mShader;
 
 	ID3D11Buffer* mInitVB;
@@ -82,6 +92,8 @@ private:
 	float mEmitFrequency;
 
 	UINT mParticleType;
+
+	XMFLOAT2 mScale;
 };
 
 #endif

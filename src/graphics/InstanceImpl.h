@@ -5,7 +5,7 @@
 #include "GenericModel.h"
 #include "AnimatedEntity.h"
 #include "Instance.h"
-
+#include "MorphModel.h"
 
 class ModelInstanceImpl : public ModelInstance
 {
@@ -59,6 +59,7 @@ public:
 	Vec3 GetRotation();
 	Vec3 GetScale();
 	UINT GetAnimation();
+	bool IsAnimationDone();
 
 	void SetVisibility(bool visible);
 	void SetPosition(Vec3 pos);
@@ -93,6 +94,34 @@ private:
 
 };
 
+class MorphModelInstanceImpl : public MorphModelInstance
+{
+public:
+	 ~MorphModelInstanceImpl() {};
 
+	 bool IsVisible() const;
+	 Vec3 GetPosition() const;
+	 Vec3 GetRotation() const;
+	 Vec3 GetScale() const;
+	 Vec3 GetWeights() const;
+
+	 void SetPosition(Vec3 pos);
+	 void SetRotation(Vec3 rot);
+	 void SetScale(Vec3 scale);
+	 void SetVisibility(bool visible);
+	 void SetWeights(Vec3 weights);
+	 void Set(Vec3 pos, Vec3 rot, Vec3 scale, Vec3 weights);
+
+	 MorphModel* model;
+
+	 XMFLOAT4X4 world;
+	 bool isVisible;
+	 XMFLOAT4 weights;
+	 XMFLOAT4X4 prevWorld;
+private:
+	Vec3 pos;
+	Vec3 rot;
+	Vec3 scale;
+};
 
 #endif

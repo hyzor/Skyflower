@@ -407,9 +407,7 @@ void EntityManager::registerGlobalRequest(ComponentRequest req, RegisteredCompon
 				}
 				break;
 			}
-		}
-
-		
+		}	
 	}
 
 	// if we want the previously created components as well, we process them
@@ -534,11 +532,6 @@ void EntityManager::removeEntity(Entity* e) {
 
 }
 
-
-
-
-
-
 // destroy a component
 void EntityManager::destroyComponent(Component *comp) {
 
@@ -581,7 +574,7 @@ void EntityManager::destroyComponent(Component *comp) {
 
 	comp->removeFromEntity();
 	// remove its own local requests - only if the Entity itself wasn't removed yet
-	getEntity(comp->getOwnerId())->removeComponent(comp);
+	comp->getOwner()->removeComponent(comp);
 
 	// CREATE event
 	Message msg(DESTROY);
@@ -602,7 +595,7 @@ void EntityManager::destroyComponent(Component *comp) {
 		}
 
 		// forward to the Entity itself, so local requests are processed also
-		getEntity(comp->getOwnerId())->sendMessage(reqId, msg);
+		comp->getOwner()->sendMessage(reqId, msg);
 
 		// release the lock
 		releaseLock(reqId);
@@ -610,119 +603,6 @@ void EntityManager::destroyComponent(Component *comp) {
 
 	// make it invalid
 	delete comp;
-}
-
-
-// finalize an Entity
-void EntityManager::finalizeEntity(EntityId id) {
-
-	int index = -1;
-	for (int i = 0; i < (int)fEntitys.size(); i++)
-	{
-		if (fEntitys[i]->getEntityId() == id)
-		{
-			index = i;
-			break;
-		}
-	}
-
-	// Entity doesn't exist
-	if (index == -1)
-	{
-		stringstream ss;
-		ss << "Failed to destroy Entity " << id << ": it does not exist!";
-		error(ss);
-	}
-	else
-	{
-		// finalize the Entity itself
-		fEntitys[index]->finalize();
-
-		// see if there are any requirements
-		if (fRequiredComponents.find(id) == fRequiredComponents.end()) return;
-
-		// there are, do the checklist
-		list<string> requiredComponents = fRequiredComponents[index];
-		bool destroyEntity = false;
-		for (list<string>::iterator it = requiredComponents.begin(); it != requiredComponents.end(); ++it) {
-
-			// get the components of this type
-			list<Component*> comps = fEntitys[index]->getComponents(*it);
-
-			// if there are none, we want this Entity dead!
-			if (comps.size() == 0) destroyEntity = true;
-		}
-		/*if (!destroyEntity) cout << "Finalized Entity " << id << " succesfully!" << endl;
-		else cout << "Finalize on Entity " << id << " failed, destroying..." << endl;*/
-		// we destroy the Entity if we didn't find what we needed
-		if (destroyEntity) this->destroyEntity(id);
-	}
-}
-
-
-// register a unique name for an Entity
-void EntityManager::registerName(Component *comp, string name) {
-	fComponentsByName[name].push_back(comp);
-}
-void EntityManager::unregisterName(Component *comp, string name) {
-
-	// not found
-	if (fComponentsByName.find(name) == fComponentsByName.end()) return;
-
-	// unregister
-	for (list<Component*>::iterator it = fComponentsByName[name].begin(); it != fComponentsByName[name].end(); ++it) {
-		if ((*it)->getId() == comp->getId()) {
-			it = fComponentsByName[name].erase(it);
-			return;
-		}
-	}
-}
-
-
-// get the id based on the unique name identified
-list<Component*> EntityManager::getComponentsByName(string name) {
-
-	// see if the name doesn't exist yet
-	if (fComponentsByName.find(name) == fComponentsByName.end()) {
-		//error(format("Failed to acquire Entity id for unique name identifier %s because it doesn't exist!") % name);
-		return list<Component*>();
-	}
-
-	// return id
-	return fComponentsByName[name];
-}
-
-
-// logging
-void EntityManager::trackRequest(RequestId reqId, bool local, Component *component) {
-
-	// if global, find it
-	if (!local) {
-
-		// find in global request list
-		for (list<RegisteredComponent>::iterator it = fGlobalRequests[reqId].begin(); it != fGlobalRequests[reqId].end(); ++it) {
-			if ((*it).component->getId() == component->getId()) (*it).trackMe = true;
-		}
-
-		// also pass to local for extra check (MESSAGE messages are always local AND global)
-		getEntity(component->getOwnerId())->trackRequest(reqId, component);
-
-
-	}
-
-	// if local, forward to Entity
-	else {
-		getEntity(component->getOwnerId())->trackRequest(reqId, component);
-	}
-}
-
-
-void EntityManager::sendMessageToAllEntities(string message)
-{
-	for (size_t i = 0; i < fEntitys.size(); i++)
-	{
-		this->fEntitys[i]->sendAMessageToAll(message);
-	}
 }
 
 void EntityManager::sendMessageToEntity(string message, string entity)
@@ -771,7 +651,7 @@ bool EntityManager::loadXML(string xmlFile)
 		// Make the element name lower case.
 		std::transform(elemName.begin(), elemName.end(), elemName.begin(), ::tolower);
 
-		if (elemName == "light")
+		if (elemName == "light2")
 		{
 			// The element is a light.
 
@@ -1000,18 +880,176 @@ bool EntityManager::loadXML(string xmlFile)
 				}
 				else if (componentName == "Goal")
 				{
-					Goal *g = new Goal();
+					Goal* g = new Goal();
 					this->addComponent(entity, g);
 				}
 				else if (componentName == "Throw")
 				{
-					Throw *t = new Throw();
+					bool haveAim = false;
+
+					attr = e->Attribute("haveAim");
+					if (attr != nullptr)
+						haveAim = e->BoolAttribute("haveAim");
+
+					Throw *t = new Throw(haveAim);
 					this->addComponent(entity, t);
 				}
 				else if (componentName == "Throwable")
 				{
 					Throwable *t = new Throwable();
 					this->addComponent(entity, t);
+				}
+				else if (componentName == "Touch")
+				{
+					Touch* t = new Touch();
+					this->addComponent(entity, t);
+				}
+				else if (componentName == "PointLight")
+				{
+					Vec3 rpos;
+					Vec3 color;
+					float intensity = 1.0f;
+
+					attr = e->Attribute("xPos");
+					if (attr != nullptr)
+						rpos.X = e->FloatAttribute("xPos");
+
+					attr = e->Attribute("yPos");
+					if (attr != nullptr)
+						rpos.Y = e->FloatAttribute("yPos");
+
+					attr = e->Attribute("zPos");
+					if (attr != nullptr)
+						rpos.Z = e->FloatAttribute("zPos");
+
+					attr = e->Attribute("r");
+					if (attr != nullptr)
+						color.X = e->FloatAttribute("r");
+
+					attr = e->Attribute("g");
+					if (attr != nullptr)
+						color.Y = e->FloatAttribute("g");
+
+					attr = e->Attribute("b");
+					if (attr != nullptr)
+						color.Z = e->FloatAttribute("b");
+
+					attr = e->Attribute("intensity");
+					if (attr != nullptr)
+						intensity = e->FloatAttribute("intensity");
+
+					PointLightComp* plc = new PointLightComp(rpos, color, intensity);
+					this->addComponent(entity, plc);
+				}
+				else if (componentName == "SpotLight")
+				{
+					Vec3 rpos;
+					Vec3 color;
+					Vec3 dir;
+					float angle = 1.0f;
+
+					attr = e->Attribute("xPos");
+					if (attr != nullptr)
+						rpos.X = e->FloatAttribute("xPos");
+
+					attr = e->Attribute("yPos");
+					if (attr != nullptr)
+						rpos.Y = e->FloatAttribute("yPos");
+
+					attr = e->Attribute("zPos");
+					if (attr != nullptr)
+						rpos.Z = e->FloatAttribute("zPos");
+					
+
+
+					attr = e->Attribute("xDir");
+					if (attr != nullptr)
+						dir.X = e->FloatAttribute("xDir");
+
+					attr = e->Attribute("yDir");
+					if (attr != nullptr)
+						dir.Y = e->FloatAttribute("yDir");
+
+					attr = e->Attribute("zDir");
+					if (attr != nullptr)
+						dir.Z = e->FloatAttribute("zDir");
+
+
+
+					attr = e->Attribute("r");
+					if (attr != nullptr)
+						color.X = e->FloatAttribute("r");
+
+					attr = e->Attribute("g");
+					if (attr != nullptr)
+						color.Y = e->FloatAttribute("g");
+
+					attr = e->Attribute("b");
+					if (attr != nullptr)
+						color.Z = e->FloatAttribute("b");
+
+
+
+					attr = e->Attribute("angle");
+					if (attr != nullptr)
+						angle = e->FloatAttribute("angle");
+
+
+
+					SpotLightComp* slc = new SpotLightComp(rpos, color, angle, dir);
+					this->addComponent(entity, slc);
+				}
+				else if (componentName == "DirectionalLight")
+				{
+					Vec3 color;
+					Vec3 dir;
+					float intensity = 1.0f;
+
+
+					attr = e->Attribute("xDir");
+					if (attr != nullptr)
+						dir.X = e->FloatAttribute("xDir");
+
+					attr = e->Attribute("yDir");
+					if (attr != nullptr)
+						dir.Y = e->FloatAttribute("yDir");
+
+					attr = e->Attribute("zDir");
+					if (attr != nullptr)
+						dir.Z = e->FloatAttribute("zDir");
+
+
+
+					attr = e->Attribute("r");
+					if (attr != nullptr)
+						color.X = e->FloatAttribute("r");
+
+					attr = e->Attribute("g");
+					if (attr != nullptr)
+						color.Y = e->FloatAttribute("g");
+
+					attr = e->Attribute("b");
+					if (attr != nullptr)
+						color.Z = e->FloatAttribute("b");
+
+
+
+					attr = e->Attribute("intensity");
+					if (attr != nullptr)
+						intensity = e->FloatAttribute("intensity");
+
+
+
+					DirectionalLightComp* dlc = new DirectionalLightComp(color, dir, intensity);
+					this->addComponent(entity, dlc);
+				}
+				else if (componentName == "MorphAnimation")
+				{
+					string path = GetStringAttribute(e, "path", entityName, componentName);
+					string file = GetStringAttribute(e, "file", entityName, componentName);
+
+					MorphAnimation *m = new MorphAnimation(path, file);
+					this->addComponent(entity, m);
 				}
 				else
 				{

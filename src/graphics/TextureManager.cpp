@@ -70,3 +70,28 @@ ID3D11ShaderResourceView* TextureManager::CreateTexture(std::string fileName)
 
 	return srv;
 }
+
+ID3D11ShaderResourceView* TextureManager::CreateDDSTextureFromBytes(const unsigned char* bytes, UINT byteSize, std::string textureName)
+{
+	ID3D11ShaderResourceView* srv = 0;
+
+	// Find if texture already exists
+	if (mTextureSRV.find(textureName) != mTextureSRV.end())
+	{
+		srv = mTextureSRV[textureName]; // Just point to existing texture
+	}
+
+	HRESULT hr;
+	hr = CreateDDSTextureFromMemory(md3dDevice, bytes, byteSize, nullptr, &srv);
+
+	if (FAILED(hr))
+	{
+		std::wostringstream ErrorStream;
+		ErrorStream << "Failed to create DDS texture " << textureName.c_str() << " from memory!";
+		MessageBox(0, ErrorStream.str().c_str(), 0, 0);
+	}
+
+	mTextureSRV[textureName] = srv;
+
+	return srv;
+}
