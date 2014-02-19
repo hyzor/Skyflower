@@ -14,12 +14,9 @@ CascadedShadows::CascadedShadows(ID3D11Device* device, UINT width, UINT height, 
 
 	for (UINT i = 0; i < nrOfCascades; i++)
 	{
-		/*Cascade* c = new Cascade(device, width, height);
-		this->mCascades.push_back(c);*/
-		this->mCascades.push_back(new Cascade(device, width, height));
+		Cascade* c = new Cascade(device, width, height);
+		this->mCascades.push_back(c);
 		this->mNrOfCascades++;
-
-		this->mCascadeSplits.push_back(CascadeSplit(0.0f, 0.0f));
 	}
 }
 
@@ -48,15 +45,14 @@ bool CascadedShadows::AddCascade(ID3D11Device* device, UINT width, UINT height)
 	return result;
 }
 
-bool CascadedShadows::SetSplitDepths(float _near, float _far, int cascadeIndex)
+bool CascadedShadows::SetSplitDepth(float depth, UINT cascadeIndex)
 {
 	bool result = false;
 
+	//Keep 1 split less than the number of cascades (3 cascades - 2 splits, 2 cascades - 1 split, etc)
 	if (cascadeIndex >= 0 && cascadeIndex < this->mNrOfCascades - 1)
 	{
-		this->mCascadeSplits.at(cascadeIndex).sNear = _near;
-		this->mCascadeSplits.at(cascadeIndex).sNear = _near;
-
+		this->mCascadeSplits[cascadeIndex] = depth;
 		result = true;
 	}
 
@@ -77,7 +73,7 @@ void CascadedShadows::CreateLightFrustums(const DirectionalLight& light, const B
 {
 	XMMATRIX P;
 	XMVECTOR lightOrtographicMin = gVecFLTMAX, lightOrtographicMax = gVecFLTMIN; //Values used as input to create light space frustum
-	float intervalBegin, intervalEnd, split;
+	float intervalBegin, intervalEnd;
 
 	XMVECTOR lightDir = XMLoadFloat3(&light.Direction);
 	XMVECTOR lightPos = -2.0f*sceneBounds.Radius*lightDir;
@@ -102,15 +98,32 @@ void CascadedShadows::CreateLightFrustums(const DirectionalLight& light, const B
 	}
 
 
-	split = (1.0f / this->mNrOfCascades); // For now, split each frustum equally
+	//split = (1.0f / this->mNrOfCascades); // For now, split each frustum equally
 
-	intervalBegin = 0.0f;
-	intervalEnd = split * camRange;
+	//intervalBegin = 0.0f;
+	//intervalEnd = split * camRange;
 
 	for (UINT i = 0; i < this->mCascades.size(); i++)
 	{
 		if (this->mFrustumSplitMethod == FIT_TO_CASCADE)
 		{
+
+			if (i == 0)
+			{
+				intervalBegin = 0.0f;
+				intervalEnd = this->mCascadeSplits[i] * camRange; //Multiply with range of camera since splits are stored in 0-1 interval
+			}
+			else if (i > 0 && i < this->mNrOfCascades - 1)
+			{
+				intervalBegin = this->mCascades.at(i - 1)->GetSplitDepthFar();
+				intervalEnd = this->mCascadeSplits[i];
+			}
+			else
+			{
+				intervalBegin = this->mCascades.at(i - 1)->GetSplitDepthFar();
+				intervalEnd = camFar;
+			}
+
 			//Create frustum points for this cascade interval
 			XMVECTOR frustumPoints[8];
 
@@ -194,15 +207,6 @@ void CascadedShadows::CreateLightFrustums(const DirectionalLight& light, const B
 
 			}
 
-			//nearPlane = intervalBegin;
-			//farPlane = intervalEnd;
-
-
-			float transformedIntervalBegin, transformedIntervalEnd;
-
-			transformedIntervalBegin = XMVectorGetZ(XMVector3Transform(XMVECTOR(XMLoadFloat3(&XMFLOAT3(1.0f, 1.0f, intervalBegin))), cam->GetViewMatrix()));
-			transformedIntervalEnd = XMVectorGetZ(XMVector3Transform(XMVECTOR(XMLoadFloat3(&XMFLOAT3(1.0f, 1.0f, intervalEnd))), cam->GetViewMatrix()));
-
 			P = XMMatrixOrthographicOffCenterLH(
 				XMVectorGetX(lightOrtographicMin), XMVectorGetX(lightOrtographicMax),
 				XMVectorGetY(lightOrtographicMin), XMVectorGetY(lightOrtographicMax),
@@ -215,12 +219,10 @@ void CascadedShadows::CreateLightFrustums(const DirectionalLight& light, const B
 			//Set the depths of the intervals to later use these to determine correct cascade to sample from
 			this->mCascades.at(i)->SetSplitDepthNear(intervalBegin);
 			this->mCascades.at(i)->SetSplitDepthFar(intervalEnd);
-			//this->mCascades.at(i)->SetSplitDepthNear(transformedIntervalBegin);
-			//this->mCascades.at(i)->SetSplitDepthFar(transformedIntervalEnd);
 
 			//Increment beginning and end equally to create the next subfrustum
-			intervalBegin += split * camRange;
-			intervalEnd += split * camRange;
+			//intervalBegin += split * camRange;
+			//intervalEnd += split * camRange;
 		}
 	}
 		
@@ -239,6 +241,15 @@ void CascadedShadows::RenderSceneToCascades(
 	for (UINT i = 0; i < this->mCascades.size(); i++)
 	{
 		this->mCascades.at(i)->BindDsvAndSetNullRenderTarget(deviceContext);
+		switch (i)
+		{
+		case 0:
+			deviceContext->RSSetState(RenderStates::mDepthBiasCloseToEyeRS);
+			break;
+		case 1:
+			deviceContext->RSSetState(RenderStates::mDepthBiasFarFromEyeRS);
+			break;
+		}
 		this->mCascades.at(i)->DrawSceneToShadowMap(
 			modelInstances, 
 			mAnimatedInstances, 

@@ -1213,7 +1213,6 @@ bool BasicDeferredShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLay
 	// Now create the buffer
 	HRESULT res = device->CreateBuffer(&cbDesc, &InitData, &vs_cPerObjBuffer);
 
-
 	//------------------------
 	// Pixel shader buffers
 	//------------------------
@@ -1302,7 +1301,6 @@ void BasicDeferredShader::SetCascadeVars(
 	mBufferCache.vsPerObjBuffer.lightSpace = XMMatrixTranspose(lightSpace);
 	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixIdentity();
 	mBufferCache.vsPerObjBuffer.shadowTransforms[index] = XMMatrixTranspose(shadowTransform);
-	//mBufferCache.psPerObjBuffer.shadowProj[index] = XMMatrixTranspose(shadowProj);
 
 	if (index == 0)
 		mBufferCache.psPerObjBuffer.nearDepths.x = nearDepth;
@@ -1321,9 +1319,8 @@ void BasicDeferredShader::SetCascadeVars(
 		mBufferCache.psPerObjBuffer.farDepths.z = farDepth;
 	else if (index == 3)
 		mBufferCache.psPerObjBuffer.farDepths.w = farDepth;
-	//mBufferCache.psPerObjBuffer.nearDepths[index] = nearDepth;
-	//mBufferCache.psPerObjBuffer.farDepths[index] = farDepth;
-	//mBufferCache.psPerObjBuffer.nrOfCascades = (float)nrOfCascades;
+
+	mBufferCache.psPerObjBuffer.nrOfCascades = nrOfCascades;
 }
 
 void BasicDeferredShader::UpdatePerObj(ID3D11DeviceContext* dc)

@@ -149,8 +149,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mCascadedShadows = new CascadedShadows(mD3D->GetDevice(), 2048, 2048, 2); //Ditto!
 	mCascadedShadows->SetSplitMethod(FIT_TO_CASCADE);
 	mCascadedShadows->SetNearFarFitMethod(FIT_NEARFAR_AABB);
-	mCascadedShadows->SetSplitDepths(0.0f, 0.25f, 0);
-	mCascadedShadows->SetSplitDepths(0.25f, 1.00f, 1);
+	mCascadedShadows->SetSplitDepth(0.25f, 0);
 
 	mGameTime = 0.0f;
 
@@ -355,12 +354,12 @@ void GraphicsEngineImpl::DrawScene()
 	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
 
 	//Draw scene to cascades
-	mD3D->GetImmediateContext()->RSSetState(RenderStates::mDepthBiasRS);
+	//mD3D->GetImmediateContext()->RSSetState(RenderStates::mDepthBiasCloseToEyeRS);
 	mCascadedShadows->CreateLightFrustums(mDirLights.at(0), mSceneBounds, mSceneBB, mCamera);
 	mCascadedShadows->RenderSceneToCascades(mInstances, mAnimatedInstances, mMorphInstances, mD3D->GetImmediateContext(), mShaderHandler->mShadowShader, mShaderHandler->mSkinnedShadowShader, mShaderHandler->mShadowMorphShader);
 
 	// Draw scene to shadowmap
-	mD3D->GetImmediateContext()->RSSetState(RenderStates::mDepthBiasRS); // This rasterizer state fixes shadow acne
+	mD3D->GetImmediateContext()->RSSetState(RenderStates::mDepthBiasFarFromEyeRS); // This rasterizer state fixes shadow acne
 	mShadowMap->BindDsvAndSetNullRenderTarget(mD3D->GetImmediateContext());
 	mShadowMap->BuildShadowTransform(mDirLights.at(0), mSceneBounds);
 	//mShadowMap->DrawSceneToShadowMap(mInstances, mAnimatedInstances, mD3D->GetImmediateContext(), mShaderHandler->mShadowShader, mShaderHandler->mSkinnedShadowShader);
@@ -671,15 +670,15 @@ void GraphicsEngineImpl::DrawScene()
 		XMFLOAT2(0.1f, 0.1f)
 		);
 
-	mSpriteBatch->Draw(
-		mCascadedShadows->GetCascade(2)->getDepthMapSRV(),
-		XMFLOAT2(675.0f, 0.0f),
-		nullptr,
-		Colors::Red,
-		0.0f,
-		XMFLOAT2(0.0f, 0.0f),
-		XMFLOAT2(0.1f, 0.1f)
-		);
+	//mSpriteBatch->Draw(
+	//	mCascadedShadows->GetCascade(2)->getDepthMapSRV(),
+	//	XMFLOAT2(675.0f, 0.0f),
+	//	nullptr,
+	//	Colors::Red,
+	//	0.0f,
+	//	XMFLOAT2(0.0f, 0.0f),
+	//	XMFLOAT2(0.1f, 0.1f)
+	//	);
 
 	mSpriteBatch->End();
 

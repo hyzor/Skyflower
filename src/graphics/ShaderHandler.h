@@ -519,6 +519,8 @@ private:
 		XMFLOAT3 padding;
 		XMFLOAT4 nearDepths;
 		XMFLOAT4 farDepths;
+		int nrOfCascades;
+		XMFLOAT3 padding1;
 	};
 
 	struct BUFFERCACHE

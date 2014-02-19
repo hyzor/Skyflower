@@ -12,7 +12,8 @@ public:
 	static ID3D11RasterizerState* mDefaultRS;
 	static ID3D11RasterizerState* mWireframeRS;
 	static ID3D11RasterizerState* mNoCullRS;
-	static ID3D11RasterizerState* mDepthBiasRS;
+	static ID3D11RasterizerState* mDepthBiasCloseToEyeRS;
+	static ID3D11RasterizerState* mDepthBiasFarFromEyeRS;
 
 	static ID3D11SamplerState* mLinearSS;
 	static ID3D11SamplerState* mLinearClampedSS;

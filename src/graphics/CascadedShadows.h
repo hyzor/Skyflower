@@ -4,8 +4,10 @@
 #include <vector>
 #include "Cascade.h"
 #include "Camera.h"
+#include "RenderStates.h"
 
-#define CASCADES_MAX 8
+#define CASCADES_MAX 3
+#define CASCADESPLITS CASCADES_MAX - 1
 
 static const XMVECTORF32 gVecFLTMAX = { FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX };
 static const XMVECTORF32 gVecFLTMIN = { -FLT_MAX, -FLT_MAX, -FLT_MAX, -FLT_MAX };
@@ -24,18 +26,6 @@ enum NEAR_FAR_FIT_METHOD
 	FIT_NEARFAR_SCENE_AABB
 };
 
-struct CascadeSplit
-{
-	float sNear;
-	float sFar;
-
-	CascadeSplit(float _near, float _far)
-	{
-		this->sNear = _near;
-		this->sFar = _far;
-	}
-};
-
 class CascadedShadows
 {
 
@@ -46,8 +36,8 @@ private:
 	FRUSTUM_SPLIT_METHOD mFrustumSplitMethod;
 	NEAR_FAR_FIT_METHOD mNearFarFitMethod;
 
-	//A vector that is parallell to the vector containing the cascades
-	std::vector<CascadeSplit> mCascadeSplits;
+	//Splitdepths used by cascades, stored in a 0-1 interval (0 to 100%)
+	float mCascadeSplits[CASCADESPLITS];
 
 	float mSplitFactor;
 
@@ -60,8 +50,8 @@ public:
 	//Returns false if the maximum amount of cascades has been reached
 	bool AddCascade(ID3D11Device* device, UINT width, UINT height);
 
-	//Set near and far splitdepth for cascade of the given index, returns false if index is bad
-	bool SetSplitDepths(float _near, float _far, int cascadeIndex);
+	//Set splitdepth for split of the given index, returns false if index is bad
+	bool SetSplitDepth(float depth, UINT cascadeIndex);
 
 	//Set the method which will be used to create the split up lightfrustums
 	void SetSplitMethod(FRUSTUM_SPLIT_METHOD splitMethod);
