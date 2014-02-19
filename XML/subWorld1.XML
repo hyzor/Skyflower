@@ -102,6 +102,7 @@
 		<Throw />
 		<Health />
         <Movement speed="10"/>
+		<Event script="aiPush" />
 		<!--Event script="testAI" /-->
     </Entity>
 	

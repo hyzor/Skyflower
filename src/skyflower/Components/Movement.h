@@ -43,9 +43,9 @@ public:
 
 	Vec3 GetLook();
 
-	bool IsDizzy()
+	bool getIsDizzy()
 	{
-		return isDizzy;
+		return this->isDizzy;
 	}
 
 private:
@@ -65,6 +65,7 @@ private:
 	void StopJump(Message const& msg);
 	void setIsDizzy(Message const& msg);
 	void dizzyTimer(float deltaTime);
+
 
 private:
 	PhysicsEntity* p;
