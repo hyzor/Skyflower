@@ -231,7 +231,16 @@ void Movement::update(float deltaTime)
 			Push *pushComponent = getOwner()->getComponent<Push *>("Push");
 			Throw *throwComponent = getOwner()->getComponent<Throw *>("Throw");
 
-			if ((this->isInAir && timeFalling > 0.3f) || p->GetStates()->isJumping)
+			if (animatedInstance->GetAnimation() == 7 && !animatedInstance->IsAnimationDone())
+			{
+				// Do nothing, waiting for throw animation to finish.
+			}
+			else if (isDizzy)
+			{
+				// Dizzy
+				animatedInstance->SetAnimation(10, true);
+			}
+			else if ((this->isInAir && timeFalling > 0.3f) || p->GetStates()->isJumping)
 			{
 				if (animatedInstance->GetAnimation() != 8 && animatedInstance->GetAnimation() != 9)
 				{
