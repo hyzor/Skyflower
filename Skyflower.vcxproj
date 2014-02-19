@@ -67,6 +67,7 @@
     <ClInclude Include="src\skyflower\Component.h" />
     <ClInclude Include="src\skyflower\ComponentHeaders.h" />
     <ClInclude Include="src\skyflower\Components\AI.h" />
+    <ClInclude Include="src\skyflower\Components\Balloon.h" />
     <ClInclude Include="src\skyflower\Components\BoxComp.h" />
     <ClInclude Include="src\skyflower\Components\Button.h" />
     <ClInclude Include="src\skyflower\Components\Checkpoint.h" />

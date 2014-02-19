@@ -196,10 +196,11 @@ end
 --ballonPop script--
 --------------------
 
-function activated_ballonPop(id)
+function activated_balloon(id)
 	Print("Touched")
 	if IsActivator(id, "Throwable") then
 		Print("POP!")
+		Pop(id)
 	end
 end
 

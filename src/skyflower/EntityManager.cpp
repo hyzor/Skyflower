@@ -1011,6 +1011,11 @@ bool EntityManager::loadXML(string xmlFile)
 				MorphAnimation *m = new MorphAnimation(path, file);
 				this->addComponent(entity, m);
 			}
+			else if (componentName == "Balloon")
+			{
+				Balloon* g = new Balloon();
+				this->addComponent(entity, g);
+			}
 			else
 			{
 				cout << xmlFile << ": Unknown component with name " << componentName << " in entity " << entityName << endl;

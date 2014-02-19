@@ -32,6 +32,13 @@
 			<Throw haveAim="true"/>
 	</Entity>
 	
+	<!--Entity entityName="WoodBlock" model="Models\Throwable\Ball" id="301" isVisible="1" isCollidible="1" isAnimated="0" xPos="20" yPos="10" zPos="20" xRot="0.0" yRot="0.0" zRot="0.0" xScale="2.0" yScale="2.0" zScale="2.0">
+		<Messenger />
+		<Touch />
+		<Balloon />
+		<Event script="balloon" />
+    </Entity-->
+	
 	
 	
     <Entity entityName="ballonPlattform" model="Models\Worlds\Subworld 1\ballonPlattform" id="24" isVisible="1" isCollidible="1" isAnimated="0" xPos="294" yPos="79" zPos="125"  xRot="0.0" yRot="-1.57145119464" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">

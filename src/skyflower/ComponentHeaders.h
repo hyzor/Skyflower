@@ -26,5 +26,6 @@
 #include "Components/DirectionalLightComp.h"
 #include "Components/MorphAnimation.h"
 #include "Components/WallButton.h"
+#include "Components/Balloon.h"
 
 #endif

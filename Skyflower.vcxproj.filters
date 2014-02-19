@@ -272,5 +272,8 @@
     <ClInclude Include="src\skyflower\Components\WallButton.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="src\skyflower\Components\Balloon.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

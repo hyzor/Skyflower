@@ -683,3 +683,20 @@ int Event::IsUnlit(lua_State* L)
 	lua_pushboolean(L, false);
 	return 1;
 }
+
+
+int Event::Pop(lua_State* L)
+{
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+
+		if (entity->hasComponents("Balloon"))
+			entity->getComponent<Balloon*>("Balloon")->Pop();
+
+		
+	}
+
+	return 0;
+}
