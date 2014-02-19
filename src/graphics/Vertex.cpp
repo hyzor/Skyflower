@@ -11,6 +11,11 @@ const D3D11_INPUT_ELEMENT_DESC InputLayoutDesc::Position[1] =
 	{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
 };
 
+const D3D11_INPUT_ELEMENT_DESC InputLayoutDesc::Position2D[1] =
+{
+	{"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
+};
+
 const D3D11_INPUT_ELEMENT_DESC InputLayoutDesc::PosTex[2] =
 {
 	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -78,6 +83,7 @@ const D3D11_INPUT_ELEMENT_DESC InputLayoutDesc::PosNormalTexTargets4[15] =
 // Input layouts
 //===========================================================================
 ID3D11InputLayout* InputLayouts::Position = 0;
+ID3D11InputLayout* InputLayouts::Position2D = 0;
 ID3D11InputLayout* InputLayouts::PosTex = 0;
 ID3D11InputLayout* InputLayouts::PosNormalTex = 0;
 ID3D11InputLayout* InputLayouts::Particle = 0;
@@ -88,6 +94,7 @@ ID3D11InputLayout* InputLayouts::PosNormalTexTargets4 = 0;
 void InputLayouts::DestroyAll()
 {
 	ReleaseCOM(Position);
+	ReleaseCOM(Position2D);
 	ReleaseCOM(PosTex);
 	ReleaseCOM(PosNormalTex);
 	ReleaseCOM(Particle);

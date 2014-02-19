@@ -135,6 +135,9 @@
     <ClCompile Include="src\skyflower\Components\MorphAnimation.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="src\skyflower\Components\Throw.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
     <ClCompile Include="src\skyflower\Components\WallButton.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>

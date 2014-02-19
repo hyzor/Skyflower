@@ -115,35 +115,18 @@ void Application::Start()
 	// Make the charts hold 2 minutes worth of values at 60fps.
 	size_t chartCapacity = 120 * 60;
 
-	LineChart frameTimeChart(chartCapacity);
-	frameTimeChart.SetSize(256, 128);
-	frameTimeChart.SetTimeSpan(chartTime, chartResolution);
-	frameTimeChart.SetTargetValue((1.0 / 60.0) * 1000.0);
-	frameTimeChart.SetUnit("ms");
-	frameTimeChart.SetLabel("frame time");
-	//Texture2D *frameTimeChartTexture = m_graphicsEngine->CreateTexture2D(frameTimeChart.GetWidth(), frameTimeChart.GetHeight());
-	m_frameChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, 0.0f, 0.0f), 
-		m_GUI->CreateTexture2D(frameTimeChart.GetWidth(), frameTimeChart.GetHeight()));
-	
-	LineChart fpsChart(chartCapacity);
-	fpsChart.SetSize(256, 128);
-	fpsChart.SetTimeSpan(chartTime, chartResolution);
-	fpsChart.SetTargetValue(60.0);
-	fpsChart.SetUnit("fps");
-	fpsChart.SetLabel("FPS");
-	//Texture2D *fpsChartTexture = m_graphicsEngine->CreateTexture2D(fpsChart.GetWidth(), fpsChart.GetHeight());
-	m_fpsChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, (float)(frameTimeChart.GetHeight() + 6), 0.0f),
-		m_GUI->CreateTexture2D(fpsChart.GetWidth(), fpsChart.GetHeight()));
+	std::vector<const struct LineChartDataPoint> lineChartDataPoints;
+	lineChartDataPoints.reserve((size_t)((chartTime / chartResolution) * 2));
 
-	LineChart memoryChart(chartCapacity);
-	memoryChart.SetSize(256, 128);
-	memoryChart.SetTimeSpan(chartTime, chartResolution);
-	memoryChart.SetTargetValue(256.0);
-	memoryChart.SetUnit("MiB");
-	memoryChart.SetLabel("RAM");
-	//Texture2D *memoryChartTexture = m_graphicsEngine->CreateTexture2D(memoryChart.GetWidth(), memoryChart.GetHeight());
-	m_memChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, (float)((frameTimeChart.GetHeight() + 6) * 2), 0.0f),
-		m_GUI->CreateTexture2D(memoryChart.GetWidth(), memoryChart.GetHeight()));
+	LineChartData frameTimeChart(chartCapacity);
+	LineChartData fpsChart(chartCapacity);
+	LineChartData memoryChart(chartCapacity);
+
+	m_frameChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, 0.0f, 0.0f), m_GUI->CreateTexture2D(256, 128, true));
+	m_fpsChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, 128.0f + 6.0f, 0.0f), m_GUI->CreateTexture2D(256, 128, true));
+	m_memChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, 2 * (128.0f + 6.0f), 0.0f), m_GUI->CreateTexture2D(256, 128, true));
+
+	LineChartRendererD3D lineChartRenderer(m_graphicsEngine);
 
 	// Don't start listening to input events until everything has been initialized.
 	m_inputHandler->AddListener(this);
@@ -171,24 +154,38 @@ void Application::Start()
 		mGameTime = time - mStartTime;
 
 		frameTimeChart.AddDataPoint(time, deltaTime * 1000.0);
-
-		// Make the fps chart more readable by ignoring delta times smaller than half a millisecond.
-		if (deltaTime > 0.0005)
-			fpsChart.AddDataPoint(time, 1.0 / deltaTime);
-
+		fpsChart.AddDataPoint(time, 1.0 / deltaTime);
 		memoryChart.AddDataPoint(time, GetMemoryUsage() / (1024.0 * 1024.0));
 
 		if (m_showCharts && time >= nextChartDraw) {
 			nextChartDraw = time + chartDrawFrequency;
 
-			frameTimeChart.Draw(time);
-			m_GUI->UploadData(m_frameChartID, frameTimeChart.GetPixels());
-			
-			fpsChart.Draw(time);
-			m_GUI->UploadData(m_fpsChartID, fpsChart.GetPixels());
+			// Draw the frame time chart.
+			lineChartDataPoints.clear();
+			frameTimeChart.PushDataPoints(time - chartTime, time, chartResolution, lineChartDataPoints);
 
-			memoryChart.Draw(time);
-			m_GUI->UploadData(m_memChartID, memoryChart.GetPixels());
+			lineChartRenderer.SetTargetValue((1.0 / 60.0) * 1000.0);
+			lineChartRenderer.SetUnit("ms");
+			lineChartRenderer.SetLabel("frame time");
+			lineChartRenderer.Draw(lineChartDataPoints, m_GUI->GetGUIElement(m_frameChartID)->GetTexture());
+
+			// Draw the FPS chart.
+			lineChartDataPoints.clear();
+			fpsChart.PushDataPoints(time - chartTime, time, chartResolution, lineChartDataPoints);
+
+			lineChartRenderer.SetTargetValue(60.0);
+			lineChartRenderer.SetUnit("fps");
+			lineChartRenderer.SetLabel("FPS");
+			lineChartRenderer.Draw(lineChartDataPoints, m_GUI->GetGUIElement(m_fpsChartID)->GetTexture());
+
+			// Draw the RAM chart.
+			lineChartDataPoints.clear();
+			memoryChart.PushDataPoints(time - chartTime, time, chartResolution, lineChartDataPoints);
+
+			lineChartRenderer.SetTargetValue(256.0);
+			lineChartRenderer.SetUnit("MiB");
+			lineChartRenderer.SetLabel("RAM");
+			lineChartRenderer.Draw(lineChartDataPoints, m_GUI->GetGUIElement(m_memChartID)->GetTexture());
 		}
 
 		float volume = m_menu->getSettings()._soundVolume;

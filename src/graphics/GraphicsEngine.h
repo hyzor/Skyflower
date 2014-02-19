@@ -63,7 +63,7 @@ public:
 	virtual void DeleteCameraController(CameraController *controller) = 0;
 
 	virtual void UpdateSceneData() = 0;
-	virtual Texture2D *CreateTexture2D(unsigned int width, unsigned int height) = 0;
+	virtual Texture2D *CreateTexture2D(unsigned int width, unsigned int height, bool renderable = false) = 0;
 	virtual void DeleteTexture2D(Texture2D *texture) = 0;
 
 	virtual ParticleSystem *CreateParticleSystem() = 0;
@@ -83,6 +83,12 @@ public:
 	virtual void SetSSAOParameters(float radius, float projection_factor, float bias, float contrast, float sigma) = 0;
 	virtual void SetMorphAnimWeigth(unsigned index, Vec3 weight) = 0;
 	virtual Vec3 GetMorphAnimWeigth(unsigned index) = 0;
+
+	virtual void ClearTexture(Texture2D *texture, const float color[4]) = 0;
+	virtual void PrintTextMonospaceToTexture(Texture2D *texture, const std::string &text, const int position[2]) = 0;
+	virtual void DrawLines(Texture2D *texture, const float *data, size_t count, const XMFLOAT3X3 &transformation, const float color[4]) = 0;
+
+	virtual void ResetRenderTargetAndViewport() = 0;
 };
 
 DLL_API GraphicsEngine* CreateGraphicsEngine();

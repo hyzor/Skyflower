@@ -27,6 +27,7 @@ ShaderHandler::ShaderHandler()
 	mParticleSystemShader = new ParticleSystemShader();
 	mLightDeferredToTextureShader = new LightDeferredShader();
 	mBasicDeferredSkinnedSortedShader = new BasicDeferredSkinnedSortedShader();
+	mLineShader = new LineShader();
 
 	// SMAA
 	mSMAAColorEdgeDetectionShader = new SMAAColorEdgeDetectionShader();
@@ -85,8 +86,8 @@ ShaderHandler::~ShaderHandler()
 	delete mShadowMorphShader;
 	delete mParticleSystemShader;
 	delete mLightDeferredToTextureShader;
-
 	delete mBasicDeferredSkinnedSortedShader;
+	delete mLineShader;
 
 	// SMAA
 	delete mSMAAColorEdgeDetectionShader;
@@ -2537,7 +2538,7 @@ void CompositeShader::SetDoFFarFieldTexture(ID3D11DeviceContext* dc, ID3D11Shade
 	dc->PSSetShaderResources(2, 1, &tex);
 }
 
-#pragma endregion BlurShader
+#pragma endregion CompositeShader
 
 ParticleSystemShader::ParticleSystemShader()
 {
@@ -3066,6 +3067,85 @@ void BasicDeferredSkinnedSortedShader::SetRootBoneIndex(UINT rootBoneIndex)
 {
 	mBufferCache.vsSkinnedBuffer.rootBoneIndex = rootBoneIndex;
 }
+
+#pragma region LineShader
+
+LineShader::LineShader()
+{
+}
+
+LineShader::~LineShader()
+{
+	if (ps_cPerObjectBuffer)
+		ps_cPerObjectBuffer->Release();
+}
+
+bool LineShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
+{
+	memset(&ps_cPerObjectVariables, 0, sizeof(PS_CPEROBJECT));
+
+	D3D11_BUFFER_DESC cbDesc;
+	cbDesc.ByteWidth = sizeof(PS_CPEROBJECT);
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	HRESULT hr = device->CreateBuffer(&cbDesc, NULL, &ps_cPerObjectBuffer);
+	
+	mInputLayout = inputLayout;
+
+	return true;
+}
+
+bool LineShader::SetActive(ID3D11DeviceContext* dc)
+{
+	dc->IASetInputLayout(mInputLayout);
+
+	// Set active shaders
+	dc->VSSetShader(mVertexShader, nullptr, 0);
+	dc->PSSetShader(mPixelShader, nullptr, 0);
+
+	dc->VSSetConstantBuffers(0, 1, &ps_cPerObjectBuffer);
+	dc->PSSetConstantBuffers(0, 1, &ps_cPerObjectBuffer);
+
+	return true;
+}
+
+void LineShader::Update(ID3D11DeviceContext* dc)
+{
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	dc->Map(ps_cPerObjectBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	memcpy(mappedResource.pData, &ps_cPerObjectVariables, sizeof(PS_CPEROBJECT));
+	dc->Unmap(ps_cPerObjectBuffer, 0);
+}
+
+bool LineShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
+{
+	mVertexShader = vShader;
+	mPixelShader = pShader;
+
+	return true;
+}
+
+void LineShader::SetTransformation(const XMFLOAT3X3 &transformation)
+{
+	ps_cPerObjectVariables.transformation = XMMatrixTranspose(XMLoadFloat3x3(&transformation));
+}
+
+void LineShader::SetFramebufferSize(const XMFLOAT2 &framebufferSize)
+{
+	ps_cPerObjectVariables.projection = XMMatrixTranspose(XMMatrixOrthographicOffCenterLH(0.0f, framebufferSize.x, 0.0f, framebufferSize.y, 0.0f, 1.0f));
+}
+
+void LineShader::SetColor(const XMFLOAT4 &color)
+{
+	ps_cPerObjectVariables.color = color;
+}
+
+#pragma endregion LineShader
 
 #pragma region SMAA
 #pragma region SMAAColorEdgeDetectionShader
@@ -3723,3 +3803,4 @@ void SMAANeighborhoodBlendingShader::SetVelocityTex(ID3D11DeviceContext* dc, ID3
 }
 #pragma endregion SMAANeighborhoodBlendingShader
 #pragma endregion SMAA
+
