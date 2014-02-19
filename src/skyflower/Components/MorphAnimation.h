@@ -11,17 +11,17 @@
 using namespace std;
 using namespace Cistron;
 
-class MorphAnimtation : public Component
+class MorphAnimation : public Component
 {
 public:
-	MorphAnimtation(string path, string model) : Component("MorphAnimation")
+	MorphAnimation(string path, string model) : Component("MorphAnimation")
 	{
 		isMorphing = false;
 		speed = 0.0f;
 		this->path = path;
 		this->model = model;
 	};
-	virtual ~MorphAnimtation();
+	virtual ~MorphAnimation(){}
 
 	void addedToEntity();
 	void update(float deltaTime);
