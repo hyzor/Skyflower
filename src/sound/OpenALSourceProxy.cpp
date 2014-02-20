@@ -74,7 +74,7 @@ ALuint OpenALSourceProxy::RevokeSource()
 
 		if (info) {
 			uint64_t sampleOffset = m_queuedBufferIndices[0] * info->samplesPerBuffer;
-			m_time += (float)sampleOffset / (info->sampleRate * info->channels);
+			m_time += sampleOffset / (float)(info->sampleRate * info->channels);
 		}
 	}
 

@@ -77,7 +77,7 @@ struct AudioResource *CreateAudioResource(const std::string &file)
 			resource->info.bufferCount++;
 		}
 
-		printf("duration=%.2f, bufferCount=%i\n", resource->info.duration, resource->info.bufferCount);
+		printf("duration=%.2f, bufferCount=%u\n", resource->info.duration, resource->info.bufferCount);
 
 		return resource;
 	}

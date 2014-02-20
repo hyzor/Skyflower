@@ -172,7 +172,7 @@ void SoundSourceImpl::Update(float deltaTime)
 			//printf("SoundSourceImpl::Update, BufferStatusPendingLoad\n");
 			break;
 		case BufferStatusIndexOutOfBounds:
-			printf("SoundSourceImpl::Update, BufferStatusIndexOutOfBounds, maxIndex=%i, index=%i\n", resourceInfo->bufferCount, m_nextBufferIndex);
+			printf("SoundSourceImpl::Update, BufferStatusIndexOutOfBounds, maxIndex=%u, index=%u\n", resourceInfo->bufferCount, m_nextBufferIndex);
 			break;
 		case BufferStatusOutOfMemory:
 			printf("SoundSourceImpl::Update, BufferStatusOutOfMemory\n");

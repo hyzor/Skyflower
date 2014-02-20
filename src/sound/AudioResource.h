@@ -25,12 +25,12 @@ struct MemoryMappedFile
 struct AudioResourceInfo
 {
 	// Filled in by AudioDecoder.init
-	ALenum format;
 	uint64_t totalSamples;
 	uint64_t samplesPerBuffer; // Typically totalSamples if not streaming SOUNDENGINE_STREAMING_BUFFER_SIZE * sampleRate * channels if streaming.
 	unsigned int channels;
 	unsigned int sampleRate;
 	unsigned int bitDepth;
+	ALenum format;
 
 	// These fields are derived from the above fields.
 	float duration;
