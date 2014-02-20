@@ -109,9 +109,16 @@
     <ClInclude Include="src\skyflower\Menu.h" />
     <ClInclude Include="src\skyflower\MenuItems.h" />
     <ClInclude Include="src\skyflower\PotentialField.h" />
+    <ClInclude Include="src\skyflower\resources\resource.h" />
     <ClInclude Include="src\skyflower\ScriptHandler.h" />
     <ClInclude Include="src\skyflower\tinyxml2.h" />
     <ClInclude Include="src\skyflower\Window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="src\skyflower\resources\Skyflower.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="src\skyflower\resources\app.ico" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{37AF7357-6F98-4587-BA3E-CBEF4F9D14A3}</ProjectGuid>
