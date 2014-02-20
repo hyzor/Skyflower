@@ -318,6 +318,7 @@ void Application::updateMenu(float dt)
 
 void Application::updateCutScene(float dt)
 {
+	m_entityManager->update(dt);
 	m_camera->Update(dt);
 	m_graphicsEngine->UpdateScene(dt, (float)mGameTime);
 	m_graphicsEngine->DrawScene();

@@ -44,6 +44,7 @@ public:
 		lua_register(sh->L, "IsActivated", Event::IsActivated);
 		lua_register(sh->L, "IsActivator", Event::IsActivator);
 		lua_register(sh->L, "IsDown", Event::IsDown);
+		lua_register(sh->L, "PrintText", Event::PrintText);
 
 		//AI
 		lua_register(sh->L, "SetTarget", Event::SetTarget);
@@ -73,7 +74,10 @@ public:
 		// Balloon
 		lua_register(sh->L, "Pop", Event::Pop);
 
-		lua_register(sh->L, "PrintText", Event::PrintText);
+		// Morph
+		lua_register(sh->L, "SetMorphState", Event::SetMorphState);
+		lua_register(sh->L, "StartMorph", Event::StartMorph);
+		lua_register(sh->L, "CompletedLevelCount", Event::CompletedLevelCount);
 	};
 
 	// we are added to an Entity, and thus to the component system
@@ -153,6 +157,10 @@ private:
 
 	static int Pop(lua_State* L);
 	static int PrintText(lua_State* L);
+
+	static int SetMorphState(lua_State* L);
+	static int StartMorph(lua_State* L);
+	static int CompletedLevelCount(lua_State* L);
 };
 
 #endif

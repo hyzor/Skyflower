@@ -120,7 +120,7 @@ int Event::ChangeLevel(lua_State* L)
 	if (n >= 1)
 	{
 		int level = (int)lua_tointeger(L, 1);
-		if (level != 0)
+		if (LevelHandler::GetInstance()->currentLevel() != 0)
 			LevelHandler::GetInstance()->levelCompleted();
 		LevelHandler::GetInstance()->queue(level);
 	}
@@ -711,4 +711,56 @@ int Event::PrintText(lua_State* L)
 	}
 
 	return 0;
+}
+
+int Event::SetMorphState(lua_State* L)
+{
+	// ID, x, y, z
+	int n = lua_gettop(L);
+
+	if (n >= 4)
+	{
+		EntityId id = (EntityId)lua_tointeger(L, 1);
+		float x = (float)lua_tonumber(L, 2);
+		float y = (float)lua_tonumber(L, 3);
+		float z = (float)lua_tonumber(L, 4);
+
+		MorphAnimation* morph = entityManager->getEntity(id)->getComponent<MorphAnimation*>("MorphAnimation");
+
+		if (morph)
+		{
+			morph->setWeights(Vec3(x, y, z));
+		}
+	}
+	return 0;
+}
+
+int Event::StartMorph(lua_State* L)
+{
+	// ID, x, y, z, speed
+	int n = lua_gettop(L);
+
+	if (n >= 5)
+	{
+		EntityId id = (EntityId)lua_tointeger(L, 1);
+		float x = (float)lua_tonumber(L, 2);
+		float y = (float)lua_tonumber(L, 3);
+		float z = (float)lua_tonumber(L, 4);
+		float speed = (float)lua_tonumber(L, 5);
+
+		MorphAnimation* morph = entityManager->getEntity(id)->getComponent<MorphAnimation*>("MorphAnimation");
+
+		if (morph)
+		{
+			morph->startMorphing(Vec3(x, y, z), speed);
+		}
+	}
+	return 0;
+}
+
+int Event::CompletedLevelCount(lua_State* L)
+{
+	int count = levelHandler->completedCount();
+	lua_pushinteger(L, count);
+	return 1;
 }
