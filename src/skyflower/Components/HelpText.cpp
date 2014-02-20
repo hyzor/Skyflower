@@ -36,11 +36,7 @@ void HelpText::update(float dt)
 {
 	if (m_active)
 	{
-		if (first)
-		{
-			first = false;
-			// Play sound
-		}
+
 		GUI* gui = getOwner()->getModules()->gui;
 
 		getOwner()->getModules()->graphics->GetWindowResolution(width, height);
@@ -51,6 +47,13 @@ void HelpText::update(float dt)
 		float distance = (getEntityManager()->getEntity(1)->returnPos() - orig).Length();
 		if (distance < m_range)
 		{
+			if (first)
+			{
+				first = false;
+				// Play sound
+				getOwner()->getModules()->sound->PlaySound("comedy_duck.wav", 1.0f);
+			}
+
 			if (top < 153.6f)
 				top += dt*300;
 
