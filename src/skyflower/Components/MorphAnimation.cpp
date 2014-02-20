@@ -29,9 +29,10 @@ void MorphAnimation::update(float dt)
 	if (isMorphing)
 	{
 		Vec3 weight = m_model->GetWeights();
+		float lastDistance = (weight - targetWeight).Length();
 		weight += morphSpeed * dt;
 
-		if (abs((weight - targetWeight).Length()) > 0.1)
+		if ((weight - targetWeight).Length() < lastDistance)
 		{
 			m_model->SetWeights(weight);
 		}
