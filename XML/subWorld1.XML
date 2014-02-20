@@ -87,7 +87,7 @@
     </Entity>
 	
 	
-    <!--Entity type="Test" model="Models\Worlds\Subworld 1\Puncha" id="27" isVisible="1" isCollidible="0" isAnimated="1" xPos="80" yPos="0" zPos="20" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
+    <Entity type="Test" model="Models\Worlds\Subworld 1\Puncha" id="27" isVisible="1" isCollidible="0" isAnimated="1" xPos="80" yPos="0" zPos="20" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <Gravity/>
 		<Messenger />
         <AI />
@@ -95,10 +95,11 @@
 		<Pushable />
 		<Throw />
 		<Health />
+		<Footsteps />
         <Movement speed="10"/>
 		<Event script="aiPush" />
-		<!--Event script="testAI" />
-    </Entity-->
+		<!--Event script="testAI" /-->
+    </Entity>
 	
 	<Entity type="spawnpoint" model="" id="511" isVisible="0" isCollidible="0" isAnimated="0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0"
 		xPos="40" yPos="0" zPos="20" />
