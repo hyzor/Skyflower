@@ -268,6 +268,9 @@ void Throwable::update(float deltaTime)
 
 												AnimatedInstance *animatedInstance = entity->getAnimatedInstance();
 
+												Vec3 position = getOwner()->returnPos();
+												getOwner()->getModules()->sound->PlaySound("swish.wav", 1.0f, &position.X);
+
 												if (animatedInstance && entity->fId == 1)
 												{
 													// Play throw animation
