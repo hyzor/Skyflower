@@ -24,7 +24,10 @@ public:
 
 		this->lightOn = true;
 	};
-	virtual ~SpotLightComp() {};
+	virtual ~SpotLightComp() 
+	{
+		delete light;
+	};
 
 	void addedToEntity();
 

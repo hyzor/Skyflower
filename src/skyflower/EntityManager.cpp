@@ -653,7 +653,7 @@ bool EntityManager::loadXML(string xmlFile)
 
 		
 		// The element is an entity.
-		string entityName = GetStringAttribute(elem, "entityName", "", xmlFile);
+		string entityName = GetStringAttribute(elem, "type", "", xmlFile);
 		int id = GetIntAttribute(elem, "id", entityName, xmlFile);
 
 		if (id == 0)

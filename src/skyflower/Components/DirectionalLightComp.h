@@ -23,7 +23,10 @@ public:
 
 		this->lightOn = true;
 	};
-	virtual ~DirectionalLightComp() {};
+	virtual ~DirectionalLightComp() 
+	{
+		delete light;
+	};
 
 	void addedToEntity();
 

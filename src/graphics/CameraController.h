@@ -29,6 +29,7 @@ public:
 	virtual bool GetInverted() const = 0;
 	virtual void SetMouseSense(float sensitivity) = 0;
 	virtual float GetMouseSense() const = 0;
+	virtual void SetOffsetFast(float offset) = 0;
 };
 
 DLL_API void DestroyCameraController(CameraController* cameraController); // Clean up

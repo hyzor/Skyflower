@@ -101,6 +101,8 @@ rush = true
 rushtime = 0
 scaredtime = 0
 function update_aiPush(id, dt)
+	Push(player, id)
+	
 	if IsTouching(id, 16) then
 		Jump(id)
 	end
@@ -133,7 +135,6 @@ function update_aiPush(id, dt)
 		else
 			SetTarget(id, player, 30)
 			SetSpeed(id, 30)
-			Push(player, id)
 			if scaredtime > 4 then
 				rush = true
 				rushtime = 0

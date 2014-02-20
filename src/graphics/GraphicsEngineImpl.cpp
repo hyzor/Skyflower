@@ -1649,9 +1649,9 @@ SpotLight* GraphicsEngineImpl::addSpotLight(Vec3 color, Vec3 direction, Vec3 pos
 
 void GraphicsEngineImpl::clearLights()
 {
-	//mSpotLights.clear();
-	//mDirLights.clear();
-	//mPointLights.clear();
+	mSpotLightsCount = 0;
+	mDirLightsCount = 0;
+	mPointLightsCount = 0;
 }
 
 

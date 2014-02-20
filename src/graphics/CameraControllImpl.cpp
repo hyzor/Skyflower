@@ -67,6 +67,12 @@ void CameraControllImpl::Update(float dt)
 	target = Vec3::Zero();
 }
 
+void CameraControllImpl::SetOffsetFast(float offset)
+{
+	if(this->offset > offset)
+		this->offset = offset;
+}
+
 void CameraControllImpl::SetDirection(Vec3 direction)
 {
 	this->camera->SetDirection(direction);

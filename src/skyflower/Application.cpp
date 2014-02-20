@@ -327,11 +327,31 @@ void Application::updateCutScene(float dt)
 
 void Application::updateGame(float dt, float gameTime)
 {
-	m_camera->Follow(m_entityManager->getEntityPos("player"));
+	Vec3 playerPos = m_entityManager->getEntityPos("player");
+	m_camera->Follow(playerPos);
 
 	Movement* playerMove = m_entityManager->getEntity(1)->getComponent<Movement*>("Movement");
 	playerMove->setCamera(m_camera->GetLook(), m_camera->GetRight(), m_camera->GetUp());
 	playerMove->setYaw(m_camera->GetYaw());
+
+
+	//camera collision
+	Ray ray = Ray(playerPos + Vec3(0, 10, 0), (playerPos + Vec3(0, 10, 0) - m_camera->GetPosition()).Normalize()*-100);
+	std::vector<CollisionInstance*> cols = m_collision->GetCollisionInstances();
+	for (int i = 0; i < m_entityManager->getNrOfEntities(); i++)
+	{
+		if (m_entityManager->getEntityByIndex(i)->getType() == "plattform")
+		{
+			float t = m_entityManager->getEntityByIndex(i)->collInst->Test(ray);
+			if (t > 0)
+			{
+				Vec3 dir = ray.GetDir();
+				ray.Set(ray.GetPos(), dir*t);
+				m_camera->SetOffsetFast(ray.GetDir().Length() - 5);
+			}
+		}
+	}
+
 	m_camera->Update(dt);
 	
 	m_graphicsEngine->UpdateScene(dt, gameTime);
