@@ -20,7 +20,8 @@ public:
 		m_range = range;
 		m_active = true;
 		//m_showFactor = 0.0f;
-		top;
+		first = true;
+
 	};
 	virtual ~HelpText() {};
 	void addedToEntity();
@@ -39,6 +40,7 @@ private:
 	//float m_showFactor;
 	float top; // top right corner
 	bool m_active;
+	bool first;
 
 	// Texture ID's
 	int bgID;

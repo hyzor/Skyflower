@@ -3,6 +3,7 @@
 #include "shared/platform.h"
 
 #include "Window.h"
+#include "resources/resource.h"
 
 // Must be included last!
 #include "shared/debug.h"
@@ -43,7 +44,7 @@ Window::Window(const unsigned int width, const unsigned int height, const wchar_
 	windowClass.lpfnWndProc = GlobalWindowProc;
 	windowClass.cbWndExtra = sizeof(void *); // Extra space for the Window pointer.
 	windowClass.hInstance = m_instanceHandle;
-	windowClass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+	windowClass.hIcon = LoadIcon(m_instanceHandle, MAKEINTRESOURCE(IDI_APP));
 	windowClass.hCursor = LoadCursor(NULL, IDC_ARROW);
 	windowClass.hbrBackground = NULL;
 	windowClass.lpszClassName = windowClassName;
