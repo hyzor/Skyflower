@@ -36,6 +36,11 @@ void HelpText::update(float dt)
 {
 	if (m_active)
 	{
+		if (first)
+		{
+			first = false;
+			// Play sound
+		}
 		GUI* gui = getOwner()->getModules()->gui;
 
 		getOwner()->getModules()->graphics->GetWindowResolution(width, height);
@@ -68,6 +73,7 @@ void HelpText::update(float dt)
 		}
 		else
 		{
+			first = true;
 			gui->GetGUIElement(bgID)->SetVisible(false);
 			gui->GetGUIElement(duckID)->SetVisible(false);
 		}
