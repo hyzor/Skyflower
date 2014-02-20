@@ -9,7 +9,7 @@ function loaded()
 	if CompletedLevelCount() == 1 then
 		StartMorph(10,1,0,0,0.2)
 		CutScenePlay("intro")
-	end
+	end	
 end
 
 function activated_Level(id)

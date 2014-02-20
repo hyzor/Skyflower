@@ -77,21 +77,24 @@ void Checkpoint::Activate(Message const& msg)
 {
 	if (activated <= 0)
 	{
-		MorphAnimation *animation = getOwner()->getComponent<MorphAnimation*>("MorphAnimation");
+		if (getEntityManager()->getEntity(1)->spawnpos != spawnpoint)
+		{
+			MorphAnimation *animation = getOwner()->getComponent<MorphAnimation*>("MorphAnimation");
 
-		if (animation && getEntityManager()->getEntity(1)->spawnpos != spawnpoint)
-			animation->startMorphing(Vec3(1, 0, 0), 3.0f);
+			if (animation)
+				animation->startMorphing(Vec3(1, 0, 0), 3.0f);
 
-		getEntityManager()->getEntity(1)->spawnpos = spawnpoint; // set player spawn
-		getEntityManager()->sendMessageToEntity("Activated", getOwnerId()); //event managment
+			getEntityManager()->getEntity(1)->spawnpos = spawnpoint; // set player spawn
+			getEntityManager()->sendMessageToEntity("Activated", getOwnerId()); //event managment
 
-		// Update and activate particle system.
-		Vec3 pos = getEntityPos();
-		pos.Y += 10.0f;
-		pos.Z += 1.0f;
+			// Update and activate particle system.
+			Vec3 pos = getEntityPos();
+			pos.Y += 10.0f;
+			pos.Z += 1.0f;
 
-		particleSystem->SetEmitPos(XMFLOAT3(pos.X, pos.Y, pos.Z));
-		particleSystem->SetActive(true);
+			particleSystem->SetEmitPos(XMFLOAT3(pos.X, pos.Y, pos.Z));
+			particleSystem->SetActive(true);
+		}
 	}
 
 	activated = 0.2f;

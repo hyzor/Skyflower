@@ -240,8 +240,8 @@ void LineChartRendererD3D::Draw(const std::vector<const struct LineChartDataPoin
 	std::stringstream stringStream;
 	stringStream.precision(1);
 
-	stringStream << std::fixed << m_targetValue << m_unit;
-	std::string targetValueString = stringStream.str();
+	//stringStream << std::fixed << m_targetValue << m_unit;
+	//std::string targetValueString = stringStream.str();
 
 	stringStream.str("");
 	stringStream << "Min:" << std::fixed << minValue << m_unit;
