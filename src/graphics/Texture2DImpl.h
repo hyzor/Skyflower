@@ -2,6 +2,7 @@
 #define GRAPHICS_TEXTURE2DIMPL_H
 
 #include <d3d11.h>
+#include "d3dUtilities.h"
 
 #include "Texture2D.h"
 

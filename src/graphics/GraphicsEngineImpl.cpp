@@ -14,6 +14,14 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 {
 	ReleaseCOM(mDepthStencilSRVCopy);
 	ReleaseCOM(mDepthStencilTextureCopy);
+	ReleaseCOM(mRandom1DTexSRV);
+
+	for (UINT i = 0; i < mParticleSystems.size(); ++i)
+	{
+		delete mParticleSystems[i];
+	}
+
+	ReleaseCOM(mParticlesTextureArray);
 
 	for (UINT i = 0; i < mSkinnedSortedInstances.size(); ++i)
 	{
@@ -26,9 +34,6 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 			SafeDelete(it->second);
 	}
 	mSkinnedSortedModels.clear();
-
-	ReleaseCOM(mRandom1DTexSRV);
-	ReleaseCOM(mParticlesTextureArray);
 
 	for (auto& it(mModels.begin()); it != mModels.end(); ++it)
 	{
@@ -56,19 +61,14 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 	}
 	mSkinnedModels.clear();
 
-	for (UINT i = 0; i < mMorphModels.size(); ++i)
-	{
-		delete mMorphModels[i];
-	}
-
 	for (UINT i = 0; i < mMorphInstances.size(); ++i)
 	{
 		delete mMorphInstances[i];
 	}
 
-	for (UINT i = 0; i < mParticleSystems.size(); ++i)
+	for (UINT i = 0; i < mMorphModels.size(); ++i)
 	{
-		delete mParticleSystems[i];
+		delete mMorphModels[i];
 	}
 
 	delete mSky;
@@ -76,13 +76,8 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 	delete mCamera;
 	delete mTextureMgr;
 
-	mInputLayouts->DestroyAll();
-	delete mInputLayouts;
-	RenderStates::DestroyAll();
-
 	delete mSpriteFont;
 	delete mSpriteBatch;
-	delete mShaderHandler;
 
 	mDeferredBuffers->Shutdown();
 	delete mDeferredBuffers;
@@ -104,8 +99,11 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 
 	delete mFullscreenTriangle;
 
-	ReleaseCOM(mRandom1DTexSRV);
-	ReleaseCOM(mParticlesTextureArray);
+	delete mShaderHandler;
+
+	mInputLayouts->DestroyAll();
+	delete mInputLayouts;
+	RenderStates::DestroyAll();
 
 	mD3D->Shutdown();
 	delete mD3D;
@@ -1187,6 +1185,8 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	ID3D11RenderTargetView* renderTargetsLitScene[1] = { mDeferredBuffers->GetLitSceneRTV() };
 
 	mD3D->GetImmediateContext()->OMSetBlendState(RenderStates::mDefaultBS, blendFactor, 0xffffffff);
+
+	mD3D->GetImmediateContext()->RSSetState(RenderStates::mDefaultRS);
 	
 	//---------------------------------------------------------------------------------------
 	// Sky

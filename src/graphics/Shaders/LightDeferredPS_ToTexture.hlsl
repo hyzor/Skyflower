@@ -241,7 +241,7 @@ PixelOut main(VertexOut pIn)
 	//float luminance = dot(diffuse.xyz, float3(0.333f, 0.333f, 0.333f));
 
 	/*
-	float exposure = 1.25f;
+	float exposure = 2.0f;
 	float2 vtc = float2(pIn.Tex - 0.5);
 	float vignette = pow(1 - (dot(vtc, vtc) * 1.0), 2.0);
 

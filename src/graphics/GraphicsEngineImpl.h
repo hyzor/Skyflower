@@ -14,8 +14,8 @@
 #include "Sky.h"
 #include "Shadowmap.h"
 #include "RenderStates.h"
-#include <SpriteBatch.h>
-#include <SpriteFont.h>
+#include <DirectXTK/SpriteBatch.h>
+#include <DirectXTK/SpriteFont.h>
 
 #include "Character.h"
 #include "GraphicsEngine.h"

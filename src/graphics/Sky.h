@@ -9,7 +9,7 @@
 
 #include "d3dUtilities.h"
 #include "Camera.h"
-#include <DDSTextureLoader.h>
+#include <DirectXTK/DDSTextureLoader.h>
 #include "ShaderHandler.h"
 #include "RenderStates.h"
 #include "TextureManager.h"

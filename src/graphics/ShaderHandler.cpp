@@ -40,28 +40,32 @@ ShaderHandler::~ShaderHandler()
 {
 	for (UINT i = 0; i < mShaders.size(); ++i)
 	{
-		mShaders[i]->Buffer->Release();
+		//mShaders[i]->Buffer->Release();
+		ReleaseCOM(mShaders[i]->Buffer);
 		delete mShaders[i];
 	}
 
 	for (auto& it(mVertexShaders.begin()); it != mVertexShaders.end(); ++it)
 	{
 		if (it->second)
-			it->second->Release();
+			ReleaseCOM(it->second);
+			//it->second->Release();
 	}
 	mVertexShaders.clear();
 
 	for (auto& it(mPixelShaders.begin()); it != mPixelShaders.end(); ++it)
 	{
 		if (it->second)
-			it->second->Release();
+			ReleaseCOM(it->second);
+			//it->second->Release();
 	}
 	mPixelShaders.clear();
 
 	for (auto& it(mGeometryShaders.begin()); it != mGeometryShaders.end(); ++it)
 	{
 		if (it->second)
-			it->second->Release();
+			ReleaseCOM(it->second);
+			//it->second->Release();
 	}
 	mGeometryShaders.clear();
 
@@ -85,7 +89,6 @@ ShaderHandler::~ShaderHandler()
 	delete mShadowMorphShader;
 	delete mParticleSystemShader;
 	delete mLightDeferredToTextureShader;
-
 	delete mBasicDeferredSkinnedSortedShader;
 
 	// SMAA
@@ -177,7 +180,7 @@ void ShaderHandler::LoadCompiledGeometryStreamOutShader(LPCWSTR fileName, char* 
 
 	Shader* shader = new Shader();
 	shader->Name = name;
-	shader->Type = GEOMETRYSHADER;
+	shader->Type = GEOMETRYSTREAMOUTSHADER;
 	hr = D3DReadFileToBlob(fileName, &shader->Buffer);
 
 	if (FAILED(hr))
@@ -302,12 +305,16 @@ BasicShader::BasicShader(){}
 
 BasicShader::~BasicShader()
 {
-	if (vs_cPerObjBuffer)
-		vs_cPerObjBuffer->Release();
-	if (ps_cPerObjBuffer)
-		ps_cPerObjBuffer->Release();
-	if (ps_cPerFrameBuffer)
-		ps_cPerFrameBuffer->Release();
+// 	if (vs_cPerObjBuffer)
+// 		vs_cPerObjBuffer->Release();
+// 	if (ps_cPerObjBuffer)
+// 		ps_cPerObjBuffer->Release();
+// 	if (ps_cPerFrameBuffer)
+// 		ps_cPerFrameBuffer->Release();
+
+	ReleaseCOM(vs_cPerObjBuffer);
+	ReleaseCOM(ps_cPerObjBuffer);
+	ReleaseCOM(ps_cPerFrameBuffer);
 }
 
 bool BasicShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -570,8 +577,7 @@ ShadowShader::~ShadowShader()
 		mPixelShader->Release();
 	*/
 
-	if (vs_cBuffer)
-		vs_cBuffer->Release();
+	ReleaseCOM(vs_cBuffer);
 }
 
 bool ShadowShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
@@ -660,8 +666,10 @@ SkyShader::SkyShader(){}
 
 SkyShader::~SkyShader()
 {
-	if (vs_cPerFrameBuffer)
-		vs_cPerFrameBuffer->Release();
+// 	if (vs_cPerFrameBuffer)
+// 		vs_cPerFrameBuffer->Release();
+
+	ReleaseCOM(vs_cPerFrameBuffer);
 }
 
 bool SkyShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
@@ -891,14 +899,10 @@ NormalMappedSkinned::NormalMappedSkinned()
 
 NormalMappedSkinned::~NormalMappedSkinned()
 {
-	if (vs_cBuffer)
-		vs_cBuffer->Release();
-	if (ps_cPerObjBuffer)
-		ps_cPerObjBuffer->Release();
-	if (ps_cPerFrameBuffer)
-		ps_cPerFrameBuffer->Release();
-	if (vs_cSkinnedBuffer)
-		vs_cSkinnedBuffer->Release();
+	ReleaseCOM(vs_cBuffer);
+	ReleaseCOM(ps_cPerObjBuffer);
+	ReleaseCOM(ps_cPerFrameBuffer);
+	ReleaseCOM(vs_cSkinnedBuffer);
 }
 
 bool NormalMappedSkinned::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -1058,10 +1062,13 @@ SkinnedShadowShader::SkinnedShadowShader()
 
 SkinnedShadowShader::~SkinnedShadowShader()
 {
-	if (vs_cBuffer)
-		vs_cBuffer->Release();
-	if (vs_cSkinnedBuffer)
-		vs_cSkinnedBuffer->Release();
+// 	if (vs_cBuffer)
+// 		vs_cBuffer->Release();
+// 	if (vs_cSkinnedBuffer)
+// 		vs_cSkinnedBuffer->Release();
+
+	ReleaseCOM(vs_cBuffer);
+	ReleaseCOM(vs_cSkinnedBuffer);
 }
 
 bool SkinnedShadowShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
@@ -1205,10 +1212,13 @@ BasicDeferredShader::BasicDeferredShader()
 
 BasicDeferredShader::~BasicDeferredShader()
 {
-	if (vs_cPerObjBuffer)
-		vs_cPerObjBuffer->Release();
-	if (ps_cPerObjBuffer)
-		ps_cPerObjBuffer->Release();
+// 	if (vs_cPerObjBuffer)
+// 		vs_cPerObjBuffer->Release();
+// 	if (ps_cPerObjBuffer)
+// 		ps_cPerObjBuffer->Release();
+
+	ReleaseCOM(vs_cPerObjBuffer);
+	ReleaseCOM(ps_cPerObjBuffer);
 }
 
 bool BasicDeferredShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -1369,12 +1379,16 @@ BasicDeferredSkinnedShader::BasicDeferredSkinnedShader()
 
 BasicDeferredSkinnedShader::~BasicDeferredSkinnedShader()
 {
-	if (vs_cPerObjBuffer)
-		vs_cPerObjBuffer->Release();
-	if (vs_cSkinnedBuffer)
-		vs_cSkinnedBuffer->Release();
-	if (ps_cPerObjBuffer)
-		ps_cPerObjBuffer->Release();
+// 	if (vs_cPerObjBuffer)
+// 		vs_cPerObjBuffer->Release();
+// 	if (vs_cSkinnedBuffer)
+// 		vs_cSkinnedBuffer->Release();
+// 	if (ps_cPerObjBuffer)
+// 		ps_cPerObjBuffer->Release();
+
+	ReleaseCOM(vs_cPerObjBuffer);
+	ReleaseCOM(vs_cSkinnedBuffer);
+	ReleaseCOM(ps_cPerObjBuffer);
 }
 
 bool BasicDeferredSkinnedShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -1617,10 +1631,13 @@ LightDeferredShader::LightDeferredShader()
 
 LightDeferredShader::~LightDeferredShader()
 {
-	if (vs_cPerObjBuffer)
-		vs_cPerObjBuffer->Release();
-	if (ps_cPerFrameBuffer)
-		ps_cPerFrameBuffer->Release();
+// 	if (vs_cPerObjBuffer)
+// 		vs_cPerObjBuffer->Release();
+// 	if (ps_cPerFrameBuffer)
+// 		ps_cPerFrameBuffer->Release();
+
+	ReleaseCOM(vs_cPerObjBuffer);
+	ReleaseCOM(ps_cPerFrameBuffer);
 }
 
 bool LightDeferredShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -1888,8 +1905,10 @@ SkyDeferredShader::SkyDeferredShader()
 
 SkyDeferredShader::~SkyDeferredShader()
 {
-	if (vs_cPerFrameBuffer)
-		vs_cPerFrameBuffer->Release();
+// 	if (vs_cPerFrameBuffer)
+// 		vs_cPerFrameBuffer->Release();
+
+	ReleaseCOM(vs_cPerFrameBuffer);
 }
 
 bool SkyDeferredShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -1978,8 +1997,10 @@ SSAOShader::SSAOShader()
 
 SSAOShader::~SSAOShader()
 {
-	if (ps_cPerFrameBuffer)
-		ps_cPerFrameBuffer->Release();
+// 	if (ps_cPerFrameBuffer)
+// 		ps_cPerFrameBuffer->Release();
+
+	ReleaseCOM(ps_cPerFrameBuffer);
 }
 
 bool SSAOShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -2083,8 +2104,10 @@ DepthOfFieldCoCShader::DepthOfFieldCoCShader()
 
 DepthOfFieldCoCShader::~DepthOfFieldCoCShader()
 {
-	if (ps_cPerFrameBuffer)
-		ps_cPerFrameBuffer->Release();
+// 	if (ps_cPerFrameBuffer)
+// 		ps_cPerFrameBuffer->Release();
+
+	ReleaseCOM(ps_cPerFrameBuffer);
 }
 
 bool DepthOfFieldCoCShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -2170,8 +2193,10 @@ BlurShader::BlurShader()
 
 BlurShader::~BlurShader()
 {
-	if (ps_cPerFrameBuffer)
-		ps_cPerFrameBuffer->Release();
+// 	if (ps_cPerFrameBuffer)
+// 		ps_cPerFrameBuffer->Release();
+
+	ReleaseCOM(ps_cPerFrameBuffer);
 }
 
 bool BlurShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -2255,10 +2280,13 @@ BasicDeferredMorphShader::BasicDeferredMorphShader()
 
 BasicDeferredMorphShader::~BasicDeferredMorphShader()
 {
-	if (vs_cPerObjBuffer)
-		vs_cPerObjBuffer->Release();
-	if (ps_cPerObjBuffer)
-		ps_cPerObjBuffer->Release();
+// 	if (vs_cPerObjBuffer)
+// 		vs_cPerObjBuffer->Release();
+// 	if (ps_cPerObjBuffer)
+// 		ps_cPerObjBuffer->Release();
+
+	ReleaseCOM(vs_cPerObjBuffer);
+	ReleaseCOM(ps_cPerObjBuffer);
 }
 
 bool BasicDeferredMorphShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -2412,8 +2440,10 @@ ShadowMorphShader::ShadowMorphShader()
 
 ShadowMorphShader::~ShadowMorphShader()
 {
-	if (vs_cBuffer)
-		vs_cBuffer->Release();
+// 	if (vs_cBuffer)
+// 		vs_cBuffer->Release();
+
+	ReleaseCOM(vs_cBuffer);
 }
 
 bool ShadowMorphShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -2556,14 +2586,20 @@ ParticleSystemShader::ParticleSystemShader()
 
 ParticleSystemShader::~ParticleSystemShader()
 {
-	if (draw_GS_PerFrameBuffer)
-		draw_GS_PerFrameBuffer->Release();
+// 	if (draw_GS_PerFrameBuffer)
+// 		draw_GS_PerFrameBuffer->Release();
 
-	if (streamOut_GS_PerFrameBuffer)
-		streamOut_GS_PerFrameBuffer->Release();
+	ReleaseCOM(draw_GS_PerFrameBuffer);
 
-	if (draw_VS_InitBuffer)
-		draw_VS_InitBuffer->Release();
+// 	if (streamOut_GS_PerFrameBuffer)
+// 		streamOut_GS_PerFrameBuffer->Release();
+
+	ReleaseCOM(streamOut_GS_PerFrameBuffer);
+
+// 	if (draw_VS_InitBuffer)
+// 		draw_VS_InitBuffer->Release();
+
+	ReleaseCOM(draw_VS_InitBuffer);
 }
 
 bool ParticleSystemShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -2875,14 +2911,20 @@ BasicDeferredSkinnedSortedShader::BasicDeferredSkinnedSortedShader()
 
 BasicDeferredSkinnedSortedShader::~BasicDeferredSkinnedSortedShader()
 {
-	if (vs_cPerObjBuffer)
-		vs_cPerObjBuffer->Release();
+// 	if (vs_cPerObjBuffer)
+// 		vs_cPerObjBuffer->Release();
 
-	if (vs_cSkinnedBuffer)
-		vs_cSkinnedBuffer->Release();
+	ReleaseCOM(vs_cPerObjBuffer);
 
-	if (ps_cPerObjBuffer)
-		ps_cPerObjBuffer->Release();
+// 	if (vs_cSkinnedBuffer)
+// 		vs_cSkinnedBuffer->Release();
+
+	ReleaseCOM(vs_cSkinnedBuffer);
+
+// 	if (ps_cPerObjBuffer)
+// 		ps_cPerObjBuffer->Release();
+
+	ReleaseCOM(ps_cPerObjBuffer);
 }
 
 bool BasicDeferredSkinnedSortedShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -3089,8 +3131,10 @@ SMAAColorEdgeDetectionShader::SMAAColorEdgeDetectionShader()
 
 SMAAColorEdgeDetectionShader::~SMAAColorEdgeDetectionShader()
 {
-	if (VS_PerFrameBuffer)
-		VS_PerFrameBuffer->Release();
+// 	if (VS_PerFrameBuffer)
+// 		VS_PerFrameBuffer->Release();
+
+	ReleaseCOM(VS_PerFrameBuffer);
 }
 
 bool SMAAColorEdgeDetectionShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -3192,11 +3236,15 @@ SMAADepthEdgeDetectionShader::SMAADepthEdgeDetectionShader()
 
 SMAADepthEdgeDetectionShader::~SMAADepthEdgeDetectionShader()
 {
-	if (VS_PerFrameBuffer)
-		VS_PerFrameBuffer->Release();
+// 	if (VS_PerFrameBuffer)
+// 		VS_PerFrameBuffer->Release();
 
-	if (PS_PerFrameBuffer)
-		PS_PerFrameBuffer->Release();
+	ReleaseCOM(VS_PerFrameBuffer);
+
+// 	if (PS_PerFrameBuffer)
+// 		PS_PerFrameBuffer->Release();
+
+	ReleaseCOM(PS_PerFrameBuffer);
 }
 
 bool SMAADepthEdgeDetectionShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -3335,8 +3383,10 @@ SMAALumaEdgeDetectionShader::SMAALumaEdgeDetectionShader()
 
 SMAALumaEdgeDetectionShader::~SMAALumaEdgeDetectionShader()
 {
-	if (VS_PerFrameBuffer)
-		VS_PerFrameBuffer->Release();
+// 	if (VS_PerFrameBuffer)
+// 		VS_PerFrameBuffer->Release();
+
+	ReleaseCOM(VS_PerFrameBuffer);
 }
 
 bool SMAALumaEdgeDetectionShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -3438,11 +3488,15 @@ SMAABlendingWeightCalculationsShader::SMAABlendingWeightCalculationsShader()
 
 SMAABlendingWeightCalculationsShader::~SMAABlendingWeightCalculationsShader()
 {
-	if (VS_PerFrameBuffer)
-		VS_PerFrameBuffer->Release();
+// 	if (VS_PerFrameBuffer)
+// 		VS_PerFrameBuffer->Release();
 
-	if (PS_PerFrameBuffer)
-		PS_PerFrameBuffer->Release();
+	ReleaseCOM(VS_PerFrameBuffer);
+
+// 	if (PS_PerFrameBuffer)
+// 		PS_PerFrameBuffer->Release();
+
+	ReleaseCOM(PS_PerFrameBuffer);
 }
 
 bool SMAABlendingWeightCalculationsShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -3591,11 +3645,15 @@ SMAANeighborhoodBlendingShader::SMAANeighborhoodBlendingShader()
 
 SMAANeighborhoodBlendingShader::~SMAANeighborhoodBlendingShader()
 {
-	if (VS_PerFrameBuffer)
-		VS_PerFrameBuffer->Release();
+// 	if (VS_PerFrameBuffer)
+// 		VS_PerFrameBuffer->Release();
 
-	if (PS_PerFrameBuffer)
-		PS_PerFrameBuffer->Release();
+	ReleaseCOM(VS_PerFrameBuffer);
+
+// 	if (PS_PerFrameBuffer)
+// 		PS_PerFrameBuffer->Release();
+
+	ReleaseCOM(PS_PerFrameBuffer);
 }
 
 bool SMAANeighborhoodBlendingShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)

@@ -182,18 +182,22 @@ bool OrthoWindow::InitializeBuffers(ID3D11Device* device, int windowWidth, int w
 void OrthoWindow::ShutdownBuffers()
 {
 	// Release the index buffer.
-	if (mIndexBuffer)
-	{
-		mIndexBuffer->Release();
-		mIndexBuffer = 0;
-	}
+// 	if (mIndexBuffer)
+// 	{
+// 		mIndexBuffer->Release();
+// 		mIndexBuffer = 0;
+// 	}
+
+	ReleaseCOM(mIndexBuffer);
 
 	// Release the vertex buffer.
-	if (mVertexBuffer)
-	{
-		mVertexBuffer->Release();
-		mVertexBuffer = 0;
-	}
+// 	if (mVertexBuffer)
+// 	{
+// 		mVertexBuffer->Release();
+// 		mVertexBuffer = 0;
+// 	}
+
+	ReleaseCOM(mVertexBuffer);
 
 	return;
 }

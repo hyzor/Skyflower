@@ -15,6 +15,9 @@
 //#include <d3dx11effect_2013.h>
 //#include <xnamath.h>
 #include <DirectXMath.h>
+#include <wrl/client.h>
+#include <ppl.h>
+#include <ppltasks.h>
 //#include <dxerr.h>
 //#include <DxErr.h>
 #include <cassert>
@@ -28,7 +31,7 @@
 #include "MathHelper.h"
 #include <windows.h>
 
-#include <DDSTextureLoader.h>
+#include <DirectXTK/DDSTextureLoader.h>
 
 //===============================================================
 // Simple d3d error checker

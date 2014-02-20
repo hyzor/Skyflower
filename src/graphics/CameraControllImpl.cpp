@@ -31,7 +31,9 @@ CameraControllImpl::CameraControllImpl(Camera *c)
 	Vec3 look(camera->GetLook().x, camera->GetLook().y, camera->GetLook().z);
 }
 
-CameraControllImpl::~CameraControllImpl(){}
+CameraControllImpl::~CameraControllImpl()
+{
+}
 
 void CameraControllImpl::Update(float dt)
 {
