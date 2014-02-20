@@ -35,7 +35,7 @@ void Button::update(float dt)
 			getEntityManager()->sendMessageToEntity("Activated", getOwnerId());
 
 			Vec3 position = getOwner()->returnPos();
-			getOwner()->getModules()->sound->PlaySound("button/activate.wav", 1.0f, &position.X);
+			getOwner()->getModules()->sound->PlaySound("button/Button_down.wav", 1.0f, &position.X);
 		}
 	}
 	else if (act)
@@ -44,7 +44,7 @@ void Button::update(float dt)
 		getEntityManager()->sendMessageToEntity("Deactivated", getOwnerId());
 
 		Vec3 position = getOwner()->returnPos();
-		getOwner()->getModules()->sound->PlaySound("button/activate.wav", 1.0f, &position.X);
+		getOwner()->getModules()->sound->PlaySound("button/Button_up.wav", 1.0f, &position.X);
 	}
 
 	//move button animation
