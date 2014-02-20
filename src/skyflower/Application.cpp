@@ -80,6 +80,8 @@ void Application::Start()
 
 	m_backgroundMusicGame.push_back("music/happy_piano.opus");
 
+	m_backgroundMusicGameHubworld.push_back("music/happy_piano.opus");
+
 	m_backgroundMusic = m_soundEngine->CreateSource();
 	m_backgroundMusic->SetRelativeToListener(true);
 	m_backgroundMusic->SetPlaybackFinishedHandler([this]() {
@@ -236,6 +238,11 @@ void Application::Start()
 
 			m_GUI->GetGUIElement(loadingScreen)->SetVisible(false);
 
+			if (levelHandler->currentLevel() == 0)
+				setBackgroundMusicList(m_backgroundMusicGameHubworld);
+			else
+				setBackgroundMusicList(m_backgroundMusicGame);
+
 			m_oldTime = GetTime();
 		}
 	}
@@ -383,7 +390,12 @@ void Application::changeGameState(GameState newState)
 	{
 	case GameState::game:
 		m_backgroundMusic->SetVolume(0.01f);
-		setBackgroundMusicList(m_backgroundMusicGame);
+
+		if (levelHandler->currentLevel() == 0)
+			setBackgroundMusicList(m_backgroundMusicGameHubworld);
+		else
+			setBackgroundMusicList(m_backgroundMusicGame);
+
 		break;
 	case GameState::menu:
 		m_backgroundMusic->SetVolume(0.05f);

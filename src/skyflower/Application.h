@@ -87,6 +87,7 @@ private:
 
 	std::vector<std::string> m_backgroundMusicMenu;
 	std::vector<std::string> m_backgroundMusicGame;
+	std::vector<std::string> m_backgroundMusicGameHubworld;
 
 	SoundSource *m_backgroundMusic;
 	size_t m_backgroundMusicIndex;
