@@ -705,8 +705,8 @@ int Event::PrintText(lua_State* L)
 	if (n >= 3)
 	{
 		string text = lua_tostring(L, 1);
-		int x = lua_tointeger(L, 2);
-		int y = lua_tointeger(L, 3);
+		int x = (int)lua_tointeger(L, 2);
+		int y = (int)lua_tointeger(L, 3);
 		entityManager->modules->gui->printText(text, x, y);
 	}
 
