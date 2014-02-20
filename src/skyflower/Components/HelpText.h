@@ -19,7 +19,8 @@ public:
 		m_text = text;
 		m_range = range;
 		m_active = true;
-		m_alpha = 0.0f;
+		//m_showFactor = 0.0f;
+		top;
 	};
 	virtual ~HelpText() {};
 	void addedToEntity();
@@ -35,13 +36,23 @@ public:
 private:
 	string m_text;
 	float m_range;
-	float m_alpha;
+	//float m_showFactor;
+	float top; // top right corner
 	bool m_active;
+
+	// Texture ID's
 	int bgID;
 	int duckID;
+
+	// Original position of the object
 	Vec3 orig;
+
+	// x-position of the text
 	float xPos;
+
+	//screen width and heigh
 	UINT width, height;
+
 	void activate(Message const& msg);
 	void deActivate(Message const& msg);
 };

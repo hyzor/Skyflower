@@ -20,16 +20,16 @@ void HelpText::addedToEntity()
 
 	height = width = 0;
 	getOwner()->getModules()->graphics->GetWindowResolution(width, height);
-	bgID = gui->CreateGUIElementAndBindTexture(Vec3(0, height - 50.0f), "MenyGrafik\\bg_settings.png");
+	bgID = gui->CreateGUIElementAndBindTexture(Vec3(0, 0), "MenyGrafik\\bg_settings.png");
 	gui->GetGUIElement(bgID)->GetDrawInput()->scale.x = width * 0.1f; 	// bg_settings.png is 10x10px so to get a proper size we scale it
-	gui->GetGUIElement(bgID)->GetDrawInput()->scale.y = 5.0f;
+	gui->GetGUIElement(bgID)->GetDrawInput()->scale.y = 10.0f;
 	gui->GetGUIElement(bgID)->SetVisible(false);
 
-	duckID = gui->CreateGUIElementAndBindTexture(Vec3(0, height - 94.8f), "helpful_duck.png");
-	gui->GetGUIElement(duckID)->GetDrawInput()->scale.x = 0.2f;
-	gui->GetGUIElement(duckID)->GetDrawInput()->scale.y = 0.2f;
+	duckID = gui->CreateGUIElementAndBindTexture(Vec3(0, 0), "helpful_duck.png");
+	gui->GetGUIElement(duckID)->GetDrawInput()->scale.x = 0.3f;
+	gui->GetGUIElement(duckID)->GetDrawInput()->scale.y = 0.3f;
 	gui->GetGUIElement(duckID)->SetVisible(false);
-
+	top = 0;
 }
 
 void HelpText::update(float dt)
@@ -42,33 +42,29 @@ void HelpText::update(float dt)
 		xPos = (width * 0.5f) - (getOwner()->getModules()->graphics->MeassureString(m_text).X*1.5f * 0.5f);
 
 		gui->GetGUIElement(bgID)->GetDrawInput()->scale.x = width * 0.1f;
-		gui->GetGUIElement(bgID)->GetDrawInput()->pos.y = height - 50.0f;
-		gui->GetGUIElement(duckID)->GetDrawInput()->pos.y = height - 94.8f;
 
 		float distance = (getEntityManager()->getEntity(1)->returnPos() - orig).Length();
 		if (distance < m_range)
 		{
-			if (m_alpha < 1.0f)
-				m_alpha += dt;
+			if (top < 153.6f)
+				top += dt*300;
 
-			gui->GetGUIElement(bgID)->GetDrawInput()->color = XMVectorSet(1.0f, 1.0f, 1.0f, m_alpha);
-			gui->GetGUIElement(bgID)->SetVisible(true);
-
-			gui->GetGUIElement(duckID)->GetDrawInput()->color = XMVectorSet(1.0f, 1.0f, 1.0f, m_alpha);
+ 			gui->GetGUIElement(bgID)->SetVisible(true);
 			gui->GetGUIElement(duckID)->SetVisible(true);
-
-			gui->printText(m_text, (int)xPos, height - 40, Vec3(0.0f, 1.0f, 0.0f), 1.5f, m_alpha);
+			gui->GetGUIElement(bgID)->GetDrawInput()->pos.y = height - top + 85.0f;
+			gui->GetGUIElement(duckID)->GetDrawInput()->pos.y = height - top;
+			gui->printText(m_text, (int)(xPos), (int)(height - top +108.6f), Vec3(0.0f, 1.0f, 0.0f), 1.5f);
 		}
-		else if (m_alpha > 0.0f)
+		else if (top > 0.0f)
 		{
-			m_alpha -= dt;
+			top -= dt*300;
 			gui->GetGUIElement(bgID)->SetVisible(true);
-			gui->GetGUIElement(bgID)->GetDrawInput()->color = XMVectorSet(1.0f, 1.0f, 1.0f, m_alpha);
-
-			gui->GetGUIElement(duckID)->GetDrawInput()->color = XMVectorSet(1.0f, 1.0f, 1.0f, m_alpha);
 			gui->GetGUIElement(duckID)->SetVisible(true);
 
-			gui->printText(m_text, (int)xPos, height - 40, Vec3(0.0f, 1.0f, 0.0f), 1.5f, m_alpha);
+			gui->GetGUIElement(bgID)->GetDrawInput()->pos.y = height - top + 85.0f;
+			gui->GetGUIElement(duckID)->GetDrawInput()->pos.y = height - top;
+			gui->printText(m_text, (int)(xPos), (int)(height - top + 108.6f), Vec3(0.0f, 1.0f, 0.0f), 1.5f);
+
 		}
 		else
 		{
