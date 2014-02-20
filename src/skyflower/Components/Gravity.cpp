@@ -48,7 +48,7 @@ void GravityComponent::update(float dt)
 		isGroundColl[k] = false;
 
 		//test feet and head
-		float t = testMove(groundRays[k], getOwner(), ground, true, k);
+		float t = testMove(groundRays[k], getOwner(), ground, true, (int)k);
 
 		//reset jump
 		if (t == -1)
@@ -74,7 +74,7 @@ void GravityComponent::update(float dt)
 	getOwner()->changeRelative(ground);
 
 	for (size_t k = 0; k < wallRays.size(); k++)
-		testMove(wallRays[k], getOwner(), getOwner()->wall, false, k);
+		testMove(wallRays[k], getOwner(), getOwner()->wall, false, (int)k);
 
 	//activate event for ground
 	if (getOwner()->ground)
