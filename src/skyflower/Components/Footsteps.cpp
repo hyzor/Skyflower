@@ -63,7 +63,7 @@ void FootstepsComponent::update(float deltaTime)
 		m_distanceTraveled += (position - m_oldPosition).Length();
 		m_oldPosition = position;
 
-		if (m_distanceTraveled >= 10.0f && owner->getComponent<Movement*>("Movement")->GetSpeed() > 20)
+		if (m_distanceTraveled >= 10.0f && owner->getComponent<Movement*>("Movement")->GetSpeed() > 20 && !owner->getPhysics()->GetStates()->isBeingPushed)
 		{
 			m_distanceTraveled = 0.0f;
 			Vec3 pos = owner->returnPos();
