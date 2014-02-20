@@ -49,7 +49,7 @@ public:
 	void SetUnit(const std::string &unit);
 	void SetLabel(const std::string &label);
 
-	void Draw(const std::vector<const struct LineChartDataPoint> &dataPoints, Texture2D *texture);
+	void Draw(const std::vector<const struct LineChartDataPoint> &dataPoints, double startTime, Texture2D *texture);
 
 private:
 	GraphicsEngine *m_graphicsEngine;

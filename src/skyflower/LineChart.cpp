@@ -152,7 +152,7 @@ void LineChartRendererD3D::SetLabel(const std::string &label)
 	m_label = label;
 }
 
-void LineChartRendererD3D::Draw(const std::vector<const struct LineChartDataPoint> &dataPoints, Texture2D *texture)
+void LineChartRendererD3D::Draw(const std::vector<const struct LineChartDataPoint> &dataPoints, double startTime, Texture2D *texture)
 {
 	assert(texture->IsRenderable());
 
@@ -177,7 +177,7 @@ void LineChartRendererD3D::Draw(const std::vector<const struct LineChartDataPoin
 	unsigned int width = texture->GetWidth();
 	unsigned int height = texture->GetHeight();
 
-	double startTime = dataPoints.back().timeStamp;
+	//double startTime = dataPoints.back().timeStamp;
 	double endTime = dataPoints.front().timeStamp;
 	double timeSpan = endTime - startTime;
 
