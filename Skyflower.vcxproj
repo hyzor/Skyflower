@@ -31,6 +31,7 @@
     <ClCompile Include="src\skyflower\Components\Goal.cpp" />
     <ClCompile Include="src\skyflower\Components\Gravity.cpp" />
     <ClCompile Include="src\skyflower\Components\Health.cpp" />
+    <ClCompile Include="src\skyflower\Components\HelpText.cpp" />
     <ClCompile Include="src\skyflower\Components\Input.cpp" />
     <ClCompile Include="src\skyflower\Components\Listener.cpp" />
     <ClCompile Include="src\skyflower\Components\MorphAnimation.cpp" />
@@ -78,6 +79,7 @@
     <ClInclude Include="src\skyflower\Components\Goal.h" />
     <ClInclude Include="src\skyflower\Components\Gravity.h" />
     <ClInclude Include="src\skyflower\Components\Health.h" />
+    <ClInclude Include="src\skyflower\Components\HelpText.h" />
     <ClInclude Include="src\skyflower\Components\Input.h" />
     <ClInclude Include="src\skyflower\Components\Listener.h" />
     <ClInclude Include="src\skyflower\Components\Messenger.h" />

@@ -27,5 +27,6 @@
 #include "Components/MorphAnimation.h"
 #include "Components/WallButton.h"
 #include "Components/Balloon.h"
+#include "Components/HelpText.h"
 
 #endif

@@ -459,7 +459,14 @@ void EntityManager::sendGlobalMessage(RequestId reqId, Message const & msg) {
 	releaseLock(reqId);
 }
 
+void EntityManager::sendGlobalMessage(string msg)
+{
+	for (auto it = fEntitys.begin(); it != fEntitys.end(); ++it)
+	{
+		(*it)->sendMessageToEntity(msg, (*it)->fId);
+	}
 
+}
 // error processing
 void EntityManager::error(stringstream& err) {
 	cout << err.str() << endl;
@@ -992,14 +999,6 @@ bool EntityManager::loadXML(string xmlFile)
 				if (attr != nullptr)
 					color.Z = e->FloatAttribute("b");
 
-
-
-				attr = e->Attribute("intensity");
-				if (attr != nullptr)
-					intensity = e->FloatAttribute("intensity");
-
-
-
 				DirectionalLightComp* dlc = new DirectionalLightComp(color, dir, intensity);
 				this->addComponent(entity, dlc);
 			}
@@ -1015,6 +1014,12 @@ bool EntityManager::loadXML(string xmlFile)
 			{
 				Balloon* g = new Balloon();
 				this->addComponent(entity, g);
+			}
+			else if (componentName == "HelpText")
+			{
+				string text = GetStringAttribute(e, "text", entityName, componentName);
+				float range = GetFloatAttribute(e, "range", entityName, componentName);
+				HelpText* h = new HelpText(text, range);
 			}
 			else
 			{
@@ -1197,10 +1202,6 @@ Entity* EntityManager::getEntityByIndex(int index)
 {
 	return fEntitys[index];
 }
-
-
-
-
 
 void EntityManager::activateEntity(EntityId entityId)
 {

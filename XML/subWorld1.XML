@@ -116,7 +116,9 @@
     <Entity type="WoodBlock" model="Models\Worlds\Subworld 1\WoodBlock" id="28" isVisible="1" isCollidible="1" isAnimated="0" xPos="34.172665118" yPos="150.366599976" zPos="-27.3916749358" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <Gravity/>
         <Health/>
+		<Messenger />
 		<Movement speed="20"/>
+		<HelpText text="knuffa boxfanskapet till knapphelvetet. ok?" range="50" />
 		<Box />
     </Entity>
 	

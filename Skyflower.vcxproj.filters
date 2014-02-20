@@ -141,6 +141,9 @@
     <ClCompile Include="src\skyflower\Components\WallButton.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="src\skyflower\Components\HelpText.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\skyflower\Application.h">
@@ -276,6 +279,9 @@
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\skyflower\Components\Balloon.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\Components\HelpText.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>

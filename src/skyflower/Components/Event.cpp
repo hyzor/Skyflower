@@ -1,6 +1,7 @@
 #include "Components/Event.h"
 #include "EntityManager.h"
 #include "Components/Throw.h"
+#include "GUI.h"
 
 // Must be included last!
 #include "shared/debug.h"
@@ -689,13 +690,24 @@ int Event::Pop(lua_State* L)
 {
 	int n = lua_gettop(L);
 	if (n >= 1)
-	{
+	{ 
 		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
 
 		if (entity->hasComponents("Balloon"))
 			entity->getComponent<Balloon*>("Balloon")->Pop();
+	}
+	return 0;
+}
+int Event::PrintText(lua_State* L)
+{
+	int n = lua_gettop(L);
 
-		
+	if (n >= 3)
+	{
+		string text = lua_tostring(L, 1);
+		int x = lua_tointeger(L, 2);
+		int y = lua_tointeger(L, 3);
+		entityManager->modules->gui->printText(text, x, y);
 	}
 
 	return 0;

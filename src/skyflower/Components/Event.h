@@ -73,6 +73,7 @@ public:
 		// Balloon
 		lua_register(sh->L, "Pop", Event::Pop);
 
+		lua_register(sh->L, "PrintText", Event::PrintText);
 	};
 
 	// we are added to an Entity, and thus to the component system
@@ -151,6 +152,7 @@ private:
 	static int IsUnlit(lua_State* L);
 
 	static int Pop(lua_State* L);
+	static int PrintText(lua_State* L);
 };
 
 #endif

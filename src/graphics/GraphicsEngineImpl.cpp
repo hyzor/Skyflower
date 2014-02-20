@@ -420,7 +420,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 		mTextureMgr->CreateTexture(mResourceDir + "Textures/SMAA/SearchTex.dds"),
 		mFullscreenTriangle);
 
-	std::string fontPath = mResourceDir + "myfile.spritefont";
+	std::string fontPath = mResourceDir + "buxton.spritefont";
     std::string fontPathMonospace = mResourceDir + "monospace_8.spritefont";
     std::wstring fontPathW(fontPath.begin(), fontPath.end());
     std::wstring fontPatMonospacehW(fontPathMonospace.begin(), fontPathMonospace.end());
@@ -1655,12 +1655,21 @@ void GraphicsEngineImpl::clearLights()
 }
 
 
-void GraphicsEngineImpl::printText(std::string text, int x, int y, Vec3 color, float scale)
+void GraphicsEngineImpl::printText(std::string text, int x, int y, Vec3 color, float scale, float alpha)
 {
 	std::wstring t = std::wstring(text.begin(), text.end());
-	XMVECTORF32 v_color = { color.X, color.Y, color.Z, 1 };
+	XMVECTORF32 v_color = { color.X, color.Y, color.Z, alpha };
 	mSpriteFont->DrawString(mSpriteBatch, t.c_str(), XMFLOAT2((float)x, (float)y), v_color, 0.0f, XMFLOAT2(0, 0), scale);
 }
+
+Vec3 GraphicsEngineImpl::meassureString(const std::string text)
+{
+	std::wstring t = std::wstring(text.begin(), text.end());
+	XMVECTOR size = mSpriteFont->MeasureString(t.c_str());
+
+	return Vec3(size.m128_f32[0], size.m128_f32[1]);
+}
+
 void GraphicsEngineImpl::Clear()
 {
 	mD3D->GetImmediateContext()->RSSetState(0);

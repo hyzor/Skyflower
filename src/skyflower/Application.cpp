@@ -397,11 +397,13 @@ void Application::changeGameState(GameState newState)
 	{
 		if (newState == GameState::menu)
 		{
+			m_entityManager->sendGlobalMessage("MenuActivated");
 			m_inputHandler->SetMouseCapture(false);
 			m_window->SetCursorVisibility(true);
 		}
 		else
 		{
+			m_entityManager->sendGlobalMessage("MenuDeactivated");
 			m_inputHandler->SetMouseCapture(true);
 			m_window->SetCursorVisibility(false);
 		}
@@ -507,11 +509,9 @@ void Application::OnKeyDown(unsigned short key)
 	case VK_ESCAPE:
 		if (m_menu->isActive())
 			m_menu->setActive(false);
+	
 		else
-		{
-			m_graphicsEngine->Clear();
 			m_menu->setActive(true);
-		}
 		break;
 	case 'Z':
 		m_showCharts = !m_showCharts;

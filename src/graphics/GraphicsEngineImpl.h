@@ -96,7 +96,8 @@ public:
 
 	void clearLights();
 
-	void printText(std::string text, int x, int y, Vec3 color = Vec3::Zero(), float scale = 1.0f);
+	void printText(std::string text, int x, int y, Vec3 color = Vec3::Zero(), float scale = 1.0f, float alpha = 1.0f);
+	Vec3 meassureString(const std::string text);
 	void Clear();
 
 	void SetFullscreen(bool fullscreen);

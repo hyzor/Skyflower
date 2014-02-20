@@ -51,15 +51,16 @@ TextElement::TextElement()
 	this->scale = 0.0f;
 }
 
-TextElement::TextElement(std::string text, int x, int y, Vec3 color, float scale)
+TextElement::TextElement(std::string text, int x, int y, Vec3 color, float alpha, float scale)
 {
 	this->color = color;
 	this->x = x;
 	this->y = y;
 	this->text = text;
 	this->scale = scale;
+	this->alpha = alpha;
 }
 void TextElement::Draw(GraphicsEngine* gEngine)
 {
-	gEngine->printText(text, x, y, color, scale);
+	gEngine->printText(text, x, y, color, alpha, scale);
 }

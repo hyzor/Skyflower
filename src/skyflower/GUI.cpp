@@ -172,8 +172,8 @@ void GUI::UploadData(unsigned int id, const void* data)
 	_GetGUIElement(id)->UploadTextureData(data);
 }
 
-void GUI::printText(std::string text, int x, int y, Vec3 color, float scale)
+void GUI::printText(std::string text, int x, int y, Vec3 color, float scale, float alpha)
 {
-	TextElement txt(text, x, y, color, scale);
+	TextElement txt(text, x, y, color, scale, alpha);
 	textQueue.push_back(txt);
 }
