@@ -117,7 +117,7 @@ void Movement::update(float deltaTime)
 		{
 			Entity* entity = getEntityManager()->getEntity(getEntityManager()->getEntityId(j));
 
-			if (entity->hasComponents("AI"))
+			if (entity->hasComponents("AI") && getOwnerId() == 1)
 			{
 				if (entity->sphere != NULL && getOwner()->sphere != NULL && entity->sphere->Test(*getOwner()->sphere))
 				{
