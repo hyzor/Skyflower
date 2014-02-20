@@ -38,11 +38,11 @@ void Throw::update(float dt)
 {
 	if (isDizzy)
 	{
-		/*this->holdingEntityId = -1;
+		this->holdingEntityId = -1;
 		this->toPickUp = false;
 		this->toPutDown = false;
 		this->isHoldingThrowable = false;
-		this->toThrow = false;*/
+		this->toThrow = false;
 	}
 	//sendMessageToEntity(this->getOwnerId(), "update");
 }
@@ -120,6 +120,7 @@ void Throw::dropThrowable(Message const & msg)
 		setIsHoldingThrowable(false);
 		setToPickUp(false);
 		sendMessageToEntity(holdingEntityId, "Dropped");
+		sendMessageToEntity(getOwnerId(), "isNotHoldingThrowable");
 		if (haveAim)
 		{
 			getEntityManager()->updateEntityVisibility(false, 5000);

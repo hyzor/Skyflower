@@ -68,8 +68,6 @@ void Throwable::update(float deltaTime)
 				}
 			}
 
-
-
 			if (entity->hasComponents("Throw"))
 			{
 				if (!entity->getComponent<Throw*>("Throw")->getIsDizzy())
