@@ -11,6 +11,7 @@ Push::Push() : Component("Push")
 	this->canPush = true;
 	this->isColliding = false;
 	this->resetSpeed = false;
+	this->canDrag = false;
 }
 
 Push::~Push()
@@ -26,6 +27,8 @@ void Push::addedToEntity()
 	requestMessage("isHoldingThrowable", &Push::setCanNotPush);
 	requestMessage("isNotHoldingThrowable", &Push::setCanPush);
 	requestMessage("beingPushed", &Push::beingPushed);
+	requestMessage("PickUpStart", &Push::pickUpStart);
+	requestMessage("PickUpStop", &Push::pickUpStop);
 }
 
 void Push::removeFromEntity()
@@ -83,27 +86,34 @@ void Push::update(float dt)
 				rotation.Y = DegreesToRadians(90.0f + 90.0f * sign);
 			}
 
-
 			//check if entity is holding
 			bool p = true;
 			Throw* throwcomp = pusher->getComponent<Throw*>("Throw");
-			if(throwcomp)
-				if (throwcomp->getIsHoldingThrowable())
-					p = false;
+			if (throwcomp)
+			if (throwcomp->getIsHoldingThrowable())
+				p = false;
 
-			if(p)
-				pushedObject->updatePos(pushedObjectPos + dir * dt * pushedObject->getComponent<Movement*>("Movement")->GetSpeed());
-			
+			if (p)
+			{
+				if (canDrag)
+				{
+					pushedObject->updatePos(pushedObjectPos - dir * dt * pushedObject->getComponent<Movement*>("Movement")->GetSpeed());
+				}
+				else
+				{
+					pushedObject->updatePos(pushedObjectPos + dir * dt * pushedObject->getComponent<Movement*>("Movement")->GetSpeed());
+				}
+			}
+
+					
+
 			pusher->updateRot(rotation);
-
-			EntityId pusherId = getOwnerId();
 
 			getOwner()->updateRot(Vec3(pushedObject->returnRot().X, getOwner()->returnRot().Y, pushedObject->returnRot().Z));
 
-			if (pusherId == 1 && pusher->getAnimatedInstance())
-			{
+			if (getOwnerId() == 1 && pusher->getAnimatedInstance())
 				pusher->getAnimatedInstance()->SetAnimation(3, true);
-			}
+
 		}
 	}
 
@@ -220,4 +230,14 @@ void Push::setCanNotPush(Message const& msg)
 void Push::beingPushed(Message const& msg)
 {
 	this->isColliding = true;
+}
+
+void Push::pickUpStart(Message const& msg)
+{
+	canDrag = true;
+}
+
+void Push::pickUpStop(Message const& msg)
+{
+	canDrag = false;
 }

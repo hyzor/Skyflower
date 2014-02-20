@@ -50,8 +50,6 @@ void BoxComp::update(float dt)
 		fall = fallDir();
 	if (fall != Vec3())
 	{
-		cout << "fall: x: " << fall.X << " z: " << fall.Z << endl;
-
 		rotz += fall.X*(float)M_PI*dt;
 		rotx -= fall.Z*(float)M_PI*dt;
 

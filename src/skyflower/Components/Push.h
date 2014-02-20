@@ -39,12 +39,15 @@ private:
 	void setCanPush(Message const& msg);
 	void setCanNotPush(Message const& msg);
 	void beingPushed(Message const& msg);
+	void pickUpStart(Message const& msg);
+	void pickUpStop(Message const& msg);
 
 private:
 	bool m_isPushingBox;
 	Vec3 m_initialPushDirection;
 	bool canPush;
 	bool isColliding;
+	bool canDrag;
 
 	float pSpeed;
 	float resetSpeed;

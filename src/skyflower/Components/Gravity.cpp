@@ -124,6 +124,7 @@ float GravityComponent::testMove(Ray r, Entity* e, Entity* &out, bool groundRay,
 
 	//test collision for other collidible entitis
 	float col = 0;
+	Entity* outEntity = nullptr;
 	for (int j = 0; j < getEntityManager()->getNrOfEntities(); j++)
 	{
 		Entity* EntiJ = getEntityManager()->getEntityByIndex(j);
@@ -137,7 +138,7 @@ float GravityComponent::testMove(Ray r, Entity* e, Entity* &out, bool groundRay,
 					if (col == 0 || t < col)
 					{
 						col = t;
-						out = EntiJ;
+						outEntity = EntiJ;
 					}
 				}
 				else //head
@@ -145,7 +146,7 @@ float GravityComponent::testMove(Ray r, Entity* e, Entity* &out, bool groundRay,
 					if (col == 0 || t > col)
 					{
 						col = t;
-						out = EntiJ;
+						outEntity = EntiJ;
 						break;
 					}
 				}
@@ -163,12 +164,14 @@ float GravityComponent::testMove(Ray r, Entity* e, Entity* &out, bool groundRay,
 			Vec3 rDir = r.GetDir();
 			e->updatePos(pos - rDir*(1 - t));
 			dir = -1;
+			out = outEntity;
 		}
 		else if(!groundRay)
 		{
 			Vec3 rDir = r.GetDir();
 			e->updatePos(pos - rDir*(1 - col));
 			dir = -1;
+			out = outEntity;
 		}
 		if(groundRay)
 			isGroundColl[index] = true;
@@ -178,6 +181,7 @@ float GravityComponent::testMove(Ray r, Entity* e, Entity* &out, bool groundRay,
 		Vec3 rDir = r.GetDir();
 		e->updatePos(pos + rDir*(col));
 		dir = 1;
+		out = outEntity;
 	}
 
 	return dir;
