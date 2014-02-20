@@ -4,7 +4,7 @@
 DirectionalLightImpl::DirectionalLightImpl(DLight* light)
 {
 	this->light = light;
-	ZeroMemory(this->light, sizeof(this->light));
+	ZeroMemory(this->light, sizeof(DLight));
 }
 DirectionalLightImpl::~DirectionalLightImpl()
 {
@@ -61,7 +61,7 @@ Vec3 DirectionalLightImpl::GetDirection()
 PointLightImpl::PointLightImpl(PLight* light)
 {
 	this->light = light;
-	ZeroMemory(this->light, sizeof(this->light));
+	ZeroMemory(this->light, sizeof(PLight));
 }
 PointLightImpl::~PointLightImpl()
 {
@@ -136,7 +136,7 @@ float PointLightImpl::GetRange()
 SpotLightImpl::SpotLightImpl(SLight* light)
 {
 	this->light = light;
-	ZeroMemory(this->light, sizeof(this->light));
+	ZeroMemory(this->light, sizeof(SLight));
 }
 SpotLightImpl::~SpotLightImpl()
 {

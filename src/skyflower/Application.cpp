@@ -345,7 +345,7 @@ void Application::updateGame(float dt, float gameTime)
 
 	//camera collision
 	Ray ray = Ray(playerPos + Vec3(0, 10, 0), (playerPos + Vec3(0, 10, 0) - m_camera->GetPosition()).Normalize()*-100);
-	std::vector<CollisionInstance*> cols = m_collision->GetCollisionInstances();
+	//std::vector<CollisionInstance*> cols = m_collision->GetCollisionInstances();
 	for (int i = 0; i < m_entityManager->getNrOfEntities(); i++)
 	{
 		if (m_entityManager->getEntityByIndex(i)->getType() == "plattform")

@@ -80,7 +80,7 @@ bool GenericObjectLoader::loadSkinnedObject(const std::string& fileName,
 		// Get bone root
 		//SkinData::Bone* RootBone = CreateBoneTree(scene->mRootNode, NULL);
 
-		std::vector<Vertex::PosNormalTexTanSkinned*> VertexList;
+		//std::vector<Vertex::PosNormalTexTanSkinned*> VertexList;
 
 		//------------------------------------------------------------
 		// Read materials
@@ -270,7 +270,7 @@ bool GenericObjectLoader::loadSkinnedObject(const std::string& fileName,
 		// Read animations
 		ReadAnimations(scene, skinnedData);
 
-		std::vector<Vertex::PosNormalTexTanSkinned*> VertexList;
+		//std::vector<Vertex::PosNormalTexTanSkinned*> VertexList;
 
 		//------------------------------------------------------------
 		// Read materials
@@ -412,7 +412,7 @@ bool GenericObjectLoader::loadSkinnedObject(const std::string& fileName,
 
 					if (!skipAdd)
 					{
-						std::string tes = found->second->Name;
+						//std::string tes = found->second->Name;
 						SkinData::ReadAiMatrix(found->second->Offset, bone->mOffsetMatrix);
 
 						XMMATRIX offsetMatrix = XMLoadFloat4x4(&found->second->Offset);
@@ -557,7 +557,7 @@ bool GenericObjectLoader::LoadSkinnedObjectSorted(
 		// Read animations
 		ReadAnimations(scene, skinnedData);
 
-		std::vector<Vertex::PosNormalTexTanSkinned*> VertexList;
+		//std::vector<Vertex::PosNormalTexTanSkinned*> VertexList;
 
 		//------------------------------------------------------------
 		// Read materials
@@ -699,7 +699,7 @@ bool GenericObjectLoader::LoadSkinnedObjectSorted(
 
 					if (!skipAdd)
 					{
-						std::string tes = found->second->Name;
+						//std::string tes = found->second->Name;
 						SkinData::ReadAiMatrix(found->second->Offset, bone->mOffsetMatrix);
 
 						XMMATRIX offsetMatrix = XMLoadFloat4x4(&found->second->Offset);
