@@ -11,10 +11,9 @@ cbuffer cPerObject : register(b0)
 }
 
 Texture2D gDiffuseMap : register(t0);
-Texture2D gShadowMap : register(t1);
-Texture2D gShadowMap1 : register(t2);
-Texture2D gShadowMap2 : register(t3);
-Texture2D gShadowMap3 : register(t4);
+Texture2D gShadowMap1 : register(t1);
+Texture2D gShadowMap2 : register(t2);
+Texture2D gShadowMap3 : register(t3);
 
 SamplerState samLinear : register(s0);
 SamplerState samAnisotropic : register(s1);
@@ -60,7 +59,7 @@ PixelOut main(VertexOut pIn)
 	if (depth > gFarDepths.z && nrOfCascades == 3)
 		shadowFactor = 1.0f;
 
-	//Compare the depth of current pixel in camera space and compare to given near and far depths
+	//Compare the depth of current pixel in camera space to given near and far depths
 	//to decide appropriate index of cascade to sample from
 	if (depth > gNearDepths.x && depth < gFarDepths.x)
 	{

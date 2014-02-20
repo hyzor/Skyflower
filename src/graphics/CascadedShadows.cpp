@@ -110,7 +110,7 @@ void CascadedShadows::CreateLightFrustums(const DLight& light, const BoundingSph
 			else if (i > 0 && i < this->mNrOfCascades - 1)
 			{
 				intervalBegin = this->mCascades.at(i - 1)->GetSplitDepthFar();
-				intervalEnd = this->mCascadeSplits[i];
+				intervalEnd = this->mCascadeSplits[i] * camRange;
 			}
 			else
 			{
@@ -121,7 +121,7 @@ void CascadedShadows::CreateLightFrustums(const DLight& light, const BoundingSph
 			//Create frustum points for this cascade interval
 			XMVECTOR frustumPoints[8];
 
-			BoundingFrustum camFrustum(cam->GetProjMatrix());
+ 			BoundingFrustum camFrustum(cam->GetProjMatrix());
 			camFrustum.Near = intervalBegin;
 			camFrustum.Far = intervalEnd;
 
@@ -236,6 +236,9 @@ void CascadedShadows::RenderSceneToCascades(
 			break;
 		case 1:
 			deviceContext->RSSetState(RenderStates::mDepthBiasFarFromEyeRS);
+			break;
+		case 2:
+			deviceContext->RSSetState(RenderStates::mDepthBiasSuperFarFromEyeRS);
 			break;
 		}
 		this->mCascades.at(i)->DrawSceneToShadowMap(

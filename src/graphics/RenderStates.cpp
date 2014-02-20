@@ -8,6 +8,7 @@ ID3D11RasterizerState* RenderStates::mWireframeRS = 0;
 ID3D11RasterizerState* RenderStates::mNoCullRS = 0;
 ID3D11RasterizerState* RenderStates::mDepthBiasCloseToEyeRS = 0;
 ID3D11RasterizerState* RenderStates::mDepthBiasFarFromEyeRS = 0;
+ID3D11RasterizerState* RenderStates::mDepthBiasSuperFarFromEyeRS = 0;
 
 ID3D11SamplerState* RenderStates::mLinearSS = 0;
 ID3D11SamplerState* RenderStates::mLinearClampedSS = 0;
@@ -75,7 +76,7 @@ void RenderStates::InitAll(ID3D11Device* device)
 	ZeroMemory(&depthBiasCloseRSdesc, sizeof(D3D11_RASTERIZER_DESC));
 	depthBiasCloseRSdesc.DepthBias = 1000;
 	depthBiasCloseRSdesc.DepthBiasClamp = 0.0f;
-	depthBiasCloseRSdesc.SlopeScaledDepthBias = 6.0f;
+	depthBiasCloseRSdesc.SlopeScaledDepthBias = 3.5f;
 	depthBiasCloseRSdesc.FillMode = D3D11_FILL_SOLID;
 	depthBiasCloseRSdesc.CullMode = D3D11_CULL_BACK;
 
@@ -86,11 +87,21 @@ void RenderStates::InitAll(ID3D11Device* device)
 	ZeroMemory(&depthBiasFarRSdesc, sizeof(D3D11_RASTERIZER_DESC));
 	depthBiasFarRSdesc.DepthBias = 10000;
 	depthBiasFarRSdesc.DepthBiasClamp = 0.0f;
-	depthBiasFarRSdesc.SlopeScaledDepthBias = 2.0f;
+	depthBiasFarRSdesc.SlopeScaledDepthBias = 4.0f;
 	depthBiasFarRSdesc.FillMode = D3D11_FILL_SOLID;
 	depthBiasFarRSdesc.CullMode = D3D11_CULL_BACK;
 
 	device->CreateRasterizerState(&depthBiasFarRSdesc, &mDepthBiasFarFromEyeRS);
+
+	D3D11_RASTERIZER_DESC depthBiasSuperFarRSdesc;
+	ZeroMemory(&depthBiasSuperFarRSdesc, sizeof(D3D11_RASTERIZER_DESC));
+	depthBiasSuperFarRSdesc.DepthBias = 100000;
+	depthBiasSuperFarRSdesc.DepthBiasClamp = 0.0f;
+	depthBiasSuperFarRSdesc.SlopeScaledDepthBias = 4.0f;
+	depthBiasSuperFarRSdesc.FillMode = D3D11_FILL_SOLID;
+	depthBiasSuperFarRSdesc.CullMode = D3D11_CULL_BACK;
+
+	device->CreateRasterizerState(&depthBiasSuperFarRSdesc, &mDepthBiasSuperFarFromEyeRS);
 
 	//-----------------------------------------------------------
 	// Sampler states

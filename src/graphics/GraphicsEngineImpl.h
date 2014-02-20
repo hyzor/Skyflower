@@ -139,7 +139,6 @@ private:
 	int mSpotLightsCount;
 
 	Sky* mSky;
-	ShadowMap* mShadowMap;
 	CascadedShadows* mCascadedShadows;
 
 	ShaderHandler* mShaderHandler;
