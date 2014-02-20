@@ -1020,6 +1020,7 @@ bool EntityManager::loadXML(string xmlFile)
 				string text = GetStringAttribute(e, "text", entityName, componentName);
 				float range = GetFloatAttribute(e, "range", entityName, componentName);
 				HelpText* h = new HelpText(text, range);
+				this->addComponent(entity, h);
 			}
 			else
 			{

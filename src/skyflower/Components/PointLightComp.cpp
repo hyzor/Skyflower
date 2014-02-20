@@ -6,7 +6,7 @@
 
 void PointLightComp::addedToEntity()
 {
-	light = getEntityManager()->modules->graphics->addPointLight(color, getOwner()->returnPos() + pos, intensity);
+	light = getEntityManager()->modules->graphics->AddPointLight(color, getOwner()->returnPos() + pos, intensity);
 	color = light->GetDiffuse();
 }
 

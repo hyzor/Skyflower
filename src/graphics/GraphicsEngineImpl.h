@@ -90,18 +90,19 @@ public:
 
 	void UpdateSceneData();
 
-	DirectionalLight* addDirLight(Vec3 color, Vec3 direction, float intensity);
-	PointLight* addPointLight(Vec3 color, Vec3 Position, float intensity);
-	SpotLight* addSpotLight(Vec3 color, Vec3 direction, Vec3 Position, float angle);
+	DirectionalLight* AddDirLight(Vec3 color, Vec3 direction, float intensity);
+	PointLight* AddPointLight(Vec3 color, Vec3 Position, float intensity);
+	SpotLight* AddSpotLight(Vec3 color, Vec3 direction, Vec3 Position, float angle);
 
-	void clearLights();
+	void ClearLights();
 
-	void printText(std::string text, int x, int y, Vec3 color = Vec3::Zero(), float scale = 1.0f, float alpha = 1.0f);
-	Vec3 meassureString(const std::string text);
+	void PrintText(std::string text, int x, int y, Vec3 color = Vec3::Zero(), float scale = 1.0f, float alpha = 1.0f);
+	Vec3 MeassureString(const std::string text);
 	void Clear();
 
 	void SetFullscreen(bool fullscreen);
-	bool isFullscreen();
+	bool IsFullscreen();
+	void GetWindowResolution(UINT& width, UINT& height);
 
 	unsigned int GetPostProcessingEffects();
 	void SetPostProcessingEffects(unsigned int effects);
@@ -209,6 +210,9 @@ private:
 
 	size_t mLineVertexBufferSize;
 	ID3D11Buffer *mLineVertexBuffer;
+
+	UINT mScreenWidth;
+	UINT mScreenHeight;
 };
 
 #endif

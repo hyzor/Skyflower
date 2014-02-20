@@ -106,9 +106,9 @@ void LevelHandler::loadQueued()
 	m_current = m_queueID;
 
 	//load lights
-	xmlfile = m_levels.at(m_queueID).path;
+	/*xmlfile = m_levels.at(m_queueID).path;
 	xmlfile += "lights.xml";
-	m_entityManager->loadXML(xmlfile);
+	m_entityManager->loadXML(xmlfile);*/
 
 	//remove old entities
 	for (unsigned int i = 0; i < old.size(); i++)

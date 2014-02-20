@@ -129,6 +129,9 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 
 bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::string &resourceDir)
 {
+	mScreenWidth = width;
+	mScreenHeight = height;
+
 	mResourceDir = resourceDir;
 
 	mD3D = new Direct3D();
@@ -1156,6 +1159,9 @@ void GraphicsEngineImpl::DeleteParticleSystem(ParticleSystem *particleSystem)
 
 void GraphicsEngineImpl::OnResize(UINT width, UINT height)
 {
+	mScreenWidth = width;
+	mScreenHeight = height;
+
 	mD3D->OnResize(width, height);
 	ReleaseCOM(mDepthStencilTextureCopy);
 	ReleaseCOM(mDepthStencilSRVCopy);
@@ -1587,7 +1593,7 @@ void GraphicsEngineImpl::UpdateSceneData()
 	    mSceneBounds.Radius = sqrtf(extent.x*extent.x + extent.y*extent.y + extent.z*extent.z);
 }
 
-DirectionalLight* GraphicsEngineImpl::addDirLight(Vec3 color, Vec3 direction, float intensity)
+DirectionalLight* GraphicsEngineImpl::AddDirLight(Vec3 color, Vec3 direction, float intensity)
 {
 	DirectionalLight* dl = new DirectionalLightImpl(&(mDirLights[mDirLightsCount]));
 	mDirLightsCount++;
@@ -1605,7 +1611,7 @@ DirectionalLight* GraphicsEngineImpl::addDirLight(Vec3 color, Vec3 direction, fl
 	return dl;
 }
 
-PointLight* GraphicsEngineImpl::addPointLight(Vec3 color, Vec3 position, float intensity)
+PointLight* GraphicsEngineImpl::AddPointLight(Vec3 color, Vec3 position, float intensity)
 {
 	PointLight* pl = new PointLightImpl(&(mPointLights[mPointLightsCount]));
 	mPointLightsCount++;
@@ -1625,7 +1631,7 @@ PointLight* GraphicsEngineImpl::addPointLight(Vec3 color, Vec3 position, float i
 	return pl;
 }
 
-SpotLight* GraphicsEngineImpl::addSpotLight(Vec3 color, Vec3 direction, Vec3 position, float angle)
+SpotLight* GraphicsEngineImpl::AddSpotLight(Vec3 color, Vec3 direction, Vec3 position, float angle)
 {
 	SpotLight* sl = new SpotLightImpl(&(mSpotLights[mSpotLightsCount]));
 	mSpotLightsCount++;
@@ -1647,7 +1653,7 @@ SpotLight* GraphicsEngineImpl::addSpotLight(Vec3 color, Vec3 direction, Vec3 pos
 	return sl;
 }
 
-void GraphicsEngineImpl::clearLights()
+void GraphicsEngineImpl::ClearLights()
 {
 	mSpotLightsCount = 0;
 	mDirLightsCount = 0;
@@ -1655,14 +1661,14 @@ void GraphicsEngineImpl::clearLights()
 }
 
 
-void GraphicsEngineImpl::printText(std::string text, int x, int y, Vec3 color, float scale, float alpha)
+void GraphicsEngineImpl::PrintText(std::string text, int x, int y, Vec3 color, float scale, float alpha)
 {
 	std::wstring t = std::wstring(text.begin(), text.end());
 	XMVECTORF32 v_color = { color.X, color.Y, color.Z, alpha };
 	mSpriteFont->DrawString(mSpriteBatch, t.c_str(), XMFLOAT2((float)x, (float)y), v_color, 0.0f, XMFLOAT2(0, 0), scale);
 }
 
-Vec3 GraphicsEngineImpl::meassureString(const std::string text)
+Vec3 GraphicsEngineImpl::MeassureString(const std::string text)
 {
 	std::wstring t = std::wstring(text.begin(), text.end());
 	XMVECTOR size = mSpriteFont->MeasureString(t.c_str());
@@ -1670,6 +1676,11 @@ Vec3 GraphicsEngineImpl::meassureString(const std::string text)
 	return Vec3(size.m128_f32[0], size.m128_f32[1]);
 }
 
+void GraphicsEngineImpl::GetWindowResolution(UINT& width, UINT& height)
+{
+	width = mScreenWidth;
+	height = mScreenHeight;
+}
 void GraphicsEngineImpl::Clear()
 {
 	mD3D->GetImmediateContext()->RSSetState(0);
@@ -1746,7 +1757,7 @@ void GraphicsEngineImpl::SetFullscreen(bool fullscreen)
 	mD3D->GetSwapChain()->SetFullscreenState(fullscreen, NULL);
 }
 
-bool GraphicsEngineImpl::isFullscreen()
+bool GraphicsEngineImpl::IsFullscreen()
 {
 	BOOL fullscreen;
 	mD3D->GetSwapChain()->GetFullscreenState(&fullscreen, NULL);

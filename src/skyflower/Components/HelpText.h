@@ -18,6 +18,8 @@ public:
 	{ 
 		m_text = text;
 		m_range = range;
+		m_active = true;
+		m_alpha = 0.0f;
 	};
 	virtual ~HelpText() {};
 	void addedToEntity();
@@ -34,9 +36,12 @@ private:
 	string m_text;
 	float m_range;
 	float m_alpha;
+	bool m_active;
 	int bgID;
+	int duckID;
 	Vec3 orig;
-	float stringWidth;
+	float xPos;
+	UINT width, height;
 	void activate(Message const& msg);
 	void deActivate(Message const& msg);
 };

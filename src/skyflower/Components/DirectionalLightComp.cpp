@@ -6,7 +6,7 @@
 
 void DirectionalLightComp::addedToEntity()
 {
-	light = getEntityManager()->modules->graphics->addDirLight(color, dir, intensity);
+	light = getEntityManager()->modules->graphics->AddDirLight(color, dir, intensity);
 	color = light->GetDiffuse();
 }
 

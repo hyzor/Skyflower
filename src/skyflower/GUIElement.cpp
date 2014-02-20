@@ -62,5 +62,5 @@ TextElement::TextElement(std::string text, int x, int y, Vec3 color, float alpha
 }
 void TextElement::Draw(GraphicsEngine* gEngine)
 {
-	gEngine->printText(text, x, y, color, alpha, scale);
+	gEngine->PrintText(text, x, y, color, alpha, scale);
 }

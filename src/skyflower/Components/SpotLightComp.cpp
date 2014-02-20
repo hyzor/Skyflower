@@ -6,7 +6,7 @@
 
 void SpotLightComp::addedToEntity()
 {
-	light = getEntityManager()->modules->graphics->addSpotLight(color, dir, getOwner()->returnPos() + pos, angle);
+	light = getEntityManager()->modules->graphics->AddSpotLight(color, dir, getOwner()->returnPos() + pos, angle);
 	color = light->GetDiffuse();
 }
 

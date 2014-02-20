@@ -280,13 +280,13 @@ void Application::updateMenu(float dt)
 		m_menu->onMouseDown(Vec3(x, y));
 	}
 
-	if (m_menu->getSettings()._isFullscreen && !m_graphicsEngine->isFullscreen())
+	if (m_menu->getSettings()._isFullscreen && !m_graphicsEngine->IsFullscreen())
 	{
 		m_graphicsEngine->SetFullscreen(true);
 		this->OnWindowResized(1920, 1080);
 		m_oldTime = GetTime();
 	}
-	else if (!m_menu->getSettings()._isFullscreen && m_graphicsEngine->isFullscreen())
+	else if (!m_menu->getSettings()._isFullscreen && m_graphicsEngine->IsFullscreen())
 	{
 		m_graphicsEngine->SetFullscreen(false);
 		this->OnWindowResized(1024, 768);
@@ -536,7 +536,7 @@ void Application::OnKeyDown(unsigned short key)
 		g_quakeSounds = !g_quakeSounds;
 		break;
 	case 'R':
-		m_graphicsEngine->clearLights();
+		m_graphicsEngine->ClearLights();
 		levelHandler->queue(0);
 		m_entityManager->loadXML("subWorld1Lights.XML");
 			

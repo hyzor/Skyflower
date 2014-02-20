@@ -54,10 +54,10 @@ public:
 	virtual MorphModelInstance* CreateMorphAnimatedInstance(std::string path, std::string file, Vec3 pos) = 0;
 	virtual void DeleteInstance(MorphModelInstance* mmi) = 0;
 
-	virtual DirectionalLight* addDirLight(Vec3 color, Vec3 direction, float intensity) = 0;
-	virtual PointLight* addPointLight(Vec3 color, Vec3 Position, float intensity) = 0;
-	virtual SpotLight* addSpotLight(Vec3 color, Vec3 direction, Vec3 Position, float angle) = 0;
-	virtual void clearLights() = 0;
+	virtual DirectionalLight* AddDirLight(Vec3 color, Vec3 direction, float intensity) = 0;
+	virtual PointLight* AddPointLight(Vec3 color, Vec3 Position, float intensity) = 0;
+	virtual SpotLight* AddSpotLight(Vec3 color, Vec3 direction, Vec3 Position, float angle) = 0;
+	virtual void ClearLights() = 0;
 
 	virtual CameraController *CreateCameraController() = 0;
 	virtual void DeleteCameraController(CameraController *controller) = 0;
@@ -69,13 +69,14 @@ public:
 	virtual ParticleSystem *CreateParticleSystem() = 0;
 	virtual void DeleteParticleSystem(ParticleSystem *particleSystem) = 0;
 
-	virtual void printText(std::string text, int x, int y, Vec3 color = Vec3::Zero(), float scale = 1.0f, float alpha = 1.0f) = 0;
-	virtual Vec3 meassureString(const std::string text) = 0;
+	virtual void PrintText(std::string text, int x, int y, Vec3 color = Vec3::Zero(), float scale = 1.0f, float alpha = 1.0f) = 0;
+	virtual Vec3 MeassureString(const std::string text) = 0;
 //	virtual Text2D* CreateText2D() = 0;
 //	virtual void DeleteTexture2D(Text2D *text) = 0;
 
 	virtual void SetFullscreen(bool fullscreen) = 0;
-	virtual bool isFullscreen() = 0;
+	virtual bool IsFullscreen() = 0;
+	virtual void GetWindowResolution(UINT& width, UINT& height) = 0;
 	virtual void Clear() = 0;
 
 	virtual unsigned int GetPostProcessingEffects() = 0;
