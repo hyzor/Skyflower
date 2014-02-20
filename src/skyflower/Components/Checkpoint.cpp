@@ -23,8 +23,21 @@ void Checkpoint::update(float dt)
 
 	MorphAnimation *animation = getOwner()->getComponent<MorphAnimation*>("MorphAnimation");
 
-	if (animation && animation->getWeights() == Vec3(1.0f, 0.0f, 0.0f))
-		animation->startMorphing(Vec3(0.0f, 1.0f, 0.0f), 1.0f);
+	if (animation)
+	{
+		if (animation->getWeights() == Vec3(1.0f, 0.0f, 0.0f))
+		{
+			animation->startMorphing(Vec3(0.0f, 1.0f, 0.0f), 1.0f);
+		}
+		else if (animation->getWeights() == Vec3(0.0f, 1.0f, 0.0f))
+		{
+			if (getEntityManager()->getEntity(1)->spawnpos != spawnpoint)
+			{
+				// Some other checkpoint got activated, morph back to the unactivated mesh.
+				animation->startMorphing(Vec3(0.0f, 0.0f, 0.0f), 1.0f);
+			}
+		}
+	}
 }
 
 void Checkpoint::Activate(Message const& msg)
