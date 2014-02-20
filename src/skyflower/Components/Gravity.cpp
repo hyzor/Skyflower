@@ -45,8 +45,10 @@ void GravityComponent::update(float dt)
 
 	for (size_t k = 0; k < groundRays.size(); k++)
 	{
+		isGroundColl[k] = false;
+
 		//test feet and head
-		float t = testMove(groundRays[k], getOwner(), ground);
+		float t = testMove(groundRays[k], getOwner(), ground, true, (int)k);
 
 		//reset jump
 		if (t == -1)
@@ -72,7 +74,7 @@ void GravityComponent::update(float dt)
 	getOwner()->changeRelative(ground);
 
 	for (size_t k = 0; k < wallRays.size(); k++)
-		testMove(wallRays[k], getOwner(), getOwner()->wall);
+		testMove(wallRays[k], getOwner(), getOwner()->wall, false, (int)k);
 
 	//activate event for ground
 	if (getOwner()->ground)
@@ -114,7 +116,7 @@ const Vec3 *GravityComponent::GetGroundNormal()
 	return &groundNormal;
 }
 
-float GravityComponent::testMove(Ray r, Entity* e, Entity* &out)
+float GravityComponent::testMove(Ray r, Entity* e, Entity* &out, bool groundRay, int index)
 {
 	//test ray relative to entity
 	Vec3 pos = e->returnPos();
@@ -122,6 +124,7 @@ float GravityComponent::testMove(Ray r, Entity* e, Entity* &out)
 
 	//test collision for other collidible entitis
 	float col = 0;
+	Entity* outEntity = nullptr;
 	for (int j = 0; j < getEntityManager()->getNrOfEntities(); j++)
 	{
 		Entity* EntiJ = getEntityManager()->getEntityByIndex(j);
@@ -135,7 +138,7 @@ float GravityComponent::testMove(Ray r, Entity* e, Entity* &out)
 					if (col == 0 || t < col)
 					{
 						col = t;
-						out = EntiJ;
+						outEntity = EntiJ;
 					}
 				}
 				else //head
@@ -143,7 +146,7 @@ float GravityComponent::testMove(Ray r, Entity* e, Entity* &out)
 					if (col == 0 || t > col)
 					{
 						col = t;
-						out = EntiJ;
+						outEntity = EntiJ;
 						break;
 					}
 				}
@@ -155,15 +158,30 @@ float GravityComponent::testMove(Ray r, Entity* e, Entity* &out)
 	float dir = 0;
 	if (col > 0.5f) //feet
 	{
-		Vec3 rDir = r.GetDir();
-		e->updatePos(pos - rDir*(1 - col));
-		dir = -1;
+		if (groundRay && r.GetDir().Y * col > r.GetDir().Y + 2)
+		{
+			float t = (r.GetDir().Y * col) / (r.GetDir().Y + 2);
+			Vec3 rDir = r.GetDir();
+			e->updatePos(pos - rDir*(1 - t));
+			dir = -1;
+			out = outEntity;
+		}
+		else if(!groundRay)
+		{
+			Vec3 rDir = r.GetDir();
+			e->updatePos(pos - rDir*(1 - col));
+			dir = -1;
+			out = outEntity;
+		}
+		if(groundRay)
+			isGroundColl[index] = true;
 	}
 	else if (col > 0) //head
 	{
 		Vec3 rDir = r.GetDir();
 		e->updatePos(pos + rDir*(col));
 		dir = 1;
+		out = outEntity;
 	}
 
 	return dir;
@@ -193,7 +211,8 @@ void GravityComponent::createRays()
 				p.X = -small.Size.X / 2 + (small.Size.X / (amountX + 1))*kx;
 				p.Z = -small.Size.Z / 2 + (small.Size.Z / (amountZ + 1))*kz;
 
-				groundRays.push_back(Ray(p, Vec3(0, -bounds.Size.Y, 0)));
+				groundRays.push_back(Ray(p, Vec3(0, -bounds.Size.Y-2, 0)));
+				isGroundColl.push_back(false);
 			}
 		}
 
@@ -225,7 +244,8 @@ void GravityComponent::createRays()
 	else
 	{
 		//body
-		groundRays.push_back(Ray(Vec3(0, 10, 0), Vec3(0, -10, 0)));
+		groundRays.push_back(Ray(Vec3(0, 10, 0), Vec3(0, -12, 0)));
+		isGroundColl.push_back(false);
 
 		//feet
 		wallRays.push_back(Ray(Vec3(-3, 2, 0), Vec3(6, 0, 0))); // test left and right at feet
@@ -234,10 +254,13 @@ void GravityComponent::createRays()
 		wallRays.push_back(Ray(Vec3(-3 * 0.71f, 2, 3 * 0.71f), Vec3(6 * 0.71f, 0, -6 * 0.71f))); // extra test
 
 		//head
-		wallRays.push_back(Ray(Vec3(-3, 8.5f, 0), Vec3(6, 0, 0))); // test left and right at head
-		wallRays.push_back(Ray(Vec3(0, 8.5f, -3), Vec3(0, 0, 6))); // test front and back at head
-		wallRays.push_back(Ray(Vec3(-3 * 0.71f, 8.5f, -3 * 0.71f), Vec3(6 * 0.71f, 0, 6 * 0.71f))); // extra test
-		wallRays.push_back(Ray(Vec3(-3 * 0.71f, 8.5f, 3 * 0.71f), Vec3(6 * 0.71f, 0, -6 * 0.71f))); // extra test
+		if (getOwner()->hasComponents("Input"))
+		{
+			wallRays.push_back(Ray(Vec3(-3, 8.5f, 0), Vec3(6, 0, 0))); // test left and right at head
+			wallRays.push_back(Ray(Vec3(0, 8.5f, -3), Vec3(0, 0, 6))); // test front and back at head
+			wallRays.push_back(Ray(Vec3(-3 * 0.71f, 8.5f, -3 * 0.71f), Vec3(6 * 0.71f, 0, 6 * 0.71f))); // extra test
+			wallRays.push_back(Ray(Vec3(-3 * 0.71f, 8.5f, 3 * 0.71f), Vec3(6 * 0.71f, 0, -6 * 0.71f))); // extra test
+		}
 	}
 }
 
@@ -304,4 +327,18 @@ void GravityComponent::sphereCollision(float dt)
 			}
 		}
 	}
+}
+
+
+int GravityComponent::NrOfGroundRays()
+{
+	return (int)groundRays.size();
+}
+Ray GravityComponent::GroundRay(int index)
+{
+	return groundRays[index];
+}
+bool GravityComponent::GroundRayColliding(int index)
+{
+	return isGroundColl[index];
 }

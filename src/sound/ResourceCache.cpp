@@ -128,7 +128,7 @@ ResourceCache::~ResourceCache()
 	m_taskQueue->WaitForTasks(true);
 	delete m_taskQueue;
 
-	for (auto iter = m_resources.begin(); iter != m_resources.end(); iter++) {
+	for (auto iter = m_resources.begin(); iter != m_resources.end(); ++iter) {
 		DestroyAudioResource(iter->second);
 	}
 

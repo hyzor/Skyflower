@@ -71,12 +71,13 @@ class TextElement
 {
 public:
 	TextElement();
-	TextElement(std::string text, int x, int y, Vec3 color = Vec3::Zero(), float scale = 1.0f);
+	TextElement(std::string text, int x, int y, Vec3 color = Vec3::Zero(), float scale = 1.0f, float alpha = 1.0f);
 	void Draw(GraphicsEngine* gEngine);
 
 	std::string text;
 	int x, y;
 	float scale;
+	float alpha;
 	Vec3 color;
 	
 

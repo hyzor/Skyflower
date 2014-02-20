@@ -1,5 +1,5 @@
 <root>
-	<Entity entityName="player" id="1"
+	<Entity type="player" id="1"
 		xPos="0" yPos="50" zPos="0" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="1.0" yScale="1.0" zScale="1.0"
@@ -15,21 +15,19 @@
 			<Pushable />
 			<Health maxHP = "100" />
 	</Entity>
-    <Entity entityName="CloudPlatform" id="10" isVisible="1" isCollidible="1" isAnimated="0" xPos="0.0" yPos="-17.3297862346" zPos="45.1007535446" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" model="Models\\placeHolder Subworld\\CloudPlatform"/>
-    <Entity entityName="entry" id="22" isVisible="1" isCollidible="1" isAnimated="0" xPos="23.7170603524" yPos="-2.19146028307" zPos="89.0478908232" xRot="0.0" yRot="3.7" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" model="Models\\placeHolder Subworld\\entry">
+    <Entity type="CloudPlatform" id="10" isVisible="1" isCollidible="1" isAnimated="0" xPos="0.0" yPos="-17.3297862346" zPos="45.1007535446" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" model="Models\\placeHolder Subworld\\CloudPlatform"/>
+    <Entity type="entry" id="22" isVisible="1" isCollidible="1" isAnimated="0" xPos="23.7170603524" yPos="-2.19146028307" zPos="89.0478908232" xRot="0.0" yRot="3.7" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" model="Models\\placeHolder Subworld\\entry">
 		<Checkpoint/>
 		<Event script="Level"/>
 	</Entity>
-    <Entity entityName="doorPlane" id="33" isVisible="0" isCollidible="1" isAnimated="0" xPos="22.0236303383" yPos="11.5446867292" zPos="87.0344042124" xRot="0.0" yRot="3.7" zRot="0.0" xScale="1.88018653941" yScale="1.95493788201" zScale="1.88018653941" model="Models\\placeHolder Subworld\\doorPlane">
+    <Entity type="doorPlane" id="33" isVisible="0" isCollidible="1" isAnimated="0" xPos="22.0236303383" yPos="11.5446867292" zPos="87.0344042124" xRot="0.0" yRot="3.7" zRot="0.0" xScale="1.88018653941" yScale="1.95493788201" zScale="1.88018653941" model="Models\\placeHolder Subworld\\doorPlane">
         <Checkpoint/>
         <Event script="Level"/>
 		<Messenger />
     </Entity>
 	
-	<!--
-	<Entity entityName="skyFlower" model="" id="10" isVisible="0" isCollidible="0" isAnimated="0" xPos="0" yPos="-40" zPos="45" xRot="0.0" yRot="0" zRot="0.0" xScale="1" yScale="1" zScale="1">
+	<Entity type="skyFlower" model="" id="10" isVisible="0" isCollidible="0" isAnimated="0" xPos="0" yPos="-40" zPos="45" xRot="0.0" yRot="0" zRot="0.0" xScale="1" yScale="1" zScale="1">
         <MorphAnimation path="Models/skyflower meshar/Skyflower_Final/" file="skyflower.morph" />
     </Entity>
-	-->
 	
 </root>

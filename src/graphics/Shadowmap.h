@@ -33,7 +33,7 @@ public:
 	XMMATRIX GetLightView() const;
 	XMMATRIX GetLightProj() const;
 
-	void BuildShadowTransform(const DirectionalLight& light, const DirectX::BoundingSphere& sceneBounds);
+	void BuildShadowTransform(const DLight& light, const DirectX::BoundingSphere& sceneBounds);
 
 	void DrawSceneToShadowMap(
 		const std::vector<ModelInstanceImpl*>& modelInstances,

@@ -329,7 +329,12 @@ Vec3 Entity::returnPos()
 	if (ground == nullptr)
 		return this->pos;
 	else
-		return ground->returnPos() + this->pos;
+	{
+		if (ground->ground == this)
+			return this->pos;
+		else
+			return ground->returnPos() + this->pos;
+	}
 }
 
 Vec3 Entity::returnRot()

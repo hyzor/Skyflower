@@ -30,7 +30,7 @@ void Throwable::update(float deltaTime)
 					Vec3 rot = getOwner()->returnRot();
 
 					//o = direction
-					Vec3 o = Vec3(cosf(-rot.Y - 3.14f / 2), 0, sinf(-rot.Y - 3.14f / 2)).Normalize() * 10;
+					Vec3 o = Vec3(cosf(-rot.Y - 3.14f / 2), 0, sinf(-rot.Y - 3.14f / 2)).Normalize() * 2.198f;
 
 					Collision *collision = getOwner()->getModules()->collision;
 					const std::vector<CollisionInstance *> &collisionInstances = collision->GetCollisionInstances();
@@ -68,11 +68,9 @@ void Throwable::update(float deltaTime)
 				}
 			}
 
-
-
 			if (entity->hasComponents("Throw"))
 			{
-				if (!entity->getComponent<Throw*>("Throw")->IsDizzy())
+				if (!entity->getComponent<Throw*>("Throw")->getIsDizzy())
 				{
 					//if the entities are colliding and if the other entity have the component Throw
 					if (entity->sphere->Test(*getOwner()->sphere))
@@ -108,8 +106,8 @@ void Throwable::update(float deltaTime)
 							Vec3 pos = entity->returnPos();
 							Vec3 rot = entity->returnRot();
 
-							Vec3 o = Vec3(cosf(-rot.Y - 3.14f / 2), 0, sinf(-rot.Y - 3.14f / 2)).Normalize() * 10;
-							o.Y = 5;
+							Vec3 o = Vec3(cosf(-rot.Y - 3.14f / 2), 0, sinf(-rot.Y - 3.14f / 2)).Normalize() * 2.198f;
+							o.Y = 5.423f;
 
 							getOwner()->updateRot(rot);
 
@@ -128,30 +126,38 @@ void Throwable::update(float deltaTime)
 						//if the entity is holding throwable
 						else if (entity->getComponent<Throw*>("Throw")->getIsHoldingThrowable() && isBeingPickedUp)
 						{
-							//entity want to throw throwable
-							if (entity->getComponent<Throw*>("Throw")->getToThrow() && isBeingPickedUp)
-							{
-								entity->getComponent<Throw*>("Throw")->setIsHoldingThrowable(false);
-								entity->getComponent<Throw*>("Throw")->setToThrow(false);
-								entity->getComponent<Throw*>("Throw")->setToPutDown(false);
-								isBeingPickedUp = false;
-								isBeingThrown = true;
-								entity->getComponent<Throw*>("Throw")->setToPutDown(false);
-								entity->getComponent<Throw*>("Throw")->setHoldingEntityId(-1);
-								throwerId = entity->getComponent<Throw*>("Throw")->getOwnerId();
+							////entity want to throw throwable
+							//if (entity->getComponent<Throw*>("Throw")->getToThrow() && isBeingPickedUp)
+							//{
+							//	entity->getComponent<Throw*>("Throw")->setIsHoldingThrowable(false);
+							//	entity->getComponent<Throw*>("Throw")->setToThrow(false);
+							//	entity->getComponent<Throw*>("Throw")->setToPutDown(false);
+							//	isBeingPickedUp = false;
+							//	isBeingThrown = true;
+							//	entity->getComponent<Throw*>("Throw")->setToPutDown(false);
+							//	entity->getComponent<Throw*>("Throw")->setHoldingEntityId(-1);
+							//	throwerId = entity->getComponent<Throw*>("Throw")->getOwnerId();
 
-								//makes the aim invisible
-								if (entity->getComponent<Throw*>("Throw")->getHaveAim())
-								{
-									getEntityManager()->updateEntityVisibility(false, 5000);
-								}
+							//	//makes the aim invisible
+							//	if (entity->getComponent<Throw*>("Throw")->getHaveAim())
+							//	{
+							//		getEntityManager()->updateEntityVisibility(false, 5000);
+							//	}
 
-								//TODO Throwing in Physics!
-								p->FireProjectileAt(getOwner()->returnPos(), targetPos);
-								sendMessageToEntity(entity->fId, "isNotHoldingThrowable");
-							}
+							//	//TODO Throwing in Physics!
+							//	p->FireProjectileAt(getOwner()->returnPos(), targetPos);
+							//	sendMessageToEntity(entity->fId, "isNotHoldingThrowable");
+
+							//	AnimatedInstance *animatedInstance = entity->getAnimatedInstance();
+
+							//	if (animatedInstance && entity->fId == 1)
+							//	{
+							//		// Play throw animation
+							//		animatedInstance->SetAnimation(7, false);
+							//	}
+							//}
 							//if entity did not throw throwable, update throwable postition in front of entity
-							else if (isBeingPickedUp)
+							/*else */if (isBeingPickedUp)
 							{
 
 
@@ -159,8 +165,8 @@ void Throwable::update(float deltaTime)
 								Vec3 pos = entity->returnPos();
 								Vec3 rot = entity->returnRot();
 
-								Vec3 o = Vec3(cosf(-rot.Y - 3.14f / 2), 0, sinf(-rot.Y - 3.14f / 2)).Normalize() * 10;
-								o.Y = 5;
+								Vec3 o = Vec3(cosf(-rot.Y - 3.14f / 2), 0, sinf(-rot.Y - 3.14f / 2)).Normalize() * 2.198f;
+								o.Y = 5.423f;
 
 								//prevent ball from flying through stuff.
 								Collision *collision = getOwner()->getModules()->collision;
@@ -185,6 +191,7 @@ void Throwable::update(float deltaTime)
 									z = -4;
 								}
 
+								/*
 								for (size_t i = 0; i < collisionInstances.size(); i++)
 								{
 									Vec3 p = pos + o;
@@ -205,6 +212,7 @@ void Throwable::update(float deltaTime)
 										break;
 									}
 								}
+								*/
 
 								getOwner()->getPhysics()->SetVelocity(Vec3());
 								updateEntityPos(pos + o);
@@ -233,6 +241,40 @@ void Throwable::update(float deltaTime)
 											this->targetPos = hit;
 											getEntityManager()->updateEntityVisibility(true, 5000);
 											getEntityManager()->updateEntityPos(hit, 5000);
+
+											//entity want to throw throwable
+											if (entity->getComponent<Throw*>("Throw")->getToThrow() && isBeingPickedUp)
+											{
+												entity->getComponent<Throw*>("Throw")->setIsHoldingThrowable(false);
+												entity->getComponent<Throw*>("Throw")->setToThrow(false);
+												entity->getComponent<Throw*>("Throw")->setToPutDown(false);
+												isBeingPickedUp = false;
+												isBeingThrown = true;
+												entity->getComponent<Throw*>("Throw")->setToPutDown(false);
+												entity->getComponent<Throw*>("Throw")->setHoldingEntityId(-1);
+												throwerId = entity->getComponent<Throw*>("Throw")->getOwnerId();
+
+												//makes the aim invisible
+												if (entity->getComponent<Throw*>("Throw")->getHaveAim())
+												{
+													getEntityManager()->updateEntityVisibility(false, 5000);
+												}
+
+												//TODO Throwing in Physics!
+												this->p->FireProjectileAt(getOwner()->returnPos(), targetPos);
+												sendMessageToEntity(entity->fId, "isNotHoldingThrowable");
+
+												AnimatedInstance *animatedInstance = entity->getAnimatedInstance();
+
+												Vec3 position = getOwner()->returnPos();
+												getOwner()->getModules()->sound->PlaySound("swish.wav", 1.0f, &position.X);
+
+												if (animatedInstance && entity->fId == 1)
+												{
+													// Play throw animation
+													animatedInstance->SetAnimation(7, false);
+												}
+											}
 											break;
 										}
 										else

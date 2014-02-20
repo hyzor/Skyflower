@@ -25,18 +25,24 @@
     <ClCompile Include="src\skyflower\Components\BoxComp.cpp" />
     <ClCompile Include="src\skyflower\Components\Button.cpp" />
     <ClCompile Include="src\skyflower\Components\Checkpoint.cpp" />
+    <ClCompile Include="src\skyflower\Components\DirectionalLightComp.cpp" />
     <ClCompile Include="src\skyflower\Components\Event.cpp" />
     <ClCompile Include="src\skyflower\Components\Footsteps.cpp" />
     <ClCompile Include="src\skyflower\Components\Goal.cpp" />
     <ClCompile Include="src\skyflower\Components\Gravity.cpp" />
     <ClCompile Include="src\skyflower\Components\Health.cpp" />
+    <ClCompile Include="src\skyflower\Components\HelpText.cpp" />
     <ClCompile Include="src\skyflower\Components\Input.cpp" />
     <ClCompile Include="src\skyflower\Components\Listener.cpp" />
     <ClCompile Include="src\skyflower\Components\MorphAnimation.cpp" />
     <ClCompile Include="src\skyflower\Components\Movement.cpp" />
     <ClCompile Include="src\skyflower\Components\MoveTarget.cpp" />
+    <ClCompile Include="src\skyflower\Components\PointLightComp.cpp" />
+    <ClCompile Include="src\skyflower\Components\SpotLightComp.cpp" />
+    <ClCompile Include="src\skyflower\Components\Throw.cpp" />
     <ClCompile Include="src\skyflower\Components\Throwable.cpp" />
     <ClCompile Include="src\skyflower\Components\Touch.cpp" />
+    <ClCompile Include="src\skyflower\Components\WallButton.cpp" />
     <ClCompile Include="src\skyflower\CutScene.cpp" />
     <ClCompile Include="src\skyflower\Entity.cpp" />
     <ClCompile Include="src\skyflower\EntityManager.cpp" />
@@ -63,26 +69,32 @@
     <ClInclude Include="src\skyflower\Component.h" />
     <ClInclude Include="src\skyflower\ComponentHeaders.h" />
     <ClInclude Include="src\skyflower\Components\AI.h" />
+    <ClInclude Include="src\skyflower\Components\Balloon.h" />
     <ClInclude Include="src\skyflower\Components\BoxComp.h" />
     <ClInclude Include="src\skyflower\Components\Button.h" />
     <ClInclude Include="src\skyflower\Components\Checkpoint.h" />
+    <ClInclude Include="src\skyflower\Components\DirectionalLightComp.h" />
     <ClInclude Include="src\skyflower\Components\Event.h" />
     <ClInclude Include="src\skyflower\Components\Footsteps.h" />
     <ClInclude Include="src\skyflower\Components\Goal.h" />
     <ClInclude Include="src\skyflower\Components\Gravity.h" />
     <ClInclude Include="src\skyflower\Components\Health.h" />
+    <ClInclude Include="src\skyflower\Components\HelpText.h" />
     <ClInclude Include="src\skyflower\Components\Input.h" />
     <ClInclude Include="src\skyflower\Components\Listener.h" />
     <ClInclude Include="src\skyflower\Components\Messenger.h" />
     <ClInclude Include="src\skyflower\Components\MorphAnimation.h" />
     <ClInclude Include="src\skyflower\Components\Movement.h" />
     <ClInclude Include="src\skyflower\Components\MoveTarget.h" />
+    <ClInclude Include="src\skyflower\Components\PointLightComp.h" />
     <ClInclude Include="src\skyflower\Components\Push.h" />
     <ClInclude Include="src\skyflower\Components\Pushable.h" />
     <ClInclude Include="src\skyflower\Components\Rotating.h" />
+    <ClInclude Include="src\skyflower\Components\SpotLightComp.h" />
     <ClInclude Include="src\skyflower\Components\Throw.h" />
     <ClInclude Include="src\skyflower\Components\Throwable.h" />
     <ClInclude Include="src\skyflower\Components\Touch.h" />
+    <ClInclude Include="src\skyflower\Components\WallButton.h" />
     <ClInclude Include="src\skyflower\CutScene.h" />
     <ClInclude Include="src\skyflower\Entity.h" />
     <ClInclude Include="src\skyflower\EntityManager.h" />
@@ -97,9 +109,16 @@
     <ClInclude Include="src\skyflower\Menu.h" />
     <ClInclude Include="src\skyflower\MenuItems.h" />
     <ClInclude Include="src\skyflower\PotentialField.h" />
+    <ClInclude Include="src\skyflower\resources\resource.h" />
     <ClInclude Include="src\skyflower\ScriptHandler.h" />
     <ClInclude Include="src\skyflower\tinyxml2.h" />
     <ClInclude Include="src\skyflower\Window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="src\skyflower\resources\Skyflower.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="src\skyflower\resources\app.ico" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{37AF7357-6F98-4587-BA3E-CBEF4F9D14A3}</ProjectGuid>
@@ -185,7 +204,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>lua52_d.lib;skia_core_d.lib;skia_effects_d.lib;skia_images_d.lib;skia_opts_d.lib;skia_opts_ssse3_d.lib;skia_ports_d.lib;skia_sfnt_d.lib;skia_skgpu_d.lib;skia_utils_d.lib;Shared_d.lib;Graphics_d.lib;Physics_d.lib;Sound_d.lib;opengl32.lib;Usp10.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>lua52_d.lib;Shared_d.lib;Graphics_d.lib;Physics_d.lib;Sound_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -205,7 +224,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>lua52_d.lib;skia_core_d.lib;skia_effects_d.lib;skia_images_d.lib;skia_opts_d.lib;skia_opts_ssse3_d.lib;skia_ports_d.lib;skia_sfnt_d.lib;skia_skgpu_d.lib;skia_utils_d.lib;Shared_d.lib;Graphics_d.lib;Physics_d.lib;Sound_d.lib;opengl32.lib;Usp10.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>lua52_d.lib;Shared_d.lib;Graphics_d.lib;Physics_d.lib;Sound_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -229,7 +248,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>lua52.lib;skia_core.lib;skia_effects.lib;skia_images.lib;skia_opts.lib;skia_opts_ssse3.lib;skia_ports.lib;skia_sfnt.lib;skia_skgpu.lib;skia_utils.lib;Shared.lib;Graphics.lib;Physics.lib;Sound.lib;opengl32.lib;Usp10.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>lua52.lib;Shared.lib;Graphics.lib;Physics.lib;Sound.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -253,7 +272,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>lua52.lib;skia_core.lib;skia_effects.lib;skia_images.lib;skia_opts.lib;skia_opts_ssse3.lib;skia_ports.lib;skia_sfnt.lib;skia_skgpu.lib;skia_utils.lib;Shared.lib;Graphics.lib;Physics.lib;Sound.lib;opengl32.lib;Usp10.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>lua52.lib;Shared.lib;Graphics.lib;Physics.lib;Sound.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>

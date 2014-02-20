@@ -151,7 +151,7 @@ UINT ShadowMap::GetHeight() const
 	return mHeight;
 }
 
-void ShadowMap::BuildShadowTransform(const DirectionalLight& light, const DirectX::BoundingSphere& sceneBounds)
+void ShadowMap::BuildShadowTransform(const DLight& light, const DirectX::BoundingSphere& sceneBounds)
 {
 	// Only first "main" light casts a shadow
 	// So get light direction and position from first light

@@ -29,6 +29,8 @@ void GUI::Destroy()
 
 void GUI::Draw()
 {
+	mGraphics->ResetRenderTargetAndViewport();
+
 	//TO ADD: Send parameters along with the Begin2D call (using the drawing options for the GUI that are to be added)
 	mGraphics->Begin2D();
 	for (unsigned int i = 0; i < this->mGUIElements.size(); i++)
@@ -46,9 +48,9 @@ void GUI::Draw()
 }
 
 
-Texture2D* GUI::CreateTexture2D(unsigned int width, unsigned int height)
+Texture2D* GUI::CreateTexture2D(unsigned int width, unsigned int height, bool renderable)
 {
-	return mGraphics->CreateTexture2D(width, height);
+	return mGraphics->CreateTexture2D(width, height, renderable);
 }
 
 void GUI::CreateTextObject()
@@ -170,8 +172,8 @@ void GUI::UploadData(unsigned int id, const void* data)
 	_GetGUIElement(id)->UploadTextureData(data);
 }
 
-void GUI::printText(std::string text, int x, int y, Vec3 color, float scale)
+void GUI::printText(std::string text, int x, int y, Vec3 color, float scale, float alpha)
 {
-	TextElement txt(text, x, y, color, scale);
+	TextElement txt(text, x, y, color, scale, alpha);
 	textQueue.push_back(txt);
 }

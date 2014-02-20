@@ -5,16 +5,16 @@
 
 cbuffer cLightBuffer : register(b0)
 {
-	PointLight gPointLights[MAX_POINT_LIGHTS];
-	int gPointLightCount;
+	PLight gPLights[MAX_POINT_LIGHTS];
+	int gPLightCount;
 	int padding2, padding3, padding4;
 
-	DirectionalLight gDirLights[MAX_DIR_LIGHTS];
+	DLight gDirLights[MAX_DIR_LIGHTS];
 	int gDirLightCount;
 	int padding5, padding6, padding7;
 
-	SpotLight gSpotLights[MAX_SPOT_LIGHTS];
-	int gSpotLightCount;
+	SLight gSLights[MAX_SPOT_LIGHTS];
+	int gSLightCount;
 	int padding8, padding9, padding10;
 
 	float3 gEyePosW;
@@ -31,16 +31,16 @@ cbuffer cLightBuffer : register(b0)
 	int padding001;
 
 	// Needs cleanup!
-	float4x4 gShadowTransform_PS; // Light: view * projection * toTexSpace
-	float4x4 gCameraView;
-	float4x4 gCameraInvView;
-	float4x4 gCameraWorld;
-	float4x4 gCameraProj;
+	//float4x4 gShadowTransform_PS; // Light: view * projection * toTexSpace
+	//float4x4 gCameraView;
+	//float4x4 gCameraInvView;
+	//float4x4 gCameraWorld;
+	//float4x4 gCameraProj;
 	float4x4 gCamViewProjInv;
-	float4x4 gLightWorld;
-	float4x4 gLightView;
-	float4x4 gLightInvView;
-	float4x4 gLightProj;
+	//float4x4 gLightWorld;
+	//float4x4 gLightView;
+	//float4x4 gLightInvView;
+	//float4x4 gLightProj;
 };
 
 Texture2D gDiffuseTexture : register(t0);
@@ -150,23 +150,23 @@ float4 main(VertexOut pIn) : SV_TARGET
 	// Begin calculating lights
 	for (int i = 0; i < gDirLightCount; ++i)
 	{
-		ComputeDirectionalLight_Deferred_Ambient(specular, gDirLights[i], normal, toEye, A, D, S);
+		ComputeDLight_Deferred_Ambient(specular, gDirLights[i], normal, toEye, A, D, S);
 		ambient_Lights += A * ambient_occlusion * shadowFactor;
 		diffuse_Lights += D * shadowFactor;
 		specular_Lights += S * shadowFactor;
 	}
 
-	for (int j = 0; j < gPointLightCount; ++j)
+	for (int j = 0; j < gPLightCount; ++j)
 	{
-		ComputePointLight_Deferred_Ambient(specular, gPointLights[j], positionW, normal, toEye, A, D, S);
+		ComputePLight_Deferred_Ambient(specular, gPLights[j], positionW, normal, toEye, A, D, S);
 		ambient_Lights += A * ambient_occlusion;
 		diffuse_Lights += D;
 		specular_Lights += S;
 	}
 
-	for (int k = 0; k < gSpotLightCount; ++k)
+	for (int k = 0; k < gSLightCount; ++k)
 	{
-		ComputeSpotLight_Deferred(specular, gSpotLights[k], positionW, normal, toEye, A, D, S);
+		ComputeSLight_Deferred(specular, gSLights[k], positionW, normal, toEye, A, D, S);
 		ambient_Lights += A * ambient_occlusion;
 		diffuse_Lights += D;
 		specular_Lights += S;

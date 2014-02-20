@@ -27,7 +27,7 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
-#include "LightDef.h"
+#include "LightDefImpl.h"
 #include "MathHelper.h"
 #include <windows.h>
 

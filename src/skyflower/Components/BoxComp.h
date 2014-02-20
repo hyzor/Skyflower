@@ -25,9 +25,17 @@ public:
 
 	float GetSpeed();
 
+
 private:
 	float speed;
 	Vec3 pNormal;
+
+	Vec3 fallDir();
+	void respawn(Message const& msg);
+
+	Vec3 fall;
+	float rotx;
+	float rotz;
 };
 
 #endif

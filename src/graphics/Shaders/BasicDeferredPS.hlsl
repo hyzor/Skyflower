@@ -5,11 +5,18 @@ cbuffer cPerObject : register(b0)
 {
 	Material gMaterial;
 	int type;
-	float3 skit;
+	float3 padding;
+	float4 gNearDepths;
+	float4 gFarDepths;
+	int gNrOfCascades;
+	float3 padding1;
 }
 
 Texture2D gDiffuseMap : register(t0);
-Texture2D gShadowMap : register(t1);
+Texture2D gShadowMap1 : register(t1);
+Texture2D gShadowMap2 : register(t2);
+Texture2D gShadowMap3 : register(t3);
+//TODO: Texture2DArray gShadowMaps : register(t2);
 
 SamplerState samLinear : register(s0);
 SamplerState samAnisotropic : register(s1);
@@ -28,6 +35,60 @@ PixelOut main(VertexOut pIn)
 {
 	PixelOut pOut;
 
+	pOut.Color = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	pOut.Normal = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	pOut.Specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	pOut.Velocity = float2(0.0f, 0.0f);
+
+	float shadowFactor = 1.0f;
+
+	if (type == 0 || type == 2)
+	{
+		int cascadeIndex = 0;
+		int nrOfCascades = gNrOfCascades;
+		float depth = pIn.Depth;
+		float4 shadowPosH1 = pIn.ShadowPosH1;
+		float4 shadowPosH2 = pIn.ShadowPosH2;
+		float4 shadowPosH3 = pIn.ShadowPosH3;
+
+		//If current depth is beyond the furthest depth, dont shadow it
+		if (depth > gFarDepths.x && nrOfCascades == 1)
+			shadowFactor = 1.0f;
+		if (depth > gFarDepths.y && nrOfCascades == 2)
+			shadowFactor = 1.0f;
+		if (depth > gFarDepths.z && nrOfCascades == 3)
+			shadowFactor = 1.0f;
+
+		//Compare the depth of current pixel in camera space to given near and far depths
+		//to decide appropriate index of cascade to sample from
+		if (depth > gNearDepths.x && depth < gFarDepths.x)
+		{
+			cascadeIndex = 0;
+		}
+		else if (depth > gNearDepths.y && depth < gFarDepths.y && nrOfCascades > 1)
+		{
+			cascadeIndex = 1;
+		}
+		else if (depth > gNearDepths.z && depth < gFarDepths.z && nrOfCascades > 2)
+		{
+			cascadeIndex = 2;
+		}
+
+		if (cascadeIndex == 0)
+		{
+			shadowFactor = CalcShadowFactor(samShadow, gShadowMap1, shadowPosH1); //Cascade 1
+		}
+		else if (cascadeIndex == 1)
+		{
+			shadowFactor = CalcShadowFactor(samShadow, gShadowMap2, shadowPosH2); //Cascade 2
+		}
+		else if (cascadeIndex == 2)
+		{
+			shadowFactor = CalcShadowFactor(samShadow, gShadowMap3, shadowPosH3); //Cascade 3
+		}
+
+	}
+
 	if (type == 0) //textured
 	{
 		// Sample color from texture
@@ -38,7 +99,7 @@ PixelOut main(VertexOut pIn)
 		pOut.Specular = gMaterial.Specular;
 
 		// Bake shadow factor into color w component
-		float shadowFactor = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
+		//float shadowFactor = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
 
 		pOut.Color.w = shadowFactor;
 	}
@@ -49,7 +110,6 @@ PixelOut main(VertexOut pIn)
 		pOut.Normal = float4(pIn.NormalW, 1.0f);
 
 		pOut.Specular = gMaterial.Specular;
-
 
 		pOut.Color.w = 1.0f;
 
@@ -63,15 +123,10 @@ PixelOut main(VertexOut pIn)
 		pOut.Specular = gMaterial.Specular;
 
 		// Bake shadow factor into color w component
-		float shadowFactor = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
+		//float shadowFactor = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
 
 		pOut.Color.w = shadowFactor;
 	}
-
-	
-	
-
-	
 
 	//pOut.Position = float4(pIn.PosW, 1.0f);
 

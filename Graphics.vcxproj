@@ -23,6 +23,8 @@
     <ClCompile Include="src\graphics\Camera.cpp" />
     <ClCompile Include="src\graphics\CameraController.cpp" />
     <ClCompile Include="src\graphics\CameraControllImpl.cpp" />
+    <ClCompile Include="src\graphics\Cascade.cpp" />
+    <ClCompile Include="src\graphics\CascadedShadows.cpp" />
     <ClCompile Include="src\graphics\Character.cpp" />
     <ClCompile Include="src\graphics\d3dUtilities.cpp" />
     <ClCompile Include="src\graphics\DeferredBuffers.cpp" />
@@ -38,6 +40,7 @@
     <ClCompile Include="src\graphics\GraphicsEngine.cpp" />
     <ClCompile Include="src\graphics\GraphicsEngineImpl.cpp" />
     <ClCompile Include="src\graphics\InstanceImpl.cpp" />
+    <ClCompile Include="src\graphics\LightDefImpl.cpp" />
     <ClCompile Include="src\graphics\MathHelper.cpp" />
     <ClCompile Include="src\graphics\MorphModel.cpp" />
     <ClCompile Include="src\graphics\OrthoWindow.cpp" />
@@ -58,6 +61,8 @@
     <ClInclude Include="src\graphics\Camera.h" />
     <ClInclude Include="src\graphics\CameraController.h" />
     <ClInclude Include="src\graphics\CameraControllImpl.h" />
+    <ClInclude Include="src\graphics\Cascade.h" />
+    <ClInclude Include="src\graphics\CascadedShadows.h" />
     <ClInclude Include="src\graphics\Character.h" />
     <ClInclude Include="src\graphics\d3dUtilities.h" />
     <ClInclude Include="src\graphics\DeferredBuffers.h" />
@@ -77,6 +82,7 @@
     <ClInclude Include="src\graphics\Instance.h" />
     <ClInclude Include="src\graphics\InstanceImpl.h" />
     <ClInclude Include="src\graphics\LightDef.h" />
+    <ClInclude Include="src\graphics\LightDefImpl.h" />
     <ClInclude Include="src\graphics\MathHelper.h" />
     <ClInclude Include="src\graphics\MorphModel.h" />
     <ClInclude Include="src\graphics\OrthoWindow.h" />
@@ -220,6 +226,18 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="src\graphics\Shaders\LightDeferredVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\LinePS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\LineVS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
@@ -418,6 +436,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="src\graphics\Shaders\Blur.hlsli" />
+    <None Include="src\graphics\Shaders\CascadedShadowsShared.hlsli" />
     <None Include="src\graphics\Shaders\LightDef.hlsli">
       <FileType>Document</FileType>
     </None>

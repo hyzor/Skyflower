@@ -27,8 +27,12 @@ public:
 	bool isEnabled();
 	const Vec3 *GetGroundNormal();
 
+	int NrOfGroundRays();
+	Ray GroundRay(int index);
+	bool GroundRayColliding(int index);
+
 private:
-	float testMove(Ray r, Entity* e, Entity* &out);
+	float testMove(Ray r, Entity* e, Entity* &out, bool groundRay, int index);
 	void createRays();
 	void calculateGroundNormal(Entity* e, Entity* ground);
 	void sphereCollision(float dt);
@@ -40,6 +44,7 @@ private:
 	bool foundGroundNormal;
 
 	vector<Ray> groundRays;
+	vector<bool> isGroundColl;
 	vector<Ray> wallRays;
 };
 

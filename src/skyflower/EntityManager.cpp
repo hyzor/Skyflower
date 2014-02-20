@@ -459,7 +459,14 @@ void EntityManager::sendGlobalMessage(RequestId reqId, Message const & msg) {
 	releaseLock(reqId);
 }
 
+void EntityManager::sendGlobalMessage(string msg)
+{
+	for (auto it = fEntitys.begin(); it != fEntitys.end(); ++it)
+	{
+		(*it)->sendMessageToEntity(msg, (*it)->fId);
+	}
 
+}
 // error processing
 void EntityManager::error(stringstream& err) {
 	cout << err.str() << endl;
@@ -651,274 +658,376 @@ bool EntityManager::loadXML(string xmlFile)
 		// Make the element name lower case.
 		std::transform(elemName.begin(), elemName.end(), elemName.begin(), ::tolower);
 
-		if (elemName == "light")
+		
+		// The element is an entity.
+		string entityName = GetStringAttribute(elem, "type", "", xmlFile);
+		int id = GetIntAttribute(elem, "id", entityName, xmlFile);
+
+		if (id == 0)
 		{
-			// The element is a light.
-
-			for (XMLElement* e = elem->FirstChildElement(); e != NULL; e = e->NextSiblingElement())
-			{
-				string componentName = e->Value();
-
-				float xPos, yPos, zPos, dirx, diry, dirz, intensity, coneAngle;
-				xPos = yPos = zPos = dirx = diry = dirz = intensity = coneAngle = 0;
-
-				// Mandatory attribues.
-				float r = GetFloatAttribute(e, "r", elemName, xmlFile);
-				float g = GetFloatAttribute(e, "g", elemName, xmlFile);
-				float b = GetFloatAttribute(e, "b", elemName, xmlFile);
-
-				// Optional attribues depending on type of light.
-				attr = e->Attribute("xPos");
-				if (attr != NULL)
-					xPos = e->FloatAttribute("xPos");
-
-				attr = e->Attribute("yPos");
-				if (attr != NULL)
-					yPos = e->FloatAttribute("yPos");
-
-				attr = e->Attribute("zPos");
-				if (attr != NULL)
-					zPos = e->FloatAttribute("zPos");
-
-				attr = e->Attribute("dirx");
-				if (attr != NULL)
-					dirx = e->FloatAttribute("dirx");
-
-				attr = e->Attribute("diry");
-				if (attr != NULL)
-					diry = e->FloatAttribute("diry");
-
-				attr = e->Attribute("dirz");
-				if (attr != NULL)
-					dirz = e->FloatAttribute("dirz");
-
-				attr = e->Attribute("intensity");
-				if (attr != NULL)
-					intensity = e->FloatAttribute("intensity");
-
-				attr = e->Attribute("coneAngle");
-				if (attr != NULL)
-					coneAngle = e->FloatAttribute("coneAngle");
-
-				if (componentName == "spotLight")
-					modules->graphics->addSpotLight(Vec3(r, g, b), Vec3(dirx, diry, dirz), Vec3(xPos, yPos, zPos), coneAngle);
-				else if (componentName == "dirLight")
-					modules->graphics->addDirLight(Vec3(r, g, b), Vec3(dirx, diry, dirz), intensity);
-				else if (componentName == "pointLight")
-					modules->graphics->addPointLight(Vec3(r, g, b), Vec3(xPos, yPos, zPos), intensity);
-			}
+			cout << "Error: id can not be 0 for entity " << entityName << " in file " << xmlFile << endl;
+			continue;
 		}
 		else
 		{
-			// The element is an entity.
-			string entityName = GetStringAttribute(elem, "entityName", "", xmlFile);
-			int id = GetIntAttribute(elem, "id", entityName, xmlFile);
-
-			if (id == 0)
+			for (size_t i = 0; i < fEntitys.size(); i++)
 			{
-				cout << "Error: id can not be 0 for entity " << entityName << " in file " << xmlFile << endl;
-				continue;
-			}
-			else
-			{
-				for (size_t i = 0; i < fEntitys.size(); i++)
+				if (fEntitys[i]->getEntityId() == id)
 				{
-					if (fEntitys[i]->getEntityId() == id)
-					{
-						cout << "Error: entity " << entityName << " is sharing id " << id << " with entity " << fEntitys[i]->getType() << " in file " << xmlFile << endl;
-						continue;
-					}
-				}
-			}
-			
-			int relativeid = 0;
-			attr = elem->Attribute("relativeid");
-			if (attr != NULL)
-				relativeid = elem->IntAttribute("relativeid");
-
-			float xPos = GetFloatAttribute(elem, "xPos", entityName, xmlFile);
-			float yPos = GetFloatAttribute(elem, "yPos", entityName, xmlFile);
-			float zPos = GetFloatAttribute(elem, "zPos", entityName, xmlFile);
-
-			float xRot = GetFloatAttribute(elem, "xRot", entityName, xmlFile);
-			float yRot = GetFloatAttribute(elem, "yRot", entityName, xmlFile);
-			float zRot = GetFloatAttribute(elem, "zRot", entityName, xmlFile);
-
-			float xScale = GetFloatAttribute(elem, "xScale", entityName, xmlFile);
-			float yScale = GetFloatAttribute(elem, "yScale", entityName, xmlFile);
-			float zScale = GetFloatAttribute(elem, "zScale", entityName, xmlFile);
-
-			string model = GetStringAttribute(elem, "model", entityName, xmlFile);
-			bool isVisible = GetBoolAttribute(elem, "isVisible", entityName, xmlFile);
-			bool isCollidible = GetBoolAttribute(elem, "isCollidible", entityName, xmlFile);
-			bool isAnimated = GetBoolAttribute(elem, "isAnimated", entityName, xmlFile);
-
-			//Creating the entity and adding it to the entitymanager
-			EntityId entity = this->createEntity(entityName, id, relativeid, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, isAnimated);
-
-			//Looping through all the components for the entity.
-			for (XMLElement* e = elem->FirstChildElement(); e != NULL; e = e->NextSiblingElement())
-			{
-				string componentName = e->Value();
-
-				if (componentName == "MoveTarget")
-				{
-					float targetPosX = GetFloatAttribute(e, "targetPosX", entityName, xmlFile, componentName);
-					float targetPosY = GetFloatAttribute(e, "targetPosY", entityName, xmlFile, componentName);
-					float targetPosZ = GetFloatAttribute(e, "targetPosZ", entityName, xmlFile, componentName);
-					float duration = GetFloatAttribute(e, "duration", entityName, xmlFile, componentName);
-					float easingPower = GetFloatAttribute(e, "easingPower", entityName, xmlFile, componentName);
-					bool continuous = GetBoolAttribute(e, "continuous", entityName, xmlFile, componentName);
-
-					MoveTargetComponent *component = new MoveTargetComponent(Vec3(xPos, yPos, zPos), Vec3(targetPosX, targetPosY, targetPosZ), duration, easingPower, continuous);
-					this->addComponent(entity, component);
-				}
-				else if (componentName == "Rotating")
-				{
-					float yawSpeed = GetFloatAttribute(e, "yawSpeed", entityName, xmlFile, componentName);
-					float pitchSpeed = GetFloatAttribute(e, "pitchSpeed", entityName, xmlFile, componentName);
-					float rollSpeed = GetFloatAttribute(e, "rollSpeed", entityName, xmlFile, componentName);
-
-					RotatingComponent *component = new RotatingComponent(yawSpeed, pitchSpeed, rollSpeed);
-					this->addComponent(entity, component);
-				}
-				else if (componentName == "Movement")
-				{
-					float speed = GetFloatAttribute(e, "speed", entityName, xmlFile, componentName);
-
-					Movement* m = new Movement(speed);
-					this->addComponent(entity, m);
-				}
-				else if (componentName == "Gravity")
-				{
-					GravityComponent* m = new GravityComponent();
-					this->addComponent(entity, m);
-				}
-				else if (componentName == "AI")
-				{
-					AI* m = new AI();
-					this->addComponent(entity, m);
-				}
-				else if (componentName == "Listener")
-				{
-					ListenerComponent* m = new ListenerComponent();
-					this->addComponent(entity, m);
-				}
-				else if (componentName == "Footsteps")
-				{
-					FootstepsComponent* m = new FootstepsComponent();
-					this->addComponent(entity, m);
-				}
-				else if (componentName == "Messenger")
-				{
-					Messenger *m = new Messenger();
-					this->addComponent(entity, m);
-				}
-				else if (componentName == "Input")
-				{
-					Input* i = new Input();
-					this->addComponent(entity, i);
-				}
-				else if (componentName == "Health")
-				{
-					int maxHP = 0;
-
-					attr = e->Attribute("maxHP");
-					if (attr != NULL)
-						maxHP = e->IntAttribute("maxHP");
-
-					Health* hp = new Health(maxHP);
-					this->addComponent(entity, hp);
-				}
-				else if (componentName == "Event")
-				{
-					std::string script = GetStringAttribute(e, "script", entityName, xmlFile, componentName);
-
-					Event* ev = new Event(script);
-					this->addComponent(entity, ev);
-				}
-				else if (componentName == "Button")
-				{
-					Button* btn = new Button();
-					this->addComponent(entity, btn);
-				}
-				else if (componentName == "Checkpoint")
-				{
-					Vec3 spawnpoint = Vec3(xPos, yPos, zPos);
-
-					attr = e->Attribute("xPos");
-					if (attr != nullptr)
-						spawnpoint.X = e->FloatAttribute("xPos");
-
-					attr = e->Attribute("yPos");
-					if (attr != nullptr)
-						spawnpoint.Y = e->FloatAttribute("yPos");
-
-					attr = e->Attribute("zPos");
-					if (attr != nullptr)
-						spawnpoint.Z = e->FloatAttribute("zPos");
-
-					Checkpoint* cp = new Checkpoint(spawnpoint);
-					this->addComponent(entity, cp);
-				}
-				else if (componentName == "Push")
-				{
-					Push * p = new Push();
-					this->addComponent(entity, p);
-				}
-				else if (componentName == "Pushable")
-				{
-					Pushable * p = new Pushable();
-					this->addComponent(entity, p);
-				}
-				else if (componentName == "Box")
-				{
-					float speed = GetFloatAttribute(e, "speed", entityName, xmlFile, componentName);
-
-					BoxComp* p = new BoxComp(speed);
-					this->addComponent(entity, p);
-				}
-				else if (componentName == "Goal")
-				{
-					Goal* g = new Goal();
-					this->addComponent(entity, g);
-				}
-				else if (componentName == "Throw")
-				{
-					bool haveAim = false;
-
-					attr = e->Attribute("haveAim");
-					if (attr != nullptr)
-						haveAim = e->BoolAttribute("haveAim");
-
-					Throw *t = new Throw(haveAim);
-					this->addComponent(entity, t);
-				}
-				else if (componentName == "Throwable")
-				{
-					Throwable *t = new Throwable();
-					this->addComponent(entity, t);
-				}
-				else if (componentName == "Touch")
-				{
-					Touch* t = new Touch();
-					this->addComponent(entity, t);
-				}
-				else if (componentName == "MorphAnimation")
-				{
-					string path = GetStringAttribute(e, "path", entityName, componentName);
-					string file = GetStringAttribute(e, "file", entityName, componentName);
-
-					MorphAnimation *m = new MorphAnimation(path, file);
-					this->addComponent(entity, m);
-					
-				}
-				else
-				{
-					cout << xmlFile << ": Unknown component with name " << componentName << " in entity " << entityName << endl;
+					cout << "Error: entity " << entityName << " is sharing id " << id << " with entity " << fEntitys[i]->getType() << " in file " << xmlFile << endl;
+					continue;
 				}
 			}
 		}
+			
+		int relativeid = 0;
+		attr = elem->Attribute("relativeid");
+		if (attr != NULL)
+			relativeid = elem->IntAttribute("relativeid");
+
+		float xPos = GetFloatAttribute(elem, "xPos", entityName, xmlFile);
+		float yPos = GetFloatAttribute(elem, "yPos", entityName, xmlFile);
+		float zPos = GetFloatAttribute(elem, "zPos", entityName, xmlFile);
+
+		float xRot = GetFloatAttribute(elem, "xRot", entityName, xmlFile);
+		float yRot = GetFloatAttribute(elem, "yRot", entityName, xmlFile);
+		float zRot = GetFloatAttribute(elem, "zRot", entityName, xmlFile);
+
+		float xScale = GetFloatAttribute(elem, "xScale", entityName, xmlFile);
+		float yScale = GetFloatAttribute(elem, "yScale", entityName, xmlFile);
+		float zScale = GetFloatAttribute(elem, "zScale", entityName, xmlFile);
+
+		string model = GetStringAttribute(elem, "model", entityName, xmlFile);
+		bool isVisible = GetBoolAttribute(elem, "isVisible", entityName, xmlFile);
+		bool isCollidible = GetBoolAttribute(elem, "isCollidible", entityName, xmlFile);
+		bool isAnimated = GetBoolAttribute(elem, "isAnimated", entityName, xmlFile);
+
+		//Creating the entity and adding it to the entitymanager
+		EntityId entity = this->createEntity(entityName, id, relativeid, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, isAnimated);
+
+		//Looping through all the components for the entity.
+		for (XMLElement* e = elem->FirstChildElement(); e != NULL; e = e->NextSiblingElement())
+		{
+			string componentName = e->Value();
+
+			if (componentName == "MoveTarget")
+			{
+				float targetPosX = GetFloatAttribute(e, "targetPosX", entityName, xmlFile, componentName);
+				float targetPosY = GetFloatAttribute(e, "targetPosY", entityName, xmlFile, componentName);
+				float targetPosZ = GetFloatAttribute(e, "targetPosZ", entityName, xmlFile, componentName);
+				float duration = GetFloatAttribute(e, "duration", entityName, xmlFile, componentName);
+				float easingPower = GetFloatAttribute(e, "easingPower", entityName, xmlFile, componentName);
+				bool continuous = GetBoolAttribute(e, "continuous", entityName, xmlFile, componentName);
+
+				MoveTargetComponent *component = new MoveTargetComponent(Vec3(xPos, yPos, zPos), Vec3(targetPosX, targetPosY, targetPosZ), duration, easingPower, continuous);
+				this->addComponent(entity, component);
+			}
+			else if (componentName == "Rotating")
+			{
+				float yawSpeed = GetFloatAttribute(e, "yawSpeed", entityName, xmlFile, componentName);
+				float pitchSpeed = GetFloatAttribute(e, "pitchSpeed", entityName, xmlFile, componentName);
+				float rollSpeed = GetFloatAttribute(e, "rollSpeed", entityName, xmlFile, componentName);
+
+				RotatingComponent *component = new RotatingComponent(yawSpeed, pitchSpeed, rollSpeed);
+				this->addComponent(entity, component);
+			}
+			else if (componentName == "Movement")
+			{
+				float speed = GetFloatAttribute(e, "speed", entityName, xmlFile, componentName);
+
+				Movement* m = new Movement(speed);
+				this->addComponent(entity, m);
+			}
+			else if (componentName == "Gravity")
+			{
+				GravityComponent* m = new GravityComponent();
+				this->addComponent(entity, m);
+			}
+			else if (componentName == "AI")
+			{
+				AI* m = new AI();
+				this->addComponent(entity, m);
+			}
+			else if (componentName == "Listener")
+			{
+				ListenerComponent* m = new ListenerComponent();
+				this->addComponent(entity, m);
+			}
+			else if (componentName == "Footsteps")
+			{
+				FootstepsComponent* m = new FootstepsComponent();
+				this->addComponent(entity, m);
+			}
+			else if (componentName == "Messenger")
+			{
+				Messenger *m = new Messenger();
+				this->addComponent(entity, m);
+			}
+			else if (componentName == "Input")
+			{
+				Input* i = new Input();
+				this->addComponent(entity, i);
+			}
+			else if (componentName == "Health")
+			{
+				int maxHP = 0;
+
+				attr = e->Attribute("maxHP");
+				if (attr != NULL)
+					maxHP = e->IntAttribute("maxHP");
+
+				Health* hp = new Health(maxHP);
+				this->addComponent(entity, hp);
+			}
+			else if (componentName == "Event")
+			{
+				std::string script = GetStringAttribute(e, "script", entityName, xmlFile, componentName);
+
+				Event* ev = new Event(script);
+				this->addComponent(entity, ev);
+			}
+			else if (componentName == "Button")
+			{
+				bool toggle = false;
+				attr = e->Attribute("toggle");
+				if (attr != nullptr)
+					toggle = e->FloatAttribute("toggle") == 1.0f;
+
+				Button* btn = new Button(toggle);
+				this->addComponent(entity, btn);
+			}
+			else if (componentName == "WallButton")
+			{
+				Vec3 dir;
+				attr = e->Attribute("xDir");
+				if (attr != nullptr)
+					dir.X = e->FloatAttribute("xDir");
+				attr = e->Attribute("zDir");
+				if (attr != nullptr)
+					dir.Z = e->FloatAttribute("zDir");
+
+				WallButton* btn = new WallButton(dir);
+				this->addComponent(entity, btn);
+			}
+			else if (componentName == "Checkpoint")
+			{
+				Vec3 spawnpoint = Vec3(xPos, yPos, zPos);
+
+				attr = e->Attribute("xPos");
+				if (attr != nullptr)
+					spawnpoint.X = e->FloatAttribute("xPos");
+
+				attr = e->Attribute("yPos");
+				if (attr != nullptr)
+					spawnpoint.Y = e->FloatAttribute("yPos");
+
+				attr = e->Attribute("zPos");
+				if (attr != nullptr)
+					spawnpoint.Z = e->FloatAttribute("zPos");
+
+				Checkpoint* cp = new Checkpoint(spawnpoint);
+				this->addComponent(entity, cp);
+			}
+			else if (componentName == "Push")
+			{
+				Push * p = new Push();
+				this->addComponent(entity, p);
+			}
+			else if (componentName == "Pushable")
+			{
+				Pushable * p = new Pushable();
+				this->addComponent(entity, p);
+			}
+			else if (componentName == "Box")
+			{
+				float speed = GetFloatAttribute(e, "speed", entityName, xmlFile, componentName);
+
+				BoxComp* p = new BoxComp(speed);
+				this->addComponent(entity, p);
+			}
+			else if (componentName == "Goal")
+			{
+				Goal* g = new Goal();
+				this->addComponent(entity, g);
+			}
+			else if (componentName == "Throw")
+			{
+				bool haveAim = false;
+
+				attr = e->Attribute("haveAim");
+				if (attr != nullptr)
+					haveAim = e->BoolAttribute("haveAim");
+
+				Throw *t = new Throw(haveAim);
+				this->addComponent(entity, t);
+			}
+			else if (componentName == "Throwable")
+			{
+				Throwable *t = new Throwable();
+				this->addComponent(entity, t);
+			}
+			else if (componentName == "Touch")
+			{
+				Touch* t = new Touch();
+				this->addComponent(entity, t);
+			}
+			else if (componentName == "PointLight")
+			{
+				Vec3 rpos;
+				Vec3 color;
+				float intensity = 1.0f;
+
+				attr = e->Attribute("xPos");
+				if (attr != nullptr)
+					rpos.X = e->FloatAttribute("xPos");
+
+				attr = e->Attribute("yPos");
+				if (attr != nullptr)
+					rpos.Y = e->FloatAttribute("yPos");
+
+				attr = e->Attribute("zPos");
+				if (attr != nullptr)
+					rpos.Z = e->FloatAttribute("zPos");
+
+				attr = e->Attribute("r");
+				if (attr != nullptr)
+					color.X = e->FloatAttribute("r");
+
+				attr = e->Attribute("g");
+				if (attr != nullptr)
+					color.Y = e->FloatAttribute("g");
+
+				attr = e->Attribute("b");
+				if (attr != nullptr)
+					color.Z = e->FloatAttribute("b");
+
+				attr = e->Attribute("intensity");
+				if (attr != nullptr)
+					intensity = e->FloatAttribute("intensity");
+
+				PointLightComp* plc = new PointLightComp(rpos, color, intensity);
+				this->addComponent(entity, plc);
+			}
+			else if (componentName == "SpotLight")
+			{
+				Vec3 rpos;
+				Vec3 color;
+				Vec3 dir;
+				float angle = 1.0f;
+
+				attr = e->Attribute("xPos");
+				if (attr != nullptr)
+					rpos.X = e->FloatAttribute("xPos");
+
+				attr = e->Attribute("yPos");
+				if (attr != nullptr)
+					rpos.Y = e->FloatAttribute("yPos");
+
+				attr = e->Attribute("zPos");
+				if (attr != nullptr)
+					rpos.Z = e->FloatAttribute("zPos");
+					
+
+
+				attr = e->Attribute("xDir");
+				if (attr != nullptr)
+					dir.X = e->FloatAttribute("xDir");
+
+				attr = e->Attribute("yDir");
+				if (attr != nullptr)
+					dir.Y = e->FloatAttribute("yDir");
+
+				attr = e->Attribute("zDir");
+				if (attr != nullptr)
+					dir.Z = e->FloatAttribute("zDir");
+
+
+
+				attr = e->Attribute("r");
+				if (attr != nullptr)
+					color.X = e->FloatAttribute("r");
+
+				attr = e->Attribute("g");
+				if (attr != nullptr)
+					color.Y = e->FloatAttribute("g");
+
+				attr = e->Attribute("b");
+				if (attr != nullptr)
+					color.Z = e->FloatAttribute("b");
+
+
+
+				attr = e->Attribute("angle");
+				if (attr != nullptr)
+					angle = e->FloatAttribute("angle");
+
+
+
+				SpotLightComp* slc = new SpotLightComp(rpos, color, angle, dir);
+				this->addComponent(entity, slc);
+			}
+			else if (componentName == "DirectionalLight")
+			{
+				Vec3 color;
+				Vec3 dir;
+				float intensity = 1.0f;
+
+
+				attr = e->Attribute("xDir");
+				if (attr != nullptr)
+					dir.X = e->FloatAttribute("xDir");
+
+				attr = e->Attribute("yDir");
+				if (attr != nullptr)
+					dir.Y = e->FloatAttribute("yDir");
+
+				attr = e->Attribute("zDir");
+				if (attr != nullptr)
+					dir.Z = e->FloatAttribute("zDir");
+
+
+
+				attr = e->Attribute("r");
+				if (attr != nullptr)
+					color.X = e->FloatAttribute("r");
+
+				attr = e->Attribute("g");
+				if (attr != nullptr)
+					color.Y = e->FloatAttribute("g");
+
+				attr = e->Attribute("b");
+				if (attr != nullptr)
+					color.Z = e->FloatAttribute("b");
+
+				DirectionalLightComp* dlc = new DirectionalLightComp(color, dir, intensity);
+				this->addComponent(entity, dlc);
+			}
+			else if (componentName == "MorphAnimation")
+			{
+				string path = GetStringAttribute(e, "path", entityName, componentName);
+				string file = GetStringAttribute(e, "file", entityName, componentName);
+
+				MorphAnimation *m = new MorphAnimation(path, file);
+				this->addComponent(entity, m);
+			}
+			else if (componentName == "Balloon")
+			{
+				Balloon* g = new Balloon();
+				this->addComponent(entity, g);
+			}
+			else if (componentName == "HelpText")
+			{
+				string text = GetStringAttribute(e, "text", entityName, componentName);
+				float range = GetFloatAttribute(e, "range", entityName, componentName);
+				HelpText* h = new HelpText(text, range);
+				this->addComponent(entity, h);
+			}
+			else
+			{
+				cout << xmlFile << ": Unknown component with name " << componentName << " in entity " << entityName << endl;
+			}
+		}
+		
 	}
 
 
@@ -1094,10 +1203,6 @@ Entity* EntityManager::getEntityByIndex(int index)
 {
 	return fEntitys[index];
 }
-
-
-
-
 
 void EntityManager::activateEntity(EntityId entityId)
 {

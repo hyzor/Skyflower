@@ -21,6 +21,28 @@ function cutscene_intro()
 	AddPoint(60, 30, 0, -90, 20, 1)
 end
 
+--player script--
+-----------------
+
+function load_player(id)
+	StartUpdate()
+end
+
+function update_player(id, dt)
+	--player light
+	if IsLit(id) then
+		Unlit(id, 1)
+	elseif IsUnlit(id) then
+		Lit(id, 1)
+	end
+	
+	--sun
+	if IsLit(201) then
+		Unlit(201, 10)
+	elseif IsUnlit(201) then
+		Lit(201, 10)
+	end
+end
 
 --platform_start script--
 -------------------------
@@ -36,23 +58,31 @@ end
 
 --btnStair script--
 -------------------
+function load_btnStair(id)
+	StartUpdate()
+end
+
 
 stairdown = true
-function activated_btnStair(id)
-	if stairdown then
-		MoveToTarget(20)
-		MoveToTarget(80)
-		MoveToTarget(23)
-		MoveToTarget(10)
-		MoveToTarget(90)
-		stairdown = false
+function update_btnStair(id, dt)
+	if IsDown(id) then
+		if stairdown then
+			MoveToTarget(20)
+			MoveToTarget(80)
+			MoveToTarget(23)
+			MoveToTarget(10)
+			MoveToTarget(90)
+			stairdown = false
+		end
 	else
-		MoveToSpawn(20)
-		MoveToSpawn(80)
-		MoveToSpawn(23)
-		MoveToSpawn(10)
-		MoveToSpawn(90)
-		stairdown = true
+		if not stairdown then
+			MoveToSpawn(20)
+			MoveToSpawn(80)
+			MoveToSpawn(23)
+			MoveToSpawn(10)
+			MoveToSpawn(90)
+			stairdown = true
+		end
 	end
 end
 
@@ -71,6 +101,8 @@ rush = true
 rushtime = 0
 scaredtime = 0
 function update_aiPush(id, dt)
+	Push(player, id)
+	
 	if IsTouching(id, 16) then
 		Jump(id)
 	end
@@ -103,7 +135,6 @@ function update_aiPush(id, dt)
 		else
 			SetTarget(id, player, 30)
 			SetSpeed(id, 30)
-			Push(player, id)
 			if scaredtime > 4 then
 				rush = true
 				rushtime = 0
@@ -166,10 +197,11 @@ end
 --ballonPop script--
 --------------------
 
-function activated_ballonPop(id)
+function activated_balloon(id)
 	Print("Touched")
 	if IsActivator(id, "Throwable") then
 		Print("POP!")
+		Pop(id)
 	end
 end
 

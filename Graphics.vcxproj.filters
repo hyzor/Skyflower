@@ -132,6 +132,12 @@
     <ClCompile Include="src\graphics\ParticleSystemImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\graphics\CascadedShadows.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\Cascade.cpp">
+	      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\graphics\SkinnedDataSorted.cpp">
       <Filter>Models\Upper &amp; lower body sorting</Filter>
     </ClCompile>
@@ -142,6 +148,9 @@
       <Filter>Header Files\SMAA</Filter>
     </ClCompile>
     <ClCompile Include="src\graphics\FullscreenTriangle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\LightDefImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -162,9 +171,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics\GraphicsEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\graphics\LightDef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics\MathHelper.h">
@@ -242,6 +248,12 @@
     <ClInclude Include="src\graphics\ParticleSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\graphics\CascadedShadows.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\Cascade.h">
+	      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src\graphics\SkinnedDataSorted.h">
       <Filter>Models\Upper &amp; lower body sorting</Filter>
     </ClInclude>
@@ -261,6 +273,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics\FullscreenTriangle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\LightDefImpl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\LightDef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -424,6 +442,12 @@
     <FxCompile Include="src\graphics\Shaders\SMAAEdgeDetectionVS.hlsl">
       <Filter>Shaders\SMAA\First pass</Filter>
     </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\LinePS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="src\graphics\Shaders\LineVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\graphics\Shaders\LightDef.hlsli">
@@ -434,6 +458,9 @@
     </None>
     <None Include="src\graphics\Shaders\ParticleSystemShared.hlsli">
       <Filter>Shaders\Particle System</Filter>
+    </None>
+    <None Include="src\graphics\Shaders\CascadedShadowsShared.hlsli">
+      <Filter>Shaders</Filter>
     </None>
     <None Include="src\graphics\Shaders\Shared.hlsli">
       <Filter>Shaders</Filter>

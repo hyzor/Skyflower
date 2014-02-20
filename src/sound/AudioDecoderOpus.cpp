@@ -77,10 +77,7 @@ void AudioDecoderOpusRelease(struct AudioResource *resource)
 
 	struct OpusDecoderContext *context = (struct OpusDecoderContext *)resource->context;
 
-	if (context->buffer) {
-		delete[] context->buffer;
-	}
-
+	delete[] context->buffer;
 	delete context->mutex;
 	op_free(context->opus);
 
@@ -104,7 +101,7 @@ void AudioDecoderOpusFillBuffer(const struct AudioResource *resource, uint64_t s
 		assert(op_pcm_seek(context->opus, sampleOffset) == 0);
 	}
 
-	int samplesRead = 0;
+	uint64_t samplesRead = 0;
 	float *data;
 
 	if (context->buffer) {
@@ -117,12 +114,12 @@ void AudioDecoderOpusFillBuffer(const struct AudioResource *resource, uint64_t s
 	}
 
 	while (samplesRead < sampleCount) {
-		int result = op_read_float(context->opus, data + samplesRead, (int)sampleCount - samplesRead, NULL);
+		int result = op_read_float(context->opus, data + samplesRead, (int)(sampleCount - samplesRead), NULL);
 
 		assert(result > 0);
 
 		// op_read returns the number of samples written per channel.
-		samplesRead += result * resource->info.channels;
+		samplesRead += (uint64_t)result * resource->info.channels;
 	}
 
 	assert(samplesRead <= sampleCount);

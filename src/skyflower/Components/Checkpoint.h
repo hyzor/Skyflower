@@ -17,22 +17,13 @@ class Checkpoint : public Component {
 
 public:
 
-	// constructor - age is fixed at creation time
-	Checkpoint(Vec3 spawnpoint) : Component("Checkpoint")
-	{
-		this->spawnpoint = spawnpoint;
-		activated = 0;
-	};
-	virtual ~Checkpoint() {};
+	Checkpoint(Vec3 spawnpoint);
+	virtual ~Checkpoint();
 
-	// we are added to an Entity, and thus to the component system
-	void addedToEntity() {
-		//cout << "A checkpoint? was added to the system." << endl;
+	void addedToEntity();
+	void removeFromEntity();
 
-		requestMessage("Ground", &Checkpoint::Activate);
-		requestMessage("Wall", &Checkpoint::Activate);
-		requestMessage("Checkpoint", &Checkpoint::Activate);
-	}
+	void update(float dt);
 
 	void sendAMessage(string message)
 	{
@@ -40,7 +31,6 @@ public:
 		sendMessage(message);
 	}
 
-	void update(float dt);
 private:
 
 	void Activate(Message const& msg);
@@ -49,7 +39,7 @@ private:
 
 	float activated;
 	Vec3 spawnpoint;
-
+	ParticleSystem *particleSystem;
 };
 
 #endif

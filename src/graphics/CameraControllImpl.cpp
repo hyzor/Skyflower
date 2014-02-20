@@ -69,6 +69,12 @@ void CameraControllImpl::Update(float dt)
 	target = Vec3::Zero();
 }
 
+void CameraControllImpl::SetOffsetFast(float offset)
+{
+	if(this->offset > offset)
+		this->offset = offset;
+}
+
 void CameraControllImpl::SetDirection(Vec3 direction)
 {
 	this->camera->SetDirection(direction);
@@ -146,8 +152,8 @@ void CameraControllImpl::onMouseMove(float mouseX, float mouseY)
 	}
 	if (targetPitch > 1)
 		targetPitch = 1;
-	else if (targetPitch < -0.1f)
-		targetPitch = -0.1f;  
+	else if (targetPitch < -0.5f)
+		targetPitch = -0.5f;  
 
 }
 

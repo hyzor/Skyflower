@@ -21,6 +21,12 @@
 #include "Components/Throw.h"
 #include "Components/Throwable.h"
 #include "Components/Touch.h"
+#include "Components/PointLightComp.h"
+#include "Components/SpotLightComp.h"
+#include "Components/DirectionalLightComp.h"
 #include "Components/MorphAnimation.h"
+#include "Components/WallButton.h"
+#include "Components/Balloon.h"
+#include "Components/HelpText.h"
 
 #endif

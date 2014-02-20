@@ -98,6 +98,11 @@ unsigned int Texture2DImpl::GetHeight() const
 	return m_height;
 }
 
+bool Texture2DImpl::IsRenderable() const
+{
+	return m_renderTargetView != NULL;
+}
+
 ID3D11Texture2D *Texture2DImpl::GetTexture() const
 {
 	return m_texture;

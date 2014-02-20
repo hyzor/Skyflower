@@ -123,7 +123,25 @@
     <ClCompile Include="src\skyflower\Components\Touch.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="src\skyflower\Components\PointLightComp.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\skyflower\Components\SpotLightComp.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\skyflower\Components\DirectionalLightComp.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
     <ClCompile Include="src\skyflower\Components\MorphAnimation.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\skyflower\Components\Throw.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\skyflower\Components\WallButton.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\skyflower\Components\HelpText.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
   </ItemGroup>
@@ -245,8 +263,39 @@
     <ClInclude Include="src\skyflower\Components\Touch.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="src\skyflower\Components\PointLightComp.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\Components\SpotLightComp.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\Components\DirectionalLightComp.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
     <ClInclude Include="src\skyflower\Components\MorphAnimation.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="src\skyflower\Components\WallButton.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\Components\Balloon.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\Components\HelpText.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\resources\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="src\skyflower\resources\Skyflower.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="src\skyflower\resources\app.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

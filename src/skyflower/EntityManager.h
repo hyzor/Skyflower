@@ -66,6 +66,8 @@ class EntityManager {
 
 		void sendGlobalMessage(RequestId reqId, Message const & msg);
 
+		void sendGlobalMessage(string message);
+
 		// send local messages to another Entity
 		inline void sendMessageToEntity(string msg, Component *component, EntityId id, Payload payload) 
 		{

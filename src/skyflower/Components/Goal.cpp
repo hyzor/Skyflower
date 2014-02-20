@@ -27,10 +27,9 @@ void Goal::Activate(Message const& msg)
 	if (activated <= 0)
 	{
 		getEntityManager()->sendMessageToEntity("Activated", getOwnerId()); //event managment
+		getOwner()->getModules()->sound->PlaySound("doink-doink.wav", 0.75f);
 	}
 	activated = 1;
-
-	getOwner()->getModules()->sound->PlaySound("doink-doink.wav", 0.75f);
 }
 
 void Goal::Deactivate()

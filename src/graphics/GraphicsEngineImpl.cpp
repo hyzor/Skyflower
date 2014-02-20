@@ -8,6 +8,14 @@ GraphicsEngineImpl::GraphicsEngineImpl()
 {
 	mRandom1DTexSRV = nullptr;
 	mParticlesTextureArray = nullptr;
+
+	mPointLights = new PLight[MAXPLIGHTS];
+	mDirLights = new DLight[MAXDLIGHTS];
+	mSpotLights = new SLight[MAXSLIGHTS];
+
+	mPointLightsCount = 0;
+	mDirLightsCount = 0;
+	mSpotLightsCount = 0;
 }
 
 GraphicsEngineImpl::~GraphicsEngineImpl()
@@ -71,11 +79,14 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 		delete mMorphModels[i];
 	}
 
+	ReleaseCOM(mLineVertexBuffer);
+
 	delete mSky;
-	delete mShadowMap;
+	delete mCascadedShadows;
 	delete mCamera;
 	delete mTextureMgr;
 
+    delete mSpriteFontMonospace;
 	delete mSpriteFont;
 	delete mSpriteBatch;
 
@@ -107,10 +118,18 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 
 	mD3D->Shutdown();
 	delete mD3D;
+
+
+	delete [] mPointLights;
+	delete [] mDirLights;
+	delete [] mSpotLights;
 }
 
 bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::string &resourceDir)
 {
+	mScreenWidth = width;
+	mScreenHeight = height;
+
 	mResourceDir = resourceDir;
 
 	mD3D = new Direct3D();
@@ -167,7 +186,11 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mFarBlurryPlane = 250.0f;
 
 	mSky = new Sky(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Textures\\SkyBox.dds", 2000.0f);
-	mShadowMap = new ShadowMap(mD3D->GetDevice(), 2048, 2048);
+	mCascadedShadows = new CascadedShadows(mD3D->GetDevice(), 2048, 2048, 3); //Remember that a const is defined in LightDef.hlsli 
+	mCascadedShadows->SetSplitMethod(FIT_TO_CASCADE);
+	mCascadedShadows->SetNearFarFitMethod(FIT_NEARFAR_AABB);
+	mCascadedShadows->SetSplitDepth(0.125f, 0);
+	mCascadedShadows->SetSplitDepth(0.25f, 1);
 
 	mGameTime = 0.0f;
 
@@ -183,6 +206,8 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\SkyPS.cso", "SkyPS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\NormalMapSkinnedVS.cso", "NormalMapSkinnedVS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\NormalMapSkinnedPS.cso", "NormalMapSkinnedPS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\LineVS.cso", "LineVS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\LinePS.cso", "LinePS", mD3D->GetDevice());
 
 	// Shadow mapping
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\ShadowBuildVS.cso", "ShadowBuildVS", mD3D->GetDevice());
@@ -254,6 +279,9 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mNormalSkinned->BindShaders(
 		mShaderHandler->GetVertexShader("NormalMapSkinnedVS"),
 		mShaderHandler->GetPixelShader("NormalMapSkinnedPS"));
+	mShaderHandler->mLineShader->BindShaders(
+		mShaderHandler->GetVertexShader("LineVS"),
+		mShaderHandler->GetPixelShader("LinePS"));
 	mShaderHandler->mBasicDeferredShader->BindShaders(
 		mShaderHandler->GetVertexShader("BasicDeferredVS"),
 		mShaderHandler->GetPixelShader("BasicDeferredPS"));
@@ -338,6 +366,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 
 	// Now create all the input layouts
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("BasicVS"), InputLayoutDesc::PosNormalTex, COUNT_OF(InputLayoutDesc::PosNormalTex), &mInputLayouts->PosNormalTex);
+	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("LineVS"), InputLayoutDesc::Position2D, COUNT_OF(InputLayoutDesc::Position2D), &mInputLayouts->Position2D);
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("SkyVS"), InputLayoutDesc::Position, COUNT_OF(InputLayoutDesc::Position), &mInputLayouts->Position);
 	mInputLayouts->CreateInputLayout(mD3D->GetDevice(), mShaderHandler->GetShader("NormalMapSkinnedVS"),
 		InputLayoutDesc::PosNormalTexTanSkinned,
@@ -351,6 +380,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mBasicShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTex);
 	mShaderHandler->mSkyShader->Init(mD3D->GetDevice(), mInputLayouts->Position);
 	mShaderHandler->mNormalSkinned->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTanSkinned);
+	mShaderHandler->mLineShader->Init(mD3D->GetDevice(), mInputLayouts->Position2D);
 	mShaderHandler->mBasicDeferredShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTex);
 	mShaderHandler->mBasicDeferredSkinnedShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTanSkinned);
 	mShaderHandler->mLightDeferredShader->Init(mD3D->GetDevice(), mInputLayouts->PosTex);
@@ -395,11 +425,14 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 		mTextureMgr->CreateTexture(mResourceDir + "Textures/SMAA/SearchTex.dds"),
 		mFullscreenTriangle);
 
-	std::string fontPath = mResourceDir + "myfile.spritefont";
-	std::wstring fontPathW(fontPath.begin(), fontPath.end());
+	std::string fontPath = mResourceDir + "buxton.spritefont";
+    std::string fontPathMonospace = mResourceDir + "monospace_8.spritefont";
+    std::wstring fontPathW(fontPath.begin(), fontPath.end());
+    std::wstring fontPatMonospacehW(fontPathMonospace.begin(), fontPathMonospace.end());
 
-	mSpriteBatch = new SpriteBatch(mD3D->GetImmediateContext());
-	mSpriteFont = new SpriteFont(mD3D->GetDevice(), fontPathW.c_str());
+    mSpriteBatch = new SpriteBatch(mD3D->GetImmediateContext());
+    mSpriteFont = new SpriteFont(mD3D->GetDevice(), fontPathW.c_str());
+    mSpriteFontMonospace = new SpriteFont(mD3D->GetDevice(), fontPatMonospacehW.c_str());
 
 	// Create orthogonal window
 	mOrthoWindow = new OrthoWindow();
@@ -494,6 +527,19 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mCurFPS = 0.0f;
 	mTargetFPS = 60.0f;
 
+
+	mLineVertexBufferSize = 4096;
+
+	D3D11_BUFFER_DESC bufferDesc;
+	bufferDesc.ByteWidth = (UINT)(sizeof(float) * 2 * mLineVertexBufferSize);
+	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	bufferDesc.MiscFlags = 0;
+	bufferDesc.StructureByteStride = 0;
+
+	mD3D->GetDevice()->CreateBuffer(&bufferDesc, NULL, &mLineVertexBuffer);
+
 	return true;
 }
 
@@ -521,18 +567,18 @@ void GraphicsEngineImpl::DrawScene()
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(0, 0);
 	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
 
-	// Clear depth and stencil buffer
 	mD3D->GetImmediateContext()->ClearDepthStencilView(mD3D->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	// Draw scene to shadowmap
-	mD3D->GetImmediateContext()->RSSetState(RenderStates::mDepthBiasRS); // This rasterizer state fixes shadow acne
-
-	if (mDirLights.size() > 0)
+	if (mDirLightsCount > 0)
 	{
-		mShadowMap->BindDsvAndSetNullRenderTarget(mD3D->GetImmediateContext());
-		mShadowMap->BuildShadowTransform(mDirLights.at(0), mSceneBounds);
+		//mShadowMap->BindDsvAndSetNullRenderTarget(mD3D->GetImmediateContext());
+		//mShadowMap->BuildShadowTransform(mDirLights[0], mSceneBounds);
 		//mShadowMap->DrawSceneToShadowMap(mInstances, mAnimatedInstances, mD3D->GetImmediateContext(), mShaderHandler->mShadowShader, mShaderHandler->mSkinnedShadowShader);
-		mShadowMap->DrawSceneToShadowMap(mInstances, mAnimatedInstances, mMorphInstances, mD3D->GetImmediateContext(), mShaderHandler->mShadowShader, mShaderHandler->mSkinnedShadowShader, mShaderHandler->mShadowMorphShader);
+		//mShadowMap->DrawSceneToShadowMap(mInstances, mAnimatedInstances, mMorphInstances, mD3D->GetImmediateContext(), mShaderHandler->mShadowShader, mShaderHandler->mSkinnedShadowShader, mShaderHandler->mShadowMorphShader);
+
+		//Draw scene to cascades
+		mCascadedShadows->CreateLightFrustums(mDirLights[0], mSceneBounds, mSceneBB, mCamera);
+		mCascadedShadows->RenderSceneToCascades(mInstances, mAnimatedInstances, mMorphInstances, mD3D->GetImmediateContext(), mShaderHandler->mShadowShader, mShaderHandler->mSkinnedShadowShader, mShaderHandler->mShadowMorphShader);
 	}
 
 	mD3D->GetImmediateContext()->RSSetState(0);
@@ -782,6 +828,7 @@ void GraphicsEngineImpl::DrawScene()
 		}
 	}
 
+
 	for (UINT i = 0; i < mSkinnedSortedInstances.size(); ++i)
 	{
 		if (mSkinnedSortedInstances[i]->isVisible)
@@ -790,9 +837,46 @@ void GraphicsEngineImpl::DrawScene()
 		}
 	}
 
+
+
 	renderTarget = mD3D->GetRenderTargetView();
 	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
 	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
+
+	//Debugging shadowcascades
+	//mSpriteBatch->Begin();
+
+	//mSpriteBatch->Draw(
+	//	mCascadedShadows->GetCascade(0)->getDepthMapSRV(),
+	//	XMFLOAT2(225.0f, 0.0f),
+	//	nullptr,
+	//	Colors::Red,
+	//	0.0f,
+	//	XMFLOAT2(0.0f, 0.0f),
+	//	XMFLOAT2(0.1f, 0.1f)
+	//	);
+
+	//mSpriteBatch->Draw(
+	//	mCascadedShadows->GetCascade(1)->getDepthMapSRV(),
+	//	XMFLOAT2(450.0f, 0.0f),
+	//	nullptr,
+	//	Colors::Red,
+	//	0.0f,
+	//	XMFLOAT2(0.0f, 0.0f),
+	//	XMFLOAT2(0.1f, 0.1f)
+	//	);
+
+	//mSpriteBatch->Draw(
+	//	mCascadedShadows->GetCascade(2)->getDepthMapSRV(),
+	//	XMFLOAT2(675.0f, 0.0f),
+	//	nullptr,
+	//	Colors::Red,
+	//	0.0f,
+	//	XMFLOAT2(0.0f, 0.0f),
+	//	XMFLOAT2(0.1f, 0.1f)
+	//	);
+
+	//mSpriteBatch->End();
 
 	/*
 	//XMFLOAT4 test = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
@@ -1065,9 +1149,9 @@ void GraphicsEngineImpl::DeleteInstance(MorphModelInstance* mmi)
 	delete m;
 }
 
-Texture2D *GraphicsEngineImpl::CreateTexture2D(unsigned int width, unsigned int height)
+Texture2D *GraphicsEngineImpl::CreateTexture2D(unsigned int width, unsigned int height, bool renderable)
 {
-	Texture2DImpl *texture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8G8B8A8_UNORM, false);
+	Texture2DImpl *texture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8G8B8A8_UNORM, renderable);
  
 	return (Texture2D *)texture;
 }
@@ -1116,6 +1200,9 @@ void GraphicsEngineImpl::DeleteParticleSystem(ParticleSystem *particleSystem)
 
 void GraphicsEngineImpl::OnResize(UINT width, UINT height)
 {
+	mScreenWidth = width;
+	mScreenHeight = height;
+
 	mD3D->OnResize(width, height);
 	ReleaseCOM(mDepthStencilTextureCopy);
 	ReleaseCOM(mDepthStencilSRVCopy);
@@ -1210,8 +1297,31 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 		0.0f, 0.0f, 1.0f, 0.0f,
 		0.5f, 0.5f, 0.0f, 1.0f);
 
-	mShaderHandler->mBasicDeferredShader->SetShadowMap(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
+	//mShaderHandler->mBasicDeferredShader->SetShadowMap(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
 
+	//Set variables that are shared for all cascades
+	mShaderHandler->mBasicDeferredShader->SetEyeSpaceTransform(this->mCamera->GetViewMatrix());
+	mShaderHandler->mBasicDeferredShader->SetNrOfCascades(this->mCascadedShadows->GetNrOfCascades());
+
+	Cascade* currCasc;
+
+	//Loop through all cascades and set variables for the shader that renders model instances (shadowtransform, cascade texture, splitdepths)
+	for (UINT cIndex = 0; cIndex < this->mCascadedShadows->GetNrOfCascades(); cIndex++)
+	{
+		currCasc = mCascadedShadows->GetCascade(cIndex);
+
+		if (currCasc)
+		{
+			mShaderHandler->mBasicDeferredShader->SetCascadeTex(mD3D->GetImmediateContext(), currCasc->getDepthMapSRV(), cIndex);
+			mShaderHandler->mBasicDeferredShader->SetCascadeTransformAndDepths(
+				currCasc->GetShadowTransform(),
+				currCasc->GetSplitDepthNear(),
+				currCasc->GetSplitDepthFar(),
+				cIndex);
+		}
+	}
+
+	// Loop through all model instances
 	for (UINT i = 0; i < mInstances.size(); ++i)
 	{
 		if (mInstances[i]->IsVisible())
@@ -1226,11 +1336,6 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 			mShaderHandler->mBasicDeferredShader->SetPrevWorldViewProj(mInstances[i]->GetPrevWorld(),
 				mCamera->GetPreviousViewProj());
 
-			mShaderHandler->mBasicDeferredShader->SetShadowTransformLightViewProj(
-				XMMatrixMultiply(mInstances[i]->GetWorld(), mShadowMap->GetShadowTransform()),
-				mShadowMap->GetLightView(),
-				mShadowMap->GetLightProj());
-
 			for (UINT j = 0; j < mInstances[i]->model->meshCount; ++j)
 			{
 				UINT matIndex = mInstances[i]->model->meshes[j].MaterialIndex;
@@ -1244,18 +1349,39 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 		}
 	}
 
+	for (UINT cIndex = 0; cIndex < MAX_CASC; cIndex++)
+	{
+		mShaderHandler->mBasicDeferredShader->SetCascadeTex(mD3D->GetImmediateContext(), NULL, cIndex);
+	}
+
 	//---------------------------------------------------------------------------------------
 	// Skinned opaque objects
 	//---------------------------------------------------------------------------------------
 	mShaderHandler->mBasicDeferredSkinnedShader->SetActive(mD3D->GetImmediateContext());
 
-	mShaderHandler->mBasicDeferredSkinnedShader->SetShadowMapTexture(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
+	//Set variables that are shared for all cascades
+	mShaderHandler->mBasicDeferredSkinnedShader->SetEyeSpaceTransform(this->mCamera->GetViewMatrix());
+	mShaderHandler->mBasicDeferredSkinnedShader->SetNrOfCascades(this->mCascadedShadows->GetNrOfCascades());
+
+	//Loop through all cascades and set variables for the shader that renders skinned instances (shadowtransform, cascade texture, splitdepths)
+	for (UINT cIndex = 0; cIndex < this->mCascadedShadows->GetNrOfCascades(); cIndex++)
+	{
+		currCasc = mCascadedShadows->GetCascade(cIndex);
+
+		if (currCasc)
+		{
+			mShaderHandler->mBasicDeferredSkinnedShader->SetCascadeTex(mD3D->GetImmediateContext(), currCasc->getDepthMapSRV(), cIndex);
+			mShaderHandler->mBasicDeferredSkinnedShader->SetCascadeTransformAndDepths(
+				currCasc->GetShadowTransform(),
+				currCasc->GetSplitDepthNear(),
+				currCasc->GetSplitDepthFar(),
+				cIndex);
+		}
+	}
 
 	// Loop through all model instances
 	for (UINT i = 0; i < mAnimatedInstances.size(); ++i)
 	{
-		mShaderHandler->mBasicDeferredSkinnedShader->SetShadowTransform(
-						XMMatrixMultiply(mAnimatedInstances[i]->GetWorld(), mShadowMap->GetShadowTransform()));
 		if (mAnimatedInstances[i]->IsVisible())
 		{
 			mShaderHandler->mBasicDeferredSkinnedShader->SetPrevWorldViewProj(mAnimatedInstances[i]->GetPrevWorld(), mCamera->GetPreviousViewProj());
@@ -1263,19 +1389,41 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 		}
 	}
 
+	for (UINT cIndex = 0; cIndex < MAX_CASC; cIndex++)
+	{
+		mShaderHandler->mBasicDeferredSkinnedShader->SetCascadeTex(mD3D->GetImmediateContext(), NULL, cIndex);
+	}
+
 	//---------------------------------------------------------------------------------------
 	// Morphed opaque objects
 	//---------------------------------------------------------------------------------------
 	mShaderHandler->mDeferredMorphShader->SetActive(mD3D->GetImmediateContext());
-	mShaderHandler->mDeferredMorphShader->SetShadowMapTexture(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
+
+	//Set variables that are shared for all cascades
+	mShaderHandler->mDeferredMorphShader->SetEyeSpaceTransform(this->mCamera->GetViewMatrix());
+	mShaderHandler->mDeferredMorphShader->SetNrOfCascades(this->mCascadedShadows->GetNrOfCascades());
+
+	//Loop through all cascades and set variables for the shader that renders morph instances (shadowtransform, cascade texture, splitdepths)
+	for (UINT cIndex = 0; cIndex < this->mCascadedShadows->GetNrOfCascades(); cIndex++)
+	{
+		currCasc = mCascadedShadows->GetCascade(cIndex);
+
+		if (currCasc)
+		{
+			mShaderHandler->mDeferredMorphShader->SetCascadeTex(mD3D->GetImmediateContext(), currCasc->getDepthMapSRV(), cIndex);
+			mShaderHandler->mDeferredMorphShader->SetCascadeTransformAndDepths(
+				currCasc->GetShadowTransform(),
+				currCasc->GetSplitDepthNear(),
+				currCasc->GetSplitDepthFar(),
+				cIndex);
+		}
+	}
 
 	//mD3D->GetImmediateContext()->RSSetState(RenderStates::mNoCullRS);
 	for (UINT i = 0; i < mMorphInstances.size(); ++i)
 	{
 		if (mMorphInstances[i]->IsVisible())
 		{
-			mShaderHandler->mDeferredMorphShader->SetShadowTransform(
-				XMMatrixMultiply(XMLoadFloat4x4(&mMorphInstances[i]->world), mShadowMap->GetShadowTransform()));
 
 			mShaderHandler->mDeferredMorphShader->SetWorldViewProjTex(XMLoadFloat4x4(&mMorphInstances[i]->world),
 				mCamera->GetViewProjMatrix(),
@@ -1297,13 +1445,35 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 			}
 		}
 	}
+
+	for (UINT cIndex = 0; cIndex < MAX_CASC; cIndex++)
+	{
+		mShaderHandler->mDeferredMorphShader->SetCascadeTex(mD3D->GetImmediateContext(), NULL, cIndex);
+	}
 	//mD3D->GetImmediateContext()->RSSetState(RenderStates::mDefaultRS);
 
 	//---------------------------------------------------------------------------------------
 	// Skinned opaque objects with separated upper and lower body transformations
 	//---------------------------------------------------------------------------------------
+
+	//NOTE: CONFIRM THAT SHADOWING WORKS AS INTENDED FOR THIS SHADER, ONCE IT IS USED
 	mShaderHandler->mBasicDeferredSkinnedSortedShader->SetActive(mD3D->GetImmediateContext());
-	mShaderHandler->mBasicDeferredSkinnedShader->SetShadowMapTexture(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
+
+	//Set variables that are shared for all cascades
+	mShaderHandler->mBasicDeferredSkinnedSortedShader->SetEyeSpaceTransform(this->mCamera->GetViewMatrix());
+	mShaderHandler->mBasicDeferredSkinnedSortedShader->SetNrOfCascades(this->mCascadedShadows->GetNrOfCascades());
+
+	//Loop through all cascades and set variables for the shader that renders skinned instances with animation blending (shadowtransform, cascade texture, splitdepths)
+	for (UINT cIndex = 0; cIndex < this->mCascadedShadows->GetNrOfCascades(); cIndex++)
+	{
+		currCasc = mCascadedShadows->GetCascade(cIndex);
+		if (currCasc)
+		{
+			mShaderHandler->mBasicDeferredSkinnedSortedShader->SetCascadeTex(mD3D->GetImmediateContext(), currCasc->getDepthMapSRV(), cIndex);
+			mShaderHandler->mBasicDeferredSkinnedSortedShader->SetCascadeTransform(currCasc->GetShadowTransform(), cIndex);
+			mShaderHandler->mBasicDeferredSkinnedSortedShader->SetCascadeDepths(currCasc->GetSplitDepthNear(), currCasc->GetSplitDepthFar(), cIndex);
+		}
+	}
 
 	for (UINT i = 0; i < mSkinnedSortedInstances.size(); ++i)
 	{
@@ -1332,6 +1502,11 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 		}
 	}
 
+	for (UINT cIndex = 0; cIndex < MAX_CASC; cIndex++)
+	{
+		mShaderHandler->mBasicDeferredSkinnedSortedShader->SetCascadeTex(mD3D->GetImmediateContext(), NULL, cIndex);
+	}
+
 	// Set render target to light accumulation buffer, also use the depth/stencil buffer with previous stencil information
 	mD3D->GetImmediateContext()->OMSetRenderTargets(1, renderTargetsLitScene, mD3D->GetDepthStencilView());
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDepthDisabledStencilUseDSS, 1); // Draw using stencil values of 1
@@ -1341,12 +1516,12 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	//---------------------------------------------------------------------------------------
 	mShaderHandler->mLightDeferredToTextureShader->SetActive(mD3D->GetImmediateContext());
 	mShaderHandler->mLightDeferredToTextureShader->SetEyePosW(mCamera->GetPosition());
-	mShaderHandler->mLightDeferredToTextureShader->SetPointLights(mD3D->GetImmediateContext(), (UINT)mPointLights.size(), mPointLights.data());
-	mShaderHandler->mLightDeferredToTextureShader->SetDirLights(mD3D->GetImmediateContext(), (UINT)mDirLights.size(), mDirLights.data());
-	mShaderHandler->mLightDeferredToTextureShader->SetSpotLights(mD3D->GetImmediateContext(), (UINT)mSpotLights.size(), mSpotLights.data());
-	mShaderHandler->mLightDeferredToTextureShader->SetShadowTransform(mShadowMap->GetShadowTransform());
+	mShaderHandler->mLightDeferredToTextureShader->SetPLights(mD3D->GetImmediateContext(), (UINT)mPointLightsCount, mPointLights);
+	mShaderHandler->mLightDeferredToTextureShader->SetDirLights(mD3D->GetImmediateContext(), (UINT)mDirLightsCount, mDirLights);
+	mShaderHandler->mLightDeferredToTextureShader->SetSLights(mD3D->GetImmediateContext(), (UINT)mSpotLightsCount, mSpotLights);
+	//mShaderHandler->mLightDeferredToTextureShader->SetShadowTransform(mShadowMap->GetShadowTransform());
 	mShaderHandler->mLightDeferredToTextureShader->SetCameraViewProjMatrix(mCamera->GetViewMatrix(), mCamera->GetProjMatrix());
-	mShaderHandler->mLightDeferredToTextureShader->SetLightWorldViewProj(mShadowMap->GetLightWorld(), mShadowMap->GetLightView(), mShadowMap->GetLightProj());
+	//mShaderHandler->mLightDeferredToTextureShader->SetLightWorldViewProj(mShadowMap->GetLightWorld(), mShadowMap->GetLightView(), mShadowMap->GetLightProj());
 
 	// TODO: Instead of hard coding these properties, get them from some modifiable settings collection
 	mShaderHandler->mLightDeferredToTextureShader->SetFogProperties(1, 0.0195f, -125.0f, 0.105f, XMFLOAT4(0.86f, 0.86f, 0.9f, 1.0f));
@@ -1380,9 +1555,9 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDepthDisabledStencilUseDSS, 0); // Draw using stencil values of 0 (this is the sky)
 
 	// We don't want any light to affect the sky, set these "num values" to 0
-	mShaderHandler->mLightDeferredToTextureShader->SetPointLights(mD3D->GetImmediateContext(), 0, mPointLights.data());
-	mShaderHandler->mLightDeferredToTextureShader->SetDirLights(mD3D->GetImmediateContext(), 0, mDirLights.data());
-	mShaderHandler->mLightDeferredToTextureShader->SetSpotLights(mD3D->GetImmediateContext(), 0, mSpotLights.data());
+	mShaderHandler->mLightDeferredToTextureShader->SetPLights(mD3D->GetImmediateContext(), 0, mPointLights);
+	mShaderHandler->mLightDeferredToTextureShader->SetDirLights(mD3D->GetImmediateContext(), 0, mDirLights);
+	mShaderHandler->mLightDeferredToTextureShader->SetSLights(mD3D->GetImmediateContext(), 0, mSpotLights);
 	mShaderHandler->mLightDeferredToTextureShader->SetSkipLighting(true);
 
 	mShaderHandler->mLightDeferredToTextureShader->UpdatePerFrame(mD3D->GetImmediateContext());
@@ -1468,9 +1643,9 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 
 	mShaderHandler->mLightDeferredToTextureShader->SetBackgroundTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Background));
 
-	mShaderHandler->mLightDeferredToTextureShader->SetPointLights(mD3D->GetImmediateContext(), (UINT)mPointLights.size(), mPointLights.data());
-	mShaderHandler->mLightDeferredToTextureShader->SetDirLights(mD3D->GetImmediateContext(), (UINT)mDirLights.size(), mDirLights.data());
-	mShaderHandler->mLightDeferredToTextureShader->SetSpotLights(mD3D->GetImmediateContext(), (UINT)mSpotLights.size(), mSpotLights.data());
+	mShaderHandler->mLightDeferredToTextureShader->SetPLights(mD3D->GetImmediateContext(), (UINT)mPointLightsCount, mPointLights);
+	mShaderHandler->mLightDeferredToTextureShader->SetDirLights(mD3D->GetImmediateContext(), (UINT)mDirLightsCount, mDirLights);
+	mShaderHandler->mLightDeferredToTextureShader->SetSLights(mD3D->GetImmediateContext(), (UINT)mSpotLightsCount, mSpotLights);
 	mShaderHandler->mLightDeferredToTextureShader->SetSkipLighting(false);
 	mShaderHandler->mLightDeferredToTextureShader->SetIsTransparencyPass(true);
 
@@ -1533,7 +1708,10 @@ void GraphicsEngineImpl::UpdateSceneData()
 					}
 	            }
 	    }
-	 
+
+		//Used when creating orthogonal projection matrix for cascades
+		BoundingBox::CreateFromPoints(this->mSceneBB, XMLoadFloat3(&minPt), XMLoadFloat3(&maxPt));
+
 	    // Sphere center is at half of these new dimensions
 	    mSceneBounds.Center = XMFLOAT3(
 				0.5f*(minPt.x + maxPt.x),
@@ -1549,77 +1727,93 @@ void GraphicsEngineImpl::UpdateSceneData()
 	    mSceneBounds.Radius = sqrtf(extent.x*extent.x + extent.y*extent.y + extent.z*extent.z);
 }
 
-void GraphicsEngineImpl::addDirLight(Vec3 color, Vec3 direction, float intensity)
+DirectionalLight* GraphicsEngineImpl::AddDirLight(Vec3 color, Vec3 direction, float intensity)
 {
-	DirectionalLight dirLight;
-	ZeroMemory(&dirLight, sizeof(DirectionalLight));
+	DirectionalLight* dl = new DirectionalLightImpl(&(mDirLights[mDirLightsCount]));
+	mDirLightsCount++;
 
 	color.X = pow(color.X, 2.2f);
 	color.Y = pow(color.Y, 2.2f);
 	color.Z = pow(color.Z, 2.2f);
 
-	dirLight.Ambient = XMFLOAT4(intensity / 10.0f, intensity / 10.0f, intensity / 10.0f, 1.0f);
-	dirLight.Diffuse = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
-	dirLight.Direction = XMFLOAT3(direction.X, direction.Y, direction.Z);
-	dirLight.Specular = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
+	dl->SetAmbient(Vec3(intensity / 10.0f, intensity / 10.0f, intensity / 10.0f));
+	dl->SetDiffuse(color);
+	dl->SetDirection(direction);
+	dl->SetSpecular(color);
 
-	//XMFLOAT3 gammaCorrected = XMFLOAT3(dirLight.Diffuse.x, dirLight.Diffuse.y, dirLight.Diffuse.z);
-	//gammaCorrected = pow(gammaCorrected, 2.2f)
 
-	mDirLights.push_back(dirLight);
+	return dl;
 }
 
-void GraphicsEngineImpl::addPointLight(Vec3 color, Vec3 position, float intensity)
+PointLight* GraphicsEngineImpl::AddPointLight(Vec3 color, Vec3 position, float intensity)
 {
-	PointLight pointLight;
-	ZeroMemory(&pointLight, sizeof(PointLight));
+	PointLight* pl = new PointLightImpl(&(mPointLights[mPointLightsCount]));
+	mPointLightsCount++;
 
 	color.X = pow(color.X, 2.2f);
 	color.Y = pow(color.Y, 2.2f);
 	color.Z = pow(color.Z, 2.2f);
 
-	pointLight.Position = XMFLOAT3(position.X, position.Y, position.Z);
-	pointLight.Ambient = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
-	pointLight.Specular = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
-	pointLight.Diffuse = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
-	pointLight.Attenuation = XMFLOAT3(intensity / 100.0f, intensity / 100.0f, intensity / 100.0f);
-	pointLight.Range = 250.0f;
-	mPointLights.push_back(pointLight);
+	pl->SetPosition(position);
+	pl->SetAmbient(color);
+	pl->SetSpecular(color);
+	pl->SetDiffuse(color);
+	pl->SetAttenuation(Vec3(intensity / 100.0f, intensity / 100.0f, intensity / 100.0f));
+	pl->SetRange(250.0f);
+
+
+	return pl;
 }
 
-void GraphicsEngineImpl::addSpotLight(Vec3 color, Vec3 direction, Vec3 position, float angle)
+SpotLight* GraphicsEngineImpl::AddSpotLight(Vec3 color, Vec3 direction, Vec3 position, float angle)
 {
-	SpotLight spotLight;
-	ZeroMemory(&spotLight, sizeof(SpotLight));
+	SpotLight* sl = new SpotLightImpl(&(mSpotLights[mSpotLightsCount]));
+	mSpotLightsCount++;
 
 	color.X = pow(color.X, 2.2f);
 	color.Y = pow(color.Y, 2.2f);
 	color.Z = pow(color.Z, 2.2f);
 
-	spotLight.Ambient = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
-	spotLight.Diffuse = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
-	spotLight.Specular = XMFLOAT4(color.X, color.Y, color.Z, 1.0f);
-	spotLight.Attenuation = XMFLOAT3(1.0f, 0.0f, 0.0f);
-	spotLight.Spot = angle;
-	spotLight.Range = 500.0f;
-	spotLight.Position = XMFLOAT3(position.X, position.Y, position.Z);
-	spotLight.Direction = XMFLOAT3(direction.X, direction.Y, direction.Z);
-	mSpotLights.push_back(spotLight);
+	sl->SetAmbient(color);
+	sl->SetDiffuse(color);
+	sl->SetSpecular(color);
+	sl->SetAttenuation(Vec3(1.0f, 0.0f, 0.0f));
+	sl->SetSpot(angle);
+	sl->SetRange(500.0f);
+	sl->SetPosition(position);
+	sl->SetDirection(direction);
+
+
+	return sl;
 }
 
-void GraphicsEngineImpl::clearLights()
+void GraphicsEngineImpl::ClearLights()
 {
-	mSpotLights.clear();
-	mDirLights.clear();
-	mPointLights.clear();
+	mSpotLightsCount = 0;
+	mDirLightsCount = 0;
+	mPointLightsCount = 0;
 }
 
 
-void GraphicsEngineImpl::printText(std::string text, int x, int y, Vec3 color, float scale)
+void GraphicsEngineImpl::PrintText(std::string text, int x, int y, Vec3 color, float scale, float alpha)
 {
 	std::wstring t = std::wstring(text.begin(), text.end());
-	XMVECTORF32 v_color = { color.X, color.Y, color.Z, 1 };
+	XMVECTORF32 v_color = { color.X, color.Y, color.Z, alpha };
 	mSpriteFont->DrawString(mSpriteBatch, t.c_str(), XMFLOAT2((float)x, (float)y), v_color, 0.0f, XMFLOAT2(0, 0), scale);
+}
+
+Vec3 GraphicsEngineImpl::MeassureString(const std::string text)
+{
+	std::wstring t = std::wstring(text.begin(), text.end());
+	XMVECTOR size = mSpriteFont->MeasureString(t.c_str());
+
+	return Vec3(size.m128_f32[0], size.m128_f32[1]);
+}
+
+void GraphicsEngineImpl::GetWindowResolution(UINT& width, UINT& height)
+{
+	width = mScreenWidth;
+	height = mScreenHeight;
 }
 void GraphicsEngineImpl::Clear()
 {
@@ -1697,7 +1891,7 @@ void GraphicsEngineImpl::SetFullscreen(bool fullscreen)
 	mD3D->GetSwapChain()->SetFullscreenState(fullscreen, NULL);
 }
 
-bool GraphicsEngineImpl::isFullscreen()
+bool GraphicsEngineImpl::IsFullscreen()
 {
 	BOOL fullscreen;
 	mD3D->GetSwapChain()->GetFullscreenState(&fullscreen, NULL);
@@ -1720,4 +1914,84 @@ Vec3 GraphicsEngineImpl::GetMorphAnimWeigth(unsigned index)
 	}
 	else
 		return Vec3::Zero();
+}
+
+void GraphicsEngineImpl::ClearTexture(Texture2D *texture, const float color[4])
+{
+    assert(texture->IsRenderable());
+
+    Texture2DImpl *textureImpl = (Texture2DImpl *)texture;
+    mD3D->GetImmediateContext()->ClearRenderTargetView(textureImpl->GetRenderTargetView(), color);
+}
+
+void GraphicsEngineImpl::PrintTextMonospaceToTexture(Texture2D *texture, const std::string &text, const int position[2])
+{
+    assert(texture->IsRenderable());
+
+    Texture2DImpl *textureImpl = (Texture2DImpl *)texture;
+    ID3D11RenderTargetView *renderTarget = textureImpl->GetRenderTargetView();
+    D3D11_VIEWPORT viewport;
+
+    viewport.TopLeftX = 0;
+    viewport.TopLeftY = 0;
+    viewport.Width = (float)texture->GetWidth();
+    viewport.Height = (float)texture->GetHeight();
+    viewport.MinDepth = 0.0f;
+    viewport.MaxDepth = 1.0f;
+
+    mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
+    mD3D->GetImmediateContext()->RSSetViewports(1, &viewport);
+
+    std::wstring textWide(text.begin(), text.end());
+    mSpriteFontMonospace->DrawString(mSpriteBatch, textWide.c_str(), XMFLOAT2((float)position[0], (float)position[1]));
+}
+
+void GraphicsEngineImpl::DrawLines(Texture2D *texture, const float *data, size_t count, const XMFLOAT3X3 &transformation, const float color[4])
+{
+	assert(texture->IsRenderable());
+
+	if (count > mLineVertexBufferSize)
+		printf("GraphicsEngineImpl::DrawLines, count is too damn high!\n");
+
+	size_t clampedCount = std::min(count, mLineVertexBufferSize);
+
+	// Update vertex buffer
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	mD3D->GetImmediateContext()->Map(mLineVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	memcpy(mappedResource.pData, data, sizeof(float) * 2 * clampedCount);
+	mD3D->GetImmediateContext()->Unmap(mLineVertexBuffer, 0);
+
+	mShaderHandler->mLineShader->SetTransformation(transformation);
+	mShaderHandler->mLineShader->SetColor(XMFLOAT4(color[0], color[1], color[2], color[3]));
+	mShaderHandler->mLineShader->SetFramebufferSize(XMFLOAT2((float)texture->GetWidth(), (float)texture->GetHeight()));
+
+	mShaderHandler->mLineShader->Update(mD3D->GetImmediateContext());
+	mShaderHandler->mLineShader->SetActive(mD3D->GetImmediateContext());
+
+    D3D11_VIEWPORT viewport;
+    viewport.TopLeftX = 0;
+    viewport.TopLeftY = 0;
+    viewport.Width = (float)texture->GetWidth();
+    viewport.Height = (float)texture->GetHeight();
+    viewport.MinDepth = 0.0f;
+    viewport.MaxDepth = 1.0f;
+
+	ID3D11RenderTargetView *renderTarget = ((Texture2DImpl *)texture)->GetRenderTargetView();
+	UINT stride = sizeof(float) * 2;
+	UINT offset = 0;
+
+    mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
+    mD3D->GetImmediateContext()->RSSetViewports(1, &viewport);
+
+	mD3D->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
+	mD3D->GetImmediateContext()->IASetVertexBuffers(0, 1, &mLineVertexBuffer, &stride, &offset);
+	mD3D->GetImmediateContext()->Draw((UINT)clampedCount, 0);
+}
+
+void GraphicsEngineImpl::ResetRenderTargetAndViewport()
+{
+	ID3D11RenderTargetView *renderTarget = mD3D->GetRenderTargetView();
+	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, mD3D->GetDepthStencilView());
+	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
 }

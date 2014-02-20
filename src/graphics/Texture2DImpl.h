@@ -17,6 +17,8 @@ public:
 	unsigned int GetWidth() const;
 	unsigned int GetHeight() const;
 
+	bool IsRenderable() const;
+
 	ID3D11Texture2D *GetTexture() const;
 	ID3D11ShaderResourceView *GetShaderResourceView() const;
 	ID3D11RenderTargetView *GetRenderTargetView() const;

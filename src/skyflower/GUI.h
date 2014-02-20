@@ -37,7 +37,7 @@ public:
 	void Draw();
 
 	//Create a texture, created texture is returned as a pointer
-	Texture2D* CreateTexture2D(unsigned int width, unsigned int height);
+	Texture2D* CreateTexture2D(unsigned int width, unsigned int height, bool renderable = false);
 
 	//Create a GUI element without binding it to a texture, returns the ID of the GUI element
 	int CreateGUIElement(Vec3 pos);
@@ -64,7 +64,7 @@ public:
 	//Set all elements as not visible
 	void HideGUI();
 
-	void printText(std::string text, int x, int y, Vec3 color = Vec3::Zero(), float scale = 1.0f);
+	void printText(std::string text, int x, int y, Vec3 color = Vec3::Zero(), float scale = 1.0f, float alpha = 1.0f);
 
 private:
 	GraphicsEngine *mGraphics;

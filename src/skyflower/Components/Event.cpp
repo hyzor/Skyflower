@@ -1,6 +1,7 @@
 #include "Components/Event.h"
 #include "EntityManager.h"
 #include "Components/Throw.h"
+#include "GUI.h"
 
 // Must be included last!
 #include "shared/debug.h"
@@ -119,7 +120,7 @@ int Event::ChangeLevel(lua_State* L)
 	if (n >= 1)
 	{
 		int level = (int)lua_tointeger(L, 1);
-		if (level != 0)
+		if (LevelHandler::GetInstance()->currentLevel() != 0)
 			LevelHandler::GetInstance()->levelCompleted();
 		LevelHandler::GetInstance()->queue(level);
 	}
@@ -289,6 +290,24 @@ int Event::IsActivator(lua_State* L)
 
 
 	lua_pushboolean(L, self->isActivated());
+	return 1;
+}
+
+int Event::IsDown(lua_State* L)
+{
+	int n = lua_gettop(L);
+	
+	bool ret = false;
+	
+	if (n >= 1)
+	{
+		Entity* entityTarget = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+
+		if(entityTarget->hasComponents("Button"))
+			ret = entityTarget->getComponent<Button*>("Button")->isDown();
+	}
+
+	lua_pushboolean(L, ret);
 	return 1;
 }
 
@@ -538,5 +557,210 @@ int Event::CanThrow(lua_State* L)
 			lua_pushboolean(L, entity->getComponent<Throw*>("Throw")->getHoldingEntityId() == lua_tointeger(L, 2));
 	}
 
+	return 1;
+}
+
+int Event::Lit(lua_State* L)
+{
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+		float time = 0.5f;
+		if (n >= 2)
+			time = (float)lua_tonumber(L, 2);
+
+		PointLightComp* plc = entity->getComponent<PointLightComp*>("PointLight");
+		DirectionalLightComp* dlc = entity->getComponent<DirectionalLightComp*>("DirectionalLight");
+		SpotLightComp* slc = entity->getComponent<SpotLightComp*>("SpotLight");
+
+		if (plc)
+			plc->lit(time);
+		if (dlc)
+			dlc->lit(time);
+		if (slc)
+			slc->lit(time);
+	}
+
+
+	return 0;
+}
+
+int Event::Unlit(lua_State* L)
+{
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+		float time = 0.5f;
+		if (n >= 2)
+			time = (float)lua_tonumber(L, 2);
+
+		PointLightComp* plc = entity->getComponent<PointLightComp*>("PointLight");
+		DirectionalLightComp* dlc = entity->getComponent<DirectionalLightComp*>("DirectionalLight");
+		SpotLightComp* slc = entity->getComponent<SpotLightComp*>("SpotLight");
+
+		if (plc)
+			plc->unlit(time);
+		if (dlc)
+			dlc->unlit(time);
+		if (slc)
+			slc->unlit(time);
+	}
+
+
+	return 0;
+}
+
+
+int Event::IsLit(lua_State* L)
+{
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+
+		PointLightComp* plc = entity->getComponent<PointLightComp*>("PointLight");
+		DirectionalLightComp* dlc = entity->getComponent<DirectionalLightComp*>("DirectionalLight");
+		SpotLightComp* slc = entity->getComponent<SpotLightComp*>("SpotLight");
+
+		bool lit = false;
+		if (plc)
+		{
+			if (plc->isLit())
+				lit = true;
+		}
+		if (dlc)
+		{
+			if (dlc->isLit())
+				lit = true;
+		}
+		if (slc)
+		{
+			if (slc->isLit())
+				lit = true;
+		}
+
+		lua_pushboolean(L, lit);
+		return 1;
+	}
+
+	lua_pushboolean(L, false);
+	return 1;
+}
+
+int Event::IsUnlit(lua_State* L)
+{
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+
+		PointLightComp* plc = entity->getComponent<PointLightComp*>("PointLight");
+		DirectionalLightComp* dlc = entity->getComponent<DirectionalLightComp*>("DirectionalLight");
+		SpotLightComp* slc = entity->getComponent<SpotLightComp*>("SpotLight");
+
+		bool lit = false;
+		if (plc)
+		{
+			if (plc->isUnlit())
+				lit = true;
+		}
+		if (dlc)
+		{
+			if (dlc->isUnlit())
+				lit = true;
+		}
+		if (slc)
+		{
+			if (slc->isUnlit())
+				lit = true;
+		}
+
+		lua_pushboolean(L, lit);
+		return 1;
+	}
+
+	lua_pushboolean(L, false);
+	return 1;
+}
+
+
+int Event::Pop(lua_State* L)
+{
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{ 
+		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+
+		if (entity->hasComponents("Balloon"))
+			entity->getComponent<Balloon*>("Balloon")->Pop();
+	}
+	return 0;
+}
+int Event::PrintText(lua_State* L)
+{
+	int n = lua_gettop(L);
+
+	if (n >= 3)
+	{
+		string text = lua_tostring(L, 1);
+		int x = (int)lua_tointeger(L, 2);
+		int y = (int)lua_tointeger(L, 3);
+		entityManager->modules->gui->printText(text, x, y);
+	}
+
+	return 0;
+}
+
+int Event::SetMorphState(lua_State* L)
+{
+	// ID, x, y, z
+	int n = lua_gettop(L);
+
+	if (n >= 4)
+	{
+		EntityId id = (EntityId)lua_tointeger(L, 1);
+		float x = (float)lua_tonumber(L, 2);
+		float y = (float)lua_tonumber(L, 3);
+		float z = (float)lua_tonumber(L, 4);
+
+		MorphAnimation* morph = entityManager->getEntity(id)->getComponent<MorphAnimation*>("MorphAnimation");
+
+		if (morph)
+		{
+			morph->setWeights(Vec3(x, y, z));
+		}
+	}
+	return 0;
+}
+
+int Event::StartMorph(lua_State* L)
+{
+	// ID, x, y, z, speed
+	int n = lua_gettop(L);
+
+	if (n >= 5)
+	{
+		EntityId id = (EntityId)lua_tointeger(L, 1);
+		float x = (float)lua_tonumber(L, 2);
+		float y = (float)lua_tonumber(L, 3);
+		float z = (float)lua_tonumber(L, 4);
+		float speed = (float)lua_tonumber(L, 5);
+
+		MorphAnimation* morph = entityManager->getEntity(id)->getComponent<MorphAnimation*>("MorphAnimation");
+
+		if (morph)
+		{
+			morph->startMorphing(Vec3(x, y, z), speed);
+		}
+	}
+	return 0;
+}
+
+int Event::CompletedLevelCount(lua_State* L)
+{
+	int count = levelHandler->completedCount();
+	lua_pushinteger(L, count);
 	return 1;
 }

@@ -3,6 +3,7 @@
 
 #include "CameraController.h"
 #include "Instance.h"
+#include "LightDef.h"
 #include "Texture2D.h"
 #include "ParticleSystem.h"
 #include <string>
@@ -53,27 +54,29 @@ public:
 	virtual MorphModelInstance* CreateMorphAnimatedInstance(std::string path, std::string file, Vec3 pos) = 0;
 	virtual void DeleteInstance(MorphModelInstance* mmi) = 0;
 
-	virtual void addDirLight(Vec3 color, Vec3 direction, float intensity) = 0;
-	virtual void addPointLight(Vec3 color, Vec3 Position, float intensity) = 0;
-	virtual void addSpotLight(Vec3 color, Vec3 direction, Vec3 Position, float angle) = 0;
-	virtual void clearLights() = 0;
+	virtual DirectionalLight* AddDirLight(Vec3 color, Vec3 direction, float intensity) = 0;
+	virtual PointLight* AddPointLight(Vec3 color, Vec3 Position, float intensity) = 0;
+	virtual SpotLight* AddSpotLight(Vec3 color, Vec3 direction, Vec3 Position, float angle) = 0;
+	virtual void ClearLights() = 0;
 
 	virtual CameraController *CreateCameraController() = 0;
 	virtual void DeleteCameraController(CameraController *controller) = 0;
 
 	virtual void UpdateSceneData() = 0;
-	virtual Texture2D *CreateTexture2D(unsigned int width, unsigned int height) = 0;
+	virtual Texture2D *CreateTexture2D(unsigned int width, unsigned int height, bool renderable = false) = 0;
 	virtual void DeleteTexture2D(Texture2D *texture) = 0;
 
 	virtual ParticleSystem *CreateParticleSystem() = 0;
 	virtual void DeleteParticleSystem(ParticleSystem *particleSystem) = 0;
 
-	virtual void printText(std::string text, int x, int y, Vec3 color = Vec3::Zero(), float scale = 1.0f) = 0;
+	virtual void PrintText(std::string text, int x, int y, Vec3 color = Vec3::Zero(), float scale = 1.0f, float alpha = 1.0f) = 0;
+	virtual Vec3 MeassureString(const std::string text) = 0;
 //	virtual Text2D* CreateText2D() = 0;
 //	virtual void DeleteTexture2D(Text2D *text) = 0;
 
 	virtual void SetFullscreen(bool fullscreen) = 0;
-	virtual bool isFullscreen() = 0;
+	virtual bool IsFullscreen() = 0;
+	virtual void GetWindowResolution(UINT& width, UINT& height) = 0;
 	virtual void Clear() = 0;
 
 	virtual unsigned int GetPostProcessingEffects() = 0;
@@ -82,6 +85,12 @@ public:
 	virtual void SetSSAOParameters(float radius, float projection_factor, float bias, float contrast, float sigma) = 0;
 	virtual void SetMorphAnimWeigth(unsigned index, Vec3 weight) = 0;
 	virtual Vec3 GetMorphAnimWeigth(unsigned index) = 0;
+
+	virtual void ClearTexture(Texture2D *texture, const float color[4]) = 0;
+	virtual void PrintTextMonospaceToTexture(Texture2D *texture, const std::string &text, const int position[2]) = 0;
+	virtual void DrawLines(Texture2D *texture, const float *data, size_t count, const XMFLOAT3X3 &transformation, const float color[4]) = 0;
+
+	virtual void ResetRenderTargetAndViewport() = 0;
 };
 
 DLL_API GraphicsEngine* CreateGraphicsEngine();

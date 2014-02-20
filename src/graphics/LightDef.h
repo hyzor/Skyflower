@@ -1,76 +1,67 @@
-//-------------------------------------------------------------------------------------------
-// File: LightDef.h
-//
-// This class is only used to define lights
-//-------------------------------------------------------------------------------------------
-
 #ifndef LIGHTDEF_H
 #define LIGHTDEF_H
 
-#include <windows.h>
-#include <DirectXMath.h>
+#include "shared/platform.h"
+#include "shared/Vec3.h"
 
-using namespace DirectX;
-
-struct DirectionalLight
+class DLL_API DirectionalLight
 {
-	DirectionalLight() { ZeroMemory(this, sizeof(this)); }
+public:
+	virtual ~DirectionalLight() {};
 
-	XMFLOAT4 Ambient;
-	XMFLOAT4 Diffuse;
-	XMFLOAT4 Specular;
+	virtual void SetAmbient(Vec3 ambiant) = 0;
+	virtual void SetDiffuse(Vec3 diffuse) = 0;
+	virtual void SetSpecular(Vec3 specular) = 0;
+	virtual void SetDirection(Vec3 direction) = 0;
 
-	// Forms into a 4D vector
-	XMFLOAT3 Direction;
-	float Padding;
+	virtual Vec3 GetAmbient() = 0;
+	virtual Vec3 GetDiffuse() = 0;
+	virtual Vec3 GetSpecular() = 0;
+	virtual Vec3 GetDirection() = 0;
 };
 
-struct PointLight
+class PointLight
 {
-	PointLight() { ZeroMemory(this, sizeof(this)); }
+public:
+	virtual ~PointLight() {};
 
-	XMFLOAT4 Ambient;
-	XMFLOAT4 Diffuse;
-	XMFLOAT4 Specular;
+	virtual void SetAmbient(Vec3 ambiant) = 0;
+	virtual void SetDiffuse(Vec3 diffuse) = 0;
+	virtual void SetSpecular(Vec3 specular) = 0;
+	virtual void SetAttenuation(Vec3 attenuation) = 0;
+	virtual void SetPosition(Vec3 position) = 0;
+	virtual void SetRange(float range) = 0;
 
-	// Forms into a 4D vector
-	XMFLOAT3 Position;
-	float Range;
-
-	// Forms into a 4D vector
-	XMFLOAT3 Attenuation;
-	float Padding;
+	virtual Vec3 GetAmbient() = 0;
+	virtual Vec3 GetDiffuse() = 0;
+	virtual Vec3 GetSpecular() = 0;
+	virtual Vec3 GetAttenuation() = 0;
+	virtual Vec3 GetPosition() = 0;
+	virtual float GetRange() = 0;
 };
 
-struct SpotLight
+class SpotLight
 {
-	SpotLight() { ZeroMemory(this, sizeof(this)); }
+public:
+	virtual ~SpotLight() {};
 
-	XMFLOAT4 Ambient;
-	XMFLOAT4 Diffuse;
-	XMFLOAT4 Specular;
+	virtual void SetAmbient(Vec3 ambiant) = 0;
+	virtual void SetDiffuse(Vec3 diffuse) = 0;
+	virtual void SetSpecular(Vec3 specular) = 0;
+	virtual void SetAttenuation(Vec3 attenuation) = 0;
+	virtual void SetDirection(Vec3 direction) = 0;
+	virtual void SetPosition(Vec3 position) = 0;
+	virtual void SetRange(float range) = 0;
+	virtual void SetSpot(float spot) = 0;
 
-	// Forms into a 4D vector
-	XMFLOAT3 Position;
-	float Range;
-	
-	// Forms into a 4D vector
-	XMFLOAT3 Direction;
-	float Spot;
-
-	// Forms into a 4D vector
-	XMFLOAT3 Attenuation;
-	float Padding;
-};
-
-struct Material
-{
-	Material() { ZeroMemory(this, sizeof(this)); }
-
-	XMFLOAT4 Ambient;
-	XMFLOAT4 Diffuse;
-	XMFLOAT4 Specular; // w = SpecPower
-	XMFLOAT4 Reflect;
+	virtual Vec3 GetAmbient() = 0;
+	virtual Vec3 GetDiffuse() = 0;
+	virtual Vec3 GetSpecular() = 0;
+	virtual Vec3 GetAttenuation() = 0;
+	virtual Vec3 GetDirection() = 0;
+	virtual Vec3 GetPosition() = 0;
+	virtual float GetRange() = 0;
+	virtual float GetSpot() = 0;
 };
 
 #endif

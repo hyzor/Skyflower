@@ -41,7 +41,7 @@ static std::vector<SoundSourceImpl *> ApplyCullingDistance(const Listener *liste
 	result.reserve(sources.size());
 	listener->GetPosition(listenerPosition);
 
-	for (auto iter = sources.begin(); iter != sources.end(); iter++) {
+	for (auto iter = sources.begin(); iter != sources.end(); ++iter) {
 		source = (*iter);
 		source->GetPosition(sourcePosition);
 
@@ -181,7 +181,7 @@ void SoundEngineImpl::DestroySource(SoundSource *source)
 
 	SoundSourceImpl *sourceImpl = (SoundSourceImpl *)source;
 
-	for (auto iter = m_activeSources.begin(); iter != m_activeSources.end(); iter++) {
+	for (auto iter = m_activeSources.begin(); iter != m_activeSources.end(); ++iter) {
 		if ((*iter) == sourceImpl) {
 			m_activeSources.erase(iter);
 			break;
@@ -288,7 +288,7 @@ void SoundEngineImpl::Update(float deltaTime)
 		std::set_difference(previousActiveSources.begin(), previousActiveSources.end(), m_activeSources.begin(), m_activeSources.end(), std::inserter(difference, difference.begin()));
 
 		// difference contains newly deactivated sources.
-		for (auto iter = difference.begin(); iter != difference.end(); iter++) {
+		for (auto iter = difference.begin(); iter != difference.end(); ++iter) {
 			source = (*iter);
 			m_availableSources.push(source->RevokeSource());
 		}
@@ -297,7 +297,7 @@ void SoundEngineImpl::Update(float deltaTime)
 		std::set_difference(m_activeSources.begin(), m_activeSources.end(), previousActiveSources.begin(), previousActiveSources.end(), std::inserter(difference, difference.begin()));
 
 		// difference contains newly activated sources.
-		for (auto iter = difference.begin(); iter != difference.end(); iter++) {
+		for (auto iter = difference.begin(); iter != difference.end(); ++iter) {
 			if (m_availableSources.empty()) {
 				//printf("We are out of sound sources to lend!\n");
 				break;
@@ -311,7 +311,7 @@ void SoundEngineImpl::Update(float deltaTime)
 		//printf("%i out of %i sources survived culling.\n", m_activeSources.size(), sources.size());
 	}
 
-	for (auto iter = m_sources.begin(); iter != m_sources.end(); iter++) {
+	for (auto iter = m_sources.begin(); iter != m_sources.end(); ++iter) {
 		source = (*iter);
 		source->Update(deltaTime);
 	}
@@ -328,7 +328,7 @@ void SoundEngineImpl::Update(float deltaTime)
 				m_availableSources.push(source->RevokeSource());
 			}
 
-			for (auto iter = m_activeSources.begin(); iter != m_activeSources.end(); iter++) {
+			for (auto iter = m_activeSources.begin(); iter != m_activeSources.end(); ++iter) {
 				if ((*iter) == source) {
 					m_activeSources.erase(iter);
 					break;

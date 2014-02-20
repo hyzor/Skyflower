@@ -13,6 +13,7 @@ void Button::update(float dt)
 		startPos = moveTo;
 		downPos = Vec3(0, -getEntityScale().Y, 0);
 		first = false;
+		down = true;
 	}
 
 
@@ -27,7 +28,7 @@ void Button::update(float dt)
 	}
 
 	//activate button when button is down
-	if (((startPos + downPos) - getOwner()->getRelativePos()).Length() < getEntityScale().Y / 4)
+	if (isDown())
 	{
 		if (!act)
 		{
@@ -35,7 +36,7 @@ void Button::update(float dt)
 			getEntityManager()->sendMessageToEntity("Activated", getOwnerId());
 
 			Vec3 position = getOwner()->returnPos();
-			getOwner()->getModules()->sound->PlaySound("button/activate.wav", 1.0f, &position.X);
+			getOwner()->getModules()->sound->PlaySound("button/Button_down.wav", 1.0f, &position.X);
 		}
 	}
 	else if (act)
@@ -44,7 +45,7 @@ void Button::update(float dt)
 		getEntityManager()->sendMessageToEntity("Deactivated", getOwnerId());
 
 		Vec3 position = getOwner()->returnPos();
-		getOwner()->getModules()->sound->PlaySound("button/activate.wav", 1.0f, &position.X);
+		getOwner()->getModules()->sound->PlaySound("button/Button_up.wav", 1.0f, &position.X);
 	}
 
 	//move button animation
@@ -61,5 +62,24 @@ void Button::Activate(Message const& msg)
 
 void Button::Deactivate()
 {
-	moveTo = startPos;
+	if(!toggle)
+		moveTo = startPos;
+	else
+	{
+		if (down)
+		{
+			moveTo = startPos + downPos*0.7f;
+			down = false;
+		}
+		else
+		{
+			moveTo = startPos;
+			down = true;
+		}
+	}
+}
+
+bool Button::isDown()
+{
+	return (((startPos + downPos) - getOwner()->getRelativePos()).Length() < getEntityScale().Y *0.69f);
 }

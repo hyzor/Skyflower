@@ -32,6 +32,7 @@ public:
 	 bool GetInverted() const;
 	 void SetMouseSense(float sensitivity);
 	 float GetMouseSense() const;
+	 void SetOffsetFast(float offset);
 
 private:
 	Camera* camera;

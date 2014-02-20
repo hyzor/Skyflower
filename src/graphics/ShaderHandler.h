@@ -15,8 +15,11 @@
 #define MAX_DIR_LIGHTS 4
 #define MAX_POINT_LIGHTS 16
 #define MAX_SPOT_LIGHTS 8
+#define MAX_CASC 3
 
 using namespace DirectX;
+
+static const UINT SHADOWMAP_SR_REG_OFFSET = 1; // Make sure this is the same amount as there are occupied registers before the register for the shadowmaps
 
 // Shader interface
 // This shader object contains pointers to loaded compiled shaders and handles the
@@ -112,9 +115,9 @@ public:
 	void SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* shadowMap);
 	void SetShadowTransform(ID3D11DeviceContext* dc, const XMMATRIX& shadowTransform);
 
-	void SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, PointLight pointLights[]);
-	void SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DirectionalLight dirLights[]);
-	void SetSpotLights(ID3D11DeviceContext* dc, UINT numSpotLights, SpotLight spotLights[]);
+	void SetPLights(ID3D11DeviceContext* dc, UINT numPLights, PLight PLights[]);
+	void SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DLight dirLights[]);
+	void SetSLights(ID3D11DeviceContext* dc, UINT numSLights, SLight SLights[]);
 
 	void UpdatePerObj(ID3D11DeviceContext* dc);
 	void UpdatePerFrame(ID3D11DeviceContext* dc);
@@ -139,22 +142,22 @@ private:
 
 	struct PS_CPERFRAMEBUFFER
 	{
-		PointLight pointLights[MAX_POINT_LIGHTS];
+		PLight PLights[MAX_POINT_LIGHTS];
 
 		// 16 bytes
-		UINT numPointLights;
+		UINT numPLights;
 		int padding2, padding3, padding4;
 
-		DirectionalLight dirLights[MAX_DIR_LIGHTS];
+		DLight dirLights[MAX_DIR_LIGHTS];
 
 		// 16 bytes
 		UINT numDirLights;
 		int padding5, padding6, padding7;
 
-		SpotLight spotLights[MAX_SPOT_LIGHTS];
+		SLight SLights[MAX_SPOT_LIGHTS];
 
 		// 16 bytes
-		UINT numSpotLights;
+		UINT numSLights;
 		int padding8, padding9, padding10;
 
 		// Forms into a 4D vector
@@ -282,9 +285,9 @@ public:
 	void SetNormalMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
-	void SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, PointLight pointLights[]);
-	void SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DirectionalLight dirLights[]);
-	void SetSpotLights(ID3D11DeviceContext* dc, UINT numSpotLights, SpotLight spotLights[]);
+	void SetPLights(ID3D11DeviceContext* dc, UINT numPLights, PLight PLights[]);
+	void SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DLight dirLights[]);
+	void SetSLights(ID3D11DeviceContext* dc, UINT numSLights, SLight SLights[]);
 
 	void SetBoneTransforms(ID3D11DeviceContext* dc, const XMFLOAT4X4 boneTransforms[], UINT numTransforms);
 
@@ -318,22 +321,22 @@ private:
 
 	struct PS_CPERFRAMEBUFFER
 	{
-		PointLight pointLights[MAX_POINT_LIGHTS];
+		PLight PLights[MAX_POINT_LIGHTS];
 
 		// 16 bytes
-		UINT numPointLights;
+		UINT numPLights;
 		int padding2, padding3, padding4;
 
-		DirectionalLight dirLights[MAX_DIR_LIGHTS];
+		DLight dirLights[MAX_DIR_LIGHTS];
 
 		// 16 bytes
 		UINT numDirLights;
 		int padding5, padding6, padding7;
 
-		SpotLight spotLights[MAX_SPOT_LIGHTS];
+		SLight SLights[MAX_SPOT_LIGHTS];
 
 		// 16 bytes
-		UINT numSpotLights;
+		UINT numSLights;
 		int padding8, padding9, padding10;
 
 		// Forms into a 4D vector
@@ -484,6 +487,11 @@ public:
 	void SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetType(int type);
 
+	void SetCascadeTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex, int index);
+	void SetEyeSpaceTransform(const XMMATRIX& view);
+	void SetCascadeTransformAndDepths(const XMMATRIX& shadowTransform, float nearDepth, float farDepth, int index);
+	void SetNrOfCascades(int nrOfCascades);
+
 	void UpdatePerObj(ID3D11DeviceContext* dc);
 
 private:
@@ -496,16 +504,20 @@ private:
 		XMMATRIX worldViewProj;
 		//XMMATRIX worldViewProjTex;
 		XMMATRIX texTransform;
-		XMMATRIX shadowTransform;
-
+		XMMATRIX shadowTransforms[MAX_CASC];
 		XMMATRIX prevWorldViewProj;
+		XMMATRIX toEyeSpace;
 	};
-
+	
 	struct PS_CPEROBJBUFFER
 	{
 		Material mat;
 		int type;
-		XMFLOAT3 skit;
+		XMFLOAT3 padding;
+		XMFLOAT4 nearDepths;
+		XMFLOAT4 farDepths;
+		int nrOfCascades;
+		XMFLOAT3 padding1;
 	};
 
 	struct BUFFERCACHE
@@ -553,6 +565,11 @@ public:
 	void SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetShadowTransform(XMMATRIX& shadowTransform);
 
+	void SetCascadeTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex, int index);
+	void SetEyeSpaceTransform(const XMMATRIX& view);
+	void SetCascadeTransformAndDepths(const XMMATRIX& shadowTransform, float nearDepth, float farDepth, int index);
+	void SetNrOfCascades(int nrOfCascades);
+
 private:
 	void Update(ID3D11DeviceContext* dc) { ; }
 
@@ -563,9 +580,9 @@ private:
 		XMMATRIX worldViewProj;
 		//XMMATRIX worldViewProjTex;
 		XMMATRIX texTransform;
-		XMMATRIX shadowTransform;
-
 		XMMATRIX prevWorldViewProj;
+		XMMATRIX shadowTransforms[MAX_CASC];
+		XMMATRIX toEyeSpace;
 	};
 
 	struct VS_CSKINNEDBUFFER
@@ -578,6 +595,10 @@ private:
 	struct PS_CPEROBJBUFFER
 	{
 		Material mat;
+		XMFLOAT4 nearDepths;
+		XMFLOAT4 farDepths;
+		int nrOfCascades;
+		XMFLOAT3 padding1;
 	};
 
 	struct BUFFERCACHE
@@ -632,6 +653,12 @@ public:
 	void SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetShadowTransform(XMMATRIX& shadowTransform);
 
+	void SetCascadeTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex, int index);
+	void SetEyeSpaceTransform(const XMMATRIX& view);
+	void SetCascadeTransform(const XMMATRIX& shadowTransform, int index);
+	void SetCascadeDepths(float nearDepth, float farDepth, int index);
+	void SetNrOfCascades(int nrOfCascades);
+
 private:
 	void Update(ID3D11DeviceContext* dc) { ; }
 
@@ -642,9 +669,9 @@ private:
 		XMMATRIX worldViewProj;
 		//XMMATRIX worldViewProjTex;
 		XMMATRIX texTransform;
-		XMMATRIX shadowTransform;
-
 		XMMATRIX prevWorldViewProj;
+		XMMATRIX shadowTransforms[MAX_CASC];
+		XMMATRIX toEyeSpace;
 	};
 
 	struct VS_CSKINNEDBUFFER
@@ -663,6 +690,10 @@ private:
 	struct PS_CPEROBJBUFFER
 	{
 		Material mat;
+		XMFLOAT4 nearDepths;
+		XMFLOAT4 farDepths;
+		int nrOfCascades;
+		XMFLOAT3 padding1;
 	};
 
 	struct BUFFERCACHE
@@ -706,9 +737,9 @@ public:
 	void SetCameraWorldMatrix(XMMATRIX& camWorldMatrix);
 	void SetLightWorldViewProj(XMMATRIX& lightWorld, XMMATRIX& lightView, XMMATRIX& lightProj);
 
-	void SetPointLights(ID3D11DeviceContext* dc, UINT numPointLights, PointLight pointLights[]);
-	void SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DirectionalLight dirLights[]);
-	void SetSpotLights(ID3D11DeviceContext* dc, UINT numSpotLights, SpotLight spotLights[]);
+	void SetPLights(ID3D11DeviceContext* dc, UINT numPLights, PLight PLights[]);
+	void SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DLight dirLights[]);
+	void SetSLights(ID3D11DeviceContext* dc, UINT numSLights, SLight SLights[]);
 
 	void SetDiffuseTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetNormalTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
@@ -747,22 +778,22 @@ private:
 
 	struct PS_CPERFRAMEBUFFER
 	{
-		PointLight pointLights[MAX_POINT_LIGHTS];
+		PLight PLights[MAX_POINT_LIGHTS];
 
 		// 16 bytes
-		UINT numPointLights;
+		UINT numPLights;
 		int padding2, padding3, padding4;
 
-		DirectionalLight dirLights[MAX_DIR_LIGHTS];
+		DLight dirLights[MAX_DIR_LIGHTS];
 
 		// 16 bytes
 		UINT numDirLights;
 		int padding5, padding6, padding7;
 
-		SpotLight spotLights[MAX_SPOT_LIGHTS];
+		SLight SLights[MAX_SPOT_LIGHTS];
 
 		// 16 bytes
-		UINT numSpotLights;
+		UINT numSLights;
 		int padding8, padding9, padding10;
 
 		// Forms into a 4D vector
@@ -778,16 +809,16 @@ private:
 		float targetFPS;
 		int skipLighting;
 
-		XMMATRIX shadowTransform;
-		XMMATRIX cameraViewMatrix;
-		XMMATRIX cameraInvViewMatrix;
-		XMMATRIX cameraWorldMatrix;
-		XMMATRIX cameraProjMatrix;
+		//XMMATRIX shadowTransform;
+		//XMMATRIX cameraViewMatrix;
+		//XMMATRIX cameraInvViewMatrix;
+		//XMMATRIX cameraWorldMatrix;
+		//XMMATRIX cameraProjMatrix;
 		XMMATRIX camViewProjInv;
-		XMMATRIX lightWorldMatrix;
-		XMMATRIX lightViewMatrix;
-		XMMATRIX lightInvViewMatrix;
-		XMMATRIX lightProjMatrix;
+		//XMMATRIX lightWorldMatrix;
+		//XMMATRIX lightViewMatrix;
+		//XMMATRIX lightInvViewMatrix;
+		//XMMATRIX lightProjMatrix;
 	};
 
 	struct BUFFERCACHE
@@ -951,6 +982,11 @@ public:
 	void SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetShadowTransform(XMMATRIX& shadowTransform);
 
+	void SetCascadeTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex, int index);
+	void SetEyeSpaceTransform(const XMMATRIX& view);
+	void SetCascadeTransformAndDepths(const XMMATRIX& shadowTransform, float nearDepth, float farDepth, int index);
+	void SetNrOfCascades(int nrOfCascades);
+
 private:
 	void Update(ID3D11DeviceContext* dc) { ; }
 
@@ -961,16 +997,19 @@ private:
 		XMMATRIX worldViewProj;
 		//XMMATRIX worldViewProjTex;
 		XMMATRIX texTransform;
-		XMMATRIX shadowTransform;
-
 		XMFLOAT4 weights;
-
 		XMMATRIX prevWorldViewProj;
+		XMMATRIX shadowTransforms[MAX_CASC];
+		XMMATRIX toEyeSpace;
 	};
 
 	struct PS_CPEROBJBUFFER
 	{
 		Material mat;
+		XMFLOAT4 nearDepths;
+		XMFLOAT4 farDepths;
+		int nrOfCascades;
+		XMFLOAT3 padding1;
 	};
 
 	struct BUFFERCACHE
@@ -1423,6 +1462,37 @@ struct Shader
 	UINT Type;
 };
 
+#pragma region LineShader
+class LineShader : public IShader
+{
+public:
+	LineShader();
+	~LineShader();
+
+	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
+	bool SetActive(ID3D11DeviceContext* dc);
+
+	void Update(ID3D11DeviceContext* dc);
+
+	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+
+	void SetTransformation(const XMFLOAT3X3 &transformation);
+	void SetFramebufferSize(const XMFLOAT2 &framebufferSize);
+	void SetColor(const XMFLOAT4 &color);
+
+private:
+	struct PS_CPEROBJECT
+	{
+		XMMATRIX transformation;
+		XMMATRIX projection;
+		XMFLOAT4 color;
+	};
+
+	ID3D11Buffer* ps_cPerObjectBuffer;
+	PS_CPEROBJECT ps_cPerObjectVariables;
+};
+#pragma endregion LineShader
+
 // Loads compiled shader objects
 class ShaderHandler
 {
@@ -1464,6 +1534,7 @@ public:
 	ParticleSystemShader* mParticleSystemShader;
 	LightDeferredShader* mLightDeferredToTextureShader;
 	BasicDeferredSkinnedSortedShader* mBasicDeferredSkinnedSortedShader;
+	LineShader* mLineShader;
 
 	// SMAA
 	SMAAColorEdgeDetectionShader* mSMAAColorEdgeDetectionShader;

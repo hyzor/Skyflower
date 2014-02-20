@@ -80,6 +80,8 @@ void Application::Start()
 
 	m_backgroundMusicGame.push_back("music/happy_piano.opus");
 
+	m_backgroundMusicGameHubworld.push_back("music/happy_piano.opus");
+
 	m_backgroundMusic = m_soundEngine->CreateSource();
 	m_backgroundMusic->SetRelativeToListener(true);
 	m_backgroundMusic->SetPlaybackFinishedHandler([this]() {
@@ -115,35 +117,18 @@ void Application::Start()
 	// Make the charts hold 2 minutes worth of values at 60fps.
 	size_t chartCapacity = 120 * 60;
 
-	LineChart frameTimeChart(chartCapacity);
-	frameTimeChart.SetSize(256, 128);
-	frameTimeChart.SetTimeSpan(chartTime, chartResolution);
-	frameTimeChart.SetTargetValue((1.0 / 60.0) * 1000.0);
-	frameTimeChart.SetUnit("ms");
-	frameTimeChart.SetLabel("frame time");
-	//Texture2D *frameTimeChartTexture = m_graphicsEngine->CreateTexture2D(frameTimeChart.GetWidth(), frameTimeChart.GetHeight());
-	m_frameChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, 0.0f, 0.0f), 
-		m_GUI->CreateTexture2D(frameTimeChart.GetWidth(), frameTimeChart.GetHeight()));
-	
-	LineChart fpsChart(chartCapacity);
-	fpsChart.SetSize(256, 128);
-	fpsChart.SetTimeSpan(chartTime, chartResolution);
-	fpsChart.SetTargetValue(60.0);
-	fpsChart.SetUnit("fps");
-	fpsChart.SetLabel("FPS");
-	//Texture2D *fpsChartTexture = m_graphicsEngine->CreateTexture2D(fpsChart.GetWidth(), fpsChart.GetHeight());
-	m_fpsChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, (float)(frameTimeChart.GetHeight() + 6), 0.0f),
-		m_GUI->CreateTexture2D(fpsChart.GetWidth(), fpsChart.GetHeight()));
+	std::vector<const struct LineChartDataPoint> lineChartDataPoints;
+	lineChartDataPoints.reserve((size_t)((chartTime / chartResolution) * 2));
 
-	LineChart memoryChart(chartCapacity);
-	memoryChart.SetSize(256, 128);
-	memoryChart.SetTimeSpan(chartTime, chartResolution);
-	memoryChart.SetTargetValue(256.0);
-	memoryChart.SetUnit("MiB");
-	memoryChart.SetLabel("RAM");
-	//Texture2D *memoryChartTexture = m_graphicsEngine->CreateTexture2D(memoryChart.GetWidth(), memoryChart.GetHeight());
-	m_memChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, (float)((frameTimeChart.GetHeight() + 6) * 2), 0.0f),
-		m_GUI->CreateTexture2D(memoryChart.GetWidth(), memoryChart.GetHeight()));
+	LineChartData frameTimeChart(chartCapacity);
+	LineChartData fpsChart(chartCapacity);
+	LineChartData memoryChart(chartCapacity);
+
+	m_frameChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, 0.0f, 0.0f), m_GUI->CreateTexture2D(256, 128, true));
+	m_fpsChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, 128.0f + 6.0f, 0.0f), m_GUI->CreateTexture2D(256, 128, true));
+	m_memChartID =  m_GUI->CreateGUIElementAndBindTexture(Vec3(0.0f, 2 * (128.0f + 6.0f), 0.0f), m_GUI->CreateTexture2D(256, 128, true));
+
+	LineChartRendererD3D lineChartRenderer(m_graphicsEngine);
 
 	// Don't start listening to input events until everything has been initialized.
 	m_inputHandler->AddListener(this);
@@ -171,24 +156,38 @@ void Application::Start()
 		mGameTime = time - mStartTime;
 
 		frameTimeChart.AddDataPoint(time, deltaTime * 1000.0);
-
-		// Make the fps chart more readable by ignoring delta times smaller than half a millisecond.
-		if (deltaTime > 0.0005)
-			fpsChart.AddDataPoint(time, 1.0 / deltaTime);
-
+		fpsChart.AddDataPoint(time, 1.0 / deltaTime);
 		memoryChart.AddDataPoint(time, GetMemoryUsage() / (1024.0 * 1024.0));
 
 		if (m_showCharts && time >= nextChartDraw) {
 			nextChartDraw = time + chartDrawFrequency;
 
-			frameTimeChart.Draw(time);
-			m_GUI->UploadData(m_frameChartID, frameTimeChart.GetPixels());
-			
-			fpsChart.Draw(time);
-			m_GUI->UploadData(m_fpsChartID, fpsChart.GetPixels());
+			// Draw the frame time chart.
+			lineChartDataPoints.clear();
+			frameTimeChart.PushDataPoints(time - chartTime, time, chartResolution, lineChartDataPoints);
 
-			memoryChart.Draw(time);
-			m_GUI->UploadData(m_memChartID, memoryChart.GetPixels());
+			lineChartRenderer.SetTargetValue((1.0 / 60.0) * 1000.0);
+			lineChartRenderer.SetUnit("ms");
+			lineChartRenderer.SetLabel("frame time");
+			lineChartRenderer.Draw(lineChartDataPoints, time - chartTime, m_GUI->GetGUIElement(m_frameChartID)->GetTexture());
+
+			// Draw the FPS chart.
+			lineChartDataPoints.clear();
+			fpsChart.PushDataPoints(time - chartTime, time, chartResolution, lineChartDataPoints);
+
+			lineChartRenderer.SetTargetValue(60.0);
+			lineChartRenderer.SetUnit("fps");
+			lineChartRenderer.SetLabel("FPS");
+			lineChartRenderer.Draw(lineChartDataPoints, time - chartTime, m_GUI->GetGUIElement(m_fpsChartID)->GetTexture());
+
+			// Draw the RAM chart.
+			lineChartDataPoints.clear();
+			memoryChart.PushDataPoints(time - chartTime, time, chartResolution, lineChartDataPoints);
+
+			lineChartRenderer.SetTargetValue(256.0);
+			lineChartRenderer.SetUnit("MiB");
+			lineChartRenderer.SetLabel("RAM");
+			lineChartRenderer.Draw(lineChartDataPoints, time - chartTime, m_GUI->GetGUIElement(m_memChartID)->GetTexture());
 		}
 
 		float volume = m_menu->getSettings()._soundVolume;
@@ -239,6 +238,11 @@ void Application::Start()
 
 			m_GUI->GetGUIElement(loadingScreen)->SetVisible(false);
 
+			if (levelHandler->currentLevel() == 0)
+				setBackgroundMusicList(m_backgroundMusicGameHubworld);
+			else
+				setBackgroundMusicList(m_backgroundMusicGame);
+
 			m_oldTime = GetTime();
 		}
 	}
@@ -276,13 +280,13 @@ void Application::updateMenu(float dt)
 		m_menu->onMouseDown(Vec3(x, y));
 	}
 
-	if (m_menu->getSettings()._isFullscreen && !m_graphicsEngine->isFullscreen())
+	if (m_menu->getSettings()._isFullscreen && !m_graphicsEngine->IsFullscreen())
 	{
 		m_graphicsEngine->SetFullscreen(true);
 		this->OnWindowResized(1920, 1080);
 		m_oldTime = GetTime();
 	}
-	else if (!m_menu->getSettings()._isFullscreen && m_graphicsEngine->isFullscreen())
+	else if (!m_menu->getSettings()._isFullscreen && m_graphicsEngine->IsFullscreen())
 	{
 		m_graphicsEngine->SetFullscreen(false);
 		this->OnWindowResized(1024, 768);
@@ -314,6 +318,7 @@ void Application::updateMenu(float dt)
 
 void Application::updateCutScene(float dt)
 {
+	m_entityManager->update(dt);
 	m_camera->Update(dt);
 	m_graphicsEngine->UpdateScene(dt, (float)mGameTime);
 	m_graphicsEngine->DrawScene();
@@ -330,11 +335,31 @@ void Application::updateCutScene(float dt)
 
 void Application::updateGame(float dt, float gameTime)
 {
-	m_camera->Follow(m_entityManager->getEntityPos("player"));
+	Vec3 playerPos = m_entityManager->getEntityPos("player");
+	m_camera->Follow(playerPos);
 
 	Movement* playerMove = m_entityManager->getEntity(1)->getComponent<Movement*>("Movement");
 	playerMove->setCamera(m_camera->GetLook(), m_camera->GetRight(), m_camera->GetUp());
 	playerMove->setYaw(m_camera->GetYaw());
+
+
+	//camera collision
+	Ray ray = Ray(playerPos + Vec3(0, 10, 0), (playerPos + Vec3(0, 10, 0) - m_camera->GetPosition()).Normalize()*-100);
+	std::vector<CollisionInstance*> cols = m_collision->GetCollisionInstances();
+	for (int i = 0; i < m_entityManager->getNrOfEntities(); i++)
+	{
+		if (m_entityManager->getEntityByIndex(i)->getType() == "plattform")
+		{
+			float t = m_entityManager->getEntityByIndex(i)->collInst->Test(ray);
+			if (t > 0)
+			{
+				Vec3 dir = ray.GetDir();
+				ray.Set(ray.GetPos(), dir*t);
+				m_camera->SetOffsetFast(ray.GetDir().Length() - 5);
+			}
+		}
+	}
+
 	m_camera->Update(dt);
 	
 	m_graphicsEngine->UpdateScene(dt, gameTime);
@@ -366,7 +391,12 @@ void Application::changeGameState(GameState newState)
 	{
 	case GameState::game:
 		m_backgroundMusic->SetVolume(0.01f);
-		setBackgroundMusicList(m_backgroundMusicGame);
+
+		if (levelHandler->currentLevel() == 0)
+			setBackgroundMusicList(m_backgroundMusicGameHubworld);
+		else
+			setBackgroundMusicList(m_backgroundMusicGame);
+
 		break;
 	case GameState::menu:
 		m_backgroundMusic->SetVolume(0.05f);
@@ -380,11 +410,13 @@ void Application::changeGameState(GameState newState)
 	{
 		if (newState == GameState::menu)
 		{
+			m_entityManager->sendGlobalMessage("MenuActivated");
 			m_inputHandler->SetMouseCapture(false);
 			m_window->SetCursorVisibility(true);
 		}
 		else
 		{
+			m_entityManager->sendGlobalMessage("MenuDeactivated");
 			m_inputHandler->SetMouseCapture(true);
 			m_window->SetCursorVisibility(false);
 		}
@@ -490,11 +522,9 @@ void Application::OnKeyDown(unsigned short key)
 	case VK_ESCAPE:
 		if (m_menu->isActive())
 			m_menu->setActive(false);
+	
 		else
-		{
-			m_graphicsEngine->Clear();
 			m_menu->setActive(true);
-		}
 		break;
 	case 'Z':
 		m_showCharts = !m_showCharts;
@@ -507,7 +537,7 @@ void Application::OnKeyDown(unsigned short key)
 		g_quakeSounds = !g_quakeSounds;
 		break;
 	case 'R':
-		m_graphicsEngine->clearLights();
+		m_graphicsEngine->ClearLights();
 		levelHandler->queue(0);
 		m_entityManager->loadXML("subWorld1Lights.XML");
 			

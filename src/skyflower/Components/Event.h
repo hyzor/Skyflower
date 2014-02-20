@@ -43,6 +43,8 @@ public:
 		lua_register(sh->L, "InRange", Event::InRange);
 		lua_register(sh->L, "IsActivated", Event::IsActivated);
 		lua_register(sh->L, "IsActivator", Event::IsActivator);
+		lua_register(sh->L, "IsDown", Event::IsDown);
+		lua_register(sh->L, "PrintText", Event::PrintText);
 
 		//AI
 		lua_register(sh->L, "SetTarget", Event::SetTarget);
@@ -62,6 +64,20 @@ public:
 		lua_register(sh->L, "MoveToTarget", Event::MoveToTarget);
 		lua_register(sh->L, "MoveToSpawn", Event::MoveToSpawn);
 		lua_register(sh->L, "SetContinous", Event::SetContinous);
+
+		// Lights
+		lua_register(sh->L, "Lit", Event::Lit);
+		lua_register(sh->L, "Unlit", Event::Unlit);
+		lua_register(sh->L, "IsLit", Event::IsLit);
+		lua_register(sh->L, "IsUnlit", Event::IsUnlit);
+
+		// Balloon
+		lua_register(sh->L, "Pop", Event::Pop);
+
+		// Morph
+		lua_register(sh->L, "SetMorphState", Event::SetMorphState);
+		lua_register(sh->L, "StartMorph", Event::StartMorph);
+		lua_register(sh->L, "CompletedLevelCount", Event::CompletedLevelCount);
 	};
 
 	// we are added to an Entity, and thus to the component system
@@ -115,6 +131,7 @@ private:
 	static int InRange(lua_State* L);
 	static int IsActivated(lua_State* L);
 	static int IsActivator(lua_State* L);
+	static int IsDown(lua_State* L);
 
 	static int SetTarget(lua_State* L);
 	static int IsTouching(lua_State* L);
@@ -132,6 +149,18 @@ private:
 	static int MoveToTarget(lua_State* L);
 	static int MoveToSpawn(lua_State* L);
 	static int SetContinous(lua_State* L);
+
+	static int Lit(lua_State* L);
+	static int Unlit(lua_State* L);
+	static int IsLit(lua_State* L);
+	static int IsUnlit(lua_State* L);
+
+	static int Pop(lua_State* L);
+	static int PrintText(lua_State* L);
+
+	static int SetMorphState(lua_State* L);
+	static int StartMorph(lua_State* L);
+	static int CompletedLevelCount(lua_State* L);
 };
 
 #endif
