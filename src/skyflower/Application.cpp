@@ -169,7 +169,7 @@ void Application::Start()
 			lineChartRenderer.SetTargetValue((1.0 / 60.0) * 1000.0);
 			lineChartRenderer.SetUnit("ms");
 			lineChartRenderer.SetLabel("frame time");
-			lineChartRenderer.Draw(lineChartDataPoints, m_GUI->GetGUIElement(m_frameChartID)->GetTexture());
+			lineChartRenderer.Draw(lineChartDataPoints, time - chartTime, m_GUI->GetGUIElement(m_frameChartID)->GetTexture());
 
 			// Draw the FPS chart.
 			lineChartDataPoints.clear();
@@ -178,7 +178,7 @@ void Application::Start()
 			lineChartRenderer.SetTargetValue(60.0);
 			lineChartRenderer.SetUnit("fps");
 			lineChartRenderer.SetLabel("FPS");
-			lineChartRenderer.Draw(lineChartDataPoints, m_GUI->GetGUIElement(m_fpsChartID)->GetTexture());
+			lineChartRenderer.Draw(lineChartDataPoints, time - chartTime, m_GUI->GetGUIElement(m_fpsChartID)->GetTexture());
 
 			// Draw the RAM chart.
 			lineChartDataPoints.clear();
@@ -187,7 +187,7 @@ void Application::Start()
 			lineChartRenderer.SetTargetValue(256.0);
 			lineChartRenderer.SetUnit("MiB");
 			lineChartRenderer.SetLabel("RAM");
-			lineChartRenderer.Draw(lineChartDataPoints, m_GUI->GetGUIElement(m_memChartID)->GetTexture());
+			lineChartRenderer.Draw(lineChartDataPoints, time - chartTime, m_GUI->GetGUIElement(m_memChartID)->GetTexture());
 		}
 
 		float volume = m_menu->getSettings()._soundVolume;
