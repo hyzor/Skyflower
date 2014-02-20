@@ -439,7 +439,7 @@ void ComputeSLight_Deferred(
 // Essentially the factor is a scalar in the range 0 to 1.
 // Though, with PCF, the factor is between 0 and 1 (the point is partially in shadow).
 //====================================================================================
-static const float SMAP_SIZE = 2048.0f;
+static const float SMAP_SIZE = 2048.0f; // KEEP IN MIND!
 static const float SMAP_DX = 1.0f / SMAP_SIZE;
 
 float CalcShadowFactor(SamplerComparisonState samShadow,

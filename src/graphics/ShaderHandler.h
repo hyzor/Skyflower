@@ -15,8 +15,11 @@
 #define MAX_DIR_LIGHTS 4
 #define MAX_POINT_LIGHTS 16
 #define MAX_SPOT_LIGHTS 8
+#define MAX_CASC 3
 
 using namespace DirectX;
+
+static const UINT SHADOWMAP_SR_REG_OFFSET = 1; // Make sure this is the same amount as there are occupied registers before the register for the shadowmaps
 
 // Shader interface
 // This shader object contains pointers to loaded compiled shaders and handles the
@@ -484,6 +487,11 @@ public:
 	void SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetType(int type);
 
+	void SetCascadeTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex, int index);
+	void SetEyeSpaceTransform(const XMMATRIX& view);
+	void SetCascadeTransformAndDepths(const XMMATRIX& shadowTransform, float nearDepth, float farDepth, int index);
+	void SetNrOfCascades(int nrOfCascades);
+
 	void UpdatePerObj(ID3D11DeviceContext* dc);
 
 private:
@@ -496,16 +504,20 @@ private:
 		XMMATRIX worldViewProj;
 		//XMMATRIX worldViewProjTex;
 		XMMATRIX texTransform;
-		XMMATRIX shadowTransform;
-
+		XMMATRIX shadowTransforms[MAX_CASC];
 		XMMATRIX prevWorldViewProj;
+		XMMATRIX toEyeSpace;
 	};
-
+	
 	struct PS_CPEROBJBUFFER
 	{
 		Material mat;
 		int type;
-		XMFLOAT3 skit;
+		XMFLOAT3 padding;
+		XMFLOAT4 nearDepths;
+		XMFLOAT4 farDepths;
+		int nrOfCascades;
+		XMFLOAT3 padding1;
 	};
 
 	struct BUFFERCACHE
@@ -553,6 +565,11 @@ public:
 	void SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetShadowTransform(XMMATRIX& shadowTransform);
 
+	void SetCascadeTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex, int index);
+	void SetEyeSpaceTransform(const XMMATRIX& view);
+	void SetCascadeTransformAndDepths(const XMMATRIX& shadowTransform, float nearDepth, float farDepth, int index);
+	void SetNrOfCascades(int nrOfCascades);
+
 private:
 	void Update(ID3D11DeviceContext* dc) { ; }
 
@@ -563,9 +580,9 @@ private:
 		XMMATRIX worldViewProj;
 		//XMMATRIX worldViewProjTex;
 		XMMATRIX texTransform;
-		XMMATRIX shadowTransform;
-
 		XMMATRIX prevWorldViewProj;
+		XMMATRIX shadowTransforms[MAX_CASC];
+		XMMATRIX toEyeSpace;
 	};
 
 	struct VS_CSKINNEDBUFFER
@@ -578,6 +595,10 @@ private:
 	struct PS_CPEROBJBUFFER
 	{
 		Material mat;
+		XMFLOAT4 nearDepths;
+		XMFLOAT4 farDepths;
+		int nrOfCascades;
+		XMFLOAT3 padding1;
 	};
 
 	struct BUFFERCACHE
@@ -632,6 +653,12 @@ public:
 	void SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetShadowTransform(XMMATRIX& shadowTransform);
 
+	void SetCascadeTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex, int index);
+	void SetEyeSpaceTransform(const XMMATRIX& view);
+	void SetCascadeTransform(const XMMATRIX& shadowTransform, int index);
+	void SetCascadeDepths(float nearDepth, float farDepth, int index);
+	void SetNrOfCascades(int nrOfCascades);
+
 private:
 	void Update(ID3D11DeviceContext* dc) { ; }
 
@@ -642,9 +669,9 @@ private:
 		XMMATRIX worldViewProj;
 		//XMMATRIX worldViewProjTex;
 		XMMATRIX texTransform;
-		XMMATRIX shadowTransform;
-
 		XMMATRIX prevWorldViewProj;
+		XMMATRIX shadowTransforms[MAX_CASC];
+		XMMATRIX toEyeSpace;
 	};
 
 	struct VS_CSKINNEDBUFFER
@@ -663,6 +690,10 @@ private:
 	struct PS_CPEROBJBUFFER
 	{
 		Material mat;
+		XMFLOAT4 nearDepths;
+		XMFLOAT4 farDepths;
+		int nrOfCascades;
+		XMFLOAT3 padding1;
 	};
 
 	struct BUFFERCACHE
@@ -778,16 +809,16 @@ private:
 		float targetFPS;
 		int skipLighting;
 
-		XMMATRIX shadowTransform;
-		XMMATRIX cameraViewMatrix;
-		XMMATRIX cameraInvViewMatrix;
-		XMMATRIX cameraWorldMatrix;
-		XMMATRIX cameraProjMatrix;
+		//XMMATRIX shadowTransform;
+		//XMMATRIX cameraViewMatrix;
+		//XMMATRIX cameraInvViewMatrix;
+		//XMMATRIX cameraWorldMatrix;
+		//XMMATRIX cameraProjMatrix;
 		XMMATRIX camViewProjInv;
-		XMMATRIX lightWorldMatrix;
-		XMMATRIX lightViewMatrix;
-		XMMATRIX lightInvViewMatrix;
-		XMMATRIX lightProjMatrix;
+		//XMMATRIX lightWorldMatrix;
+		//XMMATRIX lightViewMatrix;
+		//XMMATRIX lightInvViewMatrix;
+		//XMMATRIX lightProjMatrix;
 	};
 
 	struct BUFFERCACHE
@@ -951,6 +982,11 @@ public:
 	void SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetShadowTransform(XMMATRIX& shadowTransform);
 
+	void SetCascadeTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex, int index);
+	void SetEyeSpaceTransform(const XMMATRIX& view);
+	void SetCascadeTransformAndDepths(const XMMATRIX& shadowTransform, float nearDepth, float farDepth, int index);
+	void SetNrOfCascades(int nrOfCascades);
+
 private:
 	void Update(ID3D11DeviceContext* dc) { ; }
 
@@ -961,16 +997,19 @@ private:
 		XMMATRIX worldViewProj;
 		//XMMATRIX worldViewProjTex;
 		XMMATRIX texTransform;
-		XMMATRIX shadowTransform;
-
 		XMFLOAT4 weights;
-
 		XMMATRIX prevWorldViewProj;
+		XMMATRIX shadowTransforms[MAX_CASC];
+		XMMATRIX toEyeSpace;
 	};
 
 	struct PS_CPEROBJBUFFER
 	{
 		Material mat;
+		XMFLOAT4 nearDepths;
+		XMFLOAT4 farDepths;
+		int nrOfCascades;
+		XMFLOAT3 padding1;
 	};
 
 	struct BUFFERCACHE

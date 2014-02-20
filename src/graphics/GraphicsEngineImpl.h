@@ -13,6 +13,7 @@
 #include <string>
 #include "Sky.h"
 #include "Shadowmap.h"
+#include "CascadedShadows.h"
 #include "RenderStates.h"
 #include <SpriteBatch.h>
 #include <SpriteFont.h>
@@ -39,7 +40,7 @@
 
 const float fovY = 0.785398f; // 0.25f * MathHelper::pi
 const float zNear = 1.0f;
-const float zFar = 10000.0f;
+const float zFar = 1000.0f;
 
 static const enum BlendingMethods
 {
@@ -146,7 +147,7 @@ private:
 	int mSpotLightsCount;
 
 	Sky* mSky;
-	ShadowMap* mShadowMap;
+	CascadedShadows* mCascadedShadows;
 
 	ShaderHandler* mShaderHandler;
 
@@ -155,6 +156,7 @@ private:
 	SpriteFont* mSpriteFontMonospace;
 
 	DirectX::BoundingSphere mSceneBounds;
+	DirectX::BoundingBox mSceneBB;
 
 	DeferredBuffers* mDeferredBuffers;
 	OrthoWindow* mOrthoWindow;

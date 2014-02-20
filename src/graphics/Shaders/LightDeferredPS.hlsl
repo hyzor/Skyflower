@@ -31,16 +31,16 @@ cbuffer cLightBuffer : register(b0)
 	int padding001;
 
 	// Needs cleanup!
-	float4x4 gShadowTransform_PS; // Light: view * projection * toTexSpace
-	float4x4 gCameraView;
-	float4x4 gCameraInvView;
-	float4x4 gCameraWorld;
-	float4x4 gCameraProj;
+	//float4x4 gShadowTransform_PS; // Light: view * projection * toTexSpace
+	//float4x4 gCameraView;
+	//float4x4 gCameraInvView;
+	//float4x4 gCameraWorld;
+	//float4x4 gCameraProj;
 	float4x4 gCamViewProjInv;
-	float4x4 gLightWorld;
-	float4x4 gLightView;
-	float4x4 gLightInvView;
-	float4x4 gLightProj;
+	//float4x4 gLightWorld;
+	//float4x4 gLightView;
+	//float4x4 gLightInvView;
+	//float4x4 gLightProj;
 };
 
 Texture2D gDiffuseTexture : register(t0);
