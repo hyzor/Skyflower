@@ -47,6 +47,8 @@ public:
 	{
 		pop = true;
 		getOwner()->updateScale(getOwner()->returnScale()*1.4f);
+		Vec3 pos = getOwner()->returnPos();
+		getOwner()->getModules()->sound->PlaySound("balloon_pop.wav", 1.0f, &pos.X);
 	}
 
 private:
