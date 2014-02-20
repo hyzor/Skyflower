@@ -642,7 +642,13 @@ void Movement::dizzyTimer(float deltaTime)
 
 void Movement::setIsDizzy(Message const &msg)
 {
-	this->isDizzy = true;
-	this->dizzyCounter = 0;
-	this->canMove = false;
+	if (!isDizzy)
+	{
+		this->isDizzy = true;
+		this->dizzyCounter = 0;
+		this->canMove = false;
+		Vec3 position = getOwner()->returnPos();
+		getOwner()->getModules()->sound->PlaySound("birds.wav", 1.0f, &position.X);
+	}
+
 }
