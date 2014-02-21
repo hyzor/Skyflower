@@ -44,8 +44,8 @@ void Menu::init(GUI *g, int screenWidth, int screeenHeight, SoundEngine *sound)
 	scaleX = 1.0f;
 	scaleY = 1.0f;
 
-	m_bg = g->CreateGUIElementAndBindTexture(Vec3(0, 0), "Menygrafik\\fyraTreRatio.png");
-	g->GetGUIElement(m_bg)->SetVisible(false);
+	//m_bg = g->CreateGUIElementAndBindTexture(Vec3(0, 0), "Menygrafik\\fyraTreRatio.png");
+	//g->GetGUIElement(m_bg)->SetVisible(false);
 
 	// FIXME: Hardcoding ;(
 	m_instructionsWidth = 736;
@@ -207,7 +207,7 @@ int Menu::getStatus()
 
 void Menu::setVisible(bool visible)
 {
-	guiPtr->GetGUIElement(m_bg)->SetVisible(visible);
+	//guiPtr->GetGUIElement(m_bg)->SetVisible(visible);
 
 	if (visible && m_activePage == MenuPageInstructions)
 		guiPtr->GetGUIElement(m_instructions)->SetVisible(true);
@@ -271,7 +271,7 @@ void Menu::onResize(unsigned int width, unsigned int height)
 		}
 	}
 
-	guiPtr->GetGUIElement(m_bg)->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
+	//guiPtr->GetGUIElement(m_bg)->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
 
 	guiPtr->GetGUIElement(m_instructions)->GetDrawInput()->pos = XMFLOAT2(width - m_instructionsWidth - 6.0f, 6.0f);
 

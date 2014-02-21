@@ -142,6 +142,8 @@ void Application::Start()
 	int loadingScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "Menygrafik\\fyraTreRatio.png");
 	m_GUI->GetGUIElement(loadingScreen)->SetVisible(false);
 
+	m_menuCameraRotation = 0.0f;
+
 	mGameTime = 0.0;
 	m_oldTime = GetTime();
 	mStartTime = GetTime();
@@ -207,7 +209,7 @@ void Application::Start()
 			updateLoading((float)deltaTime);
 			break;
 		case GameState::menu:
-			updateMenu((float)deltaTime);
+			updateMenu((float)deltaTime, (float)mGameTime);
 			break;
 		case GameState::cutScene:
 			updateCutScene((float)deltaTime);
@@ -267,11 +269,14 @@ void Application::Start()
 	delete m_window;
 }
 
-void Application::updateMenu(float dt)
+void Application::updateMenu(float dt, float gameTime)
 {
 	// If m has been pressed again
 	if (!m_menu->isActive())
+	{
 		changeGameState(GameState::game);
+		return;
+	}
 
 	if (m_inputHandler->isMouseButtonDown(MouseButton::MouseButtonLeft))
 	{
@@ -295,6 +300,18 @@ void Application::updateMenu(float dt)
 
 	if (m_camera->GetMouseSense() != m_menu->getSettings()._mouseSense)
 		m_camera->SetMouseSense(m_menu->getSettings()._mouseSense);
+
+	float cameraDistance = 100.0f;
+	Vec3 followTarget = m_entityManager->getEntityPos("player");
+
+	m_menuCameraRotation += DegreesToRadians(15.0f) * dt;
+
+	m_camera->Follow(followTarget);
+	m_camera->SetPosition(followTarget + Vec3(cosf(m_menuCameraRotation) * cameraDistance, 150.0f, sinf(m_menuCameraRotation) * cameraDistance));
+	m_camera->Update(dt);
+
+	m_graphicsEngine->UpdateScene(dt, gameTime);
+	m_graphicsEngine->DrawScene();
 
 	m_menu->draw();
 
@@ -360,13 +377,13 @@ void Application::updateGame(float dt, float gameTime)
 		}
 	}
 
+	m_camera->Rotate(m_camera->GetYaw(), m_camera->GetPitch());
 	m_camera->Update(dt);
-	
-	m_graphicsEngine->UpdateScene(dt, gameTime);
-	m_graphicsEngine->DrawScene();
+
 	m_entityManager->update(dt);
 
-	m_camera->Rotate(m_camera->GetYaw(), m_camera->GetPitch());
+	m_graphicsEngine->UpdateScene(dt, gameTime);
+	m_graphicsEngine->DrawScene();
 
 	if (m_cutscene->isPlaying())
 		changeGameState(GameState::cutScene);
@@ -474,8 +491,9 @@ void Application::OnWindowDeactivate()
 
 void Application::OnMouseMove(int deltaX, int deltaY)
 {
-	if (m_camera)
+	if (m_camera && gameState == GameState::game)
 		m_camera->onMouseMove((float)deltaX, (float)deltaY);
+
 	if (m_menu->isActive())
 	{
 		int x, y;
