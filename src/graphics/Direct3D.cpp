@@ -9,12 +9,12 @@ Direct3D::Direct3D(void)
 {
 	md3dDriverType = D3D_DRIVER_TYPE_HARDWARE;
 
-// 	md3dDevice = 0;
-// 	md3dImmediateContext = 0;
-// 	mSwapChain = 0;
-// 	mDepthStencilBuffer = 0;
-// 	mRenderTargetView = 0;
-// 	mDepthStencilView = 0;
+	md3dDevice = nullptr;
+	md3dImmediateContext = nullptr;
+	mSwapChain = nullptr;
+	mDepthStencilBuffer = nullptr;
+	mRenderTargetView = nullptr;
+	mDepthStencilView = nullptr;
 
 	mEnable4xMsaa = false;
 	m4xMSAAQuality = 0;
@@ -26,111 +26,6 @@ Direct3D::Direct3D(void)
 Direct3D::~Direct3D(void)
 {
 }
-
-// bool Direct3D::Init(HWND* mainWindow, int& _clientWidth, int& _clientHeight)
-// {
-// 	clientWidth = &_clientWidth;
-// 	clientHeight = &_clientHeight;
-// 
-// 	// Create D3D device and D3D device context
-// 	// These interfaces are used to interact with the hardware
-// 
-// 	UINT createDeviceFlags = 0;
-// #if defined(DEBUG) || defined(_DEBUG)
-// 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
-// #endif
-// 
-// 	D3D_FEATURE_LEVEL featureLevel;
-// 
-// 	HRESULT hr = D3D11CreateDevice(
-// 		0,						// Display adapter (Default)
-// 		md3dDriverType,			// Driver type (For 3D HW Acceleration)
-// 		0,						// Software driver (No software device)
-// 		createDeviceFlags,		// Flags (i.e. Debug, Single thread)
-// 		0,						// Feature level (Check what version of D3D is supported. D3D11 forced in this case)
-// 		0,						// Number of feature levels
-// 		D3D11_SDK_VERSION,		// SDK version
-// 		&md3dDevice,			// Returns created device
-// 		&featureLevel,			// Returns feature level
-// 		&md3dImmediateContext); // Return created device context
-// 
-// 	if (FAILED(hr))
-// 	{
-// 		MessageBox(0, L"D3D11CreateDevice Failed.", 0, 0);
-// 		return false;
-// 	}
-// 
-// 	// D3D11 is forced so check if device actually supports it
-// 	if (featureLevel != D3D_FEATURE_LEVEL_11_0)
-// 	{
-// 		MessageBox(0, L"Direct3D Feature level 11 unsupported.", 0, 0);
-// 		return false;
-// 	}
-// 
-// 	// Check if 4x MSAA quality is supported
-// 	HR(md3dDevice->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, 4, &m4xMSAAQuality));
-// 	assert(m4xMSAAQuality > 0);
-// 
-// 	// Instance used for describing the swap chain
-// 	DXGI_SWAP_CHAIN_DESC sd;
-// 
-// 	// ----- Start describing swap chain -----
-// 	// Back buffer properties
-// 	sd.BufferDesc.Width = *clientWidth;
-// 	sd.BufferDesc.Height = *clientHeight;
-// 	sd.BufferDesc.RefreshRate.Numerator = 60;
-// 	sd.BufferDesc.RefreshRate.Denominator = 1;
-// 	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-// 	sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-// 	sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-// 
-// 	// Number of multisamples and quality levels,
-// 	// fixed to 4X MSAA or no MSAA in this case
-// 	if (mEnable4xMsaa)
-// 	{
-// 		sd.SampleDesc.Count = 4;
-// 		sd.SampleDesc.Quality = m4xMSAAQuality-1;
-// 	}
-// 	else
-// 	{
-// 		sd.SampleDesc.Count = 1;
-// 		sd.SampleDesc.Quality = 0;
-// 	}
-// 
-// 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; // Use back buffer as render target
-// 	sd.BufferCount = 1;								  // Number of back buffers to use in swap chain
-// 	sd.OutputWindow = *mainWindow;					  // Specify window we render into
-// 	sd.Windowed = true;								  // Windowed mode or full-screen mode
-// 	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;	      // Let display driver select most efficient presentation method
-// 	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;									  // Optional flags
-// 
-// 	// We have to find and use the same IDXGIFactory that was used to create the device before
-// 	IDXGIDevice* dxgiDevice = 0;
-// 	HR(md3dDevice->QueryInterface(__uuidof(IDXGIDevice), (void**)&dxgiDevice));
-// 
-// 	IDXGIAdapter* dxgiAdapter = 0;
-// 	HR(dxgiDevice->GetParent(__uuidof(IDXGIAdapter),(void**)&dxgiAdapter));
-// 
-// 	IDXGIFactory* dxgiFactory = 0;
-// 	HR(dxgiAdapter->GetParent(__uuidof(IDXGIFactory), (void**)&dxgiFactory));
-// 
-// 	// Now create the swap chain with the IDXGIFactory we found
-// 	HR(dxgiFactory->CreateSwapChain(md3dDevice, &sd, &mSwapChain));
-// 
-// 	// Release temporary COM objects
-// 	ReleaseCOM(dxgiDevice);
-// 	ReleaseCOM(dxgiAdapter);
-// 	ReleaseCOM(dxgiFactory);
-// 
-// 	// Remaining steps are also used when we resize window, so we call that function
-// 	// 1: Create render target view to the swap chain's back buffer
-// 	// 2: Create depth/stencil buffer and view
-// 	// 3: Bind render target view and depth/stencil view to pipeline
-// 	// 4: Set viewport transform
-// 	OnResize();
-// 
-// 	return true;
-// }
 
 bool Direct3D::Init(HWND* mainWindow, UINT width, UINT height)
 {
@@ -156,18 +51,6 @@ bool Direct3D::Init(HWND* mainWindow, UINT width, UINT height)
 		D3D_FEATURE_LEVEL_11_0,
 	};
 
-// 	hr = D3D11CreateDevice(
-// 		0,						// Display adapter (Default)
-// 		md3dDriverType,			// Driver type (For 3D HW Acceleration)
-// 		0,						// Software driver (No software device)
-// 		createDeviceFlags,		// Flags (i.e. Debug, Single thread)
-// 		0,						// Feature level (Check what version of D3D is supported. D3D11 forced in this case)
-// 		0,						// Number of feature levels
-// 		D3D11_SDK_VERSION,		// SDK version
-// 		&md3dDevice,			// Returns created device
-// 		&featureLevel,			// Returns feature level
-// 		&md3dImmediateContext); // Return created device context
-
 	ComPtr<ID3D11Device> device;
 	ComPtr<ID3D11DeviceContext> deviceContext;
 	hr = D3D11CreateDevice(
@@ -191,13 +74,6 @@ bool Direct3D::Init(HWND* mainWindow, UINT width, UINT height)
 		return false;
 	}
 
-	// D3D11 is forced so check if device actually supports it
-// 	if (featureLevel != D3D_FEATURE_LEVEL_11_0)
-// 	{
-// 		MessageBox(0, L"Direct3D Feature level 11 unsupported.", 0, 0);
-// 		return false;
-// 	}
-
 	if (featureLevel < D3D_FEATURE_LEVEL_11_0)
 	{
 		MessageBox(0, L"Direct3D Feature level 11 unsupported.", 0, 0);
@@ -209,10 +85,8 @@ bool Direct3D::Init(HWND* mainWindow, UINT width, UINT height)
 	assert(m4xMSAAQuality > 0);
 
 	// Instance used for describing the swap chain
-	//DXGI_SWAP_CHAIN_DESC sd;
+	DXGI_SWAP_CHAIN_DESC sd;
 
-	/*
-	// ----- Start describing swap chain -----
 	// Back buffer properties
 	sd.BufferDesc.Width = width;
 	sd.BufferDesc.Height = height;
@@ -221,67 +95,52 @@ bool Direct3D::Init(HWND* mainWindow, UINT width, UINT height)
 	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-
-	// Number of multisamples and quality levels,
-	// fixed to 4X MSAA or no MSAA in this case
-	if (mEnable4xMsaa)
-	{
-		sd.SampleDesc.Count = 4;
-		sd.SampleDesc.Quality = m4xMSAAQuality - 1;
-	}
-	else
-	{
-		sd.SampleDesc.Count = 1;
-		sd.SampleDesc.Quality = 0;
-	}
-
+	sd.SampleDesc.Count = 1; // No MSAA
+	sd.SampleDesc.Quality = 0; // Lowest quality level
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; // Use back buffer as render target
 	sd.BufferCount = 1;								  // Number of back buffers to use in swap chain
 	sd.OutputWindow = *mainWindow;					  // Specify window we render into
 	sd.Windowed = true;								  // Windowed mode or full-screen mode
 	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;	      // Let display driver select most efficient presentation method
 	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;		// Optional flags
-	*/
+
 
 	// We have to find and use the same IDXGIFactory that was used to create the device before
 	ComPtr<IDXGIDevice1> dxgiDevice;
 	hr = md3dDevice.As(&dxgiDevice);
-	//IDXGIDevice* dxgiDevice = 0;
-	//hr = md3dDevice->QueryInterface(__uuidof(IDXGIDevice), (void**)&dxgiDevice);
 
 	ComPtr<IDXGIAdapter> dxgiAdapter;
 	hr = dxgiDevice->GetAdapter(&dxgiAdapter);
-	//IDXGIAdapter* dxgiAdapter = 0;
-	//hr = dxgiDevice->GetParent(__uuidof(IDXGIAdapter), (void**)&dxgiAdapter);
 
 	//IDXGIFactory* dxgiFactory = 0;
 	ComPtr<IDXGIFactory2> dxgiFactory;
 	hr = dxgiAdapter->GetParent(__uuidof(IDXGIFactory), /*(void**)*/&dxgiFactory);
 
-	// Now create the swap chain with the IDXGIFactory we found
-	//hr = dxgiFactory->CreateSwapChain(md3dDevice.Get(), &sd, &mSwapChain);
-	//hr = dxgiFactory->CreateSwapChain(md3dDevice, &sd, &mSwapChain);
-
+	/*
 	// Otherwise, create a new one using the same adapter as the existing Direct3D device.
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = { 0 };
 	swapChainDesc.Width = static_cast<UINT>(width); // Match the size of the window.
 	swapChainDesc.Height = static_cast<UINT>(height);
-	swapChainDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM; // This is the most common swap chain format.
+	//swapChainDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM; // This is the most common swap chain format.
+	swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	swapChainDesc.Stereo = false;
 	swapChainDesc.SampleDesc.Count = 1; // Don't use multi-sampling.
 	swapChainDesc.SampleDesc.Quality = 0;
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	swapChainDesc.BufferCount = 2; // Use double-buffering to minimize latency.
+	swapChainDesc.BufferCount = 1;
 	swapChainDesc.Scaling = DXGI_SCALING_STRETCH;
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-	swapChainDesc.Flags = 0;
+	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+	*/
 
-	hr = dxgiFactory->CreateSwapChainForHwnd(md3dDevice.Get(), *mainWindow, &swapChainDesc, NULL, NULL, &mSwapChain);
+	// Now create the swap chain with the IDXGIFactory we found
+	//hr = dxgiFactory->CreateSwapChainForHwnd(md3dDevice.Get(), *mainWindow, &swapChainDesc, NULL, NULL, &mSwapChain);
+	hr = dxgiFactory->CreateSwapChain(md3dDevice.Get(), &sd, mSwapChain.GetAddressOf());
 
 	// Release temporary COM objects
-// 	ReleaseCOM(dxgiDevice);
-// 	ReleaseCOM(dxgiAdapter);
-// 	ReleaseCOM(dxgiFactory);
+	dxgiDevice = nullptr;
+	dxgiAdapter = nullptr;
+	dxgiFactory = nullptr;
 
 	// Remaining steps are also used when we resize window, so we call that function
 	// 1: Create render target view to the swap chain's back buffer
@@ -302,23 +161,16 @@ void Direct3D::OnResize(UINT width, UINT height)
 	assert(mSwapChain);
 
 	// Release old views because they hold references to buffers we will be destroying
-	//ReleaseCOM(mRenderTargetView);
-	//ReleaseCOM(mDepthStencilView);
 	mRenderTargetView = nullptr;
 	mDepthStencilView = nullptr;
 
 	// Release depth/stencil buffer
-	//ReleaseCOM(mDepthStencilBuffer);
 	mDepthStencilBuffer = nullptr;
 
 	// Resize the swap chain
 	hr = mSwapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
 
 	// Recreate render target view
-// 	ID3D11Texture2D* backBuffer;
-// 	hr = mSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer));
-// 	hr = md3dDevice->CreateRenderTargetView(backBuffer, 0, &mRenderTargetView);
-// 	ReleaseCOM(backBuffer);
 	ComPtr<ID3D11Texture2D> backBuffer;
 	hr = mSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), &backBuffer);
 	md3dDevice->CreateRenderTargetView(backBuffer.Get(), nullptr, &mRenderTargetView);
@@ -368,7 +220,6 @@ void Direct3D::OnResize(UINT width, UINT height)
 	hr = md3dDevice->CreateShaderResourceView(mDepthStencilBuffer.Get(), &depthStencilSRViewDesc, &mDepthStencilSRView);
 
 	// Bind render target and depth/stencil view to the pipeline
-	//md3dImmediateContext->OMSetRenderTargets(1, &mRenderTargetView, mDepthStencilView.Get());
 	md3dImmediateContext->OMSetRenderTargets(1, mRenderTargetView.GetAddressOf(), mDepthStencilView.Get());
 
 	// Set the viewport transform
@@ -389,11 +240,6 @@ void Direct3D::Shutdown()
 	// Switch to windowed mode before releasing swap chain
 	mSwapChain->SetFullscreenState(FALSE, NULL);
 
-// 	ReleaseCOM(mRenderTargetView);
-// 	ReleaseCOM(mDepthStencilSRView);
-// 	ReleaseCOM(mDepthStencilView);
-// 	ReleaseCOM(mSwapChain);
-// 	ReleaseCOM(mDepthStencilBuffer);
 	mRenderTargetView = nullptr;
 	mDepthStencilSRView = nullptr;
 	mDepthStencilView = nullptr;
@@ -406,7 +252,6 @@ void Direct3D::Shutdown()
 		md3dImmediateContext->Flush();
 	}
 
-	//ReleaseCOM(md3dImmediateContext);
 	md3dImmediateContext = nullptr;
 
 #if defined(DEBUG) || defined(_DEBUG)
@@ -422,15 +267,8 @@ void Direct3D::Shutdown()
 		//d3dDebug->Release();
 		d3dDebug = nullptr;
 	}
-
-// 	if (SUCCEEDED(md3dDevice->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&d3dDebug))))
-// 	{
-// 		d3dDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
-// 		d3dDebug->Release();
-// 	}
 #endif
 
-	//ReleaseCOM(md3dDevice);
 	md3dDevice = nullptr;
 }
 
@@ -464,7 +302,7 @@ D3D11_VIEWPORT Direct3D::GetScreenViewport() const
 	return mScreenViewport;
 }
 
-IDXGISwapChain1* Direct3D::GetSwapChain() const
+IDXGISwapChain* Direct3D::GetSwapChain() const
 {
 	return mSwapChain.Get();
 }

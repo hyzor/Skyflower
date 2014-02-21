@@ -47,6 +47,7 @@ public:
 		MenuPageMain = 0,
 		MenuPageSettings,
 		MenuPageInstructions,
+		MenuPageCredits,
 		MenuPageCount
 	};
 	struct Settings
@@ -92,6 +93,8 @@ private:
 	 //int m_bg;
 	 int m_instructionsWidth;
 	 int m_instructions;
+	 int m_creditsWidth;
+	 int m_credits;
 	 int settingsBox;
 	 MenuPage m_pages[MenuPageCount];
 	 int m_activePage;

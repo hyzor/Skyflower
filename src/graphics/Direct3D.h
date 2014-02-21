@@ -22,34 +22,24 @@ public:
 	ID3D11ShaderResourceView* GetDepthStencilSRView() const;
 	ID3D11Texture2D* GetDepthStencilBuffer() const;
 	D3D11_VIEWPORT GetScreenViewport() const;
-	IDXGISwapChain1* GetSwapChain() const;
+	IDXGISwapChain* GetSwapChain() const;
 
 private:
-// 	ID3D11Device* md3dDevice;
-// 	ID3D11DeviceContext* md3dImmediateContext;
-// 	IDXGISwapChain* mSwapChain;
-// 	ID3D11Texture2D* mDepthStencilBuffer;
-// 	ID3D11RenderTargetView* mRenderTargetView;
-// 	ID3D11DepthStencilView* mDepthStencilView;
-// 	ID3D11ShaderResourceView* mDepthStencilSRView;
 	D3D11_VIEWPORT mScreenViewport;
 
 	Microsoft::WRL::ComPtr<ID3D11Device1> md3dDevice;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext1> md3dImmediateContext;
-	Microsoft::WRL::ComPtr<IDXGISwapChain1> mSwapChain;
+	//Microsoft::WRL::ComPtr<IDXGISwapChain1> mSwapChain;
+	Microsoft::WRL::ComPtr<IDXGISwapChain> mSwapChain;
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> mDepthStencilBuffer;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> mRenderTargetView;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> mDepthStencilView;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mDepthStencilSRView;
-	//Microsoft::WRL::ComPtr<D3D11_VIEWPORT> mScreenViewport;
 
 	D3D_DRIVER_TYPE md3dDriverType;
 
 	bool mEnable4xMsaa;
 	UINT m4xMSAAQuality;
-
-// 	int* clientWidth;
-// 	int* clientHeight;
 };
 
 #endif
