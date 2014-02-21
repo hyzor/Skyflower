@@ -3,7 +3,7 @@
 // Must be included last!
 #include "shared/debug.h"
 
-#define ENABLE_ASSIMP_LOG 1
+#define ENABLE_ASSIMP_LOG 0
 
 static std::string GetPathFromFilename(const std::string &filename)
 {

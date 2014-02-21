@@ -93,6 +93,7 @@ void Push::update(float dt)
 			if (throwcomp->getIsHoldingThrowable())
 				p = false;
 
+
 			if (p)
 			{
 				if (canDrag)

@@ -35,7 +35,7 @@ public:
 private:
 
 	void updateGame(float dt, float gameTime);
-	void updateMenu(float dt);
+	void updateMenu(float dt, float gameTime);
 	void updateLoading(float dt);
 	void updateCutScene(float dt);
 	void changeGameState(GameState newState);
@@ -100,6 +100,8 @@ private:
 	float m_SSAOsigma;
 
 	float m_oldVolume;
+
+	float m_menuCameraRotation;
 };
 
 std::string GetPlayerSoundFile(const std::string &file);

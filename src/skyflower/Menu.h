@@ -89,7 +89,7 @@ public:
 private:
 	 bool m_active;
 	 int selectedButton;
-	 int m_bg;
+	 //int m_bg;
 	 int m_instructionsWidth;
 	 int m_instructions;
 	 int settingsBox;

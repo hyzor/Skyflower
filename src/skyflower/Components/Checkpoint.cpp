@@ -94,6 +94,10 @@ void Checkpoint::Activate(Message const& msg)
 
 			particleSystem->SetEmitPos(XMFLOAT3(pos.X, pos.Y, pos.Z));
 			particleSystem->SetActive(true);
+
+			Vec3 position = getOwner()->returnPos();
+			getOwner()->getModules()->sound->PlaySound("checkpoint_crystal.wav", 1.0f, &position.X);
+			//getOwner()->getModules()->sound->PlaySound("checkpoint_yell.wav", 1.0f, &position.X);
 		}
 	}
 
