@@ -170,6 +170,14 @@ void Movement::update(float deltaTime)
 	}
 	else if (canMove)
 	{
+		bool backwards = isMovingBackward;
+		//Push* push = getOwner()->getComponent<Push*>("Push");
+		//if (push)
+		//{
+			//if (push->isDraging())
+				//backwards = false;
+		//}
+
 		if (this->isMovingForward) {
 			if (this->isMovingLeft) {
 				targetRot = -45.0f;
@@ -181,7 +189,7 @@ void Movement::update(float deltaTime)
 				targetRot = 0.0f;
 			}
 		}
-		else if (this->isMovingBackward) {
+		else if (backwards) {
 			if (this->isMovingLeft) {
 				targetRot = -90.0f - 45.0f;
 			}
@@ -199,7 +207,7 @@ void Movement::update(float deltaTime)
 			targetRot = 90.0f;
 		}
 
-		if (isMovingBackward || isMovingForward || isMovingLeft || isMovingRight)
+		if (backwards || isMovingForward || isMovingLeft || isMovingRight)
 		{
 			if (std::abs((((int)targetRot) % 360) - ((int)walkAngle % 360)) > 1)
 			{

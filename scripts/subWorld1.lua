@@ -29,6 +29,8 @@ function load_player(id)
 end
 
 function update_player(id, dt)
+	PushAll(id)
+	
 	--player light
 	if IsLit(id) then
 		Unlit(id, 1)
@@ -101,7 +103,6 @@ rush = true
 rushtime = 0
 scaredtime = 0
 function update_aiPush(id, dt)
-	Push(player, id)
 	
 	if IsTouching(id, 16) then
 		Jump(id)
@@ -157,15 +158,14 @@ end
 throwtime = 0
 currtarget = 511;
 function update_testAI(id, dt)
-
-			SetTarget(id, currtarget)
-			if InRange(id, currtarget, 4) then
-				if currtarget == 511 then
-					currtarget = 512
-				else
-					currtarget = 511
-				end
-			end
+	SetTarget(id, currtarget)
+	if InRange(id, currtarget, 4) then
+		if currtarget == 511 then
+			currtarget = 512
+		else
+			currtarget = 511
+		end
+	end
 end
 
 function skit(id, dt)

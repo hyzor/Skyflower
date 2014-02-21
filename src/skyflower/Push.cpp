@@ -12,6 +12,7 @@ Push::Push() : Component("Push")
 	this->isColliding = false;
 	this->resetSpeed = false;
 	this->canDrag = false;
+	this->box = nullptr;
 }
 
 Push::~Push()
@@ -37,83 +38,85 @@ void Push::removeFromEntity()
 
 void Push::update(float dt)
 {
-	//push box
-	Entity* pusher = getOwner();
-	Entity* pushedObject = pusher->wall;
-	bool isPushingBox = false;
-
-	if (pushedObject)
+	//find box to push
+	if (getOwner()->wall && !box)
 	{
-		if (pushedObject->hasComponents("Box") && canPush)
+		if (getOwner()->wall->hasComponents("Box") && canPush)
 		{
-			isPushingBox = true;
+			box = getOwner()->wall;
+			relativePos = getOwner()->returnPos() - box->returnPos();
+		}
+	}
 
-			Vec3 pushedObjectPos = pushedObject->returnPos();
-			Vec3 pusherPos = pusher->returnPos();
-			Vec3 dir = pushedObjectPos - pusherPos;
+	//push box
+	bool isPushingBox = false;
+	if (box)
+	{
+		Movement* mov = getOwner()->getComponent<Movement*>("Movement");
 
-			if (!m_isPushingBox)
-			{
-				// Entity just started pushing box.
-				m_initialPushDirection = dir;
-				m_initialPushDirection.Y = 0.0f;
-				m_initialPushDirection.Normalize();
-			}
+		//find walking direction
+		Vec3 pos = getOwner()->returnPos();
+		mov->update(dt);
+		Vec3 dir = (pos - getOwner()->returnPos()).Normalize()*-1;
+		getOwner()->updatePos(pos);
+		//axis aligne
+		dir.Y = 0;
+		if (dir.X == 0 && dir.Z == 0)
+			dir = Vec3();
+		else if (abs(dir.X) > abs(dir.Z))
+			dir = Vec3(copysign(1.0f, dir.X), 0.0f, 0.0f);
+		else
+			dir = Vec3(0.0f, 0.0f, copysign(1.0f, dir.Z));
 
-			// Make the entity "stick" to the box it is pushing.
-			Vec3 tempDir = dir;
-			tempDir.Y = 0;
+		//find direction to box
+		Vec3 boxDir = (box->returnPos() - pos).Normalize();
+		//axis aligne
+		boxDir.Y = 0;
+		if (abs(boxDir.X) > abs(boxDir.Z))
+			boxDir = Vec3(copysign(1.0f, boxDir.X), 0.0f, 0.0f);
+		else
+			boxDir = Vec3(0.0f, 0.0f, copysign(1.0f, boxDir.Z));
+		
+		//check if entity is holding
+		bool canpush = true;
+		Throw* throwcomp = getOwner()->getComponent<Throw*>("Throw");
+		if (throwcomp)
+		{
+			if (throwcomp->getIsHoldingThrowable())
+				canpush = false;
+		}
 
-			float oldPusherY = pusherPos.Y;
-			pusherPos = pushedObjectPos - m_initialPushDirection * tempDir.Length();
-			pusherPos.Y = oldPusherY;
-
-			pusher->updatePos(pusherPos);
-
+		//release pusher from box
+		if (!canpush || box->getComponent<BoxComp*>("Box")->isFalling() || (dir != Vec3() && ((dir != boxDir && !canDrag) || (canDrag && dir*boxDir == Vec3()))))
+		{
+			relativePos = Vec3();
+			box = nullptr;
+		}
+		//push box
+		else
+		{
 			// Rotate the entity to make it perpendicular to the box it is pushing.
 			Vec3 rotation = Vec3(0.0f, 0.0f, 0.0f);
-
-			if (abs(dir.X) > abs(dir.Z))
-			{
-				float sign = copysign(1.0f, dir.X);
-				dir = Vec3(sign, 0.0f, 0.0f);
-				rotation.Y = DegreesToRadians(-90.0f * sign);
-			}
+			if (abs(boxDir.X) > abs(dir.Z))
+				rotation.Y = DegreesToRadians(-90.0f * boxDir.X);
 			else
+				rotation.Y = DegreesToRadians(90.0f + 90.0f * boxDir.Z);
+
+			//move box
+			box->updatePos(box->returnPos() + dir*dt*box->getComponent<Movement*>("Movement")->GetSpeed());
+
+			//move relative to box
+			getOwner()->updatePos((box->returnPos() + relativePos)*Vec3(1, 0, 1) + pos*Vec3(0, 1, 0));
+
+			//rotate pusher with box
+			getOwner()->updateRot(Vec3(box->returnRot().X, rotation.Y, box->returnRot().Z));
+
+			//play push animation for player
+			if (dir != Vec3() && getOwnerId() == 1 && getOwner()->getAnimatedInstance())
 			{
-				float sign = copysign(1.0f, dir.Z);
-				dir = Vec3(0.0f, 0.0f, sign);
-				rotation.Y = DegreesToRadians(90.0f + 90.0f * sign);
+				isPushingBox = true;
+				getOwner()->getAnimatedInstance()->SetAnimation(3, true);
 			}
-
-			//check if entity is holding
-			bool p = true;
-			Throw* throwcomp = pusher->getComponent<Throw*>("Throw");
-			if (throwcomp)
-			if (throwcomp->getIsHoldingThrowable())
-				p = false;
-
-			if (p)
-			{
-				if (canDrag)
-				{
-					pushedObject->updatePos(pushedObjectPos - dir * dt * pushedObject->getComponent<Movement*>("Movement")->GetSpeed());
-				}
-				else
-				{
-					pushedObject->updatePos(pushedObjectPos + dir * dt * pushedObject->getComponent<Movement*>("Movement")->GetSpeed());
-				}
-			}
-
-					
-
-			pusher->updateRot(rotation);
-
-			getOwner()->updateRot(Vec3(pushedObject->returnRot().X, getOwner()->returnRot().Y, pushedObject->returnRot().Z));
-
-			if (getOwnerId() == 1 && pusher->getAnimatedInstance())
-				pusher->getAnimatedInstance()->SetAnimation(3, true);
-
 		}
 	}
 
@@ -240,4 +243,12 @@ void Push::pickUpStart(Message const& msg)
 void Push::pickUpStop(Message const& msg)
 {
 	canDrag = false;
+}
+
+
+bool Push::isDraging()
+{
+	if (getOwner()->wall)
+		return getOwner()->wall->hasComponents("Box") && canPush && canDrag;
+	return false;;
 }

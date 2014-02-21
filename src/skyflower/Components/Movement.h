@@ -48,6 +48,16 @@ public:
 		return this->isDizzy;
 	}
 
+	bool isMovingBackwards()
+	{
+		return this->isMovingBackward;
+	}
+
+	void CanMove(bool canMove)
+	{
+		this->canMove = canMove;
+	}
+
 private:
 	void startMoveForward(Message const& msg);
 	void startMoveBackward(Message const& msg);

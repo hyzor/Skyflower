@@ -33,6 +33,7 @@ public:
 
 	bool isPushingBox();
 
+	bool isDraging();
 
 private:
 	void stopPush(Message const& msg);
@@ -44,13 +45,17 @@ private:
 
 private:
 	bool m_isPushingBox;
-	Vec3 m_initialPushDirection;
 	bool canPush;
 	bool isColliding;
 	bool canDrag;
 
 	float pSpeed;
 	float resetSpeed;
+
+
+	Entity* box;
+	Vec3 relativePos;
+
 };
 
 #endif

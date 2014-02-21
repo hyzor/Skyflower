@@ -48,10 +48,10 @@ void BoxComp::update(float dt)
 
 	if(getOwner()->ground)
 		fall = fallDir();
-	if (fall != Vec3())
+	if (isFalling())
 	{
 		rotz += fall.X*(float)M_PI*dt;
-		rotx -= fall.Z*(float)M_PI*dt;
+		rotx += fall.Z*(float)M_PI*dt;
 
 		getOwner()->updatePos(getOwner()->returnPos() + fall*10*dt);
 	}
@@ -62,7 +62,7 @@ void BoxComp::update(float dt)
 		rotz = asinf(Vec3(normal.X, normal.Y, 0.0f).Normalize().Y);
 	}
 
-	getOwner()->updateRot(Vec3(M_PI*2 - (rotx - M_PI_2), getOwner()->returnRot().Y, -rotz + M_PI_2));
+	getOwner()->updateRot(Vec3((rotx - M_PI_2), getOwner()->returnRot().Y, -rotz + M_PI_2));
 }
 
 float BoxComp::GetSpeed()
@@ -96,4 +96,9 @@ Vec3 BoxComp::fallDir()
 void BoxComp::respawn(Message const& msg)
 {
 	fall = Vec3();
+}
+
+bool BoxComp::isFalling()
+{
+	return fall != Vec3();
 }

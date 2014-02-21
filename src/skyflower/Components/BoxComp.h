@@ -25,6 +25,7 @@ public:
 
 	float GetSpeed();
 
+	bool isFalling();
 
 private:
 	float speed;
