@@ -1717,6 +1717,9 @@ void GraphicsEngineImpl::UpdateSceneData()
 		//--------------------------------------------------------------------
 		// Cache all the materials in this scene, by storing the addresses
 		//--------------------------------------------------------------------
+		// First clear the material cache
+		mMaterials.clear();
+
 		// Cache static object materials
 		for (auto& it(mModels.begin()); it != mModels.end(); ++it)
 		{
