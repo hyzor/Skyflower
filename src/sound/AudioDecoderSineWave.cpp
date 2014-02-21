@@ -18,7 +18,7 @@
 struct SineWaveDecoderContext
 {
 	// In number of samples.
-	size_t bufferSize;
+	uint64_t bufferSize;
 	float *buffer;
 };
 
@@ -31,7 +31,7 @@ bool AudioDecoderSineWaveInit(struct AudioResource *resource)
 	//uint64_t samplesPerBuffer = totalSamples;
 
 	struct SineWaveDecoderContext *context = new struct SineWaveDecoderContext;
-	context->bufferSize = (size_t)samplesPerBuffer;
+	context->bufferSize = samplesPerBuffer;
 	context->buffer = new float[context->bufferSize];
 
 	double amplitude = 0.5;

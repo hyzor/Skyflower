@@ -1,4 +1,7 @@
 #include <cassert>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <io.h>
 
 #include "AudioResource.h"
 
@@ -6,54 +9,6 @@
 #include "debug.h"
 
 static bool forceSineWave = false;
-
-static struct MemoryMappedFile *MemoryMapFile(const char *file)
-{
-	HANDLE fileHandle = CreateFile(file, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-
-	if (fileHandle == INVALID_HANDLE_VALUE) {
-		return NULL;
-	}
-
-	LARGE_INTEGER fileSize;
-	
-	if (GetFileSizeEx(fileHandle, &fileSize) == 0) {
-		CloseHandle(fileHandle);
-		return NULL;
-	}
-
-	HANDLE fileMapping = CreateFileMapping(fileHandle, NULL, PAGE_READONLY, 0, 0, NULL);
-
-	if (fileMapping == NULL) {
-		CloseHandle(fileHandle);
-		return NULL;
-	}
-
-	const char *data = (const char *)MapViewOfFile(fileMapping, FILE_MAP_READ, 0, 0, 0);
-
-	if (data == NULL) {
-		CloseHandle(fileMapping);
-		CloseHandle(fileHandle);
-		return NULL;
-	}
-
-	struct MemoryMappedFile *mappedFile = new MemoryMappedFile;
-	mappedFile->data = data;
-	mappedFile->size = fileSize.QuadPart;
-	mappedFile->fileHandle = fileHandle;
-	mappedFile->fileMapping = fileMapping;
-
-	return mappedFile;
-}
-
-static void FreeMemoryMappedFile(struct MemoryMappedFile *mappedFile)
-{
-	UnmapViewOfFile(mappedFile->data);
-	CloseHandle(mappedFile->fileMapping);
-	CloseHandle(mappedFile->fileHandle);
-
-	delete mappedFile;
-}
 
 struct AudioResource *CreateAudioResource(const std::string &file)
 {
@@ -82,30 +37,48 @@ struct AudioResource *CreateAudioResource(const std::string &file)
 		return resource;
 	}
 
-	struct MemoryMappedFile *mappedFile = MemoryMapFile(file.c_str());
+	int fd = _open(file.c_str(), O_RDONLY, 0);
 
-	if (!mappedFile) {
-		printf("Failed to find resource '%s'\n", file.c_str());
+	if (fd < 0) {
+		printf("Failed to open resource '%s'\n", file.c_str());
+		return NULL;
+	}
+	
+	struct stat fileInfo;
+
+	if (fstat(fd, &fileInfo) < 0) {
+		printf("Failed to get size of resource '%s'\n", file.c_str());
+
+		_close(fd);
+
+		return NULL;
+	}
+
+	void *mappedFile = mmap(NULL, (size_t)fileInfo.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+	_close(fd);
+
+	if (mappedFile == MAP_FAILED) {
+		printf("Failed to map resource '%s'\n", file.c_str());
+
 		return NULL;
 	}
 
 	struct AudioResource *resource = new AudioResource;
+	resource->decoder = NULL;
+	resource->fileSize = fileInfo.st_size;
 	resource->file = mappedFile;
-
-	bool success = false;
 
 	for (int i = 0; i < AudioDecoderCount; i++) {
 		if (audioDecoders[i].init(resource)) {
-			success = true;
 			resource->decoder = &audioDecoders[i];
 			break;
 		}
 	}
 
-	if (!success) {
+	if (!resource->decoder) {
 		printf("Failed to decode resource '%s'\n", file.c_str());
 
-		FreeMemoryMappedFile(mappedFile);
+		munmap(resource->file, (size_t)resource->fileSize);
 		delete resource;
 		
 		return NULL;
@@ -136,10 +109,7 @@ void DestroyAudioResource(struct AudioResource *resource)
 	}
 
 	resource->decoder->release(resource);
-
-	if (resource->file) {
-		FreeMemoryMappedFile(resource->file);
-	}
+	munmap(resource->file, (size_t)resource->fileSize);
 
 	delete resource;
 }
