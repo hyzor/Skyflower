@@ -120,7 +120,7 @@ void Throw::dropThrowable(Message const & msg)
 		setIsHoldingThrowable(false);
 		setToPickUp(false);
 		sendMessageToEntity(holdingEntityId, "Dropped");
-		sendMessageToEntity(getOwnerId(), "isNotHoldingThrowable");
+		//sendMessageToEntity(getOwnerId(), "canPush");
 		if (haveAim)
 		{
 			getEntityManager()->updateEntityVisibility(false, 5000);

@@ -24,8 +24,6 @@ void Push::addedToEntity()
 
 	//requestMessage("inAir", &Push::stopPush);
 	requestMessage("Wall", &Push::stopPush);
-	requestMessage("isHoldingThrowable", &Push::setCanNotPush);
-	requestMessage("isNotHoldingThrowable", &Push::setCanPush);
 	requestMessage("beingPushed", &Push::beingPushed);
 	requestMessage("PickUpStart", &Push::pickUpStart);
 	requestMessage("PickUpStop", &Push::pickUpStop);
@@ -41,6 +39,33 @@ void Push::update(float dt)
 	Entity* pusher = getOwner();
 	Entity* pushedObject = pusher->wall;
 	bool isPushingBox = false;
+
+	this->canPush = true;
+	if (getOwner()->hasComponents("Pushable"))
+	{
+		if (getOwner()->getComponent<Pushable*>("Pushable")->getIsBeingPushed())
+		{
+			this->canPush = false;
+		}
+	}
+	if (getOwner()->hasComponents("Throw"))
+	{
+		if (getOwner()->getComponent<Throw*>("Throw")->getIsHoldingThrowable())
+		{
+			this->canPush = false;
+		}
+	}
+	if (getOwner()->hasComponents("Movement"))
+	{
+		if (getOwner()->getComponent<Movement*>("Movement")->getIsDizzy())
+		{
+			this->canPush = false;
+		}
+		if (getOwner()->getComponent<Movement*>("Movement")->getIsInAir())
+		{
+			this->canPush = false;
+		}
+	}
 
 	if (pushedObject)
 	{
@@ -216,16 +241,6 @@ void Push::pushAll()
 bool Push::isPushingBox()
 {
 	return m_isPushingBox;
-}
-
-void Push::setCanPush(Message const& msg)
-{
-	this->canPush = true;
-}
-
-void Push::setCanNotPush(Message const& msg)
-{
-	this->canPush = false;
 }
 
 void Push::beingPushed(Message const& msg)

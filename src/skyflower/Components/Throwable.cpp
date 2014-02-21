@@ -115,7 +115,7 @@ void Throwable::update(float deltaTime)
 							getOwner()->getPhysics()->SetVelocity(Vec3());
 
 							entity->getComponent<Throw*>("Throw")->setHoldingEntityId(-1);
-							sendMessageToEntity(entity->fId, "isNotHoldingThrowable");
+							//sendMessageToEntity(entity->fId, "canPush");
 							if (entity->getComponent<Throw*>("Throw")->getHaveAim())
 							{
 								getEntityManager()->updateEntityVisibility(false, 5000);
@@ -262,7 +262,7 @@ void Throwable::update(float deltaTime)
 
 												//TODO Throwing in Physics!
 												this->p->FireProjectileAt(getOwner()->returnPos(), targetPos);
-												sendMessageToEntity(entity->fId, "isNotHoldingThrowable");
+												//sendMessageToEntity(entity->fId, "canPush");
 
 												AnimatedInstance *animatedInstance = entity->getAnimatedInstance();
 
