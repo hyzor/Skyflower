@@ -199,6 +199,9 @@ private:
 	std::vector<GenericSkinnedModelSortedInstance*> mSkinnedSortedInstances;
 	std::map<std::string, GenericSkinnedModelSorted*> mSkinnedSortedModels;
 
+	// Keep a list of all the materials used in a specific level
+	std::vector<Material*> mMaterials;
+
 	SMAA* mSMAA;
 
 	FullscreenTriangle* mFullscreenTriangle;

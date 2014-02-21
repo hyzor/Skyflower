@@ -1713,6 +1713,77 @@ void GraphicsEngineImpl::UpdateSceneData()
 	            0.5f*(maxPt.z - minPt.z));
 	 
 	    mSceneBounds.Radius = sqrtf(extent.x*extent.x + extent.y*extent.y + extent.z*extent.z);
+
+		//--------------------------------------------------------------------
+		// Cache all the materials in this scene, by storing the addresses
+		//--------------------------------------------------------------------
+		// Cache static object materials
+		for (auto& it(mModels.begin()); it != mModels.end(); ++it)
+		{
+			if (it->second->mat.size() > 0 && it->second->meshCount > 0)
+			{
+				if (it->second->mat.size() > 1)
+				{
+					// Skip loading default materials
+					for (UINT i = 1; i < it->second->mat.size(); ++i)
+					{
+						mMaterials.push_back(&it->second->mat[i]);
+					}
+				}
+				else
+				{
+					mMaterials.push_back(&it->second->mat.front());
+				}
+			}
+		}
+
+		// Cache skinned object materials
+		for (auto& it(mSkinnedModels.begin()); it != mSkinnedModels.end(); ++it)
+		{
+			if (it->second->mat.size() > 0 && it->second->mat.size() > 0)
+			{
+				if (it->second->mat.size() > 1)
+				{
+					// Skip loading default materials
+					for (UINT i = 1; i < it->second->mat.size(); ++i)
+					{
+						mMaterials.push_back(&it->second->mat[i]);
+					}
+				}
+				else
+				{
+					mMaterials.push_back(&it->second->mat.front());
+				}
+			}
+		}
+
+		// Cache morphed object materials
+		// NOTE/FIXME: Right now textures and materials are loaded for each morph target
+		// Even though the morph base model's materials and textures are the same as
+		// the targets.
+		// This takes up unnecessary space.
+		// TODO: Load only materials and textures for the base model and use them.
+		for (UINT i = 0; i < mMorphModels.size(); ++i)
+		{
+			if (mMorphModels[i]->mat.size() > 1)
+			{
+				// Skip loading default materials
+				for (UINT j = 1; j < mMorphModels[i]->mat.size(); ++j)
+				{
+					mMaterials.push_back(&mMorphModels[i]->mat[j]);
+				}
+			}
+			else
+			{
+				mMaterials.push_back(&mMorphModels[i]->mat.front());
+			}
+		}
+
+		// TODO: Send all these materials in to the light accumulation shader
+		// using material IDs that corresponds to the index in this material array.
+		// Every model instance that's drawn has to know where in this material array
+		// its material is indexed when drawing the instances, then outputting the index
+		// into the deferred diffuse render target w-component.
 }
 
 DirectionalLight* GraphicsEngineImpl::AddDirLight(Vec3 color, Vec3 direction, float intensity)
