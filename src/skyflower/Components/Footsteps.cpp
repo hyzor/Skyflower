@@ -68,7 +68,7 @@ void FootstepsComponent::update(float deltaTime)
 			m_distanceTraveled = 0.0f;
 
 			// FIXME: Project the sound's position onto the ground.
-			owner->getModules()->sound->PlaySound(GetPlayerSoundFile(AIrunSounds[rand() % ARRAY_SIZE(AIrunSounds)]), 3.0f, &originalPosition.X);
+			owner->getModules()->sound->PlaySound(AIrunSounds[rand() % ARRAY_SIZE(AIrunSounds)], 3.0f, &originalPosition.X);
 		}
 	}
 	else

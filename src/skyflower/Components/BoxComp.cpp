@@ -7,17 +7,16 @@
 #include "Components/BoxComp.h"
 #include "Components/Gravity.h"
 #include "EntityManager.h"
-#include "Application.h"
 
 // Must be included last!
 #include "shared/debug.h"
 
 static const char *pushBoxSounds[] = {
-	"player/box_move_1.wav",
-	"player/box_move_2.wav",
-	"player/box_move_3.wav",
-	"player/box_move_4.wav",
-	"player/box_move_5.wav"
+	"box/move1.wav",
+	"box/move2.wav",
+	"box/move3.wav",
+	"box/move4.wav",
+	"box/move5.wav"
 };
 
 BoxComp::BoxComp(float speed) : Component("Box")
@@ -76,8 +75,7 @@ void BoxComp::update(float dt)
 			{
 				m_distanceTraveled = 0.0f;
 
-				// FIXME: Project the sound's position onto the ground.
-				getOwner()->getModules()->sound->PlaySound(GetPlayerSoundFile(pushBoxSounds[rand() % ARRAY_SIZE(pushBoxSounds)]), 1.0f, &originalPosition.X);
+				getOwner()->getModules()->sound->PlaySound(pushBoxSounds[rand() % ARRAY_SIZE(pushBoxSounds)], 1.0f, &originalPosition.X);
 			}
 		}
 		//box is rotating over the edge

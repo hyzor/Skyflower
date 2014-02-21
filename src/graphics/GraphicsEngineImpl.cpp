@@ -142,21 +142,6 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mTextureMgr = new TextureManager();
 	mTextureMgr->Init(mD3D->GetDevice(), mD3D->GetImmediateContext());
 
-	/*
-	//mMorphModels.push_back(new MorphModel(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Models/Morphtest/Block/", "WoodBlock.morph"));
-	mMorphModels.push_back(new MorphModel(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Models/skyflower meshar/Skyflower_Final/", "skyflower.morph"));
-
-	mMorphInstances.push_back(new MorphModelInstance());
-	XMMATRIX scaling = XMMatrixScaling(1.0f, 1.0f, 1.0f);
-	XMMATRIX rotation = XMMatrixRotationY(0.0f);
-	XMMATRIX offset = XMMatrixTranslation(20.0f, 20.0f, 0.0f);
-	XMStoreFloat4x4(&mMorphInstances[0]->world, scaling*rotation*offset);
-	mMorphInstances[0]->model = mMorphModels[0];
-	mMorphInstances[0]->weights = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-	morphTimeTest = 0.0f;
-	morphIncrease = true;
-	*/
-
 	// Camera
 	mCamera = new Camera();
 	mCamera->SetLens(fovY, static_cast<float>(width) / height, zNear, zFar);
@@ -1286,6 +1271,9 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	// (remained 0) will therefore mean that this is the sky.
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDepthStencilEnabledDSS, 1);
 
+	// Sky shader uses no culling, so switch back to back face culling
+	mD3D->GetImmediateContext()->RSSetState(RenderStates::mDefaultRS);
+
 	//---------------------------------------------------------------------------------------
 	// Static opaque objects
 	//---------------------------------------------------------------------------------------
@@ -1420,7 +1408,8 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 		}
 	}
 
-	//mD3D->GetImmediateContext()->RSSetState(RenderStates::mNoCullRS);
+	// No back face culling for morphed objects
+	mD3D->GetImmediateContext()->RSSetState(RenderStates::mNoCullRS);
 	for (UINT i = 0; i < mMorphInstances.size(); ++i)
 	{
 		if (mMorphInstances[i]->IsVisible())
@@ -1451,7 +1440,7 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	{
 		mShaderHandler->mDeferredMorphShader->SetCascadeTex(mD3D->GetImmediateContext(), NULL, cIndex);
 	}
-	//mD3D->GetImmediateContext()->RSSetState(RenderStates::mDefaultRS);
+	mD3D->GetImmediateContext()->RSSetState(RenderStates::mDefaultRS);
 
 	//---------------------------------------------------------------------------------------
 	// Skinned opaque objects with separated upper and lower body transformations
