@@ -54,7 +54,7 @@ struct AudioResource *CreateAudioResource(const std::string &file)
 		return NULL;
 	}
 
-	void *mappedFile = mmap(NULL, fileInfo.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+	void *mappedFile = mmap(NULL, (size_t)fileInfo.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
 	_close(fd);
 
 	if (mappedFile == MAP_FAILED) {

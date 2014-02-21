@@ -16,11 +16,12 @@
 
 struct OpusDecoderContext
 {
+	// In number of samples.
+	uint64_t bufferSize;
+	float *buffer;
+
 	OggOpusFile *opus;
 	Mutex *mutex;
-	// In number of samples.
-	size_t bufferSize;
-	float *buffer;
 };
 
 bool AudioDecoderOpusInit(struct AudioResource *resource)
@@ -46,13 +47,13 @@ bool AudioDecoderOpusInit(struct AudioResource *resource)
 	uint64_t samplesPerBuffer = (shouldStream? std::min((int64_t)(SOUNDENGINE_STREAM_BUFFER_SIZE * sampleRate * channels), totalSamples) : totalSamples);
 
 	struct OpusDecoderContext *context = new struct OpusDecoderContext;
-	context->opus = opus;
-	context->mutex = Mutex::Create();
 	context->bufferSize = 0;
 	context->buffer = NULL;
+	context->opus = opus;
+	context->mutex = Mutex::Create();
 
 	if (shouldStream) {
-		context->bufferSize = (size_t)samplesPerBuffer;
+		context->bufferSize = samplesPerBuffer;
 		context->buffer = new float[context->bufferSize];
 	}
 
