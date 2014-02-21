@@ -4,23 +4,15 @@
 #include <cstdint>
 #include <string>
 
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#include <Windows.h>
+#ifdef _WIN32
+#include "win32/mman.h"
+#else
+#include <sys/mman.h>
+#endif
 
 #include <AL/al.h>
 
 #include "AudioDecoder.h"
-
-struct MemoryMappedFile
-{
-	const char *data;
-	uint64_t size;
-
-	// Private
-	HANDLE fileHandle;
-	HANDLE fileMapping;
-};
 
 struct AudioResourceInfo
 {
@@ -40,9 +32,11 @@ struct AudioResourceInfo
 struct AudioResource
 {
 	const struct AudioDecoder *decoder;
-	struct MemoryMappedFile *file;
-
 	struct AudioResourceInfo info;
+
+	uint64_t fileSize;
+	void *file;
+
 	void *context;
 };
 

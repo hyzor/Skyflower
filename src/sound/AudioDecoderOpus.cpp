@@ -25,7 +25,7 @@ struct OpusDecoderContext
 
 bool AudioDecoderOpusInit(struct AudioResource *resource)
 {
-	OggOpusFile *opus = op_open_memory((const unsigned char *)resource->file->data, (size_t)resource->file->size, NULL);
+	OggOpusFile *opus = op_open_memory((const unsigned char *)resource->file, (size_t)resource->fileSize, NULL);
 
 	if (!opus) {
 		return false;

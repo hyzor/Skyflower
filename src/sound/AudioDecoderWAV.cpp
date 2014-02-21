@@ -48,7 +48,8 @@ struct FormatChunk
 
 bool AudioDecoderWAVInit(struct AudioResource *resource)
 {
-	const char *buffer = resource->file->data;
+	const char *buffer = (const char *)resource->file;
+	const char *bufferEnd = (const char *)resource->file + resource->fileSize;
 	const struct HeaderChunk *header = (const struct HeaderChunk *)buffer;
 
 	if (header->base.fourcc != FOURCC('R', 'I', 'F', 'F') || header->format != FOURCC('W', 'A', 'V', 'E')) {
@@ -86,7 +87,7 @@ bool AudioDecoderWAVInit(struct AudioResource *resource)
 	uint64_t chunkSize = 0;
 
 	do {
-		if (buffer + chunkSize > resource->file->data + resource->file->size) {
+		if (buffer + chunkSize > bufferEnd) {
 			return false;
 		}
 
@@ -99,7 +100,7 @@ bool AudioDecoderWAVInit(struct AudioResource *resource)
 	bool shouldStream = (dataHeader->size > SOUNDENGINE_STREAM_THRESHOLD_SIZE? true : false);
 
 	struct WAVDecoderContext *context = new struct WAVDecoderContext;
-	context->dataOffset = (buffer - resource->file->data) + sizeof(struct ChunkHeader);
+	context->dataOffset = (buffer - (const char *)resource->file) + sizeof(struct ChunkHeader);
 
 	resource->info.format = bufferFormat;
 	resource->info.totalSamples = totalSamples;
@@ -136,7 +137,7 @@ void AudioDecoderWAVFillBuffer(const struct AudioResource *resource, uint64_t sa
 	uint64_t byteOffset = context->dataOffset + sampleOffset * (resource->info.bitDepth / 8);
 	uint64_t size = sampleCount * (resource->info.bitDepth / 8);
 
-	alBufferData(buffer, resource->info.format, (const void *)(resource->file->data + byteOffset), (ALsizei)size, resource->info.sampleRate);
+	alBufferData(buffer, resource->info.format, (const void *)((const char *)resource->file + byteOffset), (ALsizei)size, resource->info.sampleRate);
 
 	assert(alGetError() == AL_NO_ERROR);
 }
