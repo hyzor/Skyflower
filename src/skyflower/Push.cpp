@@ -24,8 +24,6 @@ void Push::addedToEntity()
 
 	//requestMessage("inAir", &Push::stopPush);
 	requestMessage("Wall", &Push::stopPush);
-	//requestMessage("canNotPush", &Push::setCanNotPush);
-	//requestMessage("canPush", &Push::setCanPush);
 	requestMessage("beingPushed", &Push::beingPushed);
 	requestMessage("PickUpStart", &Push::pickUpStart);
 	requestMessage("PickUpStop", &Push::pickUpStop);
@@ -243,16 +241,6 @@ void Push::pushAll()
 bool Push::isPushingBox()
 {
 	return m_isPushingBox;
-}
-
-void Push::setCanPush(Message const& msg)
-{
-	this->canPush = true;
-}
-
-void Push::setCanNotPush(Message const& msg)
-{
-	this->canPush = false;
 }
 
 void Push::beingPushed(Message const& msg)
