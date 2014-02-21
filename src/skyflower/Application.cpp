@@ -85,6 +85,7 @@ void Application::Start()
 
 	m_backgroundMusic = m_soundEngine->CreateSource();
 	m_backgroundMusic->SetRelativeToListener(true);
+	m_backgroundMusic->SetVolume(0.5f);
 	m_backgroundMusic->SetPlaybackFinishedHandler([this]() {
 		m_backgroundMusicIndex = (m_backgroundMusicIndex + 1) % m_backgroundMusicList->size();
 
@@ -93,7 +94,6 @@ void Application::Start()
 	});
 
 	// Start playing some background music for the menu.
-	m_backgroundMusic->SetVolume(0.25f);
 	setBackgroundMusicList(m_backgroundMusicMenu);
 
 	m_entityManager = new EntityManager("../../XML/", &modules);
@@ -412,8 +412,6 @@ void Application::changeGameState(GameState newState)
 	switch (newState)
 	{
 	case GameState::game:
-		m_backgroundMusic->SetVolume(0.01f);
-
 		if (levelHandler->currentLevel() == 0)
 			setBackgroundMusicList(m_backgroundMusicGameHubworld);
 		else if (levelHandler->currentLevel() == 4)
@@ -423,7 +421,6 @@ void Application::changeGameState(GameState newState)
 
 		break;
 	case GameState::menu:
-		m_backgroundMusic->SetVolume(0.05f);
 		setBackgroundMusicList(m_backgroundMusicMenu);
 		break;
 	default:
