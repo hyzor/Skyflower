@@ -45,6 +45,7 @@ ShaderHandler::~ShaderHandler()
 		ReleaseCOM(mShaders[i]->Buffer);
 		delete mShaders[i];
 	}
+	mShaders.clear();
 
 	for (auto& it(mVertexShaders.begin()); it != mVertexShaders.end(); ++it)
 	{
@@ -2716,6 +2717,8 @@ ParticleSystemShader::~ParticleSystemShader()
 // 		draw_VS_InitBuffer->Release();
 
 	ReleaseCOM(draw_VS_InitBuffer);
+
+
 }
 
 bool ParticleSystemShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -2906,7 +2909,7 @@ void ParticleSystemShader::UpdateDrawShaders(ID3D11DeviceContext* dc)
 
 	dc->Unmap(draw_VS_InitBuffer, 0);
 
-	dc->VSGetConstantBuffers(0, 1, &draw_VS_InitBuffer);
+	dc->VSSetConstantBuffers(0, 1, &draw_VS_InitBuffer);
 
 	dc->PSSetShaderResources(0, 1, &mTexArray);
 	dc->PSSetShaderResources(1, 1, &mLitSceneTex);

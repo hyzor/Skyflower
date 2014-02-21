@@ -81,14 +81,14 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 
 	ReleaseCOM(mLineVertexBuffer);
 
+	delete[] mPointLights;
+	delete[] mDirLights;
+	delete[] mSpotLights;
+
 	delete mSky;
 	delete mCascadedShadows;
 	delete mCamera;
 	delete mTextureMgr;
-
-    delete mSpriteFontMonospace;
-	delete mSpriteFont;
-	delete mSpriteBatch;
 
 	mDeferredBuffers->Shutdown();
 	delete mDeferredBuffers;
@@ -116,13 +116,12 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 	delete mInputLayouts;
 	RenderStates::DestroyAll();
 
+	delete mSpriteFontMonospace;
+	delete mSpriteFont;
+	delete mSpriteBatch;
+
 	mD3D->Shutdown();
 	delete mD3D;
-
-
-	delete [] mPointLights;
-	delete [] mDirLights;
-	delete [] mSpotLights;
 }
 
 bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::string &resourceDir)
@@ -569,6 +568,8 @@ void GraphicsEngineImpl::DrawScene()
 
 	mD3D->GetImmediateContext()->ClearDepthStencilView(mD3D->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
+	ID3D11RenderTargetView* renderTarget;
+
 	if (mDirLightsCount > 0)
 	{
 		//mShadowMap->BindDsvAndSetNullRenderTarget(mD3D->GetImmediateContext());
@@ -585,7 +586,7 @@ void GraphicsEngineImpl::DrawScene()
 	// Restore back and depth buffer and viewport to the OM stage
 	ID3D11RenderTargetView* renderTargets[1] = { mD3D->GetRenderTargetView() };
 	mD3D->GetImmediateContext()->OMSetRenderTargets(1, renderTargets, mD3D->GetDepthStencilView());
-	mD3D->GetImmediateContext()->ClearRenderTargetView(mD3D->GetRenderTargetView(), reinterpret_cast<const float*>(&D3dColors::LightSteelBlue));
+	mD3D->GetImmediateContext()->ClearRenderTargetView(mD3D->GetRenderTargetView(), reinterpret_cast<const float*>(&Colors::LightSteelBlue));
 
 	mD3D->GetImmediateContext()->ClearDepthStencilView(mD3D->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
@@ -597,7 +598,7 @@ void GraphicsEngineImpl::DrawScene()
 	//mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDisabledDSS, 0);
 	mD3D->GetImmediateContext()->OMGetDepthStencilState(&RenderStates::mDepthStencilDisabledDSS, 0);
 
-	ID3D11RenderTargetView* renderTarget;
+	//ID3D11RenderTargetView* renderTarget;
 
 	//------------------------------------------------------------------------------
 	// Post processing
@@ -837,8 +838,6 @@ void GraphicsEngineImpl::DrawScene()
 		}
 	}
 
-
-
 	renderTarget = mD3D->GetRenderTargetView();
 	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
 	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
@@ -910,6 +909,8 @@ void GraphicsEngineImpl::DrawScene()
 	mD3D->GetImmediateContext()->RSSetState(0);
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(0, 0);
 	mD3D->GetImmediateContext()->OMSetBlendState(0, blendFactor, 0xffffffff);
+
+	mD3D->GetImmediateContext()->OMSetRenderTargets(0, nullptr, nullptr);
 }
 
 void GraphicsEngineImpl::UpdateScene(float dt, float gameTime)
@@ -988,7 +989,7 @@ void GraphicsEngineImpl::Draw2DTexture(Texture2D *texture, const Draw2DInput* in
 		textureImpl->GetShaderResourceView(), 
 		input->pos, 
 		0, 
-		D3dColors::White, 
+		Colors::White, 
 		0.0f,
 		XMFLOAT2(0.0f,0.0f),
 		input->scale,
@@ -1592,8 +1593,6 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	// I have to keep a copy of the depth/stencil buffer because the render target is set to use the buffer, while trying to send in the depth SRV to the shader.
 	// That's why I send in a copy of the SRV instead.
 	mD3D->GetImmediateContext()->CopyResource(mDepthStencilTextureCopy, mD3D->GetDepthStencilBuffer());
-	//mShaderHandler->mLightDeferredToTextureShader->SetDepthTexture(mD3D->GetImmediateContext(), mDepthStencilSRVCopy);
-
 	mShaderHandler->mParticleSystemShader->SetDepthTexture(mD3D->GetImmediateContext(), mDepthStencilSRVCopy);
 
 	for (UINT i = 0; i < mParticleSystems.size(); ++i)
@@ -1601,7 +1600,7 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 		if (mParticleSystems[i]->IsActive())
 		{
 			mParticleSystems[i]->SetEyePos(mCamera->GetPosition());
-			mParticleSystems[i]->Draw(mD3D->GetImmediateContext(), *mCamera, RenderStates::mDepthStencilEnabledDSS);
+			mParticleSystems[i]->Draw(mD3D->GetImmediateContext(), *mCamera);
 		}
 	}
 
@@ -1821,7 +1820,7 @@ void GraphicsEngineImpl::Clear()
 	// Restore back and depth buffer and viewport to the OM stage
 	ID3D11RenderTargetView* renderTargets[1] = { mD3D->GetRenderTargetView() };
 	mD3D->GetImmediateContext()->OMSetRenderTargets(1, renderTargets, mD3D->GetDepthStencilView());
-	mD3D->GetImmediateContext()->ClearRenderTargetView(mD3D->GetRenderTargetView(), reinterpret_cast<const float*>(&D3dColors::LightSteelBlue));
+	mD3D->GetImmediateContext()->ClearRenderTargetView(mD3D->GetRenderTargetView(), reinterpret_cast<const float*>(&Colors::LightSteelBlue));
 
 	mD3D->GetImmediateContext()->ClearDepthStencilView(mD3D->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());

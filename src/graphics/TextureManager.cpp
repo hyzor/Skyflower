@@ -23,9 +23,6 @@ TextureManager::~TextureManager(void)
 	}
 
 	mTextureSRV.clear();
-
-	md3dDevice = nullptr;
-	mDC = nullptr;
 }
 
 void TextureManager::Init(ID3D11Device* device, ID3D11DeviceContext* dc)

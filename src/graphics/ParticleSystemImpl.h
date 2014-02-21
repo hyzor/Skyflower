@@ -52,7 +52,7 @@ public:
 
 	void Reset();
 	void Update(float dt, float gameTime);
-	void Draw(ID3D11DeviceContext* dc, const Camera& cam, ID3D11DepthStencilState* drawDepthStencilState);
+	void Draw(ID3D11DeviceContext* dc, const Camera& cam);
 
 private:
 	void BuildVB(ID3D11Device* device);
