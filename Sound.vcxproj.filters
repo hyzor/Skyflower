@@ -104,5 +104,8 @@
     <ClCompile Include="src\sound\AudioDecoderSineWave.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\sound\TaskQueue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -49,6 +49,7 @@
     <ClCompile Include="src\sound\SoundEngine.cpp" />
     <ClCompile Include="src\sound\SoundEngineImpl.cpp" />
     <ClCompile Include="src\sound\SoundSourceImpl.cpp" />
+    <ClCompile Include="src\sound\TaskQueue.cpp" />
     <ClCompile Include="src\sound\TaskQueueWin32.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

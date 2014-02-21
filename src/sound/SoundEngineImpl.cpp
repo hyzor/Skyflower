@@ -10,7 +10,6 @@
 #include "ListenerImpl.h"
 #include "SoundEngineImpl.h"
 #include "SoundSourceImpl.h"
-#include "TaskQueueWin32.h"
 
 // Must be included last!
 #include "debug.h"
@@ -168,7 +167,7 @@ SoundSource *SoundEngineImpl::CreateSource()
 
 Listener *SoundEngineImpl::CreateListener()
 {
-	Listener *listener = (Listener *)new ListenerImpl();
+	Listener *listener = new ListenerImpl();
 
 	return listener;
 }
