@@ -46,13 +46,18 @@ public:
 			float distance = (entityPos - this->startPos).Length();
 
 			//if you have been pushed away far enough, entity is able to move again
-			if (distance > this->maxDistance)
+			if (distance > this->maxDistance || getOwner()->getComponent<Movement*>("Movement")->getTimeFalling() > 0.3f)
 			{
 				sendMessageToEntity(getOwnerId(), "StartMoving");
 				this->isPushed = false;
 				this->p->GetStates()->isBeingPushed = false;
 			}
 		}
+	}
+
+	bool getIsBeingPushed()
+	{
+		return this->isPushed;
 	}
 
 private:
@@ -73,6 +78,7 @@ private:
 			//stop the entity from moving, except for the push
 			sendMessageToEntity(getOwnerId(), "StopMoving");
 			sendMessageToEntity(getOwnerId(), "DropThrowable");
+			//sendMessageToEntity(getOwnerId(), "canNotPush");
 		}
 	}
 
@@ -81,8 +87,8 @@ private:
 		this->isPushed = false;
 		this->p->GetStates()->isBeingPushed = false;
 		sendMessageToEntity(getOwnerId(), "StartMoving");
+		//sendMessageToEntity(getOwnerId(), "canPush");
 	}
-
 };
 
 #endif

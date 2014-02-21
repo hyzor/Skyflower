@@ -652,3 +652,13 @@ void Movement::setIsDizzy(Message const &msg)
 	}
 
 }
+
+bool Movement::getIsInAir()
+{
+	return this->isInAir;
+}
+
+float Movement::getTimeFalling()
+{
+	return this->timeFalling;
+}
