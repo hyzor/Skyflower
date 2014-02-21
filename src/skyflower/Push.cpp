@@ -215,9 +215,12 @@ void Push::push(Entity* target)
 					Movement* mov = getOwner()->getComponent<Movement*>("Movement");
 					if (mov)
 					{
-						pSpeed = mov->GetSpeed();
-						mov->SetSpeed(5);
-						resetSpeed = true;
+						if (!resetSpeed)
+						{
+							pSpeed = mov->GetSpeed();
+							mov->SetSpeed(5);
+							resetSpeed = true;
+						}
 					}
 				}
 			}
