@@ -122,6 +122,12 @@ float GravityComponent::testMove(Ray r, Entity* e, Entity* &out, bool groundRay,
 	Vec3 pos = e->returnPos();
 	r.SetPos(pos + r.GetPos());
 
+	//create sphere for ray
+	Vec3 raypos = r.GetDir();
+	raypos /= 2;
+	raypos += r.GetPos();
+	Sphere rayS = Sphere(raypos, 10); //max line length 20
+
 	//test collision for other collidible entitis
 	float col = 0;
 	Entity* outEntity = nullptr;
@@ -130,24 +136,29 @@ float GravityComponent::testMove(Ray r, Entity* e, Entity* &out, bool groundRay,
 		Entity* EntiJ = getEntityManager()->getEntityByIndex(j);
 		if (EntiJ->collInst && EntiJ != e)
 		{
-			float t = EntiJ->collInst->Test(r);
-			if (t > 0)
+			Sphere collSphere = EntiJ->collInst->GetSphere();
+			collSphere.Radius *= EntiJ->returnScale().X + 0.3f;
+			if (collSphere.Test(rayS))
 			{
-				if (t > 0.5f) //feet
+				float t = EntiJ->collInst->Test(r);
+				if (t > 0)
 				{
-					if (col == 0 || t < col)
+					if (t > 0.5f) //feet
 					{
-						col = t;
-						outEntity = EntiJ;
+						if (col == 0 || t < col)
+						{
+							col = t;
+							outEntity = EntiJ;
+						}
 					}
-				}
-				else //head
-				{
-					if (col == 0 || t > col)
+					else //head
 					{
-						col = t;
-						outEntity = EntiJ;
-						break;
+						if (col == 0 || t > col)
+						{
+							col = t;
+							outEntity = EntiJ;
+							break;
+						}
 					}
 				}
 			}
