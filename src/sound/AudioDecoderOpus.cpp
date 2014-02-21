@@ -9,7 +9,7 @@
 #include "AudioDecoderOpus.h"
 #include "AudioResource.h"
 #include "Config.h"
-#include "TaskQueueWin32.h"
+#include "TaskQueue.h"
 
 // Must be included last!
 #include "debug.h"
@@ -25,7 +25,7 @@ struct OpusDecoderContext
 
 bool AudioDecoderOpusInit(struct AudioResource *resource)
 {
-	OggOpusFile *opus = op_open_memory((const unsigned char *)resource->file->data, (size_t)resource->file->size, NULL);
+	OggOpusFile *opus = op_open_memory((const unsigned char *)resource->file, (size_t)resource->fileSize, NULL);
 
 	if (!opus) {
 		return false;
@@ -47,7 +47,7 @@ bool AudioDecoderOpusInit(struct AudioResource *resource)
 
 	struct OpusDecoderContext *context = new struct OpusDecoderContext;
 	context->opus = opus;
-	context->mutex = new MutexWin32();
+	context->mutex = Mutex::Create();
 	context->bufferSize = 0;
 	context->buffer = NULL;
 
@@ -78,7 +78,7 @@ void AudioDecoderOpusRelease(struct AudioResource *resource)
 	struct OpusDecoderContext *context = (struct OpusDecoderContext *)resource->context;
 
 	delete[] context->buffer;
-	delete context->mutex;
+	Mutex::Destroy(context->mutex);
 	op_free(context->opus);
 
 	delete context;

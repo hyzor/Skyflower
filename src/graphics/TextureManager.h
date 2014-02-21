@@ -9,8 +9,8 @@
 
 #include "d3dUtilities.h"
 #include <map>
-#include <DDSTextureLoader.h>
-#include <WICTextureLoader.h>
+#include <DirectXTK/DDSTextureLoader.h>
+#include <DirectXTK/WICTextureLoader.h>
 
 class TextureManager
 {

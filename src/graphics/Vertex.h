@@ -31,21 +31,6 @@ namespace Vertex
 		XMFLOAT2 texCoord;
 	};
 
-	struct Terrain
-	{
-		XMFLOAT3 position;
-		XMFLOAT2 texCoord;
-		XMFLOAT2 boundsY;
-	};
-
-	struct TerrainNormal
-	{
-		XMFLOAT3 position;
-		XMFLOAT3 normal;
-		XMFLOAT2 texCoord;
-		XMFLOAT2 boundsY;
-	};
-
 	struct Particle
 	{
 		XMFLOAT3 InitialPos;
@@ -107,8 +92,6 @@ public:
 	static const D3D11_INPUT_ELEMENT_DESC Position2D[1];
 	static const D3D11_INPUT_ELEMENT_DESC PosTex[2];
 	static const D3D11_INPUT_ELEMENT_DESC PosNormalTex[3];
-	static const D3D11_INPUT_ELEMENT_DESC Terrain[3];
-	static const D3D11_INPUT_ELEMENT_DESC TerrainNormal[4];
 	static const D3D11_INPUT_ELEMENT_DESC Particle[5];
 	static const D3D11_INPUT_ELEMENT_DESC PosNormalTexTan[4];
 	static const D3D11_INPUT_ELEMENT_DESC PosNormalTexTanSkinned[6];
@@ -136,8 +119,6 @@ public:
 	static ID3D11InputLayout* Position2D;
 	static ID3D11InputLayout* PosTex;
 	static ID3D11InputLayout* PosNormalTex;
-	static ID3D11InputLayout* Terrain;
-	static ID3D11InputLayout* TerrainNormal;
 	static ID3D11InputLayout* Particle;
 	static ID3D11InputLayout* PosNormalTexTan;
 	static ID3D11InputLayout* PosNormalTexTanSkinned;

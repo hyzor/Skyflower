@@ -6,7 +6,9 @@
 ID3D11RasterizerState* RenderStates::mDefaultRS = 0;
 ID3D11RasterizerState* RenderStates::mWireframeRS = 0;
 ID3D11RasterizerState* RenderStates::mNoCullRS = 0;
-ID3D11RasterizerState* RenderStates::mDepthBiasRS = 0;
+ID3D11RasterizerState* RenderStates::mDepthBiasCloseToEyeRS = 0;
+ID3D11RasterizerState* RenderStates::mDepthBiasFarFromEyeRS = 0;
+ID3D11RasterizerState* RenderStates::mDepthBiasSuperFarFromEyeRS = 0;
 
 ID3D11SamplerState* RenderStates::mLinearSS = 0;
 ID3D11SamplerState* RenderStates::mLinearClampedSS = 0;
@@ -70,15 +72,36 @@ void RenderStates::InitAll(ID3D11Device* device)
 
 	device->CreateRasterizerState(&noCullRSdesc, &mNoCullRS);
 
-	D3D11_RASTERIZER_DESC depthBiasRSdesc;
-	ZeroMemory(&depthBiasRSdesc, sizeof(D3D11_RASTERIZER_DESC));
-	depthBiasRSdesc.DepthBias = 10000;
-	depthBiasRSdesc.DepthBiasClamp = 0.0f;
-	depthBiasRSdesc.SlopeScaledDepthBias = 3.0f;
-	depthBiasRSdesc.FillMode = D3D11_FILL_SOLID;
-	depthBiasRSdesc.CullMode = D3D11_CULL_BACK;
+	D3D11_RASTERIZER_DESC depthBiasCloseRSdesc;
+	ZeroMemory(&depthBiasCloseRSdesc, sizeof(D3D11_RASTERIZER_DESC));
+	depthBiasCloseRSdesc.DepthBias = 1000;
+	depthBiasCloseRSdesc.DepthBiasClamp = 0.0f;
+	depthBiasCloseRSdesc.SlopeScaledDepthBias = 3.5f;
+	depthBiasCloseRSdesc.FillMode = D3D11_FILL_SOLID;
+	depthBiasCloseRSdesc.CullMode = D3D11_CULL_BACK;
 
-	device->CreateRasterizerState(&depthBiasRSdesc, &mDepthBiasRS);
+	device->CreateRasterizerState(&depthBiasCloseRSdesc, &mDepthBiasCloseToEyeRS);
+
+
+	D3D11_RASTERIZER_DESC depthBiasFarRSdesc;
+	ZeroMemory(&depthBiasFarRSdesc, sizeof(D3D11_RASTERIZER_DESC));
+	depthBiasFarRSdesc.DepthBias = 10000;
+	depthBiasFarRSdesc.DepthBiasClamp = 0.0f;
+	depthBiasFarRSdesc.SlopeScaledDepthBias = 4.0f;
+	depthBiasFarRSdesc.FillMode = D3D11_FILL_SOLID;
+	depthBiasFarRSdesc.CullMode = D3D11_CULL_BACK;
+
+	device->CreateRasterizerState(&depthBiasFarRSdesc, &mDepthBiasFarFromEyeRS);
+
+	D3D11_RASTERIZER_DESC depthBiasSuperFarRSdesc;
+	ZeroMemory(&depthBiasSuperFarRSdesc, sizeof(D3D11_RASTERIZER_DESC));
+	depthBiasSuperFarRSdesc.DepthBias = 100000;
+	depthBiasSuperFarRSdesc.DepthBiasClamp = 0.0f;
+	depthBiasSuperFarRSdesc.SlopeScaledDepthBias = 4.0f;
+	depthBiasSuperFarRSdesc.FillMode = D3D11_FILL_SOLID;
+	depthBiasSuperFarRSdesc.CullMode = D3D11_CULL_BACK;
+
+	device->CreateRasterizerState(&depthBiasSuperFarRSdesc, &mDepthBiasSuperFarFromEyeRS);
 
 	//-----------------------------------------------------------
 	// Sampler states
@@ -258,9 +281,28 @@ void RenderStates::InitAll(ID3D11Device* device)
 	device->CreateDepthStencilState(&depthStencilEnabledDSSdesc, &mDepthStencilEnabledDSS);
 
 	// Depth disabled, stencil enabled
-	depthStencilEnabledDSSdesc.DepthEnable = FALSE;
+	D3D11_DEPTH_STENCIL_DESC depthDisabledStencilEnabledDSSdesc;
+	ZeroMemory(&depthDisabledStencilEnabledDSSdesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+	depthDisabledStencilEnabledDSSdesc.DepthEnable = FALSE;
+	depthDisabledStencilEnabledDSSdesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthDisabledStencilEnabledDSSdesc.DepthFunc = D3D11_COMPARISON_LESS;
 
-	device->CreateDepthStencilState(&depthStencilEnabledDSSdesc, &mDepthDisabledStencilEnabledDSS);
+	depthDisabledStencilEnabledDSSdesc.StencilEnable = TRUE;
+	depthDisabledStencilEnabledDSSdesc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+	depthDisabledStencilEnabledDSSdesc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+
+	depthDisabledStencilEnabledDSSdesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depthDisabledStencilEnabledDSSdesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	depthDisabledStencilEnabledDSSdesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
+	depthDisabledStencilEnabledDSSdesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+
+	depthDisabledStencilEnabledDSSdesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depthDisabledStencilEnabledDSSdesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	depthDisabledStencilEnabledDSSdesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
+	depthDisabledStencilEnabledDSSdesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthDisabledStencilEnabledDSSdesc.DepthEnable = FALSE;
+
+	device->CreateDepthStencilState(&depthDisabledStencilEnabledDSSdesc, &mDepthDisabledStencilEnabledDSS);
 
 	// Depth disabled, stencil replace
 	D3D11_DEPTH_STENCIL_DESC depthDisabledStencilReplaceDSSdesc;
@@ -411,7 +453,9 @@ void RenderStates::DestroyAll()
 	ReleaseCOM(mDefaultRS);
 	ReleaseCOM(mWireframeRS);
 	ReleaseCOM(mNoCullRS);
-	ReleaseCOM(mDepthBiasRS);
+	ReleaseCOM(mDepthBiasCloseToEyeRS);
+	ReleaseCOM(mDepthBiasFarFromEyeRS);
+	ReleaseCOM(mDepthBiasSuperFarFromEyeRS);
 
 	ReleaseCOM(mLinearSS);
 	ReleaseCOM(mLinearClampedSS);

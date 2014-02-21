@@ -159,7 +159,12 @@ void LineChartRendererD3D::Draw(const std::vector<const struct LineChartDataPoin
 	float backgroundColor[4] = {0.0f, 0.0f, 0.0f, 0.5f};
 	m_graphicsEngine->ClearTexture(texture, backgroundColor);
 
-	// FIXME: Print m_label. (We have no way to set text alignment)
+	Vec3 labelSize = m_graphicsEngine->MeassureString(m_label.c_str());
+	int textPosition[2] = {(int)(texture->GetWidth() - labelSize.X), 0};
+
+	m_graphicsEngine->Begin2D();
+	m_graphicsEngine->PrintTextMonospaceToTexture(texture, m_label.c_str(), textPosition);
+	m_graphicsEngine->End2D();
 
 	// Only draw the background and label if we don't have any points to render.
 	if (dataPoints.size() == 0) {
@@ -240,8 +245,8 @@ void LineChartRendererD3D::Draw(const std::vector<const struct LineChartDataPoin
 	std::stringstream stringStream;
 	stringStream.precision(1);
 
-	stringStream << std::fixed << m_targetValue << m_unit;
-	std::string targetValueString = stringStream.str();
+	//stringStream << std::fixed << m_targetValue << m_unit;
+	//std::string targetValueString = stringStream.str();
 
 	stringStream.str("");
 	stringStream << "Min:" << std::fixed << minValue << m_unit;
@@ -260,7 +265,9 @@ void LineChartRendererD3D::Draw(const std::vector<const struct LineChartDataPoin
 	std::string currentValueString = stringStream.str();
 
 	int textPadding = 10;
-	int textPosition[2] = {0, 0};
+
+	textPosition[0] = 0;
+	textPosition[1] = 0;
 
 	m_graphicsEngine->Begin2D();
 

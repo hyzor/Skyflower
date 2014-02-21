@@ -40,6 +40,8 @@ public:
 	void moveforward();
 	float GetSpeed();
 	void SetSpeed(float speed);
+	bool getIsInAir();
+	float getTimeFalling();
 
 	Vec3 GetLook();
 

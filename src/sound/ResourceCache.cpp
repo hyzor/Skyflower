@@ -10,7 +10,7 @@
 
 #include "AudioResource.h"
 #include "ResourceCache.h"
-#include "TaskQueueWin32.h"
+#include "TaskQueue.h"
 
 // Must be included last!
 #include "debug.h"
@@ -104,7 +104,7 @@ static uint32_t util_hash32_str(const char *data)
 ResourceCache::ResourceCache(const std::string &resourceDir)
 {
 	m_resourceDir = resourceDir;
-	m_taskQueue = (TaskQueue *)new TaskQueueWin32();
+	m_taskQueue = TaskQueue::Create();
 	m_currentFrame = 0;
 
 	alGenBuffers(SOUNDENGINE_BUFFER_POOL_SIZE, m_buffers);
@@ -126,7 +126,7 @@ ResourceCache::ResourceCache(const std::string &resourceDir)
 ResourceCache::~ResourceCache()
 {
 	m_taskQueue->WaitForTasks(true);
-	delete m_taskQueue;
+	TaskQueue::Destroy(m_taskQueue);
 
 	for (auto iter = m_resources.begin(); iter != m_resources.end(); ++iter) {
 		DestroyAudioResource(iter->second);

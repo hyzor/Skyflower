@@ -23,6 +23,8 @@
     <ClCompile Include="src\graphics\Camera.cpp" />
     <ClCompile Include="src\graphics\CameraController.cpp" />
     <ClCompile Include="src\graphics\CameraControllImpl.cpp" />
+    <ClCompile Include="src\graphics\Cascade.cpp" />
+    <ClCompile Include="src\graphics\CascadedShadows.cpp" />
     <ClCompile Include="src\graphics\Character.cpp" />
     <ClCompile Include="src\graphics\d3dUtilities.cpp" />
     <ClCompile Include="src\graphics\DeferredBuffers.cpp" />
@@ -59,6 +61,8 @@
     <ClInclude Include="src\graphics\Camera.h" />
     <ClInclude Include="src\graphics\CameraController.h" />
     <ClInclude Include="src\graphics\CameraControllImpl.h" />
+    <ClInclude Include="src\graphics\Cascade.h" />
+    <ClInclude Include="src\graphics\CascadedShadows.h" />
     <ClInclude Include="src\graphics\Character.h" />
     <ClInclude Include="src\graphics\d3dUtilities.h" />
     <ClInclude Include="src\graphics\DeferredBuffers.h" />
@@ -432,6 +436,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="src\graphics\Shaders\Blur.hlsli" />
+    <None Include="src\graphics\Shaders\CascadedShadowsShared.hlsli" />
     <None Include="src\graphics\Shaders\LightDef.hlsli">
       <FileType>Document</FileType>
     </None>

@@ -34,8 +34,7 @@ FullscreenTriangle::FullscreenTriangle(ID3D11Device* device, ID3D11InputLayout* 
 
 FullscreenTriangle::~FullscreenTriangle()
 {
-	if (mBuffer)
-		mBuffer->Release();
+	ReleaseCOM(mBuffer);
 }
 
 void FullscreenTriangle::Draw(ID3D11DeviceContext* dc)

@@ -15,24 +15,33 @@ public:
 	void OnResize(UINT width, UINT height);
 	void Shutdown();
 
-	ID3D11Device* GetDevice() const;
-	ID3D11DeviceContext* GetImmediateContext() const;
+	ID3D11Device1* GetDevice() const;
+	ID3D11DeviceContext1* GetImmediateContext() const;
 	ID3D11RenderTargetView* GetRenderTargetView() const;
 	ID3D11DepthStencilView* GetDepthStencilView() const;
 	ID3D11ShaderResourceView* GetDepthStencilSRView() const;
 	ID3D11Texture2D* GetDepthStencilBuffer() const;
 	D3D11_VIEWPORT GetScreenViewport() const;
-	IDXGISwapChain* GetSwapChain() const;
+	IDXGISwapChain1* GetSwapChain() const;
 
 private:
-	ID3D11Device* md3dDevice;
-	ID3D11DeviceContext* md3dImmediateContext;
-	IDXGISwapChain* mSwapChain;
-	ID3D11Texture2D* mDepthStencilBuffer;
-	ID3D11RenderTargetView* mRenderTargetView;
-	ID3D11DepthStencilView* mDepthStencilView;
-	ID3D11ShaderResourceView* mDepthStencilSRView;
+// 	ID3D11Device* md3dDevice;
+// 	ID3D11DeviceContext* md3dImmediateContext;
+// 	IDXGISwapChain* mSwapChain;
+// 	ID3D11Texture2D* mDepthStencilBuffer;
+// 	ID3D11RenderTargetView* mRenderTargetView;
+// 	ID3D11DepthStencilView* mDepthStencilView;
+// 	ID3D11ShaderResourceView* mDepthStencilSRView;
 	D3D11_VIEWPORT mScreenViewport;
+
+	Microsoft::WRL::ComPtr<ID3D11Device1> md3dDevice;
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext1> md3dImmediateContext;
+	Microsoft::WRL::ComPtr<IDXGISwapChain1> mSwapChain;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> mDepthStencilBuffer;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> mRenderTargetView;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> mDepthStencilView;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mDepthStencilSRView;
+	//Microsoft::WRL::ComPtr<D3D11_VIEWPORT> mScreenViewport;
 
 	D3D_DRIVER_TYPE md3dDriverType;
 

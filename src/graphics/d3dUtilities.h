@@ -8,15 +8,11 @@
 
 #include <d3d11.h>
 #include <dxgi.h>
-//#include <D3DX11.h>
 
-//#include "d3dx11effect.h"
-//#include "d3dx11effect_2013.h"
-//#include <d3dx11effect_2013.h>
-//#include <xnamath.h>
 #include <DirectXMath.h>
-//#include <dxerr.h>
-//#include <DxErr.h>
+#include <wrl/client.h>
+#include <ppl.h>
+#include <ppltasks.h>
 #include <cassert>
 #include <ctime>
 #include <algorithm>
@@ -28,7 +24,7 @@
 #include "MathHelper.h"
 #include <windows.h>
 
-#include <DDSTextureLoader.h>
+#include <DirectXTK/DDSTextureLoader.h>
 
 //===============================================================
 // Simple d3d error checker
@@ -36,14 +32,6 @@
 #if defined(DEBUG) | defined(_DEBUG)
 	#ifndef HR
 #define HR(x) (x)
-// 	#define HR(x)												\
-// 	{															\
-// 	HRESULT hr = (x);											\
-// 	if(FAILED(hr))												\
-// 		{														\
-// 		DXTrace(__FILE__, (DWORD)__LINE__, hr, L#x, true);		\
-// 		}														\
-// 	}
 	#endif
 
 #else
@@ -79,24 +67,5 @@ public:
 
 	static ID3D11ShaderResourceView* CreateRandomTexture1DSRV(ID3D11Device* device);
 };
-
-//==============================================================
-// Colors
-//==============================================================
-//#define XMGLOBALCONST extern CONST __declspec(selectany)
-namespace D3dColors
-{
-	XMGLOBALCONST XMVECTORF32 White     = {1.0f, 1.0f, 1.0f, 1.0f};
-	XMGLOBALCONST XMVECTORF32 Black     = {0.0f, 0.0f, 0.0f, 1.0f};
-	XMGLOBALCONST XMVECTORF32 Red       = {1.0f, 0.0f, 0.0f, 1.0f};
-	XMGLOBALCONST XMVECTORF32 Green     = {0.0f, 1.0f, 0.0f, 1.0f};
-	XMGLOBALCONST XMVECTORF32 Blue      = {0.0f, 0.0f, 1.0f, 1.0f};
-	XMGLOBALCONST XMVECTORF32 Yellow    = {1.0f, 1.0f, 0.0f, 1.0f};
-	XMGLOBALCONST XMVECTORF32 Cyan      = {0.0f, 1.0f, 1.0f, 1.0f};
-	XMGLOBALCONST XMVECTORF32 Magenta   = {1.0f, 0.0f, 1.0f, 1.0f};
-
-	XMGLOBALCONST XMVECTORF32 Silver    = {0.75f, 0.75f, 0.75f, 1.0f};
-	XMGLOBALCONST XMVECTORF32 LightSteelBlue = {0.69f, 0.77f, 0.87f, 1.0f};
-}
 
 #endif

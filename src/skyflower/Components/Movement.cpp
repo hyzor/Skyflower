@@ -117,7 +117,7 @@ void Movement::update(float deltaTime)
 		{
 			Entity* entity = getEntityManager()->getEntity(getEntityManager()->getEntityId(j));
 
-			if (entity->hasComponents("AI"))
+			if (entity->hasComponents("AI") && getOwnerId() == 1)
 			{
 				if (entity->sphere != NULL && getOwner()->sphere != NULL && entity->sphere->Test(*getOwner()->sphere))
 				{
@@ -209,6 +209,11 @@ void Movement::update(float deltaTime)
 
 		if (backwards || isMovingForward || isMovingLeft || isMovingRight)
 		{
+			/*char buffer[50];
+			sprintf(buffer, "Current Rotation: %f         Target rotation: %f", walkAngle, targetRot);
+			string t = buffer;
+			getOwner()->getModules()->gui->printText(t, 50, 20); */
+
 			if (std::abs((((int)targetRot) % 360) - ((int)walkAngle % 360)) > 1)
 			{
 				float tot = targetRot - walkAngle;
@@ -659,4 +664,14 @@ void Movement::setIsDizzy(Message const &msg)
 		getOwner()->getModules()->sound->PlaySound("birds.wav", 1.0f, &position.X);
 	}
 
+}
+
+bool Movement::getIsInAir()
+{
+	return this->isInAir;
+}
+
+float Movement::getTimeFalling()
+{
+	return this->timeFalling;
 }

@@ -60,7 +60,7 @@
         <Checkpoint />
 		<MorphAnimation path="Models/Checkpoint/Checkpoint_FINAL/" file="checkPoint.morph" />
     </Entity>
-	<Entity type="Goal" model="Models\Goal\goalSackAnimerad" id="1411" isVisible="1" isCollidible="0" isAnimated="1" xPos="565.370649948" yPos="116.5956517912" zPos="51.8543727491" xRot="0.0" yRot="-1.57" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
+	<Entity type="Goal" model="Models\Goal\goalSackAnimerad" id="1411" isVisible="1" isCollidible="0" isAnimated="1" xPos="565.370649948" yPos="116.5956517912" zPos="51.8543727491" xRot="0.0" yRot="-1.57" zRot="0.0" xScale="1.5" yScale="1.5" zScale="1.5">
 		<Messenger />
 		<Goal />
 		<Event script="Goal" />

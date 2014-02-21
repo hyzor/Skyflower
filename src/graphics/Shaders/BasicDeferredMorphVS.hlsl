@@ -1,4 +1,5 @@
 // http://shiba.hpe.cn/jiaoyanzu/wuli/soft/Hlsl/Character-Animation-With-Direct3D.pdf
+#include "CascadedShadowsShared.hlsli"
 
 cbuffer cbPerObject : register(b0)
 {
@@ -6,12 +7,13 @@ cbuffer cbPerObject : register(b0)
 	float4x4 gWorldInvTranspose;
 	float4x4 gWorldViewProj;
 	float4x4 gTexTransform;
-	float4x4 gShadowTransform;
 
 	// Morph target weights
 	float4 gWeights;
 
 	float4x4 gPrevWorldViewProj;
+	float4x4 gShadowTransforms[MAX_CASCADES];
+	float4x4 gToEyeSpace;
 };
 
 struct VertexIn
@@ -43,10 +45,12 @@ struct VertexOut
 	float3 PosW : POSITION;
 	float3 NormalW : NORMAL;
 	float2 Tex : TEXCOORD;
-	float4 ShadowPosH : TEXCOORD1;
-
 	float4 CurPosH : CURPOSH;
 	float4 PrevPosH : PREVPOSH;
+	float4 ShadowPosH1 : TEXCOORD1;
+	float4 ShadowPosH2 : TEXCOORD2;
+	float4 ShadowPosH3 : TEXCOORD3;
+	float Depth : TEXCOORD4;
 };
 
 VertexOut main(VertexIn vIn)
@@ -96,8 +100,13 @@ VertexOut main(VertexIn vIn)
 	//vOut.Tex = mul(float4(vIn.Tex, 0.0f, 1.0f), gTexTransform).xy;
 	vOut.Tex = vIn.baseTex;
 
+	//Generate depth for current pixel in cam space
+	vOut.Depth = mul(float4(vOut.PosW, 1.0f), gToEyeSpace).z;
+
 	// Generate projective tex coords to project shadow map onto scene
-	vOut.ShadowPosH = mul(float4(posL, 1.0f), gShadowTransform);
+	vOut.ShadowPosH1 = mul(float4(vOut.PosW, 1.0f), gShadowTransforms[0]);
+	vOut.ShadowPosH2 = mul(float4(vOut.PosW, 1.0f), gShadowTransforms[1]);
+	vOut.ShadowPosH3 = mul(float4(vOut.PosW, 1.0f), gShadowTransforms[2]);
 
 	vOut.CurPosH = vOut.PosH;
 	vOut.PrevPosH = mul(float4(posL, 1.0f), gPrevWorldViewProj);

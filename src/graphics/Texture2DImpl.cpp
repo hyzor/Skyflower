@@ -71,12 +71,16 @@ Texture2DImpl::Texture2DImpl(ID3D11Device *d3dDevice, ID3D11DeviceContext *d3dDe
 
 Texture2DImpl::~Texture2DImpl(void)
 {
-	if (m_renderTargetView) {
-		m_renderTargetView->Release();
-	}
+// 	if (m_renderTargetView) {
+// 		m_renderTargetView->Release();
+// 	}
 
-	m_shaderResourceView->Release();
-	m_texture->Release();
+	ReleaseCOM(m_renderTargetView);
+	ReleaseCOM(m_shaderResourceView);
+	ReleaseCOM(m_texture);
+
+// 	m_shaderResourceView->Release();
+// 	m_texture->Release();
 }
 
 void Texture2DImpl::UploadData(const void *data)

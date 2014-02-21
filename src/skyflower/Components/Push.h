@@ -37,8 +37,6 @@ public:
 
 private:
 	void stopPush(Message const& msg);
-	void setCanPush(Message const& msg);
-	void setCanNotPush(Message const& msg);
 	void beingPushed(Message const& msg);
 	void pickUpStart(Message const& msg);
 	void pickUpStop(Message const& msg);

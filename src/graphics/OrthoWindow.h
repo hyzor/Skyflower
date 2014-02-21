@@ -24,7 +24,8 @@ private:
 	void PrepareBuffers(ID3D11DeviceContext* dc);
 
 private:
-	ID3D11Buffer *mVertexBuffer, *mIndexBuffer;
+	ID3D11Buffer* mVertexBuffer;
+	ID3D11Buffer* mIndexBuffer;
 	int mVertexCount, mIndexCount;
 };
 

@@ -190,20 +190,17 @@ void DeferredBuffers::Shutdown()
 	{
 		if (mShaderResourceViewArray[i])
 		{
-			mShaderResourceViewArray[i]->Release();
-			mShaderResourceViewArray[i] = 0;
+			ReleaseCOM(mShaderResourceViewArray[i]);
 		}
 
 		if (mRenderTargetViewArray[i])
 		{
-			mRenderTargetViewArray[i]->Release();
-			mRenderTargetViewArray[i] = 0;
+			ReleaseCOM(mRenderTargetViewArray[i]);
 		}
 
 		if (mRenderTargetTextureArray[i])
 		{
-			mRenderTargetTextureArray[i]->Release();
-			mRenderTargetTextureArray[i] = 0;
+			ReleaseCOM(mRenderTargetTextureArray[i]);
 		}
 	}
 

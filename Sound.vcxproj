@@ -35,7 +35,8 @@
     <ClInclude Include="src\sound\SoundEngineImpl.h" />
     <ClInclude Include="src\sound\SoundSourceImpl.h" />
     <ClInclude Include="src\sound\TaskQueue.h" />
-    <ClInclude Include="src\sound\TaskQueueWin32.h" />
+    <ClInclude Include="src\sound\win32\mman.h" />
+    <ClInclude Include="src\sound\win32\TaskQueueWin32.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\sound\AudioDecoder.cpp" />
@@ -49,7 +50,9 @@
     <ClCompile Include="src\sound\SoundEngine.cpp" />
     <ClCompile Include="src\sound\SoundEngineImpl.cpp" />
     <ClCompile Include="src\sound\SoundSourceImpl.cpp" />
-    <ClCompile Include="src\sound\TaskQueueWin32.cpp" />
+    <ClCompile Include="src\sound\TaskQueue.cpp" />
+    <ClCompile Include="src\sound\win32\mman.c" />
+    <ClCompile Include="src\sound\win32\TaskQueueWin32.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B436B3C1-B4AA-4A61-972E-8DD36A9CC598}</ProjectGuid>
@@ -102,26 +105,26 @@
     <OutDir>$(SolutionDir)bin\x64\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\x64\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)_d</TargetName>
-    <IncludePath>$(SolutionDir)include/;$(SolutionDir)external/include/;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)include/;$(SolutionDir)external/include/;$(SolutionDir)src/sound/;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)external/lib/x64/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)bin\x64\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\x64\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)include/;$(SolutionDir)external/include/;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)include/;$(SolutionDir)external/include/;$(SolutionDir)src/sound/;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)external/lib/x64/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)bin\x86\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\x86\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)_d</TargetName>
-    <IncludePath>$(SolutionDir)include/;$(SolutionDir)external/include/;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)include/;$(SolutionDir)external/include/;$(SolutionDir)src/sound/;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)external/lib/x86/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)bin\x86\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\x86\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)include/;$(SolutionDir)external/include/;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)include/;$(SolutionDir)external/include/;$(SolutionDir)src/sound/;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)external/lib/x86/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -129,7 +132,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>COMPILING_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>COMPILING_DLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -141,7 +144,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>COMPILING_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>COMPILING_DLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -155,7 +158,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>COMPILING_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>COMPILING_DLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -171,7 +174,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>COMPILING_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>COMPILING_DLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

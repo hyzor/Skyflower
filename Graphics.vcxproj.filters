@@ -132,6 +132,12 @@
     <ClCompile Include="src\graphics\ParticleSystemImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\graphics\CascadedShadows.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\Cascade.cpp">
+	      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\graphics\SkinnedDataSorted.cpp">
       <Filter>Models\Upper &amp; lower body sorting</Filter>
     </ClCompile>
@@ -241,6 +247,12 @@
     </ClInclude>
     <ClInclude Include="src\graphics\ParticleSystem.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\CascadedShadows.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\Cascade.h">
+	      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics\SkinnedDataSorted.h">
       <Filter>Models\Upper &amp; lower body sorting</Filter>
@@ -446,6 +458,9 @@
     </None>
     <None Include="src\graphics\Shaders\ParticleSystemShared.hlsli">
       <Filter>Shaders\Particle System</Filter>
+    </None>
+    <None Include="src\graphics\Shaders\CascadedShadowsShared.hlsli">
+      <Filter>Shaders</Filter>
     </None>
     <None Include="src\graphics\Shaders\Shared.hlsli">
       <Filter>Shaders</Filter>

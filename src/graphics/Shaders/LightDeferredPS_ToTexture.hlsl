@@ -44,16 +44,16 @@ cbuffer cLightBuffer : register(b0)
 	int gSkipLighting;
 
 	// Needs cleanup!
-	float4x4 gShadowTransform_PS; // Light: view * projection * toTexSpace
-	float4x4 gCameraView;
-	float4x4 gCameraInvView;
-	float4x4 gCameraWorld;
-	float4x4 gCameraProj;
+	//float4x4 gShadowTransform_PS; // Light: view * projection * toTexSpace
+	//float4x4 gCameraView;
+	//float4x4 gCameraInvView;
+	//float4x4 gCameraWorld;
+	//float4x4 gCameraProj;
 	float4x4 gCamViewProjInv;
-	float4x4 gLightWorld;
-	float4x4 gLightView;
-	float4x4 gLightInvView;
-	float4x4 gLightProj;
+	//float4x4 gLightWorld;
+	//float4x4 gLightView;
+	//float4x4 gLightInvView;
+	//float4x4 gLightProj;
 };
 
 Texture2D gDiffuseTexture : register(t0);
@@ -241,7 +241,7 @@ PixelOut main(VertexOut pIn)
 	//float luminance = dot(diffuse.xyz, float3(0.333f, 0.333f, 0.333f));
 
 	/*
-	float exposure = 1.25f;
+	float exposure = 2.0f;
 	float2 vtc = float2(pIn.Tex - 0.5);
 	float vignette = pow(1 - (dot(vtc, vtc) * 1.0), 2.0);
 

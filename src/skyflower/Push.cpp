@@ -25,8 +25,6 @@ void Push::addedToEntity()
 
 	//requestMessage("inAir", &Push::stopPush);
 	requestMessage("Wall", &Push::stopPush);
-	requestMessage("isHoldingThrowable", &Push::setCanNotPush);
-	requestMessage("isNotHoldingThrowable", &Push::setCanPush);
 	requestMessage("beingPushed", &Push::beingPushed);
 	requestMessage("PickUpStart", &Push::pickUpStart);
 	requestMessage("PickUpStop", &Push::pickUpStop);
@@ -38,10 +36,30 @@ void Push::removeFromEntity()
 
 void Push::update(float dt)
 {
+	this->canPush = true;
+	if (getOwner()->hasComponents("Pushable"))
+	{
+		if (getOwner()->getComponent<Pushable*>("Pushable")->getIsBeingPushed())
+			this->canPush = false;
+	}
+	if (getOwner()->hasComponents("Throw"))
+	{
+		if (getOwner()->getComponent<Throw*>("Throw")->getIsHoldingThrowable())
+			this->canPush = false;
+	}
+	if (getOwner()->hasComponents("Movement"))
+	{
+		if (getOwner()->getComponent<Movement*>("Movement")->getIsDizzy())
+			this->canPush = false;
+		if (getOwner()->getComponent<Movement*>("Movement")->getIsInAir())
+			this->canPush = false;
+	}
+
+
 	//find box to push
 	if (getOwner()->wall && !box)
 	{
-		if (getOwner()->wall->hasComponents("Box") && canPush)
+		if (getOwner()->wall->hasComponents("Box") && getOwner()->hasComponents("Movement") && getOwner()->wall->hasComponents("Movement") && canPush)
 		{
 			box = getOwner()->wall;
 			relativePos = getOwner()->returnPos() - box->returnPos();
@@ -52,11 +70,9 @@ void Push::update(float dt)
 	bool isPushingBox = false;
 	if (box)
 	{
-		Movement* mov = getOwner()->getComponent<Movement*>("Movement");
-
 		//find walking direction
 		Vec3 pos = getOwner()->returnPos();
-		mov->update(dt);
+		getOwner()->getComponent<Movement*>("Movement")->update(dt);
 		Vec3 dir = (pos - getOwner()->returnPos()).Normalize()*-1;
 		getOwner()->updatePos(pos);
 		//axis aligne
@@ -218,16 +234,6 @@ void Push::pushAll()
 bool Push::isPushingBox()
 {
 	return m_isPushingBox;
-}
-
-void Push::setCanPush(Message const& msg)
-{
-	this->canPush = true;
-}
-
-void Push::setCanNotPush(Message const& msg)
-{
-	this->canPush = false;
 }
 
 void Push::beingPushed(Message const& msg)

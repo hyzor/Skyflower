@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\win32">
+      <UniqueIdentifier>{4b435751-1486-44ac-94ec-025029ecc5c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Sound\Listener.h">
@@ -31,9 +34,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="src\sound\TaskQueue.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\sound\TaskQueueWin32.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="src\sound\Config.h">
@@ -66,6 +66,12 @@
     <ClInclude Include="src\sound\debug.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\sound\win32\TaskQueueWin32.h">
+      <Filter>Source Files\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sound\win32\mman.h">
+      <Filter>Source Files\win32</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\sound\SoundEngine.cpp">
@@ -75,9 +81,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\sound\SoundSourceImpl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\sound\TaskQueueWin32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\sound\ListenerImpl.cpp">
@@ -103,6 +106,15 @@
     </ClCompile>
     <ClCompile Include="src\sound\AudioDecoderSineWave.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sound\TaskQueue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sound\win32\TaskQueueWin32.cpp">
+      <Filter>Source Files\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sound\win32\mman.c">
+      <Filter>Source Files\win32</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

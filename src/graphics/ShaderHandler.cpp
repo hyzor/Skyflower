@@ -41,28 +41,33 @@ ShaderHandler::~ShaderHandler()
 {
 	for (UINT i = 0; i < mShaders.size(); ++i)
 	{
-		mShaders[i]->Buffer->Release();
+		//mShaders[i]->Buffer->Release();
+		ReleaseCOM(mShaders[i]->Buffer);
 		delete mShaders[i];
 	}
+	mShaders.clear();
 
 	for (auto& it(mVertexShaders.begin()); it != mVertexShaders.end(); ++it)
 	{
 		if (it->second)
-			it->second->Release();
+			ReleaseCOM(it->second);
+			//it->second->Release();
 	}
 	mVertexShaders.clear();
 
 	for (auto& it(mPixelShaders.begin()); it != mPixelShaders.end(); ++it)
 	{
 		if (it->second)
-			it->second->Release();
+			ReleaseCOM(it->second);
+			//it->second->Release();
 	}
 	mPixelShaders.clear();
 
 	for (auto& it(mGeometryShaders.begin()); it != mGeometryShaders.end(); ++it)
 	{
 		if (it->second)
-			it->second->Release();
+			ReleaseCOM(it->second);
+			//it->second->Release();
 	}
 	mGeometryShaders.clear();
 
@@ -178,7 +183,7 @@ void ShaderHandler::LoadCompiledGeometryStreamOutShader(LPCWSTR fileName, char* 
 
 	Shader* shader = new Shader();
 	shader->Name = name;
-	shader->Type = GEOMETRYSHADER;
+	shader->Type = GEOMETRYSTREAMOUTSHADER;
 	hr = D3DReadFileToBlob(fileName, &shader->Buffer);
 
 	if (FAILED(hr))
@@ -303,12 +308,16 @@ BasicShader::BasicShader(){}
 
 BasicShader::~BasicShader()
 {
-	if (vs_cPerObjBuffer)
-		vs_cPerObjBuffer->Release();
-	if (ps_cPerObjBuffer)
-		ps_cPerObjBuffer->Release();
-	if (ps_cPerFrameBuffer)
-		ps_cPerFrameBuffer->Release();
+// 	if (vs_cPerObjBuffer)
+// 		vs_cPerObjBuffer->Release();
+// 	if (ps_cPerObjBuffer)
+// 		ps_cPerObjBuffer->Release();
+// 	if (ps_cPerFrameBuffer)
+// 		ps_cPerFrameBuffer->Release();
+
+	ReleaseCOM(vs_cPerObjBuffer);
+	ReleaseCOM(ps_cPerObjBuffer);
+	ReleaseCOM(ps_cPerFrameBuffer);
 }
 
 bool BasicShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -571,8 +580,7 @@ ShadowShader::~ShadowShader()
 		mPixelShader->Release();
 	*/
 
-	if (vs_cBuffer)
-		vs_cBuffer->Release();
+	ReleaseCOM(vs_cBuffer);
 }
 
 bool ShadowShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
@@ -661,8 +669,10 @@ SkyShader::SkyShader(){}
 
 SkyShader::~SkyShader()
 {
-	if (vs_cPerFrameBuffer)
-		vs_cPerFrameBuffer->Release();
+// 	if (vs_cPerFrameBuffer)
+// 		vs_cPerFrameBuffer->Release();
+
+	ReleaseCOM(vs_cPerFrameBuffer);
 }
 
 bool SkyShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
@@ -892,14 +902,10 @@ NormalMappedSkinned::NormalMappedSkinned()
 
 NormalMappedSkinned::~NormalMappedSkinned()
 {
-	if (vs_cBuffer)
-		vs_cBuffer->Release();
-	if (ps_cPerObjBuffer)
-		ps_cPerObjBuffer->Release();
-	if (ps_cPerFrameBuffer)
-		ps_cPerFrameBuffer->Release();
-	if (vs_cSkinnedBuffer)
-		vs_cSkinnedBuffer->Release();
+	ReleaseCOM(vs_cBuffer);
+	ReleaseCOM(ps_cPerObjBuffer);
+	ReleaseCOM(ps_cPerFrameBuffer);
+	ReleaseCOM(vs_cSkinnedBuffer);
 }
 
 bool NormalMappedSkinned::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -1059,10 +1065,13 @@ SkinnedShadowShader::SkinnedShadowShader()
 
 SkinnedShadowShader::~SkinnedShadowShader()
 {
-	if (vs_cBuffer)
-		vs_cBuffer->Release();
-	if (vs_cSkinnedBuffer)
-		vs_cSkinnedBuffer->Release();
+// 	if (vs_cBuffer)
+// 		vs_cBuffer->Release();
+// 	if (vs_cSkinnedBuffer)
+// 		vs_cSkinnedBuffer->Release();
+
+	ReleaseCOM(vs_cBuffer);
+	ReleaseCOM(vs_cSkinnedBuffer);
 }
 
 bool SkinnedShadowShader::BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader)
@@ -1206,10 +1215,13 @@ BasicDeferredShader::BasicDeferredShader()
 
 BasicDeferredShader::~BasicDeferredShader()
 {
-	if (vs_cPerObjBuffer)
-		vs_cPerObjBuffer->Release();
-	if (ps_cPerObjBuffer)
-		ps_cPerObjBuffer->Release();
+// 	if (vs_cPerObjBuffer)
+// 		vs_cPerObjBuffer->Release();
+// 	if (ps_cPerObjBuffer)
+// 		ps_cPerObjBuffer->Release();
+
+	ReleaseCOM(vs_cPerObjBuffer);
+	ReleaseCOM(ps_cPerObjBuffer);
 }
 
 bool BasicDeferredShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -1236,7 +1248,7 @@ bool BasicDeferredShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLay
 	InitData.SysMemSlicePitch = 0;
 
 	// Now create the buffer
-	device->CreateBuffer(&cbDesc, &InitData, &vs_cPerObjBuffer);
+	HRESULT res = device->CreateBuffer(&cbDesc, &InitData, &vs_cPerObjBuffer);
 
 	//------------------------
 	// Pixel shader buffers
@@ -1260,7 +1272,7 @@ bool BasicDeferredShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLay
 	InitData2.SysMemSlicePitch = 0;
 
 	// Now create the buffer
-	device->CreateBuffer(&cbDesc2, &InitData2, &ps_cPerObjBuffer);
+	res = device->CreateBuffer(&cbDesc2, &InitData2, &ps_cPerObjBuffer);
 
 	mInputLayout = inputLayout;
 
@@ -1314,6 +1326,44 @@ void BasicDeferredShader::SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderRes
 	dc->PSSetShaderResources(0, 1, &tex);
 }
 
+void BasicDeferredShader::SetCascadeTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex, int index)
+{
+	dc->PSSetShaderResources(index + SHADOWMAP_SR_REG_OFFSET, 1, &tex);
+}
+
+void BasicDeferredShader::SetEyeSpaceTransform(const XMMATRIX& view)
+{
+	mBufferCache.vsPerObjBuffer.toEyeSpace = XMMatrixTranspose(view);
+}
+
+void BasicDeferredShader::SetCascadeTransformAndDepths(const XMMATRIX& shadowTransform, float nearDepth, float farDepth, int index)
+{
+	mBufferCache.vsPerObjBuffer.shadowTransforms[index] = XMMatrixTranspose(shadowTransform);
+
+	if (index == 0)
+		mBufferCache.psPerObjBuffer.nearDepths.x = nearDepth;
+	else if (index == 1)
+		mBufferCache.psPerObjBuffer.nearDepths.y = nearDepth;
+	else if (index == 2)
+		mBufferCache.psPerObjBuffer.nearDepths.z = nearDepth;
+	else if (index == 3)
+		mBufferCache.psPerObjBuffer.nearDepths.w = nearDepth;
+
+	if (index == 0)
+		mBufferCache.psPerObjBuffer.farDepths.x = farDepth;
+	else if (index == 1)
+		mBufferCache.psPerObjBuffer.farDepths.y = farDepth;
+	else if (index == 2)
+		mBufferCache.psPerObjBuffer.farDepths.z = farDepth;
+	else if (index == 3)
+		mBufferCache.psPerObjBuffer.farDepths.w = farDepth;
+}
+
+void BasicDeferredShader::SetNrOfCascades(int nrOfCascades)
+{
+	mBufferCache.psPerObjBuffer.nrOfCascades = nrOfCascades;
+}
+
 void BasicDeferredShader::UpdatePerObj(ID3D11DeviceContext* dc)
 {
 	// Update constant shader buffers using our cache
@@ -1350,7 +1400,7 @@ void BasicDeferredShader::UpdatePerObj(ID3D11DeviceContext* dc)
 
 void BasicDeferredShader::SetShadowTransformLightViewProj(XMMATRIX& shadowTransform, XMMATRIX& lightView, XMMATRIX& lightProj)
 {
-	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
+	//mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
 }
 
 void BasicDeferredShader::SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
@@ -1370,12 +1420,16 @@ BasicDeferredSkinnedShader::BasicDeferredSkinnedShader()
 
 BasicDeferredSkinnedShader::~BasicDeferredSkinnedShader()
 {
-	if (vs_cPerObjBuffer)
-		vs_cPerObjBuffer->Release();
-	if (vs_cSkinnedBuffer)
-		vs_cSkinnedBuffer->Release();
-	if (ps_cPerObjBuffer)
-		ps_cPerObjBuffer->Release();
+// 	if (vs_cPerObjBuffer)
+// 		vs_cPerObjBuffer->Release();
+// 	if (vs_cSkinnedBuffer)
+// 		vs_cSkinnedBuffer->Release();
+// 	if (ps_cPerObjBuffer)
+// 		ps_cPerObjBuffer->Release();
+
+	ReleaseCOM(vs_cPerObjBuffer);
+	ReleaseCOM(vs_cSkinnedBuffer);
+	ReleaseCOM(ps_cPerObjBuffer);
 }
 
 bool BasicDeferredSkinnedShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -1490,6 +1544,44 @@ void BasicDeferredSkinnedShader::SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11Sh
 	dc->PSSetShaderResources(0, 1, &tex);
 }
 
+void BasicDeferredSkinnedShader::SetCascadeTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex, int index)
+{
+	dc->PSSetShaderResources(index + SHADOWMAP_SR_REG_OFFSET, 1, &tex);
+}
+
+void BasicDeferredSkinnedShader::SetEyeSpaceTransform(const XMMATRIX& view)
+{
+	mBufferCache.vsPerObjBuffer.toEyeSpace = XMMatrixTranspose(view);
+}
+
+void BasicDeferredSkinnedShader::SetCascadeTransformAndDepths(const XMMATRIX& shadowTransform, float nearDepth, float farDepth, int index)
+{
+	mBufferCache.vsPerObjBuffer.shadowTransforms[index] = XMMatrixTranspose(shadowTransform);
+
+	if (index == 0)
+		mBufferCache.psPerObjBuffer.nearDepths.x = nearDepth;
+	else if (index == 1)
+		mBufferCache.psPerObjBuffer.nearDepths.y = nearDepth;
+	else if (index == 2)
+		mBufferCache.psPerObjBuffer.nearDepths.z = nearDepth;
+	else if (index == 3)
+		mBufferCache.psPerObjBuffer.nearDepths.w = nearDepth;
+
+	if (index == 0)
+		mBufferCache.psPerObjBuffer.farDepths.x = farDepth;
+	else if (index == 1)
+		mBufferCache.psPerObjBuffer.farDepths.y = farDepth;
+	else if (index == 2)
+		mBufferCache.psPerObjBuffer.farDepths.z = farDepth;
+	else if (index == 3)
+		mBufferCache.psPerObjBuffer.farDepths.w = farDepth;
+}
+
+void BasicDeferredSkinnedShader::SetNrOfCascades(int nrOfCascades)
+{
+	mBufferCache.psPerObjBuffer.nrOfCascades = nrOfCascades;
+}
+
 void BasicDeferredSkinnedShader::SetBoneTransforms(const XMFLOAT4X4 boneTransforms[], UINT numTransforms)
 {
 	for (UINT i = 0; i < numTransforms; ++i)
@@ -1566,7 +1658,7 @@ void BasicDeferredSkinnedShader::SetShadowMapTexture(ID3D11DeviceContext* dc, ID
 
 void BasicDeferredSkinnedShader::SetShadowTransform(XMMATRIX& shadowTransform)
 {
-	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
+//	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
 }
 
 void BasicDeferredSkinnedShader::SetPrevWorldViewProj(XMMATRIX& prevWorld, XMMATRIX& prevViewProj)
@@ -1618,10 +1710,13 @@ LightDeferredShader::LightDeferredShader()
 
 LightDeferredShader::~LightDeferredShader()
 {
-	if (vs_cPerObjBuffer)
-		vs_cPerObjBuffer->Release();
-	if (ps_cPerFrameBuffer)
-		ps_cPerFrameBuffer->Release();
+// 	if (vs_cPerObjBuffer)
+// 		vs_cPerObjBuffer->Release();
+// 	if (ps_cPerFrameBuffer)
+// 		ps_cPerFrameBuffer->Release();
+
+	ReleaseCOM(vs_cPerObjBuffer);
+	ReleaseCOM(ps_cPerFrameBuffer);
 }
 
 bool LightDeferredShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -1804,15 +1899,15 @@ void LightDeferredShader::SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11Sha
 
 void LightDeferredShader::SetShadowTransform(XMMATRIX& shadowTransform)
 {
-	mBufferCache.psPerFrameBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
+	//mBufferCache.psPerFrameBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
 	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
 }
 
 void LightDeferredShader::SetCameraViewProjMatrix(XMMATRIX& camViewMatrix, XMMATRIX& proj)
 {
-	mBufferCache.psPerFrameBuffer.cameraViewMatrix = XMMatrixTranspose(camViewMatrix);
-	mBufferCache.psPerFrameBuffer.cameraInvViewMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, camViewMatrix));
-	mBufferCache.psPerFrameBuffer.cameraProjMatrix = XMMatrixTranspose(proj);
+	//mBufferCache.psPerFrameBuffer.cameraViewMatrix = XMMatrixTranspose(camViewMatrix);
+	//mBufferCache.psPerFrameBuffer.cameraInvViewMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, camViewMatrix));
+	//mBufferCache.psPerFrameBuffer.cameraProjMatrix = XMMatrixTranspose(proj);
 
 	XMMATRIX viewProj = XMMatrixMultiply(camViewMatrix, proj);
 	XMMATRIX viewProjInv = XMMatrixInverse(nullptr, viewProj);
@@ -1824,15 +1919,15 @@ void LightDeferredShader::SetCameraViewProjMatrix(XMMATRIX& camViewMatrix, XMMAT
 
 void LightDeferredShader::SetCameraWorldMatrix(XMMATRIX& camWorldMatrix)
 {
-	mBufferCache.psPerFrameBuffer.cameraWorldMatrix = XMMatrixTranspose(camWorldMatrix);
+	//mBufferCache.psPerFrameBuffer.cameraWorldMatrix = XMMatrixTranspose(camWorldMatrix);
 }
 
 void LightDeferredShader::SetLightWorldViewProj(XMMATRIX& lightWorld, XMMATRIX& lightView, XMMATRIX& lightProj)
 {
-	mBufferCache.psPerFrameBuffer.lightWorldMatrix = XMMatrixTranspose(lightWorld);
-	mBufferCache.psPerFrameBuffer.lightViewMatrix = XMMatrixTranspose(lightView);
-	mBufferCache.psPerFrameBuffer.lightProjMatrix = XMMatrixTranspose(lightProj);
-	mBufferCache.psPerFrameBuffer.lightInvViewMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, lightView));
+	//mBufferCache.psPerFrameBuffer.lightWorldMatrix = XMMatrixTranspose(lightWorld);
+	//mBufferCache.psPerFrameBuffer.lightViewMatrix = XMMatrixTranspose(lightView);
+	//mBufferCache.psPerFrameBuffer.lightProjMatrix = XMMatrixTranspose(lightProj);
+	//mBufferCache.psPerFrameBuffer.lightInvViewMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, lightView));
 
 	mBufferCache.vsPerObjBuffer.lightViewProj = XMMatrixTranspose(XMMatrixMultiply(lightView, lightProj));
 }
@@ -1889,8 +1984,10 @@ SkyDeferredShader::SkyDeferredShader()
 
 SkyDeferredShader::~SkyDeferredShader()
 {
-	if (vs_cPerFrameBuffer)
-		vs_cPerFrameBuffer->Release();
+// 	if (vs_cPerFrameBuffer)
+// 		vs_cPerFrameBuffer->Release();
+
+	ReleaseCOM(vs_cPerFrameBuffer);
 }
 
 bool SkyDeferredShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -1979,8 +2076,10 @@ SSAOShader::SSAOShader()
 
 SSAOShader::~SSAOShader()
 {
-	if (ps_cPerFrameBuffer)
-		ps_cPerFrameBuffer->Release();
+// 	if (ps_cPerFrameBuffer)
+// 		ps_cPerFrameBuffer->Release();
+
+	ReleaseCOM(ps_cPerFrameBuffer);
 }
 
 bool SSAOShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -2084,8 +2183,10 @@ DepthOfFieldCoCShader::DepthOfFieldCoCShader()
 
 DepthOfFieldCoCShader::~DepthOfFieldCoCShader()
 {
-	if (ps_cPerFrameBuffer)
-		ps_cPerFrameBuffer->Release();
+// 	if (ps_cPerFrameBuffer)
+// 		ps_cPerFrameBuffer->Release();
+
+	ReleaseCOM(ps_cPerFrameBuffer);
 }
 
 bool DepthOfFieldCoCShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -2171,8 +2272,10 @@ BlurShader::BlurShader()
 
 BlurShader::~BlurShader()
 {
-	if (ps_cPerFrameBuffer)
-		ps_cPerFrameBuffer->Release();
+// 	if (ps_cPerFrameBuffer)
+// 		ps_cPerFrameBuffer->Release();
+
+	ReleaseCOM(ps_cPerFrameBuffer);
 }
 
 bool BlurShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -2256,10 +2359,13 @@ BasicDeferredMorphShader::BasicDeferredMorphShader()
 
 BasicDeferredMorphShader::~BasicDeferredMorphShader()
 {
-	if (vs_cPerObjBuffer)
-		vs_cPerObjBuffer->Release();
-	if (ps_cPerObjBuffer)
-		ps_cPerObjBuffer->Release();
+// 	if (vs_cPerObjBuffer)
+// 		vs_cPerObjBuffer->Release();
+// 	if (ps_cPerObjBuffer)
+// 		ps_cPerObjBuffer->Release();
+
+	ReleaseCOM(vs_cPerObjBuffer);
+	ReleaseCOM(ps_cPerObjBuffer);
 }
 
 bool BasicDeferredMorphShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -2398,7 +2504,45 @@ void BasicDeferredMorphShader::SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D
 
 void BasicDeferredMorphShader::SetShadowTransform(XMMATRIX& shadowTransform)
 {
-	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
+	//mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
+}
+
+void BasicDeferredMorphShader::SetCascadeTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex, int index)
+{
+	dc->PSSetShaderResources(index + SHADOWMAP_SR_REG_OFFSET, 1, &tex);
+}
+
+void BasicDeferredMorphShader::SetEyeSpaceTransform(const XMMATRIX& view)
+{
+	mBufferCache.vsPerObjBuffer.toEyeSpace = XMMatrixTranspose(view);
+}
+
+void BasicDeferredMorphShader::SetCascadeTransformAndDepths(const XMMATRIX& shadowTransform, float nearDepth, float farDepth, int index)
+{
+	mBufferCache.vsPerObjBuffer.shadowTransforms[index] = XMMatrixTranspose(shadowTransform);
+
+	if (index == 0)
+		mBufferCache.psPerObjBuffer.nearDepths.x = nearDepth;
+	else if (index == 1)
+		mBufferCache.psPerObjBuffer.nearDepths.y = nearDepth;
+	else if (index == 2)
+		mBufferCache.psPerObjBuffer.nearDepths.z = nearDepth;
+	else if (index == 3)
+		mBufferCache.psPerObjBuffer.nearDepths.w = nearDepth;
+
+	if (index == 0)
+		mBufferCache.psPerObjBuffer.farDepths.x = farDepth;
+	else if (index == 1)
+		mBufferCache.psPerObjBuffer.farDepths.y = farDepth;
+	else if (index == 2)
+		mBufferCache.psPerObjBuffer.farDepths.z = farDepth;
+	else if (index == 3)
+		mBufferCache.psPerObjBuffer.farDepths.w = farDepth;
+}
+
+void BasicDeferredMorphShader::SetNrOfCascades(int nrOfCascades)
+{
+	mBufferCache.psPerObjBuffer.nrOfCascades = nrOfCascades;
 }
 
 void BasicDeferredMorphShader::SetPrevWorldViewProj(XMMATRIX& prevWorld, XMMATRIX& prevViewProj)
@@ -2413,8 +2557,10 @@ ShadowMorphShader::ShadowMorphShader()
 
 ShadowMorphShader::~ShadowMorphShader()
 {
-	if (vs_cBuffer)
-		vs_cBuffer->Release();
+// 	if (vs_cBuffer)
+// 		vs_cBuffer->Release();
+
+	ReleaseCOM(vs_cBuffer);
 }
 
 bool ShadowMorphShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -2557,14 +2703,22 @@ ParticleSystemShader::ParticleSystemShader()
 
 ParticleSystemShader::~ParticleSystemShader()
 {
-	if (draw_GS_PerFrameBuffer)
-		draw_GS_PerFrameBuffer->Release();
+// 	if (draw_GS_PerFrameBuffer)
+// 		draw_GS_PerFrameBuffer->Release();
 
-	if (streamOut_GS_PerFrameBuffer)
-		streamOut_GS_PerFrameBuffer->Release();
+	ReleaseCOM(draw_GS_PerFrameBuffer);
 
-	if (draw_VS_InitBuffer)
-		draw_VS_InitBuffer->Release();
+// 	if (streamOut_GS_PerFrameBuffer)
+// 		streamOut_GS_PerFrameBuffer->Release();
+
+	ReleaseCOM(streamOut_GS_PerFrameBuffer);
+
+// 	if (draw_VS_InitBuffer)
+// 		draw_VS_InitBuffer->Release();
+
+	ReleaseCOM(draw_VS_InitBuffer);
+
+
 }
 
 bool ParticleSystemShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -2755,7 +2909,7 @@ void ParticleSystemShader::UpdateDrawShaders(ID3D11DeviceContext* dc)
 
 	dc->Unmap(draw_VS_InitBuffer, 0);
 
-	dc->VSGetConstantBuffers(0, 1, &draw_VS_InitBuffer);
+	dc->VSSetConstantBuffers(0, 1, &draw_VS_InitBuffer);
 
 	dc->PSSetShaderResources(0, 1, &mTexArray);
 	dc->PSSetShaderResources(1, 1, &mLitSceneTex);
@@ -2876,14 +3030,20 @@ BasicDeferredSkinnedSortedShader::BasicDeferredSkinnedSortedShader()
 
 BasicDeferredSkinnedSortedShader::~BasicDeferredSkinnedSortedShader()
 {
-	if (vs_cPerObjBuffer)
-		vs_cPerObjBuffer->Release();
+// 	if (vs_cPerObjBuffer)
+// 		vs_cPerObjBuffer->Release();
 
-	if (vs_cSkinnedBuffer)
-		vs_cSkinnedBuffer->Release();
+	ReleaseCOM(vs_cPerObjBuffer);
 
-	if (ps_cPerObjBuffer)
-		ps_cPerObjBuffer->Release();
+// 	if (vs_cSkinnedBuffer)
+// 		vs_cSkinnedBuffer->Release();
+
+	ReleaseCOM(vs_cSkinnedBuffer);
+
+// 	if (ps_cPerObjBuffer)
+// 		ps_cPerObjBuffer->Release();
+
+	ReleaseCOM(ps_cPerObjBuffer);
 }
 
 bool BasicDeferredSkinnedSortedShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -3008,6 +3168,47 @@ void BasicDeferredSkinnedSortedShader::SetDiffuseMap(ID3D11DeviceContext* dc, ID
 	dc->PSSetShaderResources(0, 1, &tex);
 }
 
+void BasicDeferredSkinnedSortedShader::SetCascadeTex(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex, int index)
+{
+	dc->PSSetShaderResources(index + SHADOWMAP_SR_REG_OFFSET, 1, &tex);
+}
+
+void BasicDeferredSkinnedSortedShader::SetEyeSpaceTransform(const XMMATRIX& view)
+{
+	mBufferCache.vsPerObjBuffer.toEyeSpace = XMMatrixTranspose(view);
+}
+
+void BasicDeferredSkinnedSortedShader::SetCascadeTransform(const XMMATRIX& shadowTransform, int index)
+{
+	mBufferCache.vsPerObjBuffer.shadowTransforms[index] = XMMatrixTranspose(shadowTransform);
+}
+
+void BasicDeferredSkinnedSortedShader::SetCascadeDepths(float nearDepth, float farDepth, int index)
+{
+	if (index == 0)
+		mBufferCache.psPerObjBuffer.nearDepths.x = nearDepth;
+	else if (index == 1)
+		mBufferCache.psPerObjBuffer.nearDepths.y = nearDepth;
+	else if (index == 2)
+		mBufferCache.psPerObjBuffer.nearDepths.z = nearDepth;
+	else if (index == 3)
+		mBufferCache.psPerObjBuffer.nearDepths.w = nearDepth;
+
+	if (index == 0)
+		mBufferCache.psPerObjBuffer.farDepths.x = farDepth;
+	else if (index == 1)
+		mBufferCache.psPerObjBuffer.farDepths.y = farDepth;
+	else if (index == 2)
+		mBufferCache.psPerObjBuffer.farDepths.z = farDepth;
+	else if (index == 3)
+		mBufferCache.psPerObjBuffer.farDepths.w = farDepth;
+}
+
+void BasicDeferredSkinnedSortedShader::SetNrOfCascades(int nrOfCascades)
+{
+	mBufferCache.psPerObjBuffer.nrOfCascades = nrOfCascades;
+}
+
 void BasicDeferredSkinnedSortedShader::SetBoneTransforms(const XMFLOAT4X4 lowerBodyTransforms[], UINT numLowerBodyTransforms, const XMFLOAT4X4 upperBodyTransforms[], UINT numUpperBodyTransforms)
 {
 	for (UINT i = 0; i < numLowerBodyTransforms; ++i)
@@ -3073,7 +3274,7 @@ void BasicDeferredSkinnedSortedShader::SetShadowMapTexture(ID3D11DeviceContext* 
 
 void BasicDeferredSkinnedSortedShader::SetShadowTransform(XMMATRIX& shadowTransform)
 {
-	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
+	//mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
 }
 
 void BasicDeferredSkinnedSortedShader::SetRootBoneIndex(UINT rootBoneIndex)
@@ -3169,8 +3370,10 @@ SMAAColorEdgeDetectionShader::SMAAColorEdgeDetectionShader()
 
 SMAAColorEdgeDetectionShader::~SMAAColorEdgeDetectionShader()
 {
-	if (VS_PerFrameBuffer)
-		VS_PerFrameBuffer->Release();
+// 	if (VS_PerFrameBuffer)
+// 		VS_PerFrameBuffer->Release();
+
+	ReleaseCOM(VS_PerFrameBuffer);
 }
 
 bool SMAAColorEdgeDetectionShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -3272,11 +3475,15 @@ SMAADepthEdgeDetectionShader::SMAADepthEdgeDetectionShader()
 
 SMAADepthEdgeDetectionShader::~SMAADepthEdgeDetectionShader()
 {
-	if (VS_PerFrameBuffer)
-		VS_PerFrameBuffer->Release();
+// 	if (VS_PerFrameBuffer)
+// 		VS_PerFrameBuffer->Release();
 
-	if (PS_PerFrameBuffer)
-		PS_PerFrameBuffer->Release();
+	ReleaseCOM(VS_PerFrameBuffer);
+
+// 	if (PS_PerFrameBuffer)
+// 		PS_PerFrameBuffer->Release();
+
+	ReleaseCOM(PS_PerFrameBuffer);
 }
 
 bool SMAADepthEdgeDetectionShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -3415,8 +3622,10 @@ SMAALumaEdgeDetectionShader::SMAALumaEdgeDetectionShader()
 
 SMAALumaEdgeDetectionShader::~SMAALumaEdgeDetectionShader()
 {
-	if (VS_PerFrameBuffer)
-		VS_PerFrameBuffer->Release();
+// 	if (VS_PerFrameBuffer)
+// 		VS_PerFrameBuffer->Release();
+
+	ReleaseCOM(VS_PerFrameBuffer);
 }
 
 bool SMAALumaEdgeDetectionShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -3518,11 +3727,15 @@ SMAABlendingWeightCalculationsShader::SMAABlendingWeightCalculationsShader()
 
 SMAABlendingWeightCalculationsShader::~SMAABlendingWeightCalculationsShader()
 {
-	if (VS_PerFrameBuffer)
-		VS_PerFrameBuffer->Release();
+// 	if (VS_PerFrameBuffer)
+// 		VS_PerFrameBuffer->Release();
 
-	if (PS_PerFrameBuffer)
-		PS_PerFrameBuffer->Release();
+	ReleaseCOM(VS_PerFrameBuffer);
+
+// 	if (PS_PerFrameBuffer)
+// 		PS_PerFrameBuffer->Release();
+
+	ReleaseCOM(PS_PerFrameBuffer);
 }
 
 bool SMAABlendingWeightCalculationsShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -3671,11 +3884,15 @@ SMAANeighborhoodBlendingShader::SMAANeighborhoodBlendingShader()
 
 SMAANeighborhoodBlendingShader::~SMAANeighborhoodBlendingShader()
 {
-	if (VS_PerFrameBuffer)
-		VS_PerFrameBuffer->Release();
+// 	if (VS_PerFrameBuffer)
+// 		VS_PerFrameBuffer->Release();
 
-	if (PS_PerFrameBuffer)
-		PS_PerFrameBuffer->Release();
+	ReleaseCOM(VS_PerFrameBuffer);
+
+// 	if (PS_PerFrameBuffer)
+// 		PS_PerFrameBuffer->Release();
+
+	ReleaseCOM(PS_PerFrameBuffer);
 }
 
 bool SMAANeighborhoodBlendingShader::Init(ID3D11Device* device, ID3D11InputLayout* inputLayout)
@@ -3816,4 +4033,3 @@ void SMAANeighborhoodBlendingShader::SetVelocityTex(ID3D11DeviceContext* dc, ID3
 }
 #pragma endregion SMAANeighborhoodBlendingShader
 #pragma endregion SMAA
-
