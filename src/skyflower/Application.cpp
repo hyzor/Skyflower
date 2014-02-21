@@ -78,9 +78,10 @@ void Application::Start()
 	
 	m_backgroundMusicMenu.push_back("music/ants.opus");
 
-	m_backgroundMusicGame.push_back("music/happy_piano.opus");
+	m_backgroundMusicLevel1.push_back("music/happy_piano.opus");
+	m_backgroundMusicLevel2.push_back("music/daydreaming.opus");
 
-	m_backgroundMusicGameHubworld.push_back("music/happy_piano.opus");
+	m_backgroundMusicGameHubworld.push_back("music/apple_commercial.opus");
 
 	m_backgroundMusic = m_soundEngine->CreateSource();
 	m_backgroundMusic->SetRelativeToListener(true);
@@ -101,7 +102,7 @@ void Application::Start()
 	levelHandler->init(m_entityManager);
 
 	// Load Hub Level
-	levelHandler->queue(5);
+	levelHandler->queue(0);
 	levelHandler->loadQueued();
 
 	//m_entityManager->sendMessageToEntity("ActivateListener", "player");
@@ -239,10 +240,15 @@ void Application::Start()
 
 			m_GUI->GetGUIElement(loadingScreen)->SetVisible(false);
 
+			//hub
 			if (levelHandler->currentLevel() == 0)
 				setBackgroundMusicList(m_backgroundMusicGameHubworld);
-			else
-				setBackgroundMusicList(m_backgroundMusicGame);
+			//level 1
+			else if (levelHandler->currentLevel() == 4)
+				setBackgroundMusicList(m_backgroundMusicLevel1);
+			//level 2
+			else if (levelHandler->currentLevel() == 5)
+				setBackgroundMusicList(m_backgroundMusicLevel2);
 
 			m_oldTime = GetTime();
 		}
@@ -410,8 +416,10 @@ void Application::changeGameState(GameState newState)
 
 		if (levelHandler->currentLevel() == 0)
 			setBackgroundMusicList(m_backgroundMusicGameHubworld);
-		else
-			setBackgroundMusicList(m_backgroundMusicGame);
+		else if (levelHandler->currentLevel() == 4)
+			setBackgroundMusicList(m_backgroundMusicLevel1);
+		else if (levelHandler->currentLevel() == 5)
+			setBackgroundMusicList(m_backgroundMusicLevel2);
 
 		break;
 	case GameState::menu:
