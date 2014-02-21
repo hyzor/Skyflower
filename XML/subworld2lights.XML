@@ -1,29 +1,20 @@
 <root>
-    <Light entityName="spotLight1" id="3" isVisible="0" isCollidible="1" Type="spotLight ">
-		<spotLight xPos="-84.3191001532" yPos="107.198923913" zPos="104.505588587" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
-	</Light>
-	
-    <Light entityName="group5|pasted__spotLight1" id="4" isVisible="0" isCollidible="1" Type="spotLight ">
-		<spotLight xPos="-84.3191001532" yPos="107.198923913" zPos="104.505588587" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
-	</Light>
-	
-    <Light entityName="group6|pasted__spotLight1" id="5" isVisible="0" isCollidible="1" Type="spotLight ">
-		<spotLight xPos="-84.3191001532" yPos="107.198923913" zPos="104.505588587" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
-	</Light>
-	
-    <Light entityName="spotLight2" id="6" isVisible="0" isCollidible="1" Type="spotLight ">
-		<spotLight xPos="0.0" yPos="118.876711808" zPos="-0.0" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
-	</Light>
-	
-    <Light entityName="group7|pasted__spotLight2" id="7" isVisible="0" isCollidible="1" Type="spotLight ">
-		<spotLight xPos="0.0" yPos="118.876711808" zPos="-0.0" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
-	</Light>
-	
-    <Light entityName="group8|pasted__spotLight2" id="8" isVisible="0" isCollidible="1" Type="spotLight ">
-		<spotLight xPos="-12.280406184" yPos="136.65840384" zPos="-1.04695454775" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
-	</Light>
-	
-    <Light entityName="group9|pasted__group8|pasted__pasted__spotLight2" id="9" isVisible="0" isCollidible="1" Type="spotLight ">
-		<spotLight xPos="-12.280406184" yPos="136.65840384" zPos="-1.04695454775" r="1.0" g="1.0" b="1.0" intensity="1.0"/>
-	</Light>
+    <Light type="spotLight1" id="95" Type="spotLight ">
+        <spotLight  xPos="-146.374584497" yPos="220.298517695" zPos="-32.5007372587" r="1.0" g="1.0" b="1.0" intensity="1.0" coneAngle="40.0"/>
+    </Light>
+    <Light type="spotLight2" id="96" Type="spotLight ">
+        <spotLight  xPos="82.0846498422" yPos="76.9141675967" zPos="1.66533453694e-16" r="1.0" g="1.0" b="1.0" intensity="1.0" coneAngle="40.0"/>
+    </Light>
+    <Light type="spotLight3" id="97" Type="spotLight ">
+        <spotLight  xPos="-146.392836816" yPos="171.469486359" zPos="168.142293777" r="1.0" g="1.0" b="1.0" intensity="1.0" coneAngle="78.4969728943"/>
+    </Light>
+    <Light type="spotLight4" id="98" Type="spotLight ">
+        <spotLight  xPos="-173.83492749" yPos="234.564570483" zPos="319.680460046" r="1.0" g="1.0" b="1.0" intensity="1.0" coneAngle="52.7843241784"/>
+    </Light>
+    <Light type="spotLight5" id="99" Type="spotLight ">
+        <spotLight  xPos="-257.986716391" yPos="506.056801136" zPos="708.637676847" r="1.0" g="1.0" b="1.0" intensity="1.0" coneAngle="73.0837837174"/>
+    </Light>
+    <Light type="spotLight6" id="100" Type="spotLight ">
+        <spotLight  xPos="-787.935304229" yPos="269.331173166" zPos="715.323814977" r="1.0" g="1.0" b="1.0" intensity="1.0" coneAngle="96.0898379288"/>
+    </Light>
 </root>

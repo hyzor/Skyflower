@@ -556,8 +556,8 @@ void Application::OnKeyDown(unsigned short key)
 		break;
 	case 'R':
 		m_graphicsEngine->ClearLights();
-		levelHandler->queue(0);
-		m_entityManager->loadXML("subWorld1Lights.XML");
+		levelHandler->queue(5);
+		//m_entityManager->loadXML("subWorld2Lights.XML");
 			
 		break;
 	case VK_SPACE:

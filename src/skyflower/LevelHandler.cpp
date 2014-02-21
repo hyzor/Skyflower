@@ -87,7 +87,6 @@ int LevelHandler::currentLevel() const
 void LevelHandler::loadQueued()
 {
 	m_hasQueued = false;
-	printf("Thread started\n");
 
 	//get all entities to remove later
 	std::vector<Entity*> old;

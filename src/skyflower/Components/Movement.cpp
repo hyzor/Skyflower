@@ -201,6 +201,11 @@ void Movement::update(float deltaTime)
 
 		if (isMovingBackward || isMovingForward || isMovingLeft || isMovingRight)
 		{
+			/*char buffer[50];
+			sprintf(buffer, "Current Rotation: %f         Target rotation: %f", walkAngle, targetRot);
+			string t = buffer;
+			getOwner()->getModules()->gui->printText(t, 50, 20); */
+
 			if (std::abs((((int)targetRot) % 360) - ((int)walkAngle % 360)) > 1)
 			{
 				float tot = targetRot - walkAngle;
