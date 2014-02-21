@@ -15,7 +15,7 @@ void Goal::update(float dt)
 	}
 
 	//sphere test for goal mesh
-	Sphere cp = Sphere(getEntityPos(), 5);
+	Sphere cp = Sphere(getOwner()->returnPos(), 5);
 	Sphere player = Sphere(getEntityManager()->getEntity(1)->returnPos(), 5);
 	if (cp.Test(player))
 		getEntityManager()->sendMessageToEntity("Goal", getOwnerId());

@@ -11,7 +11,7 @@ void WallButton::update(float dt)
 	{
 		moveTo = getOwner()->getRelativePos();
 		startPos = moveTo;
-		downPos = dir*getEntityScale();
+		downPos = dir*getOwner()->returnScale();
 		first = false;
 	}
 
@@ -48,7 +48,7 @@ void WallButton::update(float dt)
 	}
 
 	//move button animation
-	getOwner()->updateRelativePos(getOwner()->getRelativePos() + (moveTo - getOwner()->getRelativePos()) * 10 * dt / (getEntityScale()*Vec3(1, 0, 1)).Length());
+	getOwner()->updateRelativePos(getOwner()->getRelativePos() + (moveTo - getOwner()->getRelativePos()) * 10 * dt / (getOwner()->returnScale()*Vec3(1, 0, 1)).Length());
 }
 
 void WallButton::Activate(Message const& msg)
@@ -66,5 +66,5 @@ void WallButton::Deactivate()
 
 bool WallButton::isDown()
 {
-	return (((startPos + downPos) - getOwner()->getRelativePos()).Length() < (getEntityScale()*Vec3(1,0,1)).Length() *0.69f);
+	return (((startPos + downPos) - getOwner()->getRelativePos()).Length() < (getOwner()->returnScale()*Vec3(1,0,1)).Length() *0.69f);
 }

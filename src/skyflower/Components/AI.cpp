@@ -13,7 +13,7 @@ void AI::addedToEntity()
 	requestMessage("StartMoving", &AI::startMoving);
 
 	if (!getOwner()->field)
-		getOwner()->field = getEntityManager()->modules->potentialField->CreateField(8, 8, getEntityPos());
+		getOwner()->field = getEntityManager()->modules->potentialField->CreateField(8, 8, getOwner()->returnPos());
 
 	target = nullptr;
 	getOwner()->sphere->Radius = 3.5f; // AI size

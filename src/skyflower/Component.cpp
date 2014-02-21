@@ -160,7 +160,7 @@ void Component::processPing(Message const & msg) {
 	cout << *this << " PING" << endl;
 }
 
-Vec3 Component::getEntityPos()
+/*Vec3 Component::getEntityPos()
 {
 	return this->fEntityManager->getEntityPos(this->fOwnerId);
 }
@@ -198,4 +198,4 @@ void Component::updateEntityScale(Vec3 scale)
 void Component::updateEntityVisibility(bool isVisible)
 {
 	this->fEntityManager->updateEntityVisibility(isVisible, this->fOwnerId);
-}
+}*/

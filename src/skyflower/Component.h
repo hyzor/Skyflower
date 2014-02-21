@@ -180,15 +180,15 @@ class Component {
 		string toString();
 
 		// entity-functions
-		Vec3 getEntityPos();
-		Vec3 getEntityRot();
-		Vec3 getEntityScale();
-		bool getEntityVisibility();
-		CollisionInstance* getEntityCollision();
-		void updateEntityPos(Vec3 pos);
-		void updateEntityRot(Vec3 rot);
-		void updateEntityScale(Vec3 scale);
-		void updateEntityVisibility(bool isVisible);
+		//Vec3 getEntityPos();
+		//Vec3 getEntityRot();
+		//Vec3 getEntityScale();
+		//bool getEntityVisibility();
+		//CollisionInstance* getEntityCollision();
+		//void updateEntityPos(Vec3 pos);
+		//void updateEntityRot(Vec3 rot);
+		//void updateEntityScale(Vec3 scale);
+		//void updateEntityVisibility(bool isVisible);
 
 	private:
 		// set owner

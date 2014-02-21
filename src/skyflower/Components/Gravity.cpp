@@ -31,14 +31,14 @@ void GravityComponent::removeFromEntity()
 
 void GravityComponent::update(float dt)
 {
-	Vec3 pos = getEntityPos();
+	Vec3 pos = getOwner()->returnPos();
 	
 	if (this->enabled)
 	{
 		this->p->AddGravityCalc(pos);
 	}
 
-	updateEntityPos(pos);
+	getOwner()->updatePos(pos);
 
 	getOwner()->wall = nullptr;
 	Entity *ground = nullptr;

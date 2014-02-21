@@ -3,6 +3,7 @@
 #include "shared/Vec3.h"
 
 #include "MoveTarget.h"
+#include "Entity.h"
 
 // Must be included last!
 #include "shared/debug.h"
@@ -45,10 +46,10 @@ void MoveTargetComponent::update(float deltaTime)
 
 	float positionalProgress = GetPositionalProgress(m_progress);
 	Vec3 targetPosition = (m_state == MoveTargetStateMovingToTarget? m_targetPosition : m_spawnPosition);
-	Vec3 direction = (targetPosition - getEntityPos()).Normalize();
+	Vec3 direction = (targetPosition - getOwner()->returnPos()).Normalize();
 	Vec3 position = targetPosition - direction * m_travelDistance * (1.0f - positionalProgress);
 
-	updateEntityPos(position);
+	getOwner()->updatePos(position);
 
 	if (m_progress >= 1.0f)
 	{
@@ -77,13 +78,13 @@ void MoveTargetComponent::update(float deltaTime)
 void MoveTargetComponent::moveToSpawn()
 {
 	// FIXME: This is positional progress!
-	m_progress = 1.0f - (getEntityPos() - m_spawnPosition).Length() / m_travelDistance;
+	m_progress = 1.0f - (getOwner()->returnPos() - m_spawnPosition).Length() / m_travelDistance;
 	m_state = MoveTargetStateMovingToSpawn;
 }
 
 void MoveTargetComponent::moveToTarget()
 {
-	m_progress = 1.0f - (getEntityPos() - m_targetPosition).Length() / m_travelDistance;
+	m_progress = 1.0f - (getOwner()->returnPos() - m_targetPosition).Length() / m_travelDistance;
 	m_state = MoveTargetStateMovingToTarget;
 }
 

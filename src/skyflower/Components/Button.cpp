@@ -11,7 +11,7 @@ void Button::update(float dt)
 	{
 		moveTo = getOwner()->getRelativePos();
 		startPos = moveTo;
-		downPos = Vec3(0, -getEntityScale().Y, 0);
+		downPos = Vec3(0, -getOwner()->returnScale().Y, 0);
 		first = false;
 		down = true;
 	}
@@ -49,7 +49,7 @@ void Button::update(float dt)
 	}
 
 	//move button animation
-	getOwner()->updateRelativePos(getOwner()->getRelativePos() + (moveTo - getOwner()->getRelativePos()) * 10 * dt / getEntityScale().Y);
+	getOwner()->updateRelativePos(getOwner()->getRelativePos() + (moveTo - getOwner()->getRelativePos()) * 10 * dt / getOwner()->returnScale().Y);
 }
 
 void Button::Activate(Message const& msg)
@@ -81,5 +81,5 @@ void Button::Deactivate()
 
 bool Button::isDown()
 {
-	return (((startPos + downPos) - getOwner()->getRelativePos()).Length() < getEntityScale().Y *0.69f);
+	return (((startPos + downPos) - getOwner()->getRelativePos()).Length() < getOwner()->returnScale().Y *0.69f);
 }

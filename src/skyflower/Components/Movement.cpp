@@ -104,29 +104,28 @@ void Movement::removeFromEntity()
 
 void Movement::update(float deltaTime)
 {
-	Vec3 pos = getEntityPos();
-	Vec3 rot = getEntityRot();
+	Vec3 pos = getOwner()->returnPos();
+	Vec3 rot = getOwner()->returnRot();
 	p->Update(deltaTime);
 
 	GravityComponent *gravity = getOwner()->getComponent<GravityComponent*>("Gravity");
+	AI* ai = getOwner()->getComponent<AI *>("AI");
 
-	if (isInAir)
+	if (isInAir && getOwner()->sphere && getOwnerId() == 1)
 	{
 		timeFalling += deltaTime;
 		for (int j = 0; j < getEntityManager()->getNrOfEntities(); j++)
 		{
-			Entity* entity = getEntityManager()->getEntity(getEntityManager()->getEntityId(j));
+			Entity* entity = getEntityManager()->getEntityByIndex(j);
 
-			if (entity->hasComponents("AI") && getOwnerId() == 1)
+			if (entity->sphere && entity->hasComponents("AI"))
 			{
-				if (entity->sphere != NULL && getOwner()->sphere != NULL && entity->sphere->Test(*getOwner()->sphere))
+				if (entity->sphere->Test(*getOwner()->sphere))
 				{
 					Vec3 AIPos = entity->returnPos();
 					Vec3 entityPos = getOwner()->returnPos();
 					if (entityPos.Y > AIPos.Y)
-					{
 						sendMessageToEntity(entity->fId, "isDizzy");
-					}
 				}
 			}
 		}
@@ -310,7 +309,7 @@ void Movement::update(float deltaTime)
 				}
 			}
 		}
-		else if (getOwner()->getComponent<AI *>("AI"))
+		else if (ai)
 		{
 			// AI animations
 
@@ -362,10 +361,10 @@ void Movement::update(float deltaTime)
 		this->mParticleSystemDizzy->SetEmitPos(XMFLOAT3(particleSystemPosition.X, particleSystemPosition.Y, particleSystemPosition.Z));
 	}
 
-	updateEntityPos(pos);
+	getOwner()->updatePos(pos);
 
 	// Update player and AI rotation.
-	if (getOwnerId() == 1 || getOwner()->getComponent<AI *>("AI"))
+	if (getOwnerId() == 1 || ai)
 	{
 		float d = (rot.Y - pRot.Y);
 
@@ -376,7 +375,7 @@ void Movement::update(float deltaTime)
 
 		Vec3 nRot = pRot + Vec3(0,d,0) * 14 *deltaTime;
 
-		updateEntityRot(nRot);
+		getOwner()->updateRot(nRot);
 		pRot = nRot;
 	}
 }
@@ -496,7 +495,7 @@ void Movement::Jump(Message const& msg)
 	}
 	else if (canMove)
 	{
-		Vec3 pos = getEntityPos();
+		Vec3 pos = getOwner()->returnPos();
 
 		float forwardJumpSpeed = 0.0f;
 
@@ -519,7 +518,7 @@ void Movement::Jump(Message const& msg)
 			else
 				this->mInitialJumpDir = None;
 
-			updateEntityPos(pos);
+			getOwner()->updatePos(pos);
 
 			Entity *owner = getOwner();
 			GravityComponent *gravity = owner->getComponent<GravityComponent*>("Gravity");

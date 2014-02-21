@@ -46,7 +46,7 @@ void Checkpoint::update(float dt)
 	}
 
 	//sphere test for flower checkpoint mesh
-	Sphere cp = Sphere(getEntityPos(), 5);
+	Sphere cp = Sphere(getOwner()->returnPos(), 5);
 	Sphere player = Sphere(getEntityManager()->getEntity(1)->returnPos(), 5);
 
 	if (cp.Test(player))
@@ -88,7 +88,7 @@ void Checkpoint::Activate(Message const& msg)
 			getEntityManager()->sendMessageToEntity("Activated", getOwnerId()); //event managment
 
 			// Update and activate particle system.
-			Vec3 pos = getEntityPos();
+			Vec3 pos = getOwner()->returnPos();
 			pos.Y += 10.0f;
 			pos.Z += 1.0f;
 
