@@ -30,6 +30,9 @@ private:
 	float speed;
 	Vec3 pNormal;
 
+	Vec3 m_oldPosition;
+	float m_distanceTraveled;
+
 	Vec3 fallDir();
 	void respawn(Message const& msg);
 
