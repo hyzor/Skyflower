@@ -131,7 +131,6 @@ void Movement::update(float deltaTime)
 		}
 	}
 
-
 	if (gravity && !gravity->isEnabled())
 	{
 		if (this->timeUntilGravityEnable > 0.0f)
