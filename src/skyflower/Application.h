@@ -86,7 +86,8 @@ private:
 	int m_memChartID;
 
 	std::vector<std::string> m_backgroundMusicMenu;
-	std::vector<std::string> m_backgroundMusicGame;
+	std::vector<std::string> m_backgroundMusicLevel1;
+	std::vector<std::string> m_backgroundMusicLevel2;
 	std::vector<std::string> m_backgroundMusicGameHubworld;
 
 	SoundSource *m_backgroundMusic;
