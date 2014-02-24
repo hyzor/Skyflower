@@ -85,7 +85,7 @@ void Application::Start()
 
 	m_backgroundMusic = m_soundEngine->CreateSource();
 	m_backgroundMusic->SetRelativeToListener(true);
-	m_backgroundMusic->SetVolume(0.5f);
+	m_backgroundMusic->SetVolume(0.25f);
 	m_backgroundMusic->SetPlaybackFinishedHandler([this]() {
 		m_backgroundMusicIndex = (m_backgroundMusicIndex + 1) % m_backgroundMusicList->size();
 
