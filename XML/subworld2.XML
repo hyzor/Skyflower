@@ -1,6 +1,6 @@
 <root>
 	<Entity type="player" id="1"
-		xPos="0" yPos="0" zPos="0"
+		xPos="-122.25639555" yPos="27.452823515" zPos="-15.6426041247"
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="1.0" yScale="1.0" zScale="1.0"
 		model="Models/Player/playerAnimated"
@@ -63,13 +63,13 @@
     <Entity type="object " model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2cloud" id="11" isCollidible="0" isVisible="1" isAnimated="0" xPos="-752.736523018" yPos="-3.54239814852" zPos="697.345111645" xRot="0.0" yRot="-1.39316624316" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <Messenger/>
     </Entity>
-    <Entity type="plattform " model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform3grass" id="12" isCollidible="1" isVisible="1" isAnimated="0" xPos="-150.654158319" yPos="31.2559988012" zPos="139.67353372" xRot="0.0993061245312" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
+    <Entity type="plattform " model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform3grass" id="12" isCollidible="1" isVisible="1" isAnimated="0" xPos="-150.654158319" yPos="31.2559988012" zPos="139.67353372" xRot="-0.1" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <Messenger/>
     </Entity>
-    <Entity type="plattform " model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform3mud" id="13" isCollidible="1" isVisible="1" isAnimated="0" xPos="-151.252846238" yPos="31.6663704536" zPos="141.225919174" xRot="0.0940898913328" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
+    <Entity type="plattform " model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform3mud" id="13" isCollidible="1" isVisible="1" isAnimated="0" xPos="-151.252846238" yPos="31.6663704536" zPos="141.225919174" xRot="-0.1" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <Messenger/>
     </Entity>
-    <Entity type="object " model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform3cloud" id="14" isCollidible="0" isVisible="1" isAnimated="0" xPos="-151.252846238" yPos="31.6663704536" zPos="141.225919174" xRot="0.0940898913328" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
+    <Entity type="object " model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform3cloud" id="14" isCollidible="0" isVisible="1" isAnimated="0" xPos="-151.252846238" yPos="31.6663704536" zPos="141.225919174" xRot="-0.1" rot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <Messenger/>
     </Entity>
     <Entity type="object " model="Models\Worlds\Subworld 2_FINAL\subworld2\bollplankcloud" id="15" isCollidible="0" isVisible="1" isAnimated="0" xPos="-202.428319014" yPos="22.7084459802" zPos="5.0458748685" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
@@ -221,7 +221,7 @@
         <Button toggle=""/>
         <Event script="buttonBlue"/>
     </Entity>
-    <Entity type="object " model="Models\Worlds\Subworld 2_FINAL\subworld2\Ball" id="57" isCollidible="1" isVisible="1" isAnimated="0" xPos="-154.118725833" yPos="28.8054030164" zPos="1.96318219787" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
+    <Entity type="object " model="Models\Worlds\Subworld 2_FINAL\subworld2\Ball" id="57" isCollidible="1" isVisible="1" isAnimated="0" xPos="-154.118725833" yPos="38.8054030164" zPos="1.96318219787" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <Messenger/>
         <Gravity/>
         <Health/>
@@ -275,7 +275,7 @@
         <Checkpoint/>
         <MorphAnimation path="Models\Checkpoint\Checkpoint_FINAL\" file="checkPoint.morph"/>
     </Entity>
-    <Entity type="object " model="Models\Worlds\Subworld 2_FINAL\subworld2\checkpointBase" id="68" isCollidible="0" isVisible="1" isAnimated="0" xPos="-122.25639555" yPos="25.452823515" zPos="-15.6426041247" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
+    <Entity type="object " model="" id="68" isCollidible="0" isVisible="1" isAnimated="0" xPos="-122.25639555" yPos="25.452823515" zPos="-15.6426041247" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <Messenger/>
         <Checkpoint/>
         <MorphAnimation path="Models\Checkpoint\Checkpoint_FINAL\" file="checkPoint.morph"/>
@@ -362,13 +362,13 @@
     <Entity type="object " model="Models\Worlds\Subworld 2_FINAL\subworld2\rock6" id="88" isCollidible="1" isVisible="1" isAnimated="0" xPos="-149.326950058" yPos="54.5652975513" zPos="701.285592879" xRot="0.0" yRot="0.0" zRot="0.0" xScale="11.1388659323" yScale="11.1388659323" zScale="11.1388659323">
         <Messenger/>
     </Entity>
-    <Entity type="object " model="Models\Worlds\Subworld 2_FINAL\subworld2\rock2" id="89" isCollidible="1" isVisible="1" isAnimated="0" xPos="-125.727218158" yPos="24.5662125922" zPos="30.1401844849" xRot="0.0" yRot="0.0" zRot="0.0" xScale="4.56123903905" yScale="4.56123903905" zScale="4.56123903905">
+    <Entity type="object " model="Models\Worlds\Subworld 2_FINAL\subworld2\rock2" id="89" isCollidible="1" isVisible="1" isAnimated="0" xPos="0" yPos="0" zPos="0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="4.56123903905" yScale="4.56123903905" zScale="4.56123903905">
         <Messenger/>
     </Entity>
     <Entity type="object " model="Models\Worlds\Subworld 2_FINAL\subworld2\rock7" id="90" isCollidible="1" isVisible="1" isAnimated="0" xPos="-281.28505582" yPos="105.958288895" zPos="815.549536586" xRot="0.0" yRot="0.0" zRot="0.0" xScale="15.740693156" yScale="15.740693156" zScale="15.740693156">
         <Messenger/>
     </Entity>
-    <Entity type="object " model="Models\Worlds\Subworld 2_FINAL\subworld2\rock3" id="91" isCollidible="1" isVisible="1" isAnimated="0" xPos="-217.663888771" yPos="81.6924872386" zPos="330.562385224" xRot="6.46289958911" yRot="0.0" zRot="0.0" xScale="3.22727364384" yScale="5.93699430247" zScale="3.22727364384">
+    <Entity type="object " model="Models\Worlds\Subworld 2_FINAL\subworld2\rock3" id="91" isCollidible="1" isVisible="1" isAnimated="0" xPos="-6.37177594061" yPos="-10.4756680473" zPos="8.49696289447" xRot="6.46289958911" yRot="0.0" zRot="0.0" xScale="3.22727364384" yScale="5.93699430247" zScale="3.22727364384">
         <Messenger/>
     </Entity>
     <Entity type="object " model="Models\Worlds\Subworld 2_FINAL\subworld2\rock1" id="92" isCollidible="1" isVisible="1" isAnimated="0" xPos="11.2211471191" yPos="-5.06486099817" zPos="-14.9682041674" xRot="0.0" yRot="0.0" zRot="0.0" xScale="2.60277897762" yScale="2.60277897762" zScale="2.60277897762">

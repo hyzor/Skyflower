@@ -97,7 +97,6 @@ void Application::Start()
 	setBackgroundMusicList(m_backgroundMusicMenu);
 
 	m_entityManager = new EntityManager("../../XML/", &modules);
-	//m_entityManager->loadXML("player.xml");
 
 	levelHandler->init(m_entityManager);
 
@@ -573,6 +572,8 @@ void Application::OnKeyDown(unsigned short key)
 	case 'O':
 		m_graphicsEngine->SetPostProcessingEffects(m_graphicsEngine->GetPostProcessingEffects() ^ POST_PROCESSING_DOF);
 		break;
+	case 'Q':
+		m_entityManager->getEntity(1)->getComponent<Health*>("Health")->setHealth(0);
 #if 0
 	case 'Y':
 		m_SSAOradius += 0.1f;
