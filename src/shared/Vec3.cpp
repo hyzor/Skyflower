@@ -59,19 +59,19 @@ Vec3 Vec3::Cross(const Vec3 &v1, const Vec3 &v2)
 	return res;
 }
 
-Vec3 Vec3::operator+(const Vec3 &v)
+Vec3 Vec3::operator+(const Vec3 &v) const
 {
 	return Vec3(this->X+v.X, this->Y+v.Y, this->Z+v.Z);
 }
-Vec3 Vec3::operator-(const Vec3 &v)
+Vec3 Vec3::operator-(const Vec3 &v) const
 {
 	return Vec3(this->X - v.X, this->Y - v.Y, this->Z - v.Z);
 }
-Vec3 Vec3::operator*(const Vec3 &v)
+Vec3 Vec3::operator*(const Vec3 &v) const
 {
 	return Vec3(this->X * v.X, this->Y * v.Y, this->Z * v.Z);
 }
-Vec3 Vec3::operator/(const Vec3 &v)
+Vec3 Vec3::operator/(const Vec3 &v) const
 {
 	return Vec3(this->X / v.X, this->Y / v.Y, this->Z / v.Z);
 }
@@ -97,20 +97,20 @@ Vec3 Vec3::operator/=(const Vec3 &v)
 	return *this;
 }
 
-Vec3 Vec3::operator*(float v)
+Vec3 Vec3::operator*(float v) const
 {
 	return Vec3(this->X * v, this->Y * v, this->Z * v);
 }
-Vec3 Vec3::operator/(float v)
+Vec3 Vec3::operator/(float v) const
 {
 	return Vec3(this->X / v, this->Y / v, this->Z / v);
 }
 
-Vec3 Vec3::operator*(int v)
+Vec3 Vec3::operator*(int v) const
 {
 	return Vec3(this->X * v, this->Y * v, this->Z * v);
 }
-Vec3 Vec3::operator/(int v)
+Vec3 Vec3::operator/(int v) const
 {
 	return Vec3(this->X / v, this->Y / v, this->Z / v);
 }
@@ -137,29 +137,29 @@ Vec3 Vec3::operator/=(int v)
 	return *this;
 }
 
-bool Vec3::operator==(const Vec3 &v)
+bool Vec3::operator==(const Vec3 &v) const
 {
 	return this->X == v.X && this->Y == v.Y && this->Z == v.Z;
 }
 
-bool Vec3::operator!=(const Vec3 &v)
+bool Vec3::operator!=(const Vec3 &v) const
 {
 	return !(*this == v);
 }
 
-bool Vec3::operator==(float v)
+bool Vec3::operator==(float v) const
 {
 	return this->X == v && this->Y == v && this->Z == v;
 }
-bool Vec3::operator!=(float v)
+bool Vec3::operator!=(float v) const
 {
 	return !(*this == v);
 }
-bool Vec3::operator==(int v)
+bool Vec3::operator==(int v) const
 {
 	return this->X == v && this->Y == v && this->Z == v;
 }
-bool Vec3::operator!=(int v)
+bool Vec3::operator!=(int v) const
 {
 	return !(*this == v);
 }
