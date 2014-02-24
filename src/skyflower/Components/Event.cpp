@@ -481,12 +481,15 @@ int Event::MoveToSpawn(lua_State* L)
 
 	EntityId entityID = (Cistron::EntityId)lua_tointeger(L, 1);
 	Entity *entity = entityManager->getEntity(entityID);
+	
+
 
 	if (entity)
 	{
 		MoveTargetComponent *component = entity->getComponent<MoveTargetComponent *>("MoveTarget");
 
 		if (component)
+			cout << "MOVING" << endl;
 			component->moveToSpawn();
 	}
 
@@ -782,4 +785,62 @@ int Event::ButtonUp(lua_State* L)
 			entity->getComponent<Button*>("Button")->Deactivate();
 	}
 	return 0;
+}
+
+int Event::FallingPlatform(lua_State* L)
+{
+	bool flag = false;
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+		Entity* player = entityManager->getEntity(1);
+
+
+		if (player->ground != NULL)
+		{
+			if (player->ground->fId == entity->fId)
+			{
+				flag = true;
+			}
+		}
+	}
+
+	lua_pushboolean(L, flag);
+
+	return 1;
+}
+
+int Event::OnAPlatform(lua_State* L)
+{
+	bool flag = false;
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		Entity* player = entityManager->getEntity(1);
+
+		if (player->ground != NULL)
+		{
+			if (player->ground->fId == 5)
+			{
+				flag = true;
+			}
+			if (player->ground->fId == 6)
+			{
+				flag = true;
+			}
+			if (player->ground->fId == 7)
+			{
+				flag = true;
+			}
+			if (player->ground->fId == 8)
+			{
+				flag = true;
+			}
+		}
+	}
+
+	lua_pushboolean(L, flag);
+
+	return 1;
 }
