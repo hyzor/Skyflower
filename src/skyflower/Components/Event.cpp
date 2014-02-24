@@ -489,7 +489,6 @@ int Event::MoveToSpawn(lua_State* L)
 		MoveTargetComponent *component = entity->getComponent<MoveTargetComponent *>("MoveTarget");
 
 		if (component)
-			cout << "MOVING" << endl;
 			component->moveToSpawn();
 	}
 
