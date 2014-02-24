@@ -97,6 +97,34 @@ function update_temporaryFlowers(id, dt)
 	end
 end
 
+function load_fallingPlatform(id)
+	StartUpdate()
+end
+
+standingTimer = 0
+downTimer = 0
+function update_fallingPlatform(id, dt)	
+	if FallingPlatform(id) then
+		downTimer = 0
+		standingTimer = standingTimer +dt;
+		if standingTimer > 1.5 then
+			MoveToTarget(id)
+			standingTimer = 0
+		end	
+	end
+	if not OnAPlatform() then
+		downTimer = downTimer + dt
+		Print(downTimer)
+		if downTimer > 6 then
+			downTimer = 0
+			MoveToSpawn(5)
+			MoveToSpawn(6)
+			MoveToSpawn(7)
+			MoveToSpawn(8)
+		end
+	end
+end
+
 
 
 --aiPush script--

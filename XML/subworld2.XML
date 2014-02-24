@@ -1,6 +1,6 @@
 <root>
 	<Entity type="player" id="1"
-		xPos="0" yPos="0" zPos="0"
+		xPos="-122.25639555" yPos="25.452823515" zPos="-15.6426041247"
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="1.0" yScale="1.0" zScale="1.0"
 		model="Models/Player/playerAnimated"
@@ -22,22 +22,22 @@
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform1cloud" id="4" isCollidible="0" isVisible="1" isAnimated="0" xPos="-6.37177594061" yPos="-10.4756680473" zPos="8.49696289447" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\fallingPlattfrom" id="5" isCollidible="1" isVisible="1" isAnimated="0" xPos="-86.8199838021" yPos="9.4831753434" zPos="-11.0478030863" xRot="-0.0" yRot="-0.171741150516" zRot="-0.0" xScale="2.94285049618" yScale="2.94285049618" zScale="2.94285049618">
         <MoveTarget continuous="0" duration="2" easingPower="3" targetPosX="-87" targetPosY="-121" targetPosZ="-11"/>
-        <Event script="fallingPlattform"/>
+        <Event script="fallingPlatform"/>
         <Touch/>
     </Entity>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\fallingPlattfrom" id="6" isCollidible="1" isVisible="1" isAnimated="0" xPos="-101.850514288" yPos="16.6842801894" zPos="-16.1897722309" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="2.94285049618" yScale="2.94285049618" zScale="2.94285049618">
         <MoveTarget continuous="0" duration="2" easingPower="3" targetPosX="-101" targetPosY="-75" targetPosZ="-16"/>
-        <Event script="fallingPlattform"/>
+        <Event script="fallingPlatform"/>
         <Touch/>
     </Entity>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\fallingPlattfrom" id="7" isCollidible="1" isVisible="1" isAnimated="0" xPos="-67.437452425" yPos="2.63962550888" zPos="-16.1897722309" xRot="-0.0" yRot="0.53206591249" zRot="-0.0" xScale="2.94285049618" yScale="2.94285049618" zScale="2.94285049618">
         <MoveTarget continuous="0" duration="2" easingPower="3" targetPosX="-67" targetPosY="-112" targetPosZ="-16"/>
-        <Event script="fallingPlattform"/>
+        <Event script="fallingPlatform"/>
         <Touch/>
     </Entity>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\fallingPlattfrom" id="8" isCollidible="1" isVisible="1" isAnimated="0" xPos="-44.2432225832" yPos="-5.23394529573" zPos="-16.1897722309" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="2.94285049618" yScale="2.94285049618" zScale="2.94285049618">
         <MoveTarget continuous="0" duration="2" easingPower="3" targetPosX="-44" targetPosY="-135" targetPosZ="-16"/>
-        <Event script="fallingPlattform"/>
+        <Event script="fallingPlatform"/>
         <Touch/>
     </Entity>
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2grass" id="9" isCollidible="1" isVisible="1" isAnimated="0" xPos="-800.26268583" yPos="-3.54239814852" zPos="736.91988546" xRot="-0.0" yRot="1.39316624316" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>

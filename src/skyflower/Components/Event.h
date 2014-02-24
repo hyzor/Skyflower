@@ -81,6 +81,9 @@ public:
 
 		//to deactivate the button
 		lua_register(sh->L, "ButtonUp", Event::ButtonUp);
+
+		lua_register(sh->L, "FallingPlatform", Event::FallingPlatform);
+		lua_register(sh->L, "OnAPlatform", Event::OnAPlatform);
 	};
 
 	// we are added to an Entity, and thus to the component system
@@ -160,6 +163,8 @@ private:
 	static int CompletedLevelCount(lua_State* L);
 
 	static int ButtonUp(lua_State* L);
+	static int FallingPlatform(lua_State* L);
+	static int OnAPlatform(lua_State* L);
 };
 
 #endif
