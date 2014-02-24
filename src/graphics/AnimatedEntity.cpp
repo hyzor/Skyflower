@@ -171,7 +171,7 @@ void AnimatedEntity::Draw(ID3D11DeviceContext* dc, Camera* cam, BasicDeferredSki
 	{
 		UINT matIndex = mInstance.model->meshes[i].mMaterialIndex;
 
-		deferredShader->SetMaterial(mInstance.model->mat[matIndex]);
+		deferredShader->SetMaterial(mInstance.model->mat[matIndex], mInstance.model->mGlobalMaterialIndex[matIndex]);
 		deferredShader->SetDiffuseMap(dc, mInstance.model->diffuseMapSRV[matIndex]);
 		//shader->SetNormalMap(dc, mInstance.model->normalMapSRV[matIndex]);
 		deferredShader->UpdatePerObj(dc);

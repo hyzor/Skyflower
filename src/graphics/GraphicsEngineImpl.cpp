@@ -79,6 +79,8 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 		delete mMorphModels[i];
 	}
 
+	mMaterials.clear();
+
 	ReleaseCOM(mLineVertexBuffer);
 
 	delete[] mPointLights;
@@ -1329,7 +1331,9 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 			{
 				UINT matIndex = mInstances[i]->model->meshes[j].MaterialIndex;
 
-				mShaderHandler->mBasicDeferredShader->SetMaterial(mInstances[i]->model->mat[matIndex]);
+				//mShaderHandler->mBasicDeferredShader->SetMaterial(mInstances[i]->model->mat[matIndex]);
+				mShaderHandler->mBasicDeferredShader->SetMaterial(mInstances[i]->model->mat[matIndex],
+					mInstances[i]->model->mGlobalMaterialIndex[matIndex]);
 				mShaderHandler->mBasicDeferredShader->SetDiffuseMap(mD3D->GetImmediateContext(), mInstances[i]->model->diffuseMapSRV[matIndex]);
 				mShaderHandler->mBasicDeferredShader->UpdatePerObj(mD3D->GetImmediateContext());
 				mD3D->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -1427,7 +1431,8 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 			for (UINT j = 0; j < mMorphInstances[i]->model->mTargetModels.begin()->nrOfMeshes; ++j)
 			{
 				UINT matIndex = mMorphInstances[i]->model->mTargetModels.begin()->meshes[j].MaterialIndex;
-				mShaderHandler->mDeferredMorphShader->SetMaterial(mMorphInstances[i]->model->mat[matIndex]);
+				mShaderHandler->mDeferredMorphShader->SetMaterial(mMorphInstances[i]->model->mat[matIndex],
+					mMorphInstances[i]->model->mGlobalMaterialIndex[matIndex]);
 				mShaderHandler->mDeferredMorphShader->SetDiffuseMap(mD3D->GetImmediateContext(), mMorphInstances[i]->model->diffuseMapSRV[matIndex]);
 				mShaderHandler->mDeferredMorphShader->UpdatePerObj(mD3D->GetImmediateContext());
 
@@ -1483,7 +1488,8 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 			for (UINT j = 0; j < mSkinnedSortedInstances[i]->model->meshes.size(); ++j)
 			{
 				UINT matIndex = mSkinnedSortedInstances[i]->model->meshes[j].mMaterialIndex;
-				mShaderHandler->mBasicDeferredSkinnedSortedShader->SetMaterial(mSkinnedSortedInstances[i]->model->mat[matIndex]);
+				mShaderHandler->mBasicDeferredSkinnedSortedShader->SetMaterial(mSkinnedSortedInstances[i]->model->mat[matIndex],
+					mSkinnedSortedInstances[i]->model->mGlobalMaterialIndex[matIndex]);
 				mShaderHandler->mBasicDeferredSkinnedSortedShader->SetDiffuseMap(mD3D->GetImmediateContext(), mSkinnedSortedInstances[i]->model->diffuseMapSRV[matIndex]);
 				mShaderHandler->mBasicDeferredSkinnedSortedShader->UpdatePerObj(mD3D->GetImmediateContext());
 
@@ -1524,7 +1530,7 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	
  	mShaderHandler->mLightDeferredToTextureShader->SetDiffuseTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Diffuse));
 	mShaderHandler->mLightDeferredToTextureShader->SetNormalTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Normal));
-	mShaderHandler->mLightDeferredToTextureShader->SetSpecularTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Specular));
+	//mShaderHandler->mLightDeferredToTextureShader->SetSpecularTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Specular));
 	mShaderHandler->mLightDeferredToTextureShader->SetVelocityTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Velocity));
 	mShaderHandler->mLightDeferredToTextureShader->SetSSAOTexture(mD3D->GetImmediateContext(), mSSAOTexture->GetShaderResourceView());
 
@@ -1620,7 +1626,7 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 
 	mShaderHandler->mLightDeferredToTextureShader->SetDiffuseTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Diffuse));
 	mShaderHandler->mLightDeferredToTextureShader->SetNormalTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Normal));
-	mShaderHandler->mLightDeferredToTextureShader->SetSpecularTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Specular));
+	//mShaderHandler->mLightDeferredToTextureShader->SetSpecularTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Specular));
 	mShaderHandler->mLightDeferredToTextureShader->SetVelocityTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Velocity));
 	mShaderHandler->mLightDeferredToTextureShader->SetSSAOTexture(mD3D->GetImmediateContext(), mSSAOTexture->GetShaderResourceView());
 
@@ -1720,22 +1726,32 @@ void GraphicsEngineImpl::UpdateSceneData()
 		// First clear the material cache
 		mMaterials.clear();
 
+		UINT curIndex = 0;
+
 		// Cache static object materials
 		for (auto& it(mModels.begin()); it != mModels.end(); ++it)
 		{
+			it->second->mGlobalMaterialIndex.clear();
+
 			if (it->second->mat.size() > 0 && it->second->meshCount > 0)
 			{
 				if (it->second->mat.size() > 1)
 				{
+					it->second->mGlobalMaterialIndex.push_back(curIndex);
+
 					// Skip loading default materials
 					for (UINT i = 1; i < it->second->mat.size(); ++i)
 					{
 						mMaterials.push_back(&it->second->mat[i]);
+						it->second->mGlobalMaterialIndex.push_back(curIndex);
+						curIndex++;
 					}
 				}
 				else
 				{
 					mMaterials.push_back(&it->second->mat.front());
+					it->second->mGlobalMaterialIndex.push_back(curIndex);
+					curIndex++;
 				}
 			}
 		}
@@ -1743,19 +1759,27 @@ void GraphicsEngineImpl::UpdateSceneData()
 		// Cache skinned object materials
 		for (auto& it(mSkinnedModels.begin()); it != mSkinnedModels.end(); ++it)
 		{
-			if (it->second->mat.size() > 0 && it->second->mat.size() > 0)
+			it->second->mGlobalMaterialIndex.clear();
+
+			if (it->second->mat.size() > 0 && it->second->numMeshes > 0)
 			{
 				if (it->second->mat.size() > 1)
 				{
+					it->second->mGlobalMaterialIndex.push_back(curIndex);
+
 					// Skip loading default materials
 					for (UINT i = 1; i < it->second->mat.size(); ++i)
 					{
 						mMaterials.push_back(&it->second->mat[i]);
+						it->second->mGlobalMaterialIndex.push_back(curIndex);
+						curIndex++;
 					}
 				}
 				else
 				{
 					mMaterials.push_back(&it->second->mat.front());
+					it->second->mGlobalMaterialIndex.push_back(curIndex);
+					curIndex++;
 				}
 			}
 		}
@@ -1768,17 +1792,53 @@ void GraphicsEngineImpl::UpdateSceneData()
 		// TODO: Load only materials and textures for the base model and use them.
 		for (UINT i = 0; i < mMorphModels.size(); ++i)
 		{
+			mMorphModels[i]->mGlobalMaterialIndex.clear();
+
 			if (mMorphModels[i]->mat.size() > 1)
 			{
+				mMorphModels[i]->mGlobalMaterialIndex.push_back(curIndex);
+
 				// Skip loading default materials
 				for (UINT j = 1; j < mMorphModels[i]->mat.size(); ++j)
 				{
 					mMaterials.push_back(&mMorphModels[i]->mat[j]);
+					mMorphModels[i]->mGlobalMaterialIndex.push_back(curIndex);
+					curIndex++;
 				}
 			}
 			else
 			{
 				mMaterials.push_back(&mMorphModels[i]->mat.front());
+				mMorphModels[i]->mGlobalMaterialIndex.push_back(curIndex);
+				curIndex++;
+			}
+		}
+
+		// Cache skinned sorted object materials
+		for (auto& it(mSkinnedSortedModels.begin()); it != mSkinnedSortedModels.end(); ++it)
+		{
+			it->second->mGlobalMaterialIndex.clear();
+
+			if (it->second->mat.size() > 0 && it->second->numMeshes > 0)
+			{
+				if (it->second->mat.size() > 1)
+				{
+					it->second->mGlobalMaterialIndex.push_back(curIndex);
+
+					// Skip loading default materials
+					for (UINT i = 1; i < it->second->mat.size(); ++i)
+					{
+						mMaterials.push_back(&it->second->mat[i]);
+						it->second->mGlobalMaterialIndex.push_back(curIndex);
+						curIndex++;
+					}
+				}
+				else
+				{
+					mMaterials.push_back(&it->second->mat.front());
+					it->second->mGlobalMaterialIndex.push_back(curIndex);
+					curIndex++;
+				}
 			}
 		}
 
@@ -1787,6 +1847,9 @@ void GraphicsEngineImpl::UpdateSceneData()
 		// Every model instance that's drawn has to know where in this material array
 		// its material is indexed when drawing the instances, then outputting the index
 		// into the deferred diffuse render target w-component.
+
+		mShaderHandler->mLightDeferredToTextureShader->SetMaterials(mD3D->GetImmediateContext(),
+			mMaterials.size(), mMaterials.data());
 }
 
 DirectionalLight* GraphicsEngineImpl::AddDirLight(Vec3 color, Vec3 direction, float intensity)

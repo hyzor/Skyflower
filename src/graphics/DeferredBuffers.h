@@ -7,7 +7,7 @@ enum DeferredBuffersIndex
 {
 	Diffuse = 0,
 	Normal,
-	Specular,
+	//Specular,
 	Velocity,
 	//LitScene,
 	Background,

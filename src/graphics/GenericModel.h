@@ -28,6 +28,7 @@ public:
 	std::vector<ID3D11ShaderResourceView*> normalMapSRV;
 
 	std::vector<Mesh> meshes;
+	std::vector<UINT> mGlobalMaterialIndex;
 
 	// Pointer to all vertices of all meshes
 	//std::vector<Vertex::Basic32*> vertices;

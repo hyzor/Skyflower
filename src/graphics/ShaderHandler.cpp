@@ -1316,9 +1316,10 @@ void BasicDeferredShader::SetWorldViewProjTex(XMMATRIX& world, XMMATRIX& viewPro
 	mBufferCache.vsPerObjBuffer.texTransform = XMMatrixScaling(1.0f, 1.0f, 1.0f);
 }
 
-void BasicDeferredShader::SetMaterial(const Material& mat)
+void BasicDeferredShader::SetMaterial(const Material& mat, UINT globalMaterialIndex)
 {
 	mBufferCache.psPerObjBuffer.mat = mat;
+	mBufferCache.psPerObjBuffer.globalMaterialIndex = globalMaterialIndex;
 }
 
 void BasicDeferredShader::SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
@@ -1646,9 +1647,10 @@ void BasicDeferredSkinnedShader::UpdatePerObj(ID3D11DeviceContext* dc)
 	dc->PSSetConstantBuffers(0, 1, &ps_cPerObjBuffer);
 }
 
-void BasicDeferredSkinnedShader::SetMaterial(const Material& mat)
+void BasicDeferredSkinnedShader::SetMaterial(const Material& mat, UINT globalMaterialIndex)
 {
 	mBufferCache.psPerObjBuffer.mat = mat;
+	mBufferCache.psPerObjBuffer.globalMaterialIndex = globalMaterialIndex;
 }
 
 void BasicDeferredSkinnedShader::SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
@@ -1824,9 +1826,6 @@ void LightDeferredShader::UpdatePerObj(ID3D11DeviceContext* dc)
 
 	VS_CPEROBJBUFFER* dataPtr = (VS_CPEROBJBUFFER*)mappedResource.pData;
 
-// 	dataPtr->worldViewProj = mBufferCache.vsPerObjBuffer.worldViewProj;
-// 	dataPtr->shadowTransform = mBufferCache.vsPerObjBuffer.shadowTransform;
-
 	*dataPtr = mBufferCache.vsPerObjBuffer;
 
 	dc->Unmap(vs_cPerObjBuffer, 0);
@@ -1849,41 +1848,6 @@ void LightDeferredShader::UpdatePerFrame(ID3D11DeviceContext* dc)
 	dc->Map(ps_cPerFrameBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
 	PS_CPERFRAMEBUFFER* dataPtr3 = (PS_CPERFRAMEBUFFER*)mappedResource.pData;
-// 
-// 	dataPtr3->numDirLights = mBufferCache.psPerFrameBuffer.numDirLights;
-// 	dataPtr3->padding2 = 0;
-// 	dataPtr3->padding3 = 0;
-// 	dataPtr3->padding4 = 0;
-// 
-// 	for (UINT i = 0; i < mBufferCache.psPerFrameBuffer.numDirLights; ++i)
-// 		dataPtr3->dirLights[i] = mBufferCache.psPerFrameBuffer.dirLights[i];
-// 
-// 	dataPtr3->gEyePosW = mBufferCache.psPerFrameBuffer.gEyePosW;
-// 	dataPtr3->padding = 0.0f;
-// 
-// 	dataPtr3->numPLights = mBufferCache.psPerFrameBuffer.numPLights;
-// 	dataPtr3->padding5 = 0;
-// 	dataPtr3->padding6 = 0;
-// 	dataPtr3->padding7 = 0;
-// 
-// 	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numPLights; ++j)
-// 		dataPtr3->PLights[j] = mBufferCache.psPerFrameBuffer.PLights[j];
-// 
-// 	dataPtr3->numSLights = mBufferCache.psPerFrameBuffer.numSLights;
-// 	dataPtr3->padding8 = 0;
-// 	dataPtr3->padding9 = 0;
-// 	dataPtr3->padding10 = 0;
-// 
-// 	for (UINT j = 0; j < mBufferCache.psPerFrameBuffer.numSLights; ++j)
-// 		dataPtr3->SLights[j] = mBufferCache.psPerFrameBuffer.SLights[j];
-// 
-// 	dataPtr3->shadowTransform = mBufferCache.psPerFrameBuffer.shadowTransform;
-// 	dataPtr3->cameraViewMatrix = mBufferCache.psPerFrameBuffer.cameraViewMatrix;
-// 	dataPtr3->cameraWorldMatrix = mBufferCache.psPerFrameBuffer.cameraWorldMatrix;
-// 
-// 	dataPtr3->lightWorldMatrix = mBufferCache.psPerFrameBuffer.lightWorldMatrix;
-// 	dataPtr3->lightViewMatrix = mBufferCache.psPerFrameBuffer.lightViewMatrix;
-// 	dataPtr3->lightProjMatrix = mBufferCache.psPerFrameBuffer.lightProjMatrix;
 
 	*dataPtr3 = mBufferCache.psPerFrameBuffer;
 
@@ -1899,16 +1863,11 @@ void LightDeferredShader::SetShadowMapTexture(ID3D11DeviceContext* dc, ID3D11Sha
 
 void LightDeferredShader::SetShadowTransform(XMMATRIX& shadowTransform)
 {
-	//mBufferCache.psPerFrameBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
 	mBufferCache.vsPerObjBuffer.shadowTransform = XMMatrixTranspose(shadowTransform);
 }
 
 void LightDeferredShader::SetCameraViewProjMatrix(XMMATRIX& camViewMatrix, XMMATRIX& proj)
 {
-	//mBufferCache.psPerFrameBuffer.cameraViewMatrix = XMMatrixTranspose(camViewMatrix);
-	//mBufferCache.psPerFrameBuffer.cameraInvViewMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, camViewMatrix));
-	//mBufferCache.psPerFrameBuffer.cameraProjMatrix = XMMatrixTranspose(proj);
-
 	XMMATRIX viewProj = XMMatrixMultiply(camViewMatrix, proj);
 	XMMATRIX viewProjInv = XMMatrixInverse(nullptr, viewProj);
 
@@ -1919,16 +1878,10 @@ void LightDeferredShader::SetCameraViewProjMatrix(XMMATRIX& camViewMatrix, XMMAT
 
 void LightDeferredShader::SetCameraWorldMatrix(XMMATRIX& camWorldMatrix)
 {
-	//mBufferCache.psPerFrameBuffer.cameraWorldMatrix = XMMatrixTranspose(camWorldMatrix);
 }
 
 void LightDeferredShader::SetLightWorldViewProj(XMMATRIX& lightWorld, XMMATRIX& lightView, XMMATRIX& lightProj)
 {
-	//mBufferCache.psPerFrameBuffer.lightWorldMatrix = XMMatrixTranspose(lightWorld);
-	//mBufferCache.psPerFrameBuffer.lightViewMatrix = XMMatrixTranspose(lightView);
-	//mBufferCache.psPerFrameBuffer.lightProjMatrix = XMMatrixTranspose(lightProj);
-	//mBufferCache.psPerFrameBuffer.lightInvViewMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, lightView));
-
 	mBufferCache.vsPerObjBuffer.lightViewProj = XMMatrixTranspose(XMMatrixMultiply(lightView, lightProj));
 }
 
@@ -1975,6 +1928,14 @@ void LightDeferredShader::SetSkipLighting(bool skipLighting)
 void LightDeferredShader::SetIsTransparencyPass(bool isTransparencyPass)
 {
 	mBufferCache.psPerFrameBuffer.isTransparencyPass = isTransparencyPass;
+}
+
+void LightDeferredShader::SetMaterials(ID3D11DeviceContext* dc, UINT numMaterials, Material* mats[])
+{
+	for (UINT i = 0; i < numMaterials; ++i)
+	{
+		mBufferCache.psPerFrameBuffer.materials[i] = *mats[i];
+	}
 }
 
 SkyDeferredShader::SkyDeferredShader()
@@ -2455,9 +2416,10 @@ void BasicDeferredMorphShader::SetWorldViewProjTex(XMMATRIX& world, XMMATRIX& vi
 	mBufferCache.vsPerObjBuffer.texTransform = XMMatrixScaling(1.0f, 1.0f, 1.0f);
 }
 
-void BasicDeferredMorphShader::SetMaterial(const Material& mat)
+void BasicDeferredMorphShader::SetMaterial(const Material& mat, UINT globalMaterialIndex)
 {
 	mBufferCache.psPerObjBuffer.mat = mat;
+	mBufferCache.psPerObjBuffer.globalMaterialIndex = globalMaterialIndex;
 }
 
 void BasicDeferredMorphShader::SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)
@@ -3158,9 +3120,10 @@ void BasicDeferredSkinnedSortedShader::SetPrevWorldViewProj(XMMATRIX& prevWorld,
 	mBufferCache.vsPerObjBuffer.prevWorldViewProj = XMMatrixTranspose(XMMatrixMultiply(prevWorld, prevViewProj));
 }
 
-void BasicDeferredSkinnedSortedShader::SetMaterial(const Material& mat)
+void BasicDeferredSkinnedSortedShader::SetMaterial(const Material& mat, UINT globalMaterialIndex)
 {
 	mBufferCache.psPerObjBuffer.mat = mat;
+	mBufferCache.psPerObjBuffer.globalMaterialIndex = globalMaterialIndex;
 }
 
 void BasicDeferredSkinnedSortedShader::SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex)

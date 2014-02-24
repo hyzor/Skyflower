@@ -19,16 +19,12 @@ float3 Uncharted2Tonemap(float3 x)
 cbuffer cLightBuffer : register(b0)
 {
 	PLight gPointLights[MAX_POINT_LIGHTS];
-	int gPointLightCount;
-	int padding2, padding3, padding4;
-
 	DLight gDirLights[MAX_DIR_LIGHTS];
-	int gDirLightCount;
-	int padding5, padding6, padding7;
-
 	SLight gSpotLights[MAX_SPOT_LIGHTS];
+	int gPointLightCount;
+	int gDirLightCount;
 	int gSpotLightCount;
-	int padding8, padding9, padding10;
+	int padding;
 
 	float3 gEyePosW;
 	int gIsTransparencyPass;
@@ -43,22 +39,14 @@ cbuffer cLightBuffer : register(b0)
 	float gTargetFps;
 	int gSkipLighting;
 
-	// Needs cleanup!
-	//float4x4 gShadowTransform_PS; // Light: view * projection * toTexSpace
-	//float4x4 gCameraView;
-	//float4x4 gCameraInvView;
-	//float4x4 gCameraWorld;
-	//float4x4 gCameraProj;
 	float4x4 gCamViewProjInv;
-	//float4x4 gLightWorld;
-	//float4x4 gLightView;
-	//float4x4 gLightInvView;
-	//float4x4 gLightProj;
+
+	Material gMaterials[MAX_MATERIALS];
 };
 
 Texture2D gDiffuseTexture : register(t0);
 Texture2D gNormalTexture : register(t1);
-Texture2D gSpecularTexture : register(t2);
+//Texture2D gSpecularTexture : register(t2);
 Texture2D gVelocityTexture : register(t3);
 Texture2D gSSAOTexture : register(t4);
 Texture2D gDepthTexture : register(t5);
@@ -83,13 +71,15 @@ PixelOut main(VertexOut pIn)
 	float4 specular;
 	float3 positionW;
 	float shadowFactor;
-	float diffuseMultiplier;
+	//float diffuseMultiplier;
 	float2 velocity;
+	 int materialIndex;
 	
-	diffuse = gDiffuseTexture.Sample(samLinear, pIn.Tex);
+	diffuse.xyz = gDiffuseTexture.Sample(samLinear, pIn.Tex).xyz;
 	normal = gNormalTexture.Sample(samLinear, pIn.Tex).xyz;
-	specular = gSpecularTexture.Sample(samLinear, pIn.Tex);
-	shadowFactor = gDiffuseTexture.Sample(samLinear, pIn.Tex).w;
+	//specular = gSpecularTexture.Sample(samLinear, pIn.Tex);
+	//shadowFactor = gDiffuseTexture.Sample(samLinear, pIn.Tex).w;
+	shadowFactor = gNormalTexture.Sample(samLinear, pIn.Tex).w;
 
 	// Pretty ugly, normal texture w component contains a "diffuse multiplier"
 	// which sets the inital lit diffuse color by the unlit diffuse color multiplied with
@@ -99,7 +89,30 @@ PixelOut main(VertexOut pIn)
 	// TODO: This isn't needed anymore, switch this to Material ID instead (or something else more important).
 	// Maybe a single specular value (specular factor) to store in this component.
 	// Both these methods will remove the need of a specular buffer.
-	diffuseMultiplier = gNormalTexture.Sample(samLinear, pIn.Tex).w;
+	//diffuseMultiplier = gNormalTexture.Sample(samLinear, pIn.Tex).w;
+
+	//float matFloat = gDiffuseTexture.Load(pIn.Tex);
+	float matFloat = gDiffuseTexture.Sample(samPoint, pIn.Tex).w;
+	matFloat = matFloat * 1000.0f;
+	//materialIndex = gDiffuseTexture.Sample(samPoint, pIn.Tex).w * 1000.0f;
+	materialIndex = (int)matFloat;
+
+	Material curMat;
+
+	// Set this to a default material
+	if (materialIndex < 0 || materialIndex > MAX_MATERIALS - 1)
+	{
+		curMat.Ambient = float4(0.1f, 0.1f, 0.1f, 0.1f);
+		curMat.Diffuse = float4(1.0f, 1.0f, 1.0f, 1.0f);
+		curMat.Specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
+		curMat.Reflect = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	}
+	else
+	{
+		curMat = gMaterials[materialIndex];
+	}
+
+	diffuse.w = 1.0f;
 
 	// World pos reconstruction
 	float depth = gDepthTexture.Sample(samLinear, pIn.Tex).x;
@@ -181,7 +194,8 @@ PixelOut main(VertexOut pIn)
 		// Begin calculating lights
 		for (int i = 0; i < gDirLightCount; ++i)
 		{
-			ComputeDLight_Deferred_Ambient(specular, gDirLights[i], normal, toEye, A, D, S);
+			//ComputeDLight_Deferred_Ambient(specular, gDirLights[i], normal, toEye, A, D, S);
+			ComputeDLight(curMat, gDirLights[i], normal, toEye, A, D, S);
 			ambient_Lights += A * ambient_occlusion * shadowFactor;
 			diffuse_Lights += D * shadowFactor;
 			specular_Lights += S * shadowFactor;
@@ -189,7 +203,8 @@ PixelOut main(VertexOut pIn)
 
 		for (int j = 0; j < gPointLightCount; ++j)
 		{
-			ComputePLight_Deferred_Ambient(specular, gPointLights[j], positionW, normal, toEye, A, D, S);
+			//ComputePLight_Deferred_Ambient(specular, gPointLights[j], positionW, normal, toEye, A, D, S);
+			ComputePLight(curMat, gPointLights[j], positionW, normal, toEye, A, D, S);
 			ambient_Lights += A * ambient_occlusion;
 			diffuse_Lights += D;
 			specular_Lights += S;
@@ -197,7 +212,8 @@ PixelOut main(VertexOut pIn)
 
 		for (int k = 0; k < gSpotLightCount; ++k)
 		{
-			ComputeSLight_Deferred(specular, gSpotLights[k], positionW, normal, toEye, A, D, S);
+			//ComputeSLight_Deferred(specular, gSpotLights[k], positionW, normal, toEye, A, D, S);
+			ComputeSLight(curMat, gSpotLights[k], positionW, normal, toEye, A, D, S);
 			ambient_Lights += A * ambient_occlusion;
 			diffuse_Lights += D;
 			specular_Lights += S;
