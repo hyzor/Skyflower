@@ -69,8 +69,8 @@ platformTimer = 0;
 stairdown = true
 function update_temporaryFlowers(id, dt)
 	if IsDown(id) then
-	platformTimer = platformTimer + dt
-	Print(platformTimer)
+		platformTimer = platformTimer + dt
+		--Print(platformTimer)
 		if stairdown then
 			platformTimer = 0
 			MoveToTarget(26)
@@ -114,7 +114,7 @@ function update_fallingPlatform(id, dt)
 	end
 	if not OnAPlatform() then
 		downTimer = downTimer + dt
-		Print(downTimer)
+		--Print(downTimer)
 		if downTimer > 6 then
 			downTimer = 0
 			MoveToSpawn(5)
