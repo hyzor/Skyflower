@@ -58,6 +58,7 @@ void Event::Activated(Message const& msg)
 
 	std::string func = "activated_" + file;
 	lua_getglobal(entityManager->modules->script->L, func.c_str());
+	int id = this->getOwnerId();
 	lua_pushinteger(entityManager->modules->script->L, this->getOwnerId());
 
 	this->activated = true;

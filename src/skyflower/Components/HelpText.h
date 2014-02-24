@@ -27,12 +27,8 @@ public:
 	void addedToEntity();
 	void update(float dt);
 	// we are added to an Entity, and thus to the component system
-
-	void removeFromEntity()
-	{
-		Entity *owner = getOwner();
-		assert(owner);	
-	}
+	void removeFromEntity();
+	
 
 private:
 	string m_text;

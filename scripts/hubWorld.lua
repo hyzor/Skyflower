@@ -13,5 +13,9 @@ function loaded()
 end
 
 function activated_Level(id)
-	ChangeLevel(4)
+	if id == 33 then
+		ChangeLevel(4)
+	elseif id == 34 then
+		ChangeLevel(5)
+	end
 end

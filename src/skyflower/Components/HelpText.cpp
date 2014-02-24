@@ -32,6 +32,14 @@ void HelpText::addedToEntity()
 	top = 0;
 }
 
+void HelpText::removeFromEntity()
+{
+	getOwner()->getModules()->gui->GetGUIElement(bgID)->SetVisible(false);
+	getOwner()->getModules()->gui->GetGUIElement(duckID)->SetVisible(false);
+	Entity *owner = getOwner();
+	assert(owner);
+}
+
 void HelpText::update(float dt)
 {
 	if (m_active)

@@ -27,9 +27,7 @@
 		<Balloon />
 		<Event script="balloon" />
     </Entity>
-	
-	
-	
+
     <Entity type="ballonPlattform" model="Models\Worlds\Subworld 1\ballonPlattform" id="24" isVisible="1" isCollidible="1" isAnimated="0" xPos="294" yPos="79" zPos="125"  xRot="0.0" yRot="-1.57145119464" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <MoveTarget targetPosX="199.477652486" targetPosY="39.1736969453" targetPosZ="116.23238288" duration="5" easingPower="3" continuous="0" />
 		<Messenger />
