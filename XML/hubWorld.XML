@@ -1,6 +1,6 @@
 <root>
 	<Entity type="player" id="1"
-		xPos="0" yPos="50" zPos="0" 
+		xPos="23" yPos="20" zPos="65" 
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="1.0" yScale="1.0" zScale="1.0"
 		model="Models/Player/playerAnimated"
@@ -10,24 +10,39 @@
 			<Gravity />
 			<Listener />
 			<Footsteps />
-			<Messenger />
 			<Push />
 			<Pushable />
 			<Health maxHP = "100" />
 	</Entity>
-    <Entity type="CloudPlatform" id="10" isVisible="1" isCollidible="1" isAnimated="0" xPos="0.0" yPos="-17.3297862346" zPos="45.1007535446" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" model="Models\\placeHolder Subworld\\CloudPlatform"/>
-    <Entity type="entry" id="22" isVisible="1" isCollidible="1" isAnimated="0" xPos="23.7170603524" yPos="-2.19146028307" zPos="89.0478908232" xRot="0.0" yRot="3.7" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" model="Models\\placeHolder Subworld\\entry">
-		<Checkpoint/>
-		<Event script="Level"/>
+	<Entity type="light" id="201" xPos="0" yPos="0" zPos="0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="0.0" yScale="0.0" zScale="0.0" model="" isVisible="0" isCollidible="0" isAnimated="0">
+		<DirectionalLight xDir="0.604422748089" yDir="-0.785497128963" zDir="-0.132918924093" r="1.0" g="1.0" b="1.0" intensity="1.0" />
 	</Entity>
-    <Entity type="doorPlane" id="33" isVisible="0" isCollidible="1" isAnimated="0" xPos="22.0236303383" yPos="11.5446867292" zPos="87.0344042124" xRot="0.0" yRot="3.7" zRot="0.0" xScale="1.88018653941" yScale="1.95493788201" zScale="1.88018653941" model="Models\\placeHolder Subworld\\doorPlane">
+    <Entity type="plattform" id="11" isVisible="1" isCollidible="1" isAnimated="0" xPos="23.0" yPos="-17.3297862346" zPos="89.1007535446" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" model="Models\\placeHolder Subworld\\CloudPlatform"/>
+    <Entity type="plattform" id="22" isVisible="1" isCollidible="1" isAnimated="0" xPos="30.7170603524" yPos="-2.19146028307" zPos="137.0478908232" xRot="0.0" yRot="3.7" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" model="Models\\placeHolder Subworld\\entry">
+		<HelpText text="*quack* If you take this portal you will end up in subworld 1 *quack*" range="30" /> 
+	</Entity>
+    <Entity type="doorPlane" id="33" isVisible="0" isCollidible="1" isAnimated="0" xPos="30.0236303383" yPos="11.5446867292" zPos="137.0344042124" xRot="0.0" yRot="3.7" zRot="0.0" xScale="1.88018653941" yScale="1.95493788201" zScale="1.88018653941" model="Models\\placeHolder Subworld\\doorPlane">
         <Checkpoint/>
         <Event script="Level"/>
-		<Messenger />
     </Entity>
 	
-	<Entity type="skyFlower" model="" id="10" isVisible="0" isCollidible="0" isAnimated="0" xPos="0" yPos="-40" zPos="45" xRot="0.0" yRot="0" zRot="0.0" xScale="1" yScale="1" zScale="1">
+    <Entity type="plattform" id="23" isVisible="1" isCollidible="1" isAnimated="0" xPos="30.7170603524" yPos="-2.19146028307" zPos="40.0478908232" xRot="0.0" yRot="0.0174" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" model="Models\\placeHolder Subworld\\entry">
+		<HelpText text="*quack* This portal will take you to subworld 2 *quack*" range="30" />
+	</Entity>
+    <Entity type="doorPlane" id="34" isVisible="0" isCollidible="1" isAnimated="0" xPos="30.0236303383" yPos="15.5446867292" zPos="40.0344042124" xRot="0.0" yRot="0.1745" zRot="0.0" xScale="1.88018653941" yScale="1.95493788201" zScale="1.88018653941" model="Models\\placeHolder Subworld\\doorPlane">
+        <Checkpoint/>
+        <Event script="Level"/>
+    </Entity>
+	
+	<Entity type="Sign" id="536" isVisible="1" isCollidible="1" isAnimated="0" xPos="-2.0" yPos="6.0" zPos="131.0344042124" xRot="0.0" yRot="-0.55" zRot="0.0" xScale="1.88018653941" yScale="1.95493788201" zScale="1.88018653941" model="Models\\placeHolder Subworld\\level1sign">
+    </Entity>
+		<Entity type="light" id="665" xPos="-2.0" yPos="15.0" zPos="120.0344042124" xRot="0.0" yRot="0.0" zRot="0.0" xScale="0.0" yScale="0.0" zScale="0.0" model="" isVisible="0" isCollidible="0" isAnimated="0">
+		<PointLight r="1.0" g="1.0" b="1.0" intensity="4" />
+	</Entity>
+	
+	
+	<Entity type="skyFlower" model="" id="10" isVisible="1" isCollidible="0" isAnimated="0" xPos="23" yPos="-10" zPos="89" xRot="0.0" yRot="1.64" zRot="0.0" xScale="1" yScale="1" zScale="1">
         <MorphAnimation path="Models/skyflower meshar/Skyflower_Final/" file="skyflower.morph" />
     </Entity>
-	
+
 </root>

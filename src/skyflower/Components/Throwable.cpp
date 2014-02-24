@@ -5,7 +5,7 @@ void Throwable::update(float deltaTime)
 {
 	for (int j = 0; j < getEntityManager()->getNrOfEntities(); j++)
 	{
-		Entity* entity = getEntityManager()->getEntity(getEntityManager()->getEntityId(j));
+		Entity* entity = getEntityManager()->getEntityByIndex(j);
 
 		if (getOwnerId() != entity->fId)
 		{
@@ -17,7 +17,7 @@ void Throwable::update(float deltaTime)
 					if (entity->fId != throwerId)
 					{
 						isBeingThrown = false;
-						sendMessageToEntity(entity->fId, "isDizzy");
+						entity->sendMessage("isDizzy", this);
 						p->SetVelocity(p->GetVelocity()*Vec3(0, 1, 0));
 						throwerId = -1;
 					}
@@ -68,38 +68,40 @@ void Throwable::update(float deltaTime)
 				}
 			}
 
-			if (entity->hasComponents("Throw"))
+			Throw* throwComp = entity->getComponent<Throw*>("Throw");
+
+			if (throwComp)
 			{
-				if (!entity->getComponent<Throw*>("Throw")->getIsDizzy())
+				if (!throwComp->getIsDizzy())
 				{
 					//if the entities are colliding and if the other entity have the component Throw
 					if (entity->sphere->Test(*getOwner()->sphere))
 					{
 						//entity want to pick up throwable
-						if (entity->getComponent<Throw*>("Throw")->getToPickUp() && !isBeingPickedUp)
+						if (throwComp->getToPickUp() && !isBeingPickedUp)
 						{
-							entity->getComponent<Throw*>("Throw")->setIsHoldingThrowable(true);
-							entity->getComponent<Throw*>("Throw")->setToPickUp(false);
-							entity->getComponent<Throw*>("Throw")->setHoldingEntityId(getOwnerId());
-							throwerId = entity->getComponent<Throw*>("Throw")->getOwnerId();
+							throwComp->setIsHoldingThrowable(true);
+							throwComp->setToPickUp(false);
+							throwComp->setHoldingEntityId(getOwnerId());
+							throwerId = throwComp->getOwnerId();
 							isBeingPickedUp = true;
-							sendMessageToEntity(entity->fId, "isHoldingThrowable");
+							entity->sendMessage("isHoldingThrowable", this);
 
 							//makes the aim visible
-							if (entity->getComponent<Throw*>("Throw")->getHaveAim())
+							if (throwComp->getHaveAim())
 							{
 								getEntityManager()->updateEntityVisibility(true, 5000);
 							}
 						}
 					}
 					//check so that we are comparing the correct entities
-					if (entity->getComponent<Throw*>("Throw")->getHoldingEntityId() == getOwnerId())
+					if (throwComp->getHoldingEntityId() == getOwnerId())
 					{
 						//entity want to put down throwable
-						if (entity->getComponent<Throw*>("Throw")->getToPutDown() && isBeingPickedUp)
+						if (throwComp->getToPutDown() && isBeingPickedUp)
 						{
-							entity->getComponent<Throw*>("Throw")->setIsHoldingThrowable(false);
-							entity->getComponent<Throw*>("Throw")->setToPutDown(false);
+							throwComp->setIsHoldingThrowable(false);
+							throwComp->setToPutDown(false);
 							isBeingPickedUp = false;
 
 							//update throwable position
@@ -111,12 +113,12 @@ void Throwable::update(float deltaTime)
 
 							getOwner()->updateRot(rot);
 
-							updateEntityPos(pos + o);
+							getOwner()->updatePos(pos + o);
 							getOwner()->getPhysics()->SetVelocity(Vec3());
 
-							entity->getComponent<Throw*>("Throw")->setHoldingEntityId(-1);
+							throwComp->setHoldingEntityId(-1);
 							//sendMessageToEntity(entity->fId, "canPush");
-							if (entity->getComponent<Throw*>("Throw")->getHaveAim())
+							if (throwComp->getHaveAim())
 							{
 								getEntityManager()->updateEntityVisibility(false, 5000);
 							}
@@ -124,7 +126,7 @@ void Throwable::update(float deltaTime)
 							throwerId = -1;
 						}
 						//if the entity is holding throwable
-						else if (entity->getComponent<Throw*>("Throw")->getIsHoldingThrowable() && isBeingPickedUp)
+						else if (throwComp->getIsHoldingThrowable() && isBeingPickedUp)
 						{
 							////entity want to throw throwable
 							//if (entity->getComponent<Throw*>("Throw")->getToThrow() && isBeingPickedUp)
@@ -215,9 +217,9 @@ void Throwable::update(float deltaTime)
 								*/
 
 								getOwner()->getPhysics()->SetVelocity(Vec3());
-								updateEntityPos(pos + o);
+								getOwner()->updatePos(pos + o);
 
-								if (entity->getComponent<Throw*>("Throw")->getHaveAim() && isBeingPickedUp)
+								if (throwComp->getHaveAim() && isBeingPickedUp)
 								{
 									float y = -getOwner()->getModules()->camera->GetPitch();
 
@@ -243,19 +245,19 @@ void Throwable::update(float deltaTime)
 											getEntityManager()->updateEntityPos(hit, 5000);
 
 											//entity want to throw throwable
-											if (entity->getComponent<Throw*>("Throw")->getToThrow() && isBeingPickedUp)
+											if (throwComp->getToThrow() && isBeingPickedUp)
 											{
-												entity->getComponent<Throw*>("Throw")->setIsHoldingThrowable(false);
-												entity->getComponent<Throw*>("Throw")->setToThrow(false);
-												entity->getComponent<Throw*>("Throw")->setToPutDown(false);
+												throwComp->setIsHoldingThrowable(false);
+												throwComp->setToThrow(false);
+												throwComp->setToPutDown(false);
 												isBeingPickedUp = false;
 												isBeingThrown = true;
-												entity->getComponent<Throw*>("Throw")->setToPutDown(false);
-												entity->getComponent<Throw*>("Throw")->setHoldingEntityId(-1);
-												throwerId = entity->getComponent<Throw*>("Throw")->getOwnerId();
+												throwComp->setToPutDown(false);
+												throwComp->setHoldingEntityId(-1);
+												throwerId = throwComp->getOwnerId();
 
 												//makes the aim invisible
-												if (entity->getComponent<Throw*>("Throw")->getHaveAim())
+												if (throwComp->getHaveAim())
 												{
 													getEntityManager()->updateEntityVisibility(false, 5000);
 												}

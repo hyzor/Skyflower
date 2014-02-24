@@ -37,9 +37,9 @@ void Health::Respawn(Message const& msg)
 	if (safe)
 	{
 		getOwner()->getPhysics()->SetVelocity(Vec3());
-		updateEntityPos(getOwner()->spawnpos);
+		getOwner()->updatePos(getOwner()->spawnpos);
 		health = maxHP;
 	}
 
-	sendMessageToEntity(getOwnerId(), "DropThrowable");
+	getOwner()->sendMessage("DropThrowable", this);
 }

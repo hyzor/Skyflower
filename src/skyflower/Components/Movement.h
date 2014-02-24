@@ -12,7 +12,7 @@
 
 using namespace Cistron;
 
-#define MAX_JUMP_KEY_TIME 0.4f
+#define MAX_JUMP_KEY_TIME 0.2f
 
 enum JumpDirection
 {

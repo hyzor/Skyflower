@@ -30,11 +30,6 @@ public:
 
 	void addedToEntity();
 
-	void sendAMessage(string message)
-	{
-		sendMessage(message);
-	}
-
 	void update(float dt);
 
 	void lit(float time);

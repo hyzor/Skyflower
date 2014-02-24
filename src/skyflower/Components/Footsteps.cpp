@@ -42,7 +42,7 @@ FootstepsComponent::~FootstepsComponent()
 
 void FootstepsComponent::addedToEntity()
 {
-	m_oldPosition = getEntityPos();
+	m_oldPosition = getOwner()->returnPos();
 	m_oldPosition.Y = 0.0f;
 	m_distanceTraveled = 0.0f;
 }
@@ -55,7 +55,7 @@ void FootstepsComponent::update(float deltaTime)
 
 	Entity *owner = getOwner();
 
-	Vec3 originalPosition = getEntityPos();
+	Vec3 originalPosition = getOwner()->returnPos();
 	Vec3 position = Vec3(originalPosition.X, 0.0f, originalPosition.Z);
 
 	m_distanceTraveled += (position - m_oldPosition).Length();

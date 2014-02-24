@@ -24,14 +24,14 @@ void Touch::update(float dt)
 void Touch::Activate()
 {
 	if (activated <= 0)
-		getEntityManager()->sendMessageToEntity("Activated", getOwnerId()); //event managment
+		getOwner()->sendMessage("Activated", this); //event managment
 
 	activated = 0.2f;
 }
 
 void Touch::Deactivate()
 {
-	getEntityManager()->sendMessageToEntity("Deactivated", getOwnerId()); //event managment
+	getOwner()->sendMessage("Deactivated", this); //event managment
 }
 
 void Touch::findActivator()

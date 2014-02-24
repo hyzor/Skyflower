@@ -68,21 +68,8 @@ class EntityManager {
 
 		void sendGlobalMessage(string message);
 
-		// send local messages to another Entity
-		inline void sendMessageToEntity(string msg, Component *component, EntityId id, Payload payload) 
-		{
-			for (size_t i = 0; i < fEntitys.size(); i++)
-			{
-				if (fEntitys[i]->getEntityId() == id)
-				{
-					fEntitys[i]->sendMessage(getMessageRequestId(REQ_MESSAGE, msg), Message(MESSAGE, component, payload));
-					return;
-				}
-			}
-		}
-
 		// ask for a request id
-		RequestId getMessageRequestId(ComponentRequestType, string name);
+		RequestId getMessageRequestId(ComponentRequestType, const string &name);
 
 		/**
 		 * LOGGING
@@ -95,9 +82,6 @@ class EntityManager {
 
 
 		// Functions we made
-		void sendMessageToEntity(string message, string entity); //sends a message to a specific entity
-		void sendMessageToEntity(string message, EntityId entity); //sends a message to a specific entity
-
 		bool loadXML(string xmlFile);
 
 		Vec3 getEntityPos(string type);

@@ -78,12 +78,14 @@ void Application::Start()
 	
 	m_backgroundMusicMenu.push_back("music/ants.opus");
 
-	m_backgroundMusicGame.push_back("music/happy_piano.opus");
+	m_backgroundMusicLevel1.push_back("music/happy_piano.opus");
+	m_backgroundMusicLevel2.push_back("music/daydreaming.opus");
 
-	m_backgroundMusicGameHubworld.push_back("music/happy_piano.opus");
+	m_backgroundMusicGameHubworld.push_back("music/apple_commercial.opus");
 
 	m_backgroundMusic = m_soundEngine->CreateSource();
 	m_backgroundMusic->SetRelativeToListener(true);
+	m_backgroundMusic->SetVolume(0.25f);
 	m_backgroundMusic->SetPlaybackFinishedHandler([this]() {
 		m_backgroundMusicIndex = (m_backgroundMusicIndex + 1) % m_backgroundMusicList->size();
 
@@ -92,11 +94,9 @@ void Application::Start()
 	});
 
 	// Start playing some background music for the menu.
-	m_backgroundMusic->SetVolume(0.25f);
 	setBackgroundMusicList(m_backgroundMusicMenu);
 
 	m_entityManager = new EntityManager("../../XML/", &modules);
-	//m_entityManager->loadXML("player.xml");
 
 	levelHandler->init(m_entityManager);
 
@@ -239,10 +239,15 @@ void Application::Start()
 
 			m_GUI->GetGUIElement(loadingScreen)->SetVisible(false);
 
+			//hub
 			if (levelHandler->currentLevel() == 0)
 				setBackgroundMusicList(m_backgroundMusicGameHubworld);
-			else
-				setBackgroundMusicList(m_backgroundMusicGame);
+			//level 1
+			else if (levelHandler->currentLevel() == 4)
+				setBackgroundMusicList(m_backgroundMusicLevel1);
+			//level 2
+			else if (levelHandler->currentLevel() == 5)
+				setBackgroundMusicList(m_backgroundMusicLevel2);
 
 			m_oldTime = GetTime();
 		}
@@ -253,11 +258,11 @@ void Application::Start()
 
 	delete m_cutscene;
 	delete m_menu;
-	m_GUI->Destroy();
-	delete m_GUI;
 	delete levelHandler;
 	delete m_entityManager;
 	delete m_scriptHandler;
+	m_GUI->Destroy();
+	delete m_GUI;
 	delete m_potentialField;
 	DestroyCollision(m_collision);
 	DestroyPhysicsEngine(m_physicsEngine);
@@ -406,16 +411,15 @@ void Application::changeGameState(GameState newState)
 	switch (newState)
 	{
 	case GameState::game:
-		m_backgroundMusic->SetVolume(0.01f);
-
 		if (levelHandler->currentLevel() == 0)
 			setBackgroundMusicList(m_backgroundMusicGameHubworld);
-		else
-			setBackgroundMusicList(m_backgroundMusicGame);
+		else if (levelHandler->currentLevel() == 4)
+			setBackgroundMusicList(m_backgroundMusicLevel1);
+		else if (levelHandler->currentLevel() == 5)
+			setBackgroundMusicList(m_backgroundMusicLevel2);
 
 		break;
 	case GameState::menu:
-		m_backgroundMusic->SetVolume(0.05f);
 		setBackgroundMusicList(m_backgroundMusicMenu);
 		break;
 	default:
@@ -539,9 +543,9 @@ void Application::OnKeyDown(unsigned short key)
 	case VK_ESCAPE:
 		if (m_menu->isActive())
 			m_menu->setActive(false);
-	
 		else
 			m_menu->setActive(true);
+
 		break;
 	case 'Z':
 		m_showCharts = !m_showCharts;
@@ -562,13 +566,18 @@ void Application::OnKeyDown(unsigned short key)
 	case VK_SPACE:
 		if (m_cutscene->isPlaying())
 			m_cutscene->stop();
+
+		break;
+	case 'Q':
+		m_entityManager->getEntity(1)->getComponent<Health*>("Health")->setHealth(0);
+		break;
+#if 0
 	case 'P':
 		m_graphicsEngine->SetPostProcessingEffects(m_graphicsEngine->GetPostProcessingEffects() ^ POST_PROCESSING_SSAO);
 		break;
 	case 'O':
 		m_graphicsEngine->SetPostProcessingEffects(m_graphicsEngine->GetPostProcessingEffects() ^ POST_PROCESSING_DOF);
 		break;
-#if 0
 	case 'Y':
 		m_SSAOradius += 0.1f;
 		m_graphicsEngine->SetSSAOParameters(m_SSAOradius, m_SSAOprojectionFactor, m_SSAObias, m_SSAOcontrast, m_SSAOsigma);

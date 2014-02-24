@@ -32,19 +32,16 @@ public:
 		requestMessage("Ground", &Button::Activate);
 	}
 
-	void sendAMessage(string message)
-	{
-		sendMessage(message);
-	}
-
 	bool isDown();
 
 	void update(float dt);
+
+	void Deactivate();
 private:
 
 	void Activate(Message const& msg);
 
-	void Deactivate();
+
 
 	float activated;
 	bool act;

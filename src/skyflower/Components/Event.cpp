@@ -58,6 +58,7 @@ void Event::Activated(Message const& msg)
 
 	std::string func = "activated_" + file;
 	lua_getglobal(entityManager->modules->script->L, func.c_str());
+	int id = this->getOwnerId();
 	lua_pushinteger(entityManager->modules->script->L, this->getOwnerId());
 
 	this->activated = true;
@@ -108,7 +109,7 @@ int Event::Jump(lua_State* L)
 	{
 		Cistron::EntityId Id = (Cistron::EntityId)lua_tointeger(L, 1);
 
-		entityManager->sendMessageToEntity("Jump", Id);
+		entityManager->getEntity(Id)->sendMessage("Jump");
 	}
 
 	return 0;
@@ -120,8 +121,10 @@ int Event::ChangeLevel(lua_State* L)
 	if (n >= 1)
 	{
 		int level = (int)lua_tointeger(L, 1);
+
 		if (LevelHandler::GetInstance()->currentLevel() != 0)
 			LevelHandler::GetInstance()->levelCompleted();
+
 		LevelHandler::GetInstance()->queue(level);
 	}
 
@@ -155,7 +158,10 @@ int Event::Save(lua_State* L)
 
 int Event::Load(lua_State* L)
 {
-	entityManager->sendMessageToEntity("Respawn", 0);
+	//entityManager->sendMessageToEntity("Respawn", 0);
+
+	// Denna funktion verkar död, ingen entitet har id 0?
+	assert(0);
 
 	return 0;
 }
@@ -173,7 +179,7 @@ int Event::Spawn(lua_State* L)
 		Entity* pointEntity = entityManager->getEntity(pointId);
 
 		spawnEntity->spawnpos = pointEntity->returnPos();
-		entityManager->sendMessageToEntity("Respawn", spawnId);
+		spawnEntity->sendMessage("Respawn");
 	}
 
 	return 0;
@@ -475,6 +481,8 @@ int Event::MoveToSpawn(lua_State* L)
 
 	EntityId entityID = (Cistron::EntityId)lua_tointeger(L, 1);
 	Entity *entity = entityManager->getEntity(entityID);
+	
+
 
 	if (entity)
 	{
@@ -520,7 +528,7 @@ int Event::PickUp(lua_State* L)
 
 	Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
 
-	entityManager->sendMessageToEntity("PickUp", entity->fId);
+	entity->sendMessage("PickUp");
 
 
 	return 0;
@@ -539,7 +547,7 @@ int Event::sThrow(lua_State* L)
 
 	Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
 
-	entityManager->sendMessageToEntity("Throw", entity->fId);
+	entity->sendMessage("Throw");
 
 	return 0;
 }
@@ -762,5 +770,76 @@ int Event::CompletedLevelCount(lua_State* L)
 {
 	int count = levelHandler->completedCount();
 	lua_pushinteger(L, count);
+	return 1;
+}
+
+int Event::ButtonUp(lua_State* L)
+{
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+
+		if (entity->hasComponents("Button"))
+			entity->getComponent<Button*>("Button")->Deactivate();
+	}
+	return 0;
+}
+
+int Event::FallingPlatform(lua_State* L)
+{
+	bool flag = false;
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+		Entity* player = entityManager->getEntity(1);
+
+
+		if (player->ground != NULL)
+		{
+			if (player->ground->fId == entity->fId)
+			{
+				flag = true;
+			}
+		}
+	}
+
+	lua_pushboolean(L, flag);
+
+	return 1;
+}
+
+int Event::OnAPlatform(lua_State* L)
+{
+	bool flag = false;
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		Entity* player = entityManager->getEntity(1);
+
+		if (player->ground != NULL)
+		{
+			if (player->ground->fId == 5)
+			{
+				flag = true;
+			}
+			if (player->ground->fId == 6)
+			{
+				flag = true;
+			}
+			if (player->ground->fId == 7)
+			{
+				flag = true;
+			}
+			if (player->ground->fId == 8)
+			{
+				flag = true;
+			}
+		}
+	}
+
+	lua_pushboolean(L, flag);
+
 	return 1;
 }

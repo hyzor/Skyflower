@@ -34,7 +34,7 @@ BoxComp::~BoxComp()
 void BoxComp::addedToEntity()
 {
 	requestMessage("Respawn", &BoxComp::respawn);
-	this->m_oldPosition = getEntityPos();
+	this->m_oldPosition = getOwner()->returnPos();
 	this->m_oldPosition.Y = 0.0f;
 	this->m_distanceTraveled = 0.0f;
 }
@@ -65,7 +65,7 @@ void BoxComp::update(float dt)
 		{
 			fall = fallDir();
 
-			Vec3 originalPosition = getEntityPos();
+			Vec3 originalPosition = getOwner()->returnPos();
 			Vec3 position = Vec3(originalPosition.X, 0.0f, originalPosition.Z);
 
 			m_distanceTraveled += (position - m_oldPosition).Length();

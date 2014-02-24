@@ -62,8 +62,8 @@ void ListenerComponent::removeFromEntity()
 
 void ListenerComponent::update(float deltaTime)
 {
-	Vec3 position = getEntityPos();
-	Vec3 rotation = getEntityRot();
+	Vec3 position = getOwner()->returnPos();
+	Vec3 rotation = getOwner()->returnRot();
 	float rotationMatrix[4][4];
 	MatrixFromEulerAngles(rotationMatrix, DegreesToRadians(rotation.X), DegreesToRadians(rotation.Y), DegreesToRadians(rotation.Z));
 

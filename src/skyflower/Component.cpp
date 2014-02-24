@@ -88,11 +88,11 @@ string Component::getName() {
  */
 
 // message request function
-void Component::requestMessage(string message, MessageFunction f) {
+void Component::requestMessage(const string &message, MessageFunction handler) {
 
 	// construct registered component
 	RegisteredComponent reg;
-	reg.callback = f;
+	reg.callback = handler;
 	reg.required = false;
 	reg.component = this;
 	reg.trackMe = false;
@@ -111,9 +111,10 @@ void Component::requestMessage(string message, MessageFunction f) {
  */
 
 // send a message
-void Component::sendMessageToEntity(EntityId id, string msg, Payload payload) {
+/*void Component::sendMessageToEntity(EntityId id, const string &msg, Payload payload)
+{
 	fEntityManager->sendMessageToEntity(msg, this, id, payload);
-}
+}*/
 
 // called when added to an Entity
 void Component::addedToEntity() {
@@ -160,7 +161,7 @@ void Component::processPing(Message const & msg) {
 	cout << *this << " PING" << endl;
 }
 
-Vec3 Component::getEntityPos()
+/*Vec3 Component::getEntityPos()
 {
 	return this->fEntityManager->getEntityPos(this->fOwnerId);
 }
@@ -198,4 +199,4 @@ void Component::updateEntityScale(Vec3 scale)
 void Component::updateEntityVisibility(bool isVisible)
 {
 	this->fEntityManager->updateEntityVisibility(isVisible, this->fOwnerId);
-}
+}*/

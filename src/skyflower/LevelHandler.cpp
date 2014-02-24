@@ -97,7 +97,7 @@ void LevelHandler::loadQueued()
 		old.push_back(remove);
 		m_entityManager->removeEntity(remove);
 	}
-
+	m_entityManager->modules->graphics->ClearLights();
 	//load new entities
 	std::string xmlfile = m_levels.at(m_queueID).path;
 	xmlfile += ".xml";

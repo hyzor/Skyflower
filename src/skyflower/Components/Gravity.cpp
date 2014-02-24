@@ -31,14 +31,14 @@ void GravityComponent::removeFromEntity()
 
 void GravityComponent::update(float dt)
 {
-	Vec3 pos = getEntityPos();
+	Vec3 pos = getOwner()->returnPos();
 	
 	if (this->enabled)
 	{
 		this->p->AddGravityCalc(pos);
 	}
 
-	updateEntityPos(pos);
+	getOwner()->updatePos(pos);
 
 	getOwner()->wall = nullptr;
 	Entity *ground = nullptr;
@@ -62,7 +62,7 @@ void GravityComponent::update(float dt)
 			getOwner()->mPhysicsEntity->GetStates()->isJumping = false;
 			getOwner()->mPhysicsEntity->GetStates()->isActiveProjectile = false;
 
-			sendMessageToEntity(getOwnerId(), "StopBeingThrown");
+			getOwner()->sendMessage("StopBeingThrown", this);
 		}
 		else if (t == 1)
 		{
@@ -80,19 +80,19 @@ void GravityComponent::update(float dt)
 	if (getOwner()->ground)
 	{
 		if (!getOwner()->hasComponents("Throwable")) // bollar kan inte trycka knappar
-			getEntityManager()->sendMessageToEntity("Ground", getOwner()->ground->fId);
+			getOwner()->ground->sendMessage("Ground", this);
 
 		//so that you can't jump while falling from something
-		getEntityManager()->sendMessageToEntity("notInAir", getOwnerId());
+		getOwner()->sendMessage("notInAir", this);
 	}
 	else
 	{
-		getEntityManager()->sendMessageToEntity("inAir", getOwnerId());
+		getOwner()->sendMessage("inAir", this);
 	}
 
 	//activate event for wall
 	if (getOwner()->wall)
-  		getEntityManager()->sendMessageToEntity("Wall", getOwner()->wall->fId);
+		getOwner()->wall->sendMessage("Wall", this);
 
 	sphereCollision(dt);
 	calculateGroundNormal(getOwner(), getOwner()->ground);
@@ -122,6 +122,12 @@ float GravityComponent::testMove(Ray r, Entity* e, Entity* &out, bool groundRay,
 	Vec3 pos = e->returnPos();
 	r.SetPos(pos + r.GetPos());
 
+	//create sphere for ray
+	Vec3 raypos = r.GetDir();
+	raypos /= 2;
+	raypos += r.GetPos();
+	Sphere rayS = Sphere(raypos, 10); //max line length 20
+
 	//test collision for other collidible entitis
 	float col = 0;
 	Entity* outEntity = nullptr;
@@ -130,24 +136,29 @@ float GravityComponent::testMove(Ray r, Entity* e, Entity* &out, bool groundRay,
 		Entity* EntiJ = getEntityManager()->getEntityByIndex(j);
 		if (EntiJ->collInst && EntiJ != e)
 		{
-			float t = EntiJ->collInst->Test(r);
-			if (t > 0)
+			Sphere collSphere = EntiJ->collInst->GetSphere();
+			collSphere.Radius *= EntiJ->returnScale().X + 0.3f;
+			if (collSphere.Test(rayS))
 			{
-				if (t > 0.5f) //feet
+				float t = EntiJ->collInst->Test(r);
+				if (t > 0)
 				{
-					if (col == 0 || t < col)
+					if (t > 0.5f) //feet
 					{
-						col = t;
-						outEntity = EntiJ;
+						if (col == 0 || t < col)
+						{
+							col = t;
+							outEntity = EntiJ;
+						}
 					}
-				}
-				else //head
-				{
-					if (col == 0 || t > col)
+					else //head
 					{
-						col = t;
-						outEntity = EntiJ;
-						break;
+						if (col == 0 || t > col)
+						{
+							col = t;
+							outEntity = EntiJ;
+							break;
+						}
 					}
 				}
 			}
@@ -158,9 +169,9 @@ float GravityComponent::testMove(Ray r, Entity* e, Entity* &out, bool groundRay,
 	float dir = 0;
 	if (col > 0.5f) //feet
 	{
-		if (groundRay && r.GetDir().Y * col > r.GetDir().Y + 2)
+		if (groundRay && r.GetDir().Y * col > r.GetDir().Y + 5)
 		{
-			float t = (r.GetDir().Y * col) / (r.GetDir().Y + 2);
+			float t = (r.GetDir().Y * col) / (r.GetDir().Y + 5);
 			Vec3 rDir = r.GetDir();
 			e->updatePos(pos - rDir*(1 - t));
 			dir = -1;
@@ -194,6 +205,7 @@ void GravityComponent::createRays()
 	{
 		Box bounds = getOwner()->collInst->GetBox();
 		bounds.Position -= getOwner()->collInst->GetPosition();
+		//bounds.Size *= getOwner()->returnScale();
 
 		Box small = bounds;
 		small.Position += Vec3(2, 2, 2);
@@ -211,7 +223,7 @@ void GravityComponent::createRays()
 				p.X = -small.Size.X / 2 + (small.Size.X / (amountX + 1))*kx;
 				p.Z = -small.Size.Z / 2 + (small.Size.Z / (amountZ + 1))*kz;
 
-				groundRays.push_back(Ray(p, Vec3(0, -bounds.Size.Y-2, 0)));
+				groundRays.push_back(Ray(p, Vec3(0, -bounds.Size.Y-5, 0)));
 				isGroundColl.push_back(false);
 			}
 		}
@@ -240,11 +252,13 @@ void GravityComponent::createRays()
 				wallRays.push_back(Ray(Vec3(pX, pY, pZ), Vec3(bounds.Size.X, 0, 0)));
 			}
 		}
+
+
 	}
 	else
 	{
 		//body
-		groundRays.push_back(Ray(Vec3(0, 10, 0), Vec3(0, -12, 0)));
+		groundRays.push_back(Ray(Vec3(0, 10, 0), Vec3(0, -15, 0)));
 		isGroundColl.push_back(false);
 
 		//feet
@@ -261,6 +275,23 @@ void GravityComponent::createRays()
 			wallRays.push_back(Ray(Vec3(-3 * 0.71f, 8.5f, -3 * 0.71f), Vec3(6 * 0.71f, 0, 6 * 0.71f))); // extra test
 			wallRays.push_back(Ray(Vec3(-3 * 0.71f, 8.5f, 3 * 0.71f), Vec3(6 * 0.71f, 0, -6 * 0.71f))); // extra test
 		}
+	}
+
+	for (unsigned int i = 0; i < wallRays.size(); i++)
+	{
+		Vec3 pos = wallRays[i].GetPos();
+		Vec3 dir = wallRays[i].GetDir();
+		pos *= getOwner()->returnScale();
+		dir *= getOwner()->returnScale();
+		wallRays[i] = Ray(pos, dir);
+	}
+	for (unsigned int i = 0; i < groundRays.size(); i++)
+	{
+		Vec3 pos = groundRays[i].GetPos();
+		Vec3 dir = groundRays[i].GetDir();
+		pos *= getOwner()->returnScale();
+		dir *= getOwner()->returnScale();
+		groundRays[i] = Ray(pos, dir);
 	}
 }
 

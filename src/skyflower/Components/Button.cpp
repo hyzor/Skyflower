@@ -11,7 +11,7 @@ void Button::update(float dt)
 	{
 		moveTo = getOwner()->getRelativePos();
 		startPos = moveTo;
-		downPos = Vec3(0, -getEntityScale().Y, 0);
+		downPos = Vec3(0, -getOwner()->returnScale().Y, 0);
 		first = false;
 		down = true;
 	}
@@ -33,7 +33,7 @@ void Button::update(float dt)
 		if (!act)
 		{
 			act = true;
-			getEntityManager()->sendMessageToEntity("Activated", getOwnerId());
+			getOwner()->sendMessage("Activated", this);
 
 			Vec3 position = getOwner()->returnPos();
 			getOwner()->getModules()->sound->PlaySound("button/Button_down.wav", 1.0f, &position.X);
@@ -42,14 +42,14 @@ void Button::update(float dt)
 	else if (act)
 	{
 		act = false;
-		getEntityManager()->sendMessageToEntity("Deactivated", getOwnerId());
+		getOwner()->sendMessage("Deactivated", this);
 
 		Vec3 position = getOwner()->returnPos();
 		getOwner()->getModules()->sound->PlaySound("button/Button_up.wav", 1.0f, &position.X);
 	}
 
 	//move button animation
-	getOwner()->updateRelativePos(getOwner()->getRelativePos() + (moveTo - getOwner()->getRelativePos()) * 10 * dt / getEntityScale().Y);
+	getOwner()->updateRelativePos(getOwner()->getRelativePos() + (moveTo - getOwner()->getRelativePos()) * 10 * dt / getOwner()->returnScale().Y);
 }
 
 void Button::Activate(Message const& msg)
@@ -81,5 +81,5 @@ void Button::Deactivate()
 
 bool Button::isDown()
 {
-	return (((startPos + downPos) - getOwner()->getRelativePos()).Length() < getEntityScale().Y *0.69f);
+	return (((startPos + downPos) - getOwner()->getRelativePos()).Length() < getOwner()->returnScale().Y *0.69f);
 }

@@ -670,9 +670,13 @@ void GraphicsEngineImpl::DrawScene()
 		mD3D->GetImmediateContext()->ClearRenderTargetView(mSSAOTexture->GetRenderTargetView(), clearColor);
 	}
 
+	ID3D11ShaderResourceView* finalSRV = mDeferredBuffers->GetLitSceneSRV();
+
 	// Depth of field
 	if (mPostProcessingEffects & POST_PROCESSING_DOF)
 	{
+		finalSRV = mIntermediateTexture->GetShaderResourceView();
+
 		D3D11_VIEWPORT DoFViewport;
 		DoFViewport.TopLeftX = 0;
 		DoFViewport.TopLeftY = 0;
@@ -704,7 +708,6 @@ void GraphicsEngineImpl::DrawScene()
 		renderTarget = mDoFBlurTexture1->GetRenderTargetView();
 		mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
 
-		//mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mIntermediateTexture->GetShaderResourceView());
 		mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetLitSceneSRV());
 		mShaderHandler->mDepthOfFieldBlurHorizontalShader->SetInputTexture(mD3D->GetImmediateContext(), mDoFCoCTexture->GetShaderResourceView());
 
@@ -739,14 +742,13 @@ void GraphicsEngineImpl::DrawScene()
 		mShaderHandler->mDepthOfFieldBlurVerticalShader->SetFramebufferTexture(mD3D->GetImmediateContext(), NULL);
 		mShaderHandler->mDepthOfFieldBlurVerticalShader->SetInputTexture(mD3D->GetImmediateContext(), NULL);
 
-		// Reset the render target to the back buffer.
-		renderTarget = mD3D->GetRenderTargetView();
+		// Set the render target to the intermediate texture.
+		renderTarget = mIntermediateTexture->GetRenderTargetView();
 		mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
 		// Reset viewport
  		mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
 
 		// Composite the result of the light pass with the depth of field.
-		//mShaderHandler->mCompositeShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mIntermediateTexture->GetShaderResourceView());
 		mShaderHandler->mCompositeShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetLitSceneSRV());
 		mShaderHandler->mCompositeShader->SetDoFCoCTexture(mD3D->GetImmediateContext(), mDoFCoCTexture->GetShaderResourceView());
 		mShaderHandler->mCompositeShader->SetDoFFarFieldTexture(mD3D->GetImmediateContext(), mDoFBlurTexture2->GetShaderResourceView());
@@ -761,23 +763,12 @@ void GraphicsEngineImpl::DrawScene()
 		mShaderHandler->mCompositeShader->SetDoFCoCTexture(mD3D->GetImmediateContext(), NULL);
 		mShaderHandler->mCompositeShader->SetDoFFarFieldTexture(mD3D->GetImmediateContext(), NULL);
 	}
-	else
-	{
-		//ID3D11Resource *source = mIntermediateTexture->GetTexture();
-		ID3D11Resource* source = mDeferredBuffers->GetLitSceneTexture2D();
-		ID3D11Resource *destination;
-		mD3D->GetSwapChain()->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&destination));
-
-		// Copy the result of the light pass to the backbuffer.
-		mD3D->GetImmediateContext()->CopyResource(destination, source);
-	}
 
 	// Anti-aliasing (SMAA)
 	if (mEnableAntiAliasing)
 	{
 		mSMAA->Run(mD3D->GetImmediateContext(),
-			//mIntermediateTexture->GetShaderResourceView(), // <--- Has to be gamma corrected
-			mDeferredBuffers->GetLitSceneSRV(),
+			mIntermediateTexture->GetShaderResourceView(),
 			mD3D->GetDepthStencilSRView(),
 			mDeferredBuffers->GetSRV(DeferredBuffersIndex::Velocity),
 			mD3D->GetRenderTargetView(),
@@ -1657,7 +1648,7 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	mShaderHandler->mLightDeferredToTextureShader->SetBackgroundTexture(mD3D->GetImmediateContext(), NULL);
 
 	// Clear stencil buffer
-	mD3D->GetImmediateContext()->ClearDepthStencilView(mD3D->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	mD3D->GetImmediateContext()->ClearDepthStencilView(mD3D->GetDepthStencilView(), /*D3D11_CLEAR_DEPTH | */D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	mD3D->GetImmediateContext()->RSSetState(0);
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(0, 0);

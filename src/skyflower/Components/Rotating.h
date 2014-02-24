@@ -35,12 +35,12 @@ public:
 
 	void update(float deltaTime)
 	{
-		Vec3 rotation = getEntityRot();
+		Vec3 rotation = getOwner()->returnRot();
 		rotation.X += this->pitchSpeed * deltaTime;
 		rotation.Y += this->yawSpeed * deltaTime;
 		rotation.Z += this->rollSpeed * deltaTime;
 
-		updateEntityRot(rotation);
+		getOwner()->updateRot(rotation);
 	}
 
 private:

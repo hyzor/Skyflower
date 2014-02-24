@@ -108,7 +108,7 @@ void EntityManager::update(float deltaTime)
 }
 
 // generate a unique request id or return one if it already exists
-RequestId EntityManager::getMessageRequestId(ComponentRequestType type, string name) {
+RequestId EntityManager::getMessageRequestId(ComponentRequestType type, const string &name) {
 
 	// ALL_COMPONENTS is changed to COMPONENT, it's the same in regards to the request id
 	if (type == REQ_ALLCOMPONENTS) type = REQ_COMPONENT;
@@ -158,7 +158,7 @@ EntityId EntityManager::createEntity(string type, int id, int relativeid, float 
 	}
 	fEntitys = temp;
 	// create a new Entity
-	Entity *obj = new Entity(modules, id, relativeid, type, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, isAnimated);
+	Entity *obj = new Entity(this, modules, id, relativeid, type, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, isAnimated);
 	//cout << "Created Entity " << fIdCounter << endl;
 	//++fIdCounter;
 
@@ -463,9 +463,8 @@ void EntityManager::sendGlobalMessage(string msg)
 {
 	for (auto it = fEntitys.begin(); it != fEntitys.end(); ++it)
 	{
-		(*it)->sendMessageToEntity(msg, (*it)->fId);
+		(*it)->sendMessage(msg);
 	}
-
 }
 // error processing
 void EntityManager::error(stringstream& err) {
@@ -612,23 +611,6 @@ void EntityManager::destroyComponent(Component *comp) {
 	delete comp;
 }
 
-void EntityManager::sendMessageToEntity(string message, string entity)
-{
-	for (size_t i = 0; i < fEntitys.size(); i++)
-	{
-		if (this->fEntitys[i]->getType() == entity)
-		{
-			this->fEntitys[i]->sendMessageToEntity(message, this->fEntitys[i]->fId);
-		}
-	}
-}
-
-void EntityManager::sendMessageToEntity(string message, EntityId entity)
-{
-	Entity* e = getEntity(entity);
-	e->sendMessageToEntity(message, entity);
-}
-
 bool EntityManager::loadXML(string xmlFile)
 {
 	string path = m_resourceDir + xmlFile;
@@ -756,11 +738,6 @@ bool EntityManager::loadXML(string xmlFile)
 			else if (componentName == "Footsteps")
 			{
 				FootstepsComponent* m = new FootstepsComponent();
-				this->addComponent(entity, m);
-			}
-			else if (componentName == "Messenger")
-			{
-				Messenger *m = new Messenger();
 				this->addComponent(entity, m);
 			}
 			else if (componentName == "Input")

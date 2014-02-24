@@ -32,10 +32,6 @@ public:
 		requestMessage("Goal", &Goal::Activate);
 	}
 
-	void sendAMessage(string message)
-	{
-		sendMessage(message);
-	}
 	void update(float dt);
 private:
 	void Activate(Message const& msg);

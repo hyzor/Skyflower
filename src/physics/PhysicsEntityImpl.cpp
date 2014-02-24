@@ -107,19 +107,22 @@ bool PhysicsEntityImpl::FireProjectileAt(Vec3 &pos, Vec3 target)
 		delta = target - pos;
 		deltaXZPlane = Vec3(delta.X, 0.0f, delta.Z);
 		lenXZ = deltaXZPlane.Length();
-		height = PROJECTILE_HEIGHT_DEFAULT;
+		height = PROJECTILE_HEIGHT_MEDIUM;
 		projectileConst = 0.95f;
 
 		//Use appropriate defined numbers depending on the length and height of the projectilemotion
-
 		//Height
-		if (delta.Y > 0.0f)
+		if (delta.Y > 7.5f)
 		{
 			height = PROJECTILE_HEIGHT_HIGH;
 		}
 		else if (delta.Y < 0.0f)
 		{
-			height = PROJECTILE_HEIGHT_LOW;
+			height = -5.0f;// PROJECTILE_HEIGHT_LOW;
+			if (delta.Y < -10.0f)
+			{
+				height = -20.0f;
+			}
 		}
 
 		//Length
@@ -128,18 +131,19 @@ bool PhysicsEntityImpl::FireProjectileAt(Vec3 &pos, Vec3 target)
 			//Increase in order to prevent the throw from being too "weak"
 			//and instead make the throw to go past the target in order to for it
 			//to appear more like a real-life throw
-			projectileConst = 0.50f;
+			projectileConst = 0.65f;
 		}
 		else if (lenXZ > PROJECTILE_LENGTH_FAR)
 		{
 			//Reverse action here, when the target is very far away, increase
 			//the constant  to make it not quite reach its target
-			projectileConst = 1.10f;
+			projectileConst = 1.75f;
 		}
 
 		initVelocityX = delta.X / projectileConst;
 		initVelocityZ = delta.Z / projectileConst;
-		initVelocityY = sqrtf(0 - (2 * this->mGravity.Y * height));
+		//initVelocityY = sqrtf(0 - (2 * this->mGravity.Y * height));
+		initVelocityY = (height - ((this->mGravity.Y *((projectileConst)*(projectileConst))) / 2)) / projectileConst;
 
 		projectileVelocity = Vec3(initVelocityX, initVelocityY, initVelocityZ);
 

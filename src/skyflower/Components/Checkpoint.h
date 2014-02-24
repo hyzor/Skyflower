@@ -25,12 +25,6 @@ public:
 
 	void update(float dt);
 
-	void sendAMessage(string message)
-	{
-		//cout << "hej det är jag som ropar på denna funktionen: " << this->fName << endl;
-		sendMessage(message);
-	}
-
 private:
 
 	void Activate(Message const& msg);
