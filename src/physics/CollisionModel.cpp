@@ -63,12 +63,13 @@ void CollisionModel::Load(std::string file)
 			//calculate sphere
 			Vec3 p = positions[i];
 			//p.Y = center.Y; // skipp height
-			float len = (p - center).Length();
+			//float len = (p - center).Length();
+			float len = p.Length();
 			if (len > radius)
 				radius = len;
 		}
 		bounds = Box(vMin, vMax - vMin);
-		sphere = Sphere(center, radius);
+		sphere = Sphere(Vec3(), radius);
 
 		
 
