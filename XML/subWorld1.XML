@@ -12,7 +12,6 @@
 			<Gravity />
 			<Listener />
 			<Footsteps />
-			<Messenger />
 			<Push />
 			<Pushable />
 			<Health maxHP = "100" />
@@ -22,7 +21,6 @@
 	</Entity>
 	
 	<Entity type="WoodBlock" model="Models\Throwable\Ball" id="301" isVisible="1" isCollidible="1" isAnimated="0" xPos="20" yPos="10" zPos="20" xRot="0.0" yRot="0.0" zRot="0.0" xScale="2.0" yScale="2.0" zScale="2.0">
-		<Messenger />
 		<Touch />
 		<Balloon />
 		<Event script="balloon" />
@@ -30,7 +28,6 @@
 
     <Entity type="ballonPlattform" model="Models\Worlds\Subworld 1\ballonPlattform" id="24" isVisible="1" isCollidible="1" isAnimated="0" xPos="294" yPos="79" zPos="125"  xRot="0.0" yRot="-1.57145119464" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <MoveTarget targetPosX="199.477652486" targetPosY="39.1736969453" targetPosZ="116.23238288" duration="5" easingPower="3" continuous="0" />
-		<Messenger />
     </Entity>
 	
     <Entity type="plattform" model="Models\Worlds\Subworld 1\plattform1" id="100" isVisible="1" isCollidible="1" isAnimated="0" xPos="0.0" yPos="0.0" zPos="-0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
@@ -54,18 +51,15 @@
 	<Entity type="Rock" model="Models\Worlds\Subworld 1\Rock" id="12" isVisible="1" isCollidible="1" isAnimated="0" xPos="326.041811054" yPos="83.32834014" zPos="149.181274461" xRot="1.73764218889" yRot="-0.192779884652" zRot="-0.0324277093744" xScale="6.76847965241" yScale="6.76847965241" zScale="6.76847965241"/>
     <Entity type="Rock" model="Models\Worlds\Subworld 1\Rock" id="13" isVisible="1" isCollidible="1" isAnimated="0" xPos="301.101785755" yPos="77.6491530009" zPos="176.172195801" xRot="-0.169338101103" yRot="0.0" zRot="0.0" xScale="6.76847965241" yScale="6.76847965241" zScale="6.76847965241"/>
     <Entity type="WoodBlock" model="" id="14" isVisible="1" isCollidible="0" isAnimated="0" xPos="290.030637847" yPos="78" zPos="152.252250723" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
-		<Messenger />
         <Checkpoint />
 		<MorphAnimation path="Models/Checkpoint/Checkpoint_FINAL/" file="checkPoint.morph" />
     </Entity>
 	<Entity type="Goal" model="Models\Goal\goalSackAnimerad" id="1411" isVisible="1" isCollidible="0" isAnimated="1" xPos="565.370649948" yPos="116.5956517912" zPos="51.8543727491" xRot="0.0" yRot="-1.57" zRot="0.0" xScale="1.5" yScale="1.5" zScale="1.5">
-		<Messenger />
 		<Goal />
 		<Event script="Goal" />
     </Entity>
     <Entity type="ButtonBase" model="Models\Worlds\Subworld 1\ButtonBase" id="15" relativeid="8" isVisible="1" isCollidible="1" isAnimated="0" xPos="314.552295649" yPos="78.4037154914" zPos="161.77004996" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312"/>
     <Entity type="Button" model="Models\Worlds\Subworld 1\Button" id="16" relativeid="15" isVisible="1" isCollidible="1" isAnimated="0" xPos="314.466631214" yPos="78.4602890807" zPos="161.86154881" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312">
-		<Messenger />
         <Button toggle="1"/>
         <Event script="btnStair"/> 
     </Entity>
@@ -76,7 +70,6 @@
 	
     <Entity type="Puncha" model="Models\Worlds\Subworld 1\Puncha" id="984" isVisible="1" isCollidible="0" isAnimated="1" xPos="334.311318695" yPos="78.4862951289" zPos="171.906910353" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <Gravity/>
-		<Messenger />
         <AI />
 		<Push />
 		<Pushable />
@@ -87,7 +80,6 @@
 	
     <Entity type="Test" model="Models\Worlds\Subworld 1\Puncha" id="27" isVisible="1" isCollidible="0" isAnimated="1" xPos="80" yPos="0" zPos="20" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <Gravity/>
-		<Messenger />
         <AI />
 		<Push />
 		<Pushable />
@@ -115,7 +107,6 @@
     <Entity type="WoodBlock" model="Models\Worlds\Subworld 1\WoodBlock" id="28" isVisible="1" isCollidible="1" isAnimated="0" xPos="34.172665118" yPos="150.366599976" zPos="-27.3916749358" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <Gravity/>
         <Health/>
-		<Messenger />
 		<Movement speed="20"/>
 		<HelpText text="Hey! Why don't you try pushing that box?" range="50" />
 		<Box />
@@ -131,7 +122,6 @@
     <Entity type="ButtonBase" model="Models\Worlds\Subworld 1\ButtonBase" id="17" relativeid="100" isVisible="1" isCollidible="1" isAnimated="0" xPos="199.034827697" yPos="39.2123622218" zPos="-8.39870949045" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312"/>
     <Entity type="Button" model="Models\Worlds\Subworld 1\Button" id="18" relativeid="17" isVisible="1" isCollidible="1" isAnimated="0" xPos="198.949163262" yPos="39.2689358112" zPos="-8.30721064075" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312">
         <Button/>
-		<Messenger />
 		<HelpText text="*quack* You should, like, push the button... and stuff... *quack*" range="20" />
         <Event script="platform_start"/>
     </Entity>
@@ -139,7 +129,6 @@
 	<!--Entity type="ButtonBase" model="Models\Worlds\Subworld 1\ButtonBase" id="17" relativeid="100" isVisible="1" isCollidible="1" isAnimated="0" xPos="199.034827697" yPos="49.2123622218" zPos="-8.39870949045" xRot="1.57" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312"/>
     <Entity type="Button" model="Models\Worlds\Subworld 1\Button" id="18" relativeid="17" isVisible="1" isCollidible="1" isAnimated="0" xPos="198.949163262" yPos="49.2689358112" zPos="-8.30721064075" xRot="1.57" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312">
         <WallButton xDir="0" zDir="-1" />
-		<Messenger />
         <Event script="platform_start"/>
     </Entity-->
 	

@@ -10,7 +10,6 @@
 			<Gravity />
 			<Listener />
 			<Footsteps />
-			<Messenger />
 			<Push />
 			<Pushable />
 			<Health maxHP = "100" />

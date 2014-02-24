@@ -6,7 +6,6 @@
     <Entity entityName="platformbeforegoalplatform" id="3" isVisible="1" isCollidible="1" isAnimated="0" xPos="183.701509066" yPos="13.7851530761" zPos="14.4970496328" xRot="0.0" yRot="0.0" zRot="0.0" xScale="3.0" yScale="3.0" zScale="3.0" model="Models\\placeHolder Subworld\\platformbeforegoalplatform"/>
     <Entity entityName="platformwithgoal" id="4" isVisible="1" isCollidible="1" isAnimated="0" xPos="208.076226933" yPos="13.7496654365" zPos="111.957887996" xRot="0.0" yRot="3.14" zRot="0.0" xScale="3.0" yScale="3.0" zScale="3.0" model="Models\\placeHolder Subworld\\platformwithgoal"/>
     <Entity entityName="Puncha" id="5" isVisible="1" isCollidible="1" isAnimated="0" xPos="193.219141521" yPos="51.5455548835" zPos="119.173285339" xRot="0.0" yRot="0.0" zRot="0.0" xScale="3.0" yScale="3.0" zScale="3.0" model="Models\\placeHolder Subworld\\Puncha">
-        <Messenger />
 		<AI/>
         <Movement speed="20"/>
         <Gravity/>
