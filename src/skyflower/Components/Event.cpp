@@ -764,3 +764,16 @@ int Event::CompletedLevelCount(lua_State* L)
 	lua_pushinteger(L, count);
 	return 1;
 }
+
+int Event::ButtonUp(lua_State* L)
+{
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+
+		if (entity->hasComponents("Button"))
+			entity->getComponent<Button*>("Button")->Deactivate();
+	}
+	return 0;
+}
