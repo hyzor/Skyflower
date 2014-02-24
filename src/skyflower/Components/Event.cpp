@@ -109,7 +109,7 @@ int Event::Jump(lua_State* L)
 	{
 		Cistron::EntityId Id = (Cistron::EntityId)lua_tointeger(L, 1);
 
-		entityManager->sendMessageToEntity("Jump", Id);
+		entityManager->getEntity(Id)->sendMessage("Jump");
 	}
 
 	return 0;
@@ -121,8 +121,10 @@ int Event::ChangeLevel(lua_State* L)
 	if (n >= 1)
 	{
 		int level = (int)lua_tointeger(L, 1);
+
 		if (LevelHandler::GetInstance()->currentLevel() != 0)
 			LevelHandler::GetInstance()->levelCompleted();
+
 		LevelHandler::GetInstance()->queue(level);
 	}
 
@@ -156,7 +158,10 @@ int Event::Save(lua_State* L)
 
 int Event::Load(lua_State* L)
 {
-	entityManager->sendMessageToEntity("Respawn", 0);
+	//entityManager->sendMessageToEntity("Respawn", 0);
+
+	// Denna funktion verkar död, ingen entitet har id 0?
+	assert(0);
 
 	return 0;
 }
@@ -174,7 +179,7 @@ int Event::Spawn(lua_State* L)
 		Entity* pointEntity = entityManager->getEntity(pointId);
 
 		spawnEntity->spawnpos = pointEntity->returnPos();
-		entityManager->sendMessageToEntity("Respawn", spawnId);
+		spawnEntity->sendMessage("Respawn");
 	}
 
 	return 0;
@@ -521,7 +526,7 @@ int Event::PickUp(lua_State* L)
 
 	Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
 
-	entityManager->sendMessageToEntity("PickUp", entity->fId);
+	entity->sendMessage("PickUp");
 
 
 	return 0;
@@ -540,7 +545,7 @@ int Event::sThrow(lua_State* L)
 
 	Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
 
-	entityManager->sendMessageToEntity("Throw", entity->fId);
+	entity->sendMessage("Throw");
 
 	return 0;
 }

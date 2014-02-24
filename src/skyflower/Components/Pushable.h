@@ -48,7 +48,7 @@ public:
 			//if you have been pushed away far enough, entity is able to move again
 			if (distance > this->maxDistance || getOwner()->getComponent<Movement*>("Movement")->getTimeFalling() > 0.3f || getOwner()->wall)
 			{
-				sendMessageToEntity(getOwnerId(), "StartMoving");
+				getOwner()->sendMessage("StartMoving", this);
 				this->isPushed = false;
 				this->p->GetStates()->isBeingPushed = false;
 			}
@@ -75,9 +75,10 @@ private:
 			this->isPushed = true;
 			this->startPos = getOwner()->returnPos();
 			this->p->GetStates()->isBeingPushed = true;
+
 			//stop the entity from moving, except for the push
-			sendMessageToEntity(getOwnerId(), "StopMoving");
-			sendMessageToEntity(getOwnerId(), "DropThrowable");
+			getOwner()->sendMessage("StopMoving", this);
+			getOwner()->sendMessage("DropThrowable", this);
 		}
 	}
 
@@ -85,7 +86,7 @@ private:
 	{
 		this->isPushed = false;
 		this->p->GetStates()->isBeingPushed = false;
-		sendMessageToEntity(getOwnerId(), "StartMoving");
+		getOwner()->sendMessage("StartMoving", this);
 	}
 };
 

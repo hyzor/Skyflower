@@ -83,12 +83,6 @@ public:
 	// we are added to an Entity, and thus to the component system
 	void addedToEntity();
 
-	void sendAMessage(string message)
-	{
-		//cout << "hej det är jag som ropar på denna funktionen: " << this->fName << endl;
-		sendMessage(message);
-	}
-
 	void update(float deltaTime);
 
 	static EntityManager* entityManager;

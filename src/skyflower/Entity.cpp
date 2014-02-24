@@ -14,9 +14,10 @@ using namespace Cistron;
 
 
 // constructor/destructor
-Entity::Entity(const Modules *modules, EntityId id, EntityId relativeid, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
+Entity::Entity(EntityManager *entityManager, const Modules *modules, EntityId id, EntityId relativeid, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
 	float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated) : fId(id), type(type), fFinalized(false)
 {
+	this->entityManager = entityManager;
 
 	this->relativeid = relativeid;
 
@@ -222,7 +223,7 @@ list<Component*> Entity::getComponents(string name) {
 	return fComponents[name];
 }
 
-bool Entity::hasComponents(string name) {
+bool Entity::hasComponents(const string &name) {
 
 	return fComponents.count(name) > 0;
 }
@@ -271,25 +272,34 @@ void Entity::removeComponent(Component *comp) {
 
 
 // send a local message
-void Entity::sendMessage(RequestId reqId, Message const & msg) {
-
+void Entity::sendMessage(RequestId reqId, Message const & msg)
+{
 	// if there are no registered components, we just skip
-	if ((int)fLocalRequests.size() <= reqId) return;
+	if ((int)fLocalRequests.size() <= reqId)
+		return;
 
 	// just forward to the appropriate registered components
 	vector<RegisteredComponent>& regs = fLocalRequests[reqId];
 	unsigned n = (unsigned)regs.size();
+
 	for (unsigned i = 0; i < n; ++i) {
 		RegisteredComponent& comp = regs[i];
+
+		/*
 		if (comp.trackMe) {
 			string name;
+
 			if (msg.type == MESSAGE) {
-				name = comp.component->getEntityManager()->getRequestById(REQ_MESSAGE, reqId);
+				//name = comp.component->getEntityManager()->getRequestById(REQ_MESSAGE, reqId);
+				name = entityManager->getRequestById(REQ_MESSAGE, reqId);
 			}
 			else {
-				name = comp.component->getEntityManager()->getRequestById(REQ_COMPONENT, reqId);
+				//name = comp.component->getEntityManager()->getRequestById(REQ_COMPONENT, reqId);
+				name = entityManager->getRequestById(REQ_COMPONENT, reqId);
 			}
 		}
+		*/
+
 		comp.callback(msg);
 	}
 }
@@ -306,12 +316,9 @@ void Entity::registerRequest(RequestId reqId, RegisteredComponent reg) {
 	fLocalRequests[reqId].push_back(reg);
 }
 
-void Entity::sendMessageToEntity(string message, EntityId id)
+void Entity::sendMessage(const string &message, Component *component)
 {
-	if (this->fComponents.count("Messenger") != 0)
-	{
-		this->fComponents["Messenger"].front()->sendMessageToEntity(id, message);
-	}
+	sendMessage(entityManager->getMessageRequestId(REQ_MESSAGE, message), Message(MESSAGE, component, NULL));
 }
 
 string Entity::getType()

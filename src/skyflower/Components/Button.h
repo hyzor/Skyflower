@@ -32,11 +32,6 @@ public:
 		requestMessage("Ground", &Button::Activate);
 	}
 
-	void sendAMessage(string message)
-	{
-		sendMessage(message);
-	}
-
 	bool isDown();
 
 	void update(float dt);

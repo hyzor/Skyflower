@@ -62,7 +62,7 @@ void GravityComponent::update(float dt)
 			getOwner()->mPhysicsEntity->GetStates()->isJumping = false;
 			getOwner()->mPhysicsEntity->GetStates()->isActiveProjectile = false;
 
-			sendMessageToEntity(getOwnerId(), "StopBeingThrown");
+			getOwner()->sendMessage("StopBeingThrown", this);
 		}
 		else if (t == 1)
 		{
@@ -80,19 +80,19 @@ void GravityComponent::update(float dt)
 	if (getOwner()->ground)
 	{
 		if (!getOwner()->hasComponents("Throwable")) // bollar kan inte trycka knappar
-			getEntityManager()->sendMessageToEntity("Ground", getOwner()->ground->fId);
+			getOwner()->ground->sendMessage("Ground", this);
 
 		//so that you can't jump while falling from something
-		getEntityManager()->sendMessageToEntity("notInAir", getOwnerId());
+		getOwner()->sendMessage("notInAir", this);
 	}
 	else
 	{
-		getEntityManager()->sendMessageToEntity("inAir", getOwnerId());
+		getOwner()->sendMessage("inAir", this);
 	}
 
 	//activate event for wall
 	if (getOwner()->wall)
-  		getEntityManager()->sendMessageToEntity("Wall", getOwner()->wall->fId);
+		getOwner()->wall->sendMessage("Wall", this);
 
 	sphereCollision(dt);
 	calculateGroundNormal(getOwner(), getOwner()->ground);

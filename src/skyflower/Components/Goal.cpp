@@ -17,8 +17,9 @@ void Goal::update(float dt)
 	//sphere test for goal mesh
 	Sphere cp = Sphere(getOwner()->returnPos(), 5);
 	Sphere player = Sphere(getEntityManager()->getEntity(1)->returnPos(), 5);
+
 	if (cp.Test(player))
-		getEntityManager()->sendMessageToEntity("Goal", getOwnerId());
+		getOwner()->sendMessage("Goal", this);
 
 }
 
@@ -26,7 +27,7 @@ void Goal::Activate(Message const& msg)
 {
 	if (activated <= 0)
 	{
-		getEntityManager()->sendMessageToEntity("Activated", getOwnerId()); //event managment
+		getOwner()->sendMessage("Activated", this); //event managment
 		getOwner()->getModules()->sound->PlaySound("doink-doink.wav", 0.75f);
 	}
 	activated = 1;
@@ -34,5 +35,5 @@ void Goal::Activate(Message const& msg)
 
 void Goal::Deactivate()
 {
-	getEntityManager()->sendMessageToEntity("Deactivated", getOwnerId()); //event managment
+	getOwner()->sendMessage("Deactivated", this); //event managment
 }

@@ -160,7 +160,7 @@ void Push::update(float dt)
 void Push::stopPush(Message const& msg)
 {
 	if (getOwner()->getPhysics()->GetStates()->isBeingPushed)
-		getEntityManager()->sendMessageToEntity("stopBeingPushed", getOwnerId());
+		getOwner()->sendMessage("stopBeingPushed", this);
 }
 
 bool Push::colliding(Entity* target)
@@ -206,7 +206,7 @@ void Push::push(Entity* target)
 				if (getOwner()->getPhysics()->GetStates()->isMoving && e->hasComponents("Pushable"))
 				{
 					e->getPhysics()->SetPushDirection(dir * 10);
-					getEntityManager()->sendMessageToEntity("beingPushed", e->fId);
+					e->sendMessage("beingPushed", this);
 
 					Vec3 position = e->returnPos();
 					e->getModules()->sound->PlaySound("push.wav", 1.0f, &position.X);

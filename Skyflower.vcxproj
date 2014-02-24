@@ -38,6 +38,7 @@
     <ClCompile Include="src\skyflower\Components\Movement.cpp" />
     <ClCompile Include="src\skyflower\Components\MoveTarget.cpp" />
     <ClCompile Include="src\skyflower\Components\PointLightComp.cpp" />
+    <ClCompile Include="src\skyflower\Components\Push.cpp" />
     <ClCompile Include="src\skyflower\Components\SpotLightComp.cpp" />
     <ClCompile Include="src\skyflower\Components\Throw.cpp" />
     <ClCompile Include="src\skyflower\Components\Throwable.cpp" />
@@ -58,7 +59,6 @@
     <ClCompile Include="src\skyflower\Menu.cpp" />
     <ClCompile Include="src\skyflower\MenuItems.cpp" />
     <ClCompile Include="src\skyflower\PotentialField.cpp" />
-    <ClCompile Include="src\skyflower\Push.cpp" />
     <ClCompile Include="src\skyflower\ScriptHandler.cpp" />
     <ClCompile Include="src\skyflower\tinyxml2.cpp" />
     <ClCompile Include="src\skyflower\Window.cpp" />
@@ -82,7 +82,6 @@
     <ClInclude Include="src\skyflower\Components\HelpText.h" />
     <ClInclude Include="src\skyflower\Components\Input.h" />
     <ClInclude Include="src\skyflower\Components\Listener.h" />
-    <ClInclude Include="src\skyflower\Components\Messenger.h" />
     <ClInclude Include="src\skyflower\Components\MorphAnimation.h" />
     <ClInclude Include="src\skyflower\Components\Movement.h" />
     <ClInclude Include="src\skyflower\Components\MoveTarget.h" />

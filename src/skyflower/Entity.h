@@ -31,7 +31,7 @@ class Entity {
 	public:
 
 		// constructor/destructor
-		Entity(const Modules *modules, EntityId id, EntityId relativeid, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
+		Entity(EntityManager *entityManager, const Modules *modules, EntityId id, EntityId relativeid, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
 			 float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated);
 		virtual ~Entity();
 		
@@ -58,7 +58,7 @@ class Entity {
 
 		bool returnVisible();
 		bool getIsActive();
-		bool hasComponents(string name);
+		bool hasComponents(const string &name);
 
 		Vec3 returnPos();
 		Vec3 returnRot();
@@ -72,13 +72,15 @@ class Entity {
 		CollisionInstance* returnCollision();
 
 		template <typename T>
-		T getComponent(string Type)
+		T getComponent(const string &Type)
 		{
 			if (this->hasComponents(Type))
 				return (T)fComponents[Type].front();
 			else
 				return NULL;
 		}
+
+		void sendMessage(const string &message, Component *component = NULL);
 
 	private:
 
@@ -94,6 +96,8 @@ class Entity {
 		ModelInstance* modelInst;
 		AnimatedInstance* AnimInst;
 		const Modules *modules;
+
+		EntityManager *entityManager;
 
 		/**
 		 * COMPONENT MANAGEMENT
@@ -149,7 +153,6 @@ class Entity {
 		friend class EntityManager;
 
 		// Private functions we made
-		void sendMessageToEntity(string message, EntityId id);
 		EntityId getEntityId();
 };
 

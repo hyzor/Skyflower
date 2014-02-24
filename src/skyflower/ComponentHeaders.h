@@ -1,7 +1,6 @@
 #ifndef COMPONENTS_COMPONENTHEADERS_H
 #define COMPONENTS_COMPONENTHEADERS_H
 
-#include "Components/Messenger.h"
 #include "Components/Movement.h"
 #include "Components/Input.h"
 #include "Components/Listener.h"

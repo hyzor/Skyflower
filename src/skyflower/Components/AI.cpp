@@ -100,16 +100,18 @@ void AI::update(float dt)
 	if (dif.Length() < 0.5f && safe)
 	{
 		getOwner()->getComponent<Movement*>("Movement")->setCamera(dir, Vec3(), Vec3());
-		getEntityManager()->sendMessageToEntity("StartMoveForward", getOwnerId());
+		getOwner()->sendMessage("StartMoveForward", this);
 	}
 	else
-		getEntityManager()->sendMessageToEntity("StopMoveForward", getOwnerId());
+	{
+		getOwner()->sendMessage("StopMoveForward", this);
+	}
 
 	if (target)
 	{
 		if ((target->returnPos() - pos).Length() < 3)
 		{
-			getEntityManager()->sendMessageToEntity("Activated", getOwnerId()); //for scripting
+			getOwner()->sendMessage("Activated", this); //for scripting
 		}
 	}
 }
