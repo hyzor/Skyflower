@@ -122,7 +122,7 @@
     <Entity type="ButtonBase" model="Models\Worlds\Subworld 1\ButtonBase" id="17" relativeid="100" isVisible="1" isCollidible="1" isAnimated="0" xPos="199.034827697" yPos="39.2123622218" zPos="-8.39870949045" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312"/>
     <Entity type="Button" model="Models\Worlds\Subworld 1\Button" id="18" relativeid="17" isVisible="1" isCollidible="1" isAnimated="0" xPos="198.949163262" yPos="39.2689358112" zPos="-8.30721064075" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312">
         <Button/>
-		<HelpText text="*quack* You should, like, push the button... and stuff... *quack*" range="20" />
+		<HelpText text="*quack* Hmm, that's a funny-looking button right there...*quack*" range="20" />
         <Event script="platform_start"/>
     </Entity>
 	
