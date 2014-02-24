@@ -34,7 +34,7 @@
         <Event script="Level"/>
     </Entity>
 	
-	<Entity type="skyFlower" model="" id="10" isVisible="1" isCollidible="0" isAnimated="0" xPos="0" yPos="-40" zPos="45" xRot="0.0" yRot="0" zRot="0.0" xScale="1" yScale="1" zScale="1">
+	<Entity type="skyFlower" model="" id="10" isVisible="1" isCollidible="0" isAnimated="0" xPos="23" yPos="-10" zPos="89" xRot="0.0" yRot="1.64" zRot="0.0" xScale="1" yScale="1" zScale="1">
         <MorphAnimation path="Models/skyflower meshar/Skyflower_Final/" file="skyflower.morph" />
     </Entity>
 
