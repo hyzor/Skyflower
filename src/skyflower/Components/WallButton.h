@@ -32,11 +32,6 @@ public:
 		requestMessage("Wall", &WallButton::Activate);
 	}
 
-	void sendAMessage(string message)
-	{
-		sendMessage(message);
-	}
-
 	bool isDown();
 
 	void update(float dt);

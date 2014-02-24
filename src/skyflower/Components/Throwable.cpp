@@ -17,7 +17,7 @@ void Throwable::update(float deltaTime)
 					if (entity->fId != throwerId)
 					{
 						isBeingThrown = false;
-						sendMessageToEntity(entity->fId, "isDizzy");
+						entity->sendMessage("isDizzy", this);
 						p->SetVelocity(p->GetVelocity()*Vec3(0, 1, 0));
 						throwerId = -1;
 					}
@@ -85,7 +85,7 @@ void Throwable::update(float deltaTime)
 							throwComp->setHoldingEntityId(getOwnerId());
 							throwerId = throwComp->getOwnerId();
 							isBeingPickedUp = true;
-							sendMessageToEntity(entity->fId, "isHoldingThrowable");
+							entity->sendMessage("isHoldingThrowable", this);
 
 							//makes the aim visible
 							if (throwComp->getHaveAim())

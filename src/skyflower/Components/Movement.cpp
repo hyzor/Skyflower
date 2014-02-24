@@ -124,8 +124,9 @@ void Movement::update(float deltaTime)
 				{
 					Vec3 AIPos = entity->returnPos();
 					Vec3 entityPos = getOwner()->returnPos();
+
 					if (entityPos.Y > AIPos.Y)
-						sendMessageToEntity(entity->fId, "isDizzy");
+						entity->sendMessage("isDizzy", this);
 				}
 			}
 		}
@@ -156,7 +157,7 @@ void Movement::update(float deltaTime)
 
 		if (!health->isAlive())
 		{
-			sendMessageToEntity(this->getOwnerId(), "Respawn");
+			getOwner()->sendMessage("Respawn", this);
 			return;
 		}
 	}
@@ -647,7 +648,7 @@ void Movement::dizzyTimer(float deltaTime)
 	{
 		this->canMove = true;
 		this->isDizzy = false;
-		sendMessageToEntity(getOwnerId(), "notDizzy");
+		getOwner()->sendMessage("notDizzy", this);
 	}
 }
 

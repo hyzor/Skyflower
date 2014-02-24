@@ -17,9 +17,8 @@ class DLL_API Sphere
 		Sphere(Vec3 pos, float radius);
 		Sphere(Vec3 pos);
 
-		bool Test(Sphere s);
-		static bool Test(Sphere s1, Sphere s2);
-		static bool Test(Sphere *s1, Sphere *s2);
+		bool Test(const Sphere& s);
+		static bool Test(const Sphere& s1, const Sphere& s2);
 
 	private:
 };

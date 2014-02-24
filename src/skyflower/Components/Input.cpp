@@ -30,19 +30,19 @@ void Input::OnKeyDown(unsigned short key)
 	switch (key)
 	{
 	case 'W':
-		sendMessageToEntity(this->getOwnerId(), "StartMoveForward");
+		getOwner()->sendMessage("StartMoveForward", this);
 		break;
 	case 'S':
-		sendMessageToEntity(this->getOwnerId(), "StartMoveBackward");
+		getOwner()->sendMessage("StartMoveBackward", this);
 		break;
 	case 'A':
-		sendMessageToEntity(this->getOwnerId(), "StartMoveLeft");
+		getOwner()->sendMessage("StartMoveLeft", this);
 		break;
 	case 'D':
-		sendMessageToEntity(this->getOwnerId(), "StartMoveRight");
+		getOwner()->sendMessage("StartMoveRight", this);
 		break;
 	case VK_SPACE:
-		sendMessageToEntity(this->getOwnerId(), "Jump");
+		getOwner()->sendMessage("Jump", this);
 		break;
 	default:
 		break;
@@ -54,19 +54,19 @@ void Input::OnKeyUp(unsigned short key)
 	switch (key)
 	{
 	case 'W':
-		sendMessageToEntity(this->getOwnerId(), "StopMoveForward");
+		getOwner()->sendMessage("StopMoveForward", this);
 		break;
 	case 'S':
-		sendMessageToEntity(this->getOwnerId(), "StopMoveBackward");
+		getOwner()->sendMessage("StopMoveBackward", this);
 		break;
 	case 'A':
-		sendMessageToEntity(this->getOwnerId(), "StopMoveLeft");
+		getOwner()->sendMessage("StopMoveLeft", this);
 		break;
 	case 'D':
-		sendMessageToEntity(this->getOwnerId(), "StopMoveRight");
+		getOwner()->sendMessage("StopMoveRight", this);
 		break;
 	case VK_SPACE:
-		sendMessageToEntity(this->getOwnerId(), "StopJump");
+		getOwner()->sendMessage("StopJump", this);
 		break;
 	default:
 		break;
@@ -78,10 +78,10 @@ void Input::OnMouseButtonDown(enum MouseButton button)
 	switch (button)
 	{
 	case MouseButtonLeft:
-		sendMessageToEntity(this->getOwnerId(), "Throw");
+		getOwner()->sendMessage("Throw", this);
 		break;
 	case MouseButtonRight:
-		sendMessageToEntity(this->getOwnerId(), "PickUpStart");
+		getOwner()->sendMessage("PickUpStart", this);
 		break;
 	default:
 		break;
@@ -93,10 +93,10 @@ void Input::OnMouseButtonUp(enum MouseButton button)
 	switch (button)
 	{
 	case MouseButtonLeft:
-		sendMessageToEntity(this->getOwnerId(), "StopThrow");
+		getOwner()->sendMessage("StopThrow", this);
 		break;
 	case MouseButtonRight:
-		sendMessageToEntity(this->getOwnerId(), "PickUpStop");
+		getOwner()->sendMessage("PickUpStop", this);
 		break;
 	default:
 		break;

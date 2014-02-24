@@ -41,5 +41,5 @@ void Health::Respawn(Message const& msg)
 		health = maxHP;
 	}
 
-	sendMessageToEntity(getOwnerId(), "DropThrowable");
+	getOwner()->sendMessage("DropThrowable", this);
 }

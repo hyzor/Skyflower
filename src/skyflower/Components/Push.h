@@ -8,7 +8,6 @@
 #include "Cistron.h"
 #include "Entity.h"
 #include "Movement.h"
-#include "Messenger.h"
 
 using namespace std;
 using namespace Cistron;

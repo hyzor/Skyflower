@@ -84,9 +84,6 @@
     <ClCompile Include="src\skyflower\MenuItems.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\skyflower\Push.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
     <ClCompile Include="src\skyflower\Components\Footsteps.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
@@ -144,6 +141,9 @@
     <ClCompile Include="src\skyflower\Components\HelpText.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="src\skyflower\Components\Push.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\skyflower\Application.h">
@@ -171,9 +171,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\skyflower\ComponentHeaders.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="src\skyflower\Components\Messenger.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\skyflower\Components\Movement.h">

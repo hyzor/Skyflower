@@ -27,11 +27,6 @@ public:
 	{
 	}
 
-	void sendAMessage(string message)
-	{
-		sendMessage(message);
-	}
-
 	void update(float dt)
 	{
 		if (pop)

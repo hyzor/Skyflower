@@ -78,16 +78,13 @@ public:
 		lua_register(sh->L, "SetMorphState", Event::SetMorphState);
 		lua_register(sh->L, "StartMorph", Event::StartMorph);
 		lua_register(sh->L, "CompletedLevelCount", Event::CompletedLevelCount);
+
+		//to deactivate the button
+		lua_register(sh->L, "ButtonUp", Event::ButtonUp);
 	};
 
 	// we are added to an Entity, and thus to the component system
 	void addedToEntity();
-
-	void sendAMessage(string message)
-	{
-		//cout << "hej det är jag som ropar på denna funktionen: " << this->fName << endl;
-		sendMessage(message);
-	}
 
 	void update(float deltaTime);
 
@@ -161,6 +158,8 @@ private:
 	static int SetMorphState(lua_State* L);
 	static int StartMorph(lua_State* L);
 	static int CompletedLevelCount(lua_State* L);
+
+	static int ButtonUp(lua_State* L);
 };
 
 #endif

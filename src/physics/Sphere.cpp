@@ -32,12 +32,12 @@ Sphere::Sphere(Vec3 position)
 	this->Radius = 0;
 }
 
-bool Sphere::Test(Sphere s)
+bool Sphere::Test(const Sphere& s)
 {
 	return Test(*this, s);
 }
 
-bool Sphere::Test(Sphere s1, Sphere s2)
+bool Sphere::Test(const Sphere& s1, const Sphere& s2)
 {
 	float distX = (s2.Position.X - s1.Position.X);
 	float distY = (s2.Position.Y - s1.Position.Y);
@@ -45,14 +45,4 @@ bool Sphere::Test(Sphere s1, Sphere s2)
 	float dist = (float)sqrt(distX*distX + distY*distY + distZ*distZ);
 
 	return dist < s1.Radius+s2.Radius;
-}
-
-bool Sphere::Test(Sphere *s1, Sphere *s2)
-{
-	float distX = (s2->Position.X - s1->Position.X);
-	float distY = (s2->Position.Y - s1->Position.Y);
-	float distZ = (s2->Position.Z - s1->Position.Z);
-	float dist = (float)sqrt(distX*distX + distY*distY + distZ*distZ);
-
-	return dist < s1->Radius + s2->Radius;
 }

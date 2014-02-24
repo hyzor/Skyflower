@@ -32,7 +32,7 @@ void WallButton::update(float dt)
 		if (!act)
 		{
 			act = true;
-			getEntityManager()->sendMessageToEntity("Activated", getOwnerId());
+			getOwner()->sendMessage("Activated", this);
 
 			Vec3 position = getOwner()->returnPos();
 			getOwner()->getModules()->sound->PlaySound("button/activate.wav", 1.0f, &position.X);
@@ -41,7 +41,7 @@ void WallButton::update(float dt)
 	else if (act)
 	{
 		act = false;
-		getEntityManager()->sendMessageToEntity("Deactivated", getOwnerId());
+		getOwner()->sendMessage("Deactivated", this);
 
 		Vec3 position = getOwner()->returnPos();
 		getOwner()->getModules()->sound->PlaySound("button/activate.wav", 1.0f, &position.X);

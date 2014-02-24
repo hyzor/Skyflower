@@ -258,11 +258,11 @@ void Application::Start()
 
 	delete m_cutscene;
 	delete m_menu;
-	m_GUI->Destroy();
-	delete m_GUI;
 	delete levelHandler;
 	delete m_entityManager;
 	delete m_scriptHandler;
+	m_GUI->Destroy();
+	delete m_GUI;
 	delete m_potentialField;
 	DestroyCollision(m_collision);
 	DestroyPhysicsEngine(m_physicsEngine);

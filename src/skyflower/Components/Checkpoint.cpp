@@ -50,7 +50,7 @@ void Checkpoint::update(float dt)
 	Sphere player = Sphere(getEntityManager()->getEntity(1)->returnPos(), 5);
 
 	if (cp.Test(player))
-		getEntityManager()->sendMessageToEntity("Checkpoint", getOwnerId());
+		getOwner()->sendMessage("Checkpoint", this);
 
 	MorphAnimation *animation = getOwner()->getComponent<MorphAnimation*>("MorphAnimation");
 
@@ -85,7 +85,7 @@ void Checkpoint::Activate(Message const& msg)
 				animation->startMorphing(Vec3(1, 0, 0), 3.0f);
 
 			getEntityManager()->getEntity(1)->spawnpos = spawnpoint; // set player spawn
-			getEntityManager()->sendMessageToEntity("Activated", getOwnerId()); //event managment
+			getOwner()->sendMessage("Activated", this); //event managment
 
 			// Update and activate particle system.
 			Vec3 pos = getOwner()->returnPos();
@@ -106,5 +106,5 @@ void Checkpoint::Activate(Message const& msg)
 
 void Checkpoint::Deactivate()
 {
-	getEntityManager()->sendMessageToEntity("Deactivated", getOwnerId()); //event managment
+	getOwner()->sendMessage("Deactivated", this); //event managment
 }

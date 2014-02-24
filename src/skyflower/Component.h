@@ -106,7 +106,7 @@ class Component {
 		 */
 
 		// message request function
-		void requestMessage(string message, MessageFunction);
+		void requestMessage(const string &message, MessageFunction handler);
 
 		// require a component in this Entity
 		void requireComponent(string name, MessageFunction);
@@ -126,22 +126,22 @@ class Component {
 
 		// message request function
 		template<class T>
-		void requestMessage(string message, void (T::*f)(Message const &));
+		void requestMessage(const string &message, void (T::*f)(Message const &));
 
 		// request all components of a given type and dynamic_cast to a particular class
-		template<class T>
-		list<T*> getComponents(string name, EntityId id = -1);
+		//template<class T>
+		//list<T*> getComponents(string name, EntityId id = -1);
 
 		/**
 		 * MESSAGING FUNCTIONS
 		 */
 
 		// send a message
-		void sendMessage(string msg, Payload  payload = 0);
-		void sendMessage(RequestId id, Payload  payload = 0);
-		void sendMessageToEntity(EntityId id, string msg, Payload payload = 0);
-		void sendMessageToEntity(EntityId id, RequestId reqId, Payload payload = 0);
-		void sendMessageToEntity(EntityId id, RequestId reqId, Message const & msg);
+		//void sendMessage(string msg, Payload  payload = 0);
+		//void sendMessage(RequestId id, Payload  payload = 0);
+		//void sendMessageToEntity(EntityId id, const string &msg, Payload payload = 0);
+		//void sendMessageToEntity(EntityId id, RequestId reqId, Payload payload = 0);
+		//void sendMessageToEntity(EntityId id, RequestId reqId, Message const & msg);
 
 		/**
 		 * IMPLEMENTED REQUESTS & LOGGING
@@ -225,11 +225,11 @@ class Component {
 
 };
 
-
 /**
  * TEMPLATED REQUEST FUNCTIONS
  */
 
+/*
 // request all components of a given type in a given Entity
 template<class T>
 list<T*> Component::getComponents(string name, EntityId id) {
@@ -242,10 +242,11 @@ list<T*> Component::getComponents(string name, EntityId id) {
 	}
 	return tcomps;
 }
+*/
 
 // message request function
 template<class T>
-void Component::requestMessage(string message, void (T::*f)(Message const &)) {
+void Component::requestMessage(const string &message, void (T::*f)(Message const &)) {
 	requestMessage(message, std::tr1::bind(f, (T*)(this), _1));
 }
 
