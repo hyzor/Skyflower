@@ -6,7 +6,9 @@ function loaded()
 	Unlit(197,1)
 	Unlit(198,1)
 	Unlit(199,1)
+	--Lit(199,1)
 	Unlit(200,1)
+	--Lit(200,1)
 	--CutScenePlay("intro")
 end
 
@@ -83,7 +85,7 @@ function update_temporaryFlowers(id, dt)
 			stairdown = true
 		end
 	end
-	if platformTimer > 6 then
+	if platformTimer > 20 then
 		ButtonUp(id)
 		platformTimer = 0
 	end
@@ -284,10 +286,21 @@ function update_blinkingLights(id, dt)
 end
 
 function activated_light199(id)
+	if IsActivated(id) then
+		Lit(199,1)
+	end
+end
+
+function activated_light200(id)
+	if IsActivated(id) then
+		Lit(200,1)
+	end
+end
+
+function activated_flower38(id)
 	Print("HEJ")
 	if IsActivated(id) then
-		Print("HI")
-		Lit(199,1)
+		MoveToTarget(38)
 	end
 end
 

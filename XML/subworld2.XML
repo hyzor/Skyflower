@@ -106,8 +106,8 @@
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform6cloud" id="49" isCollidible="0" isVisible="1" isAnimated="0" xPos="-925.908420261" yPos="-50.0647722215" zPos="705.559592874" xRot="-0.0" yRot="-0.239540372177" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\ButtonBase" id="50" isCollidible="1" isVisible="1" isAnimated="0" xPos="-160.829834703" yPos="55.0870800115" zPos="754.39183984" xRot="-0.0" yRot="-0.0" zRot="0.00439782962308" xScale="1.799104476" yScale="1.799104476" zScale="1.799104476"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\Button" id="51" isCollidible="1" isVisible="1" isAnimated="0" xPos="-160.829834703" yPos="55.0870800115" zPos="754.39183984" xRot="-0.0" yRot="-0.0" zRot="0.00439782962308" xScale="1.799104476" yScale="1.799104476" zScale="1.799104476">
-        <Button toggle=""/>
-        <Event script="buttonTimed"/>
+        <Button toggle="1"/>
+        <Event script="temporaryFlowers"/>
         <HelpText/>
     </Entity>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\Ball" id="52" isCollidible="0" isVisible="1" isAnimated="0" xPos="-615.608748644" yPos="97.5961214186" zPos="759.155592529" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0">
@@ -152,8 +152,9 @@
     </Entity>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\ButtonBase" id="61" isCollidible="1" isVisible="1" isAnimated="0" xPos="-160.829834703" yPos="74.204870955" zPos="474.785142098" xRot="-0.0" yRot="-0.0" zRot="0.00439782962308" xScale="1.799104476" yScale="1.799104476" zScale="1.799104476"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\Button" id="62" isCollidible="1" isVisible="1" isAnimated="0" xPos="-160.829834703" yPos="74.204870955" zPos="474.785142098" xRot="-0.0" yRot="-0.0" zRot="0.00439782962308" xScale="1.799104476" yScale="1.799104476" zScale="1.799104476">
-        <Button toggle="0"/>
+        <Button toggle="1"/>
         <!--Event script="buttonPuzzle"/-->
+		<Event script="flower38" />
     </Entity>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\ButtonBase" id="63" isCollidible="1" isVisible="1" isAnimated="0" xPos="-169.900011669" yPos="48.7098579087" zPos="500.696490125" xRot="-0.0" yRot="-0.0" zRot="0.00439782962308" xScale="2.94557554482" yScale="2.94557554482" zScale="2.94557554482"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\ButtonRed" id="64" isCollidible="1" isVisible="1" isAnimated="0" xPos="-169.900011669" yPos="48.7098579087" zPos="500.696490125" xRot="-0.0" yRot="-0.0" zRot="0.00439782962308" xScale="2.94557554482" yScale="2.94557554482" zScale="2.94557554482">
@@ -168,6 +169,7 @@
     <Entity type="object" id="67" isCollidible="0" isVisible="1" isAnimated="0" xPos="-269.379498537" yPos="109.316849944" zPos="834.99023128" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <Checkpoint/>
         <MorphAnimation path="Models\Checkpoint\Checkpoint_FINAL\" file="checkPoint.morph"/>
+		<Event script="light200"/>
     </Entity>
     <Entity type="object" id="68" isCollidible="0" isVisible="1" isAnimated="0" xPos="-122.25639555" yPos="25.452823515" zPos="-15.6426041247" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <Checkpoint/>
