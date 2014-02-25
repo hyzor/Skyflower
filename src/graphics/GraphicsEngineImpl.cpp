@@ -1,5 +1,6 @@
 #include "GraphicsEngineImpl.h"
 #include "Texture2DImpl.h"
+#include <algorithm>
 
 // Must be included last!
 #include "shared/debug.h"
@@ -1048,6 +1049,7 @@ AnimatedInstance* GraphicsEngineImpl::CreateAnimatedInstance(std::string file)
 	mAnimatedInstances.push_back(mi);
 	return mi;
 }
+
 void GraphicsEngineImpl::DeleteInstance(AnimatedInstance* ai)
 {
 	AnimatedInstanceImpl* mi = (AnimatedInstanceImpl*)ai;
@@ -1724,27 +1726,62 @@ void GraphicsEngineImpl::UpdateSceneData()
 		{
 			it->second->mGlobalMaterialIndex.clear();
 
-			if (it->second->mat.size() > 0 && it->second->meshCount > 0)
-			{
-				if (it->second->mat.size() > 1)
-				{
-					it->second->mGlobalMaterialIndex.push_back(curIndex);
+			//if (it->second->mat.size() > 0 && it->second->meshCount > 0)
+			//{
+				//if (it->second->mat.size() > 1)
+				//{
+					//it->second->mGlobalMaterialIndex.push_back(curIndex);
 
 					// Skip loading default materials
-					for (UINT i = 1; i < it->second->mat.size(); ++i)
+					for (UINT i = 0; i < it->second->mat.size(); ++i)
 					{
-						mMaterials.push_back(&it->second->mat[i]);
-						it->second->mGlobalMaterialIndex.push_back(curIndex);
-						curIndex++;
+						
+						// Find if an identical material has already been loaded
+						//std::vector<Material*>::iterator iter = std::find(mMaterials.begin(), mMaterials.end(), it->second->mat[i]);						
+						//std::vector<Material*>::iterator iter = std::find_if(mMaterials.begin(), mMaterials.end(), &it->second->mat[i]);
+						int foundIndex = -1;
+
+						for (UINT j = 0; j < mMaterials.size(); ++j)
+						{
+							if (it->second->mat[i] == *mMaterials[j])
+							{
+								foundIndex = j;
+								break;
+							}
+						}
+
+						if (foundIndex >= 0)
+						{
+							it->second->mGlobalMaterialIndex.push_back(foundIndex);
+						}
+						else
+						{
+							mMaterials.push_back(&it->second->mat[i]);
+							it->second->mGlobalMaterialIndex.push_back(curIndex);
+							curIndex++;
+						}
+
+
+// 						if (iter != mMaterials.end())
+// 						{
+// 							UINT dist = std::distance(mMaterials.begin(), iter);
+// 							it->second->mGlobalMaterialIndex.push_back(dist);
+// 						}
+// 						else
+// 						{
+// 							mMaterials.push_back(&it->second->mat[i]);
+// 							it->second->mGlobalMaterialIndex.push_back(curIndex);
+// 							curIndex++;
+// 						}
 					}
-				}
-				else
-				{
-					mMaterials.push_back(&it->second->mat.front());
-					it->second->mGlobalMaterialIndex.push_back(curIndex);
-					curIndex++;
-				}
-			}
+// 				}
+// 				else
+// 				{
+// 					mMaterials.push_back(&it->second->mat.front());
+// 					it->second->mGlobalMaterialIndex.push_back(curIndex);
+// 					curIndex++;
+// 				}
+			//}
 		}
 
 		// Cache skinned object materials
@@ -1752,8 +1789,9 @@ void GraphicsEngineImpl::UpdateSceneData()
 		{
 			it->second->mGlobalMaterialIndex.clear();
 
-			if (it->second->mat.size() > 0 && it->second->numMeshes > 0)
-			{
+			//if (it->second->mat.size() > 0 && it->second->meshes.size() > 0)
+			//{
+				/*
 				if (it->second->mat.size() > 1)
 				{
 					it->second->mGlobalMaterialIndex.push_back(curIndex);
@@ -1772,7 +1810,33 @@ void GraphicsEngineImpl::UpdateSceneData()
 					it->second->mGlobalMaterialIndex.push_back(curIndex);
 					curIndex++;
 				}
-			}
+				*/
+
+				for (UINT i = 0; i < it->second->mat.size(); ++i)
+				{
+					// Find if an identical material has already been loaded
+					int foundIndex = -1;
+					for (UINT j = 0; j < mMaterials.size(); ++j)
+					{
+						if (it->second->mat[i] == *mMaterials[j])
+						{
+							foundIndex = j;
+							break;
+						}
+					}
+
+					if (foundIndex >= 0)
+					{
+						it->second->mGlobalMaterialIndex.push_back(foundIndex);
+					}
+					else
+					{
+						mMaterials.push_back(&it->second->mat[i]);
+						it->second->mGlobalMaterialIndex.push_back(curIndex);
+						curIndex++;
+					}
+				}
+			//}
 		}
 
 		// Cache morphed object materials
@@ -1785,6 +1849,7 @@ void GraphicsEngineImpl::UpdateSceneData()
 		{
 			mMorphModels[i]->mGlobalMaterialIndex.clear();
 
+			/*
 			if (mMorphModels[i]->mat.size() > 1)
 			{
 				mMorphModels[i]->mGlobalMaterialIndex.push_back(curIndex);
@@ -1803,6 +1868,35 @@ void GraphicsEngineImpl::UpdateSceneData()
 				mMorphModels[i]->mGlobalMaterialIndex.push_back(curIndex);
 				curIndex++;
 			}
+			*/
+
+			//if (mMorphModels[i]->mat.size() > 0)
+			//{
+				for (UINT j = 0; j < mMorphModels[i]->mat.size(); ++j)
+				{
+					// Find if an identical material has already been loaded
+					int foundIndex = -1;
+					for (UINT k = 0; k < mMaterials.size(); ++k)
+					{
+						if (mMorphModels[i]->mat[j] == *mMaterials[k])
+						{
+							foundIndex = k;
+							break;
+						}
+					}
+
+					if (foundIndex >= 0)
+					{
+						mMorphModels[i]->mGlobalMaterialIndex.push_back(foundIndex);
+					}
+					else
+					{
+						mMaterials.push_back(&mMorphModels[i]->mat[j]);
+						mMorphModels[i]->mGlobalMaterialIndex.push_back(curIndex);
+						curIndex++;
+					}
+				}
+			//}
 		}
 
 		// Cache skinned sorted object materials
@@ -1810,7 +1904,8 @@ void GraphicsEngineImpl::UpdateSceneData()
 		{
 			it->second->mGlobalMaterialIndex.clear();
 
-			if (it->second->mat.size() > 0 && it->second->numMeshes > 0)
+			/*
+			if (it->second->mat.size() > 0 && it->second->meshes.size() > 0)
 			{
 				if (it->second->mat.size() > 1)
 				{
@@ -1827,6 +1922,32 @@ void GraphicsEngineImpl::UpdateSceneData()
 				else
 				{
 					mMaterials.push_back(&it->second->mat.front());
+					it->second->mGlobalMaterialIndex.push_back(curIndex);
+					curIndex++;
+				}
+			}
+			*/
+
+			for (UINT i = 0; i < it->second->mat.size(); ++i)
+			{
+				// Find if an identical material has already been loaded
+				int foundIndex = -1;
+				for (UINT j = 0; j < mMaterials.size(); ++j)
+				{
+					if (it->second->mat[i] == *mMaterials[j])
+					{
+						foundIndex = j;
+						break;
+					}
+				}
+
+				if (foundIndex >= 0)
+				{
+					it->second->mGlobalMaterialIndex.push_back(foundIndex);
+				}
+				else
+				{
+					mMaterials.push_back(&it->second->mat[i]);
 					it->second->mGlobalMaterialIndex.push_back(curIndex);
 					curIndex++;
 				}
@@ -2110,4 +2231,9 @@ void GraphicsEngineImpl::ResetRenderTargetAndViewport()
 	ID3D11RenderTargetView *renderTarget = mD3D->GetRenderTargetView();
 	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, mD3D->GetDepthStencilView());
 	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
+}
+
+void GraphicsEngineImpl::ClearTextures()
+{
+	mTextureMgr->Clear();
 }

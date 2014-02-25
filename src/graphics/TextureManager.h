@@ -20,6 +20,8 @@ public:
 
 	void Init(ID3D11Device* device, ID3D11DeviceContext* dc);
 
+	void Clear();
+
 	ID3D11ShaderResourceView* CreateTexture(std::string fileName);
 
 	ID3D11ShaderResourceView* CreateDDSTextureFromBytes(const unsigned char* bytes, UINT byteSize, std::string textureName);
