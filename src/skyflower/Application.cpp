@@ -576,14 +576,14 @@ void Application::OnKeyDown(unsigned short key)
 		break;
 	case 'R':
 		m_graphicsEngine->ClearLights();
-		//levelHandler->queue(5);
-		m_entityManager->loadXML("subworld2Lights.XML");
-			
+		levelHandler->queue(levelHandler->currentLevel());
 		break;
 	case VK_SPACE:
 		if (m_cutscene->isPlaying())
 			m_cutscene->stop();
-
+		break;
+	case 'L':
+		m_entityManager->loadXML("subworld2Lights.XML");
 		break;
 	case 'Q':
 		m_entityManager->getEntity(1)->getComponent<Health*>("Health")->setHealth(0);
