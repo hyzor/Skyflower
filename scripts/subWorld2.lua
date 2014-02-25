@@ -29,14 +29,7 @@ function load_player(id)
 end
 
 function update_player(id, dt)
-	PushAll(id)
-	Lit(195, 20)
-	Lit(196, 20)
-	Lit(197, 20)
-	Lit(198, 20)
-	Lit(199, 20)
-	Lit(200, 20)
-
+	--PushAll(id)
 end
 
 --platform_start script--
@@ -260,7 +253,45 @@ function activated_Goal(id)
 
 	CutScenePlay("Goal")
 	StartUpdate()
+end
 
+function load_blinkingLights(id)
+	StartUpdate()
+end
+
+timer = 0
+function update_blinkingLights(id, dt)
+	if IsDown(id) then
+		timer = timer + dt
+		if timer < 1 then
+			Lit(196, 1)
+			Unlit(199, 1)
+		elseif timer > 1 and timer < 2 then
+			Lit(197, 1)
+			Unlit(196, 1)
+		elseif timer > 2 and timer < 3 then
+			Lit(198, 1)
+			Unlit(197, 1)
+		elseif timer > 3 and timer < 4 then
+			Lit(199, 1)
+			Unlit(198,1)
+		elseif timer > 4 then
+			timer = 0
+		end
+	else
+		--Unlit(195, 1)
+		--Unlit(196, 1)
+		--Unlit(197, 3)
+		--Unlit(198, 3)
+		--Unlit(199, 1)
+		--Unlit(200, 1)
+		Lit(195, 1)
+		Lit(196, 1)
+		Lit(197, 3)
+		Lit(198, 3)
+		Lit(199, 1)
+		Lit(200, 1)
+	end
 end
 
 
