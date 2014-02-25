@@ -93,7 +93,7 @@ function update_fallingPlatform(id, dt)
 	if FallingPlatform(id) then
 		downTimer = 0
 		standingTimer = standingTimer +dt;
-		if standingTimer > 1.5 then
+		if standingTimer > 0.8 then
 			MoveToTarget(id)
 			standingTimer = 0
 		end	
@@ -263,34 +263,30 @@ timer = 0
 function update_blinkingLights(id, dt)
 	if IsActivated(id) then
 		timer = timer + dt
-		if timer < 1 then
-			Lit(196, 1)
-			Unlit(199, 1)
-		elseif timer > 1 and timer < 2 then
+		if timer > 0 and timer < 1 then
 			Lit(197, 1)
-			Unlit(196, 1)
+		elseif timer > 1 and timer < 2 then
+			Unlit(197, 1)
 		elseif timer > 2 and timer < 3 then
 			Lit(198, 1)
-			Unlit(197, 1)
 		elseif timer > 3 and timer < 4 then
-			Lit(199, 1)
 			Unlit(198,1)
 		elseif timer > 4 then
 			timer = 0
 		end
 	else
-		--Unlit(195, 1)
-		--Unlit(196, 1)
-		--Unlit(197, 3)
-		--Unlit(198, 3)
+		Unlit(195, 1)
+		Unlit(196, 1)
+		--Unlit(197, 1)
+		--Unlit(198, 1)
 		--Unlit(199, 1)
-		--Unlit(200, 1)
-		Lit(195, 1)
-		Lit(196, 1)
-		Lit(197, 3)
-		Lit(198, 3)
-		Lit(199, 1)
-		Lit(200, 1)
+		Unlit(200, 1)
+		--Lit(195, 1)
+		--Lit(196, 1)
+		--Lit(197, 3)
+		--Lit(198, 3)
+		--Lit(199, 1)
+		--Lit(200, 1)
 	end
 end
 
