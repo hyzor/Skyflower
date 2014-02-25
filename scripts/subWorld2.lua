@@ -1,7 +1,7 @@
 player = 1 --player id
 
 function loaded()
-	CutScenePlay("intro")
+	--CutScenePlay("intro")
 end
 
 
@@ -30,20 +30,13 @@ end
 
 function update_player(id, dt)
 	PushAll(id)
-	
-	--player light
-	if IsLit(id) then
-		Unlit(id, 1)
-	elseif IsUnlit(id) then
-		Lit(id, 1)
-	end
-	
-	--sun
-	if IsLit(201) then
-		Unlit(201, 10)
-	elseif IsUnlit(201) then
-		Lit(201, 10)
-	end
+	Lit(195, 20)
+	Lit(196, 20)
+	Lit(197, 20)
+	Lit(198, 20)
+	Lit(199, 20)
+	Lit(200, 20)
+
 end
 
 --platform_start script--
