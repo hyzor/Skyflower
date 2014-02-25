@@ -80,6 +80,7 @@ private:
 	Menu *m_menu;
 	CutScene *m_cutscene;
 
+	bool m_showHelpTexts;
 	bool m_showCharts;
 	int m_frameChartID;
 	int m_fpsChartID;

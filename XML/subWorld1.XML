@@ -4,7 +4,7 @@
 
 
 	<Entity type="player" id="1"
-		xPos="0" yPos="10" zPos="0"
+		xPos="290.030637847" yPos="78" zPos="152.252250723"
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="1.0" yScale="1.0" zScale="1.0"
 		model="Models/Player/playerAnimated"
@@ -55,6 +55,7 @@
     <Entity type="WoodBlock" model="" id="14" isVisible="1" isCollidible="0" isAnimated="0" xPos="290.030637847" yPos="78" zPos="152.252250723" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <Checkpoint />
 		<MorphAnimation path="Models/Checkpoint/Checkpoint_FINAL/" file="checkPoint.morph" />
+		<HelpText text="Walking into a flower will activate it and make it your spawnpoint" range="15" />
     </Entity>
 	<Entity type="Goal" model="Models\Goal\goalSackAnimerad" id="1411" isVisible="1" isCollidible="0" isAnimated="1" xPos="565.370649948" yPos="116.5956517912" zPos="51.8543727491" xRot="0.0" yRot="-1.57" zRot="0.0" xScale="1.5" yScale="1.5" zScale="1.5">
 		<Goal />
@@ -63,6 +64,7 @@
     <Entity type="ButtonBase" model="Models\Worlds\Subworld 1\ButtonBase" id="15" relativeid="8" isVisible="1" isCollidible="1" isAnimated="0" xPos="314.552295649" yPos="78.4037154914" zPos="161.77004996" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312"/>
     <Entity type="Button" model="Models\Worlds\Subworld 1\Button" id="16" relativeid="15" isVisible="1" isCollidible="1" isAnimated="0" xPos="314.466631214" yPos="78.4602890807" zPos="161.86154881" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312">
         <Button toggle="1"/>
+		<HelpText text="Some buttons will activate or deactivate things *quack*" range="10"/>
         <Event script="btnStair"/> 
     </Entity>
     
@@ -103,6 +105,7 @@
     <Entity type="WoodBlock" model="Models\Worlds\Subworld 1\WoodBlock" id="19" isVisible="1" isCollidible="1" isAnimated="0" xPos="472.770895471" yPos="120.251395515" zPos="122.055509702" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <Gravity/>
         <Box/>
+		<HelpText text="Holding down space will make you jump higher!" range="50" />
         <Movement speed="20"/>
         <Health/>
     </Entity>
@@ -110,7 +113,7 @@
         <Gravity/>
         <Health/>
 		<Movement speed="20"/>
-		<HelpText text="Hey! Why don't you try pushing that box?" range="50" />
+		<HelpText text="Boxes can be pushed and are useful in many places! *quack*" range="50" />
 		<Box />
     </Entity>
 	
@@ -124,7 +127,7 @@
     <Entity type="ButtonBase" model="Models\Worlds\Subworld 1\ButtonBase" id="17" relativeid="100" isVisible="1" isCollidible="1" isAnimated="0" xPos="199.034827697" yPos="39.2123622218" zPos="-8.39870949045" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312"/>
     <Entity type="Button" model="Models\Worlds\Subworld 1\Button" id="18" relativeid="17" isVisible="1" isCollidible="1" isAnimated="0" xPos="198.949163262" yPos="39.2689358112" zPos="-8.30721064075" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312">
         <Button/>
-		<HelpText text="*quack* Hmm, that's a funny-looking button right there...*quack*" range="20" />
+		<HelpText text="*quack* Some buttons needs to be held down to work. *quack*" range="20" />
         <Event script="platform_start"/>
     </Entity>
 	

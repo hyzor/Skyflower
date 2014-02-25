@@ -8,6 +8,7 @@ Menu::Menu()
 	m_active = false;
 	status = MenuStatus::none;
 	selectedButton = 0;
+	settings._showHelpTexts = true;
 	settings._isFullscreen = false;
 	settings._mouseInverted = false;
 	settings._soundVolume = 1.0f;
@@ -90,17 +91,21 @@ void Menu::init(GUI *g, int screenWidth, int screeenHeight, SoundEngine *sound)
 		m_pages[m_activePage].buttons.at(selectedButton)->setHighlighted(true);
 	});
 	m_pages[MenuPageSettings].buttons.push_back(back);
+	CheckBox *helpTexts = new CheckBox(g, Vec3(430, 460), 20, 20, "checkbox_unchecked.png", "checkbox_checked.png");
+	helpTexts->setChecked(this->settings._showHelpTexts);
+	m_pages[MenuPageSettings].checkboxes.push_back(helpTexts);
 
-	CheckBox *fullScreen = new CheckBox(g, Vec3(430, 450), 20, 20, "checkbox_unchecked.png", "checkbox_checked.png");
+	CheckBox *fullScreen = new CheckBox(g, Vec3(430, 430), 20, 20, "checkbox_unchecked.png", "checkbox_checked.png");
 	m_pages[MenuPageSettings].checkboxes.push_back(fullScreen);
 
-	CheckBox *mouseInverted = new CheckBox(g, Vec3(430, 420), 20, 20, "checkbox_unchecked.png", "checkbox_checked.png");
+	CheckBox *mouseInverted = new CheckBox(g, Vec3(430, 400), 20, 20, "checkbox_unchecked.png", "checkbox_checked.png");
 	m_pages[MenuPageSettings].checkboxes.push_back(mouseInverted);
 
-	Slider *volume = new Slider(g, Vec3(430, 350), 150, 40);
+
+	Slider *volume = new Slider(g, Vec3(430, 330), 150, 40);
 	m_pages[MenuPageSettings].sliders.push_back(volume);
 
-	Slider *mouseSense = new Slider(g, Vec3(430, 280), 150, 40);
+	Slider *mouseSense = new Slider(g, Vec3(430, 260), 150, 40);
 	m_pages[MenuPageSettings].sliders.push_back(mouseSense);
 
 	// Instructions page
@@ -140,10 +145,13 @@ void Menu::draw()
 {
 	if (m_activePage == MenuPageSettings)
 	{
-		Vec3 fullScreenPos = m_pages[MenuPageSettings].checkboxes.at(0)->getPosition();
+		Vec3 helpTextPos = m_pages[MenuPageSettings].checkboxes.at(0)->getPosition();
+		guiPtr->printText("Show Helptexts", (int)(helpTextPos.X + (30 * scaleX)), (int)helpTextPos.Y, Vec3(1.0f, 1.0f, 1.0f), scaleX);
+
+		Vec3 fullScreenPos = m_pages[MenuPageSettings].checkboxes.at(1)->getPosition();
 		guiPtr->printText("Fullscreen", (int)(fullScreenPos.X + (30 * scaleX)), (int)fullScreenPos.Y, Vec3(1.0f, 1.0f, 1.0f), scaleX);
 
-		Vec3 mouseInvertPos = m_pages[MenuPageSettings].checkboxes.at(1)->getPosition();
+		Vec3 mouseInvertPos = m_pages[MenuPageSettings].checkboxes.at(2)->getPosition();
 		guiPtr->printText("Invert Camera", (int)(mouseInvertPos.X + 30 * scaleX), (int)mouseInvertPos.Y, Vec3(1.0f, 1.0f, 1.0f), scaleX);
 
 		Vec3 soundVolumePos = m_pages[MenuPageSettings].sliders.at(0)->getPosition();
@@ -208,8 +216,9 @@ void Menu::mousePressed(Vec3 pos)
 		(*it)->onMouseClick(pos);
 	}
 
-	settings._isFullscreen = m_pages[MenuPageSettings].checkboxes[0]->isChecked();
-	settings._mouseInverted = m_pages[MenuPageSettings].checkboxes[1]->isChecked();
+	settings._showHelpTexts = m_pages[MenuPageSettings].checkboxes[0]->isChecked();
+	settings._isFullscreen = m_pages[MenuPageSettings].checkboxes[1]->isChecked();
+	settings._mouseInverted = m_pages[MenuPageSettings].checkboxes[2]->isChecked();
 	settings._soundVolume = m_pages[MenuPageSettings].sliders[0]->getValue();
 }
 
@@ -337,5 +346,5 @@ void Menu::onMouseDown(Vec3 mousePos)
 	}
 
 	settings._soundVolume = m_pages[MenuPageSettings].sliders[0]->getValue();
-	settings._mouseSense = m_pages[MenuPageSettings].sliders[1]->getValue()*2 + 0.3f; // mouse sense ranges from 0.2 - 2.3
+	settings._mouseSense = m_pages[MenuPageSettings].sliders[1]->getValue()*2 + 0.3f; // mouse sense ranges from 0.3 - 2.3
 }

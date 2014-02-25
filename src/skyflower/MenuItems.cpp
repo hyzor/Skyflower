@@ -153,6 +153,11 @@ void CheckBox::setOnClick(const std::function<void()> &handler)
 	this->handler = handler;
 }
 
+void CheckBox::setChecked(bool check)
+{
+	this->checked = check;
+}
+
 void CheckBox::setVisible(bool state)
 {
 	if (state)
