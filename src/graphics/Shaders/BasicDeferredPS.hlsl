@@ -148,10 +148,12 @@ PixelOut main(VertexOut pIn)
 	//pOut.Position = float4(pIn.PosW, 1.0f);
 
 	// Output material index
-	//pOut.Normal.w = gGlobalMaterialIndex;
-	//pOut.Normal.w = shadowFactor;
+	//float globalMat = gGlobalMaterialIndex;
+	//pOut.Normal.w = globalMat / 255.0f;
+	pOut.Normal.w = shadowFactor;
 
-	pOut.Color.w = (float)gGlobalMaterialIndex / 1000.0f;
+	pOut.Color.w = (float)gGlobalMaterialIndex / 255.0f;
+	//pOut.Color.w = shadowFactor;
 	
 	// Gamma correct color (make it linear)
 	pOut.Color.xyz = pow(pOut.Color.xyz, 2.2f);

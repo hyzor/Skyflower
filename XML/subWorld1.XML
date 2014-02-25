@@ -15,7 +15,7 @@
 			<Push />
 			<Pushable />
 			<Health maxHP = "100" />
-			<PointLight xPos="0.0" yPos="10.0" zPos="0.0" r="2.0" g="0.75" b="0.75" intensity="1.0" />
+			<!--<PointLight xPos="0.0" yPos="10.0" zPos="0.0" r="2.0" g="0.75" b="0.75" intensity="1.0" />-->
 			<Event script="player" />
 			<Throw haveAim="true"/>
 	</Entity>

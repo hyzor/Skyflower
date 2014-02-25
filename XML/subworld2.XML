@@ -178,6 +178,7 @@
         <Goal/>
         <Event script="Goal"/>
     </Entity>
+	<!--
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\Puncha" id="71" isCollidible="1" isVisible="1" isAnimated="1" xPos="-446.229879321" yPos="104.23260422" zPos="756.500382396" xRot="-0.0" yRot="-1.86242290338" zRot="-0.0" xScale="3.14296495185" yScale="3.14296495185" zScale="3.14296495185">
         <Gravity/>
         <AI/>
@@ -202,6 +203,7 @@
         <Event script="thrower"/>
         <Throw haveAim=""/>
     </Entity>
+	-->
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\tree1" id="74" isCollidible="1" isVisible="1" isAnimated="0" xPos="-804.189885752" yPos="-0.612800428275" zPos="760.928729495" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.88118716529" yScale="1.88118716529" zScale="1.88118716529"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\tree2" id="75" isCollidible="1" isVisible="1" isAnimated="0" xPos="-244.633790721" yPos="104.696978236" zPos="830.619681596" xRot="-0.0" yRot="0.238323707233" zRot="-0.0" xScale="1.46080002716" yScale="1.46080002716" zScale="1.46080002716"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\tree4" id="76" isCollidible="1" isVisible="1" isAnimated="0" xPos="-137.067883653" yPos="53.5352959431" zPos="705.511573032" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="2.04007931219" yScale="2.04007931219" zScale="2.04007931219"/>

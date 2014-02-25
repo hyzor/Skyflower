@@ -95,10 +95,10 @@ PixelOut main(GeoOut pIn)
 		pOut.Background = float4(0.0f, 0.0f, 0.0f, 1.0f);
 	}
 
-	//pOut.Color.w = 1.0f;
+	pOut.Color.w = -1.0f;
 
 	// This will set the light accumulation shader to use a default material
-	pOut.Color.w = 1.0f;
+	//pOut.Color.w = 1000.0f;
 
 	pOut.Normal.xyz = pIn.NormalW;
 

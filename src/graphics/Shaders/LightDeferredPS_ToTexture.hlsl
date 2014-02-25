@@ -73,7 +73,7 @@ PixelOut main(VertexOut pIn)
 	float shadowFactor;
 	//float diffuseMultiplier;
 	float2 velocity;
-	 int materialIndex;
+	int materialIndex;
 	
 	diffuse.xyz = gDiffuseTexture.Sample(samLinear, pIn.Tex).xyz;
 	normal = gNormalTexture.Sample(samLinear, pIn.Tex).xyz;
@@ -92,10 +92,13 @@ PixelOut main(VertexOut pIn)
 	//diffuseMultiplier = gNormalTexture.Sample(samLinear, pIn.Tex).w;
 
 	//float matFloat = gDiffuseTexture.Load(pIn.Tex);
-	float matFloat = gDiffuseTexture.Sample(samPoint, pIn.Tex).w;
-	matFloat = matFloat * 1000.0f;
-	//materialIndex = gDiffuseTexture.Sample(samPoint, pIn.Tex).w * 1000.0f;
-	materialIndex = (int)matFloat;
+	//float matFloat = gDiffuseTexture.Sample(samPoint, pIn.Tex).w;
+
+	//uint3 sampleCoord = uint3(pIn.Pos.x, pIn.Pos.y, 0);
+	//float matFloat = gNormalTexture.Load(sampleCoord);
+	//float matFloat = gNormalTexture.Sample(samPoint, pIn.Tex).w;
+	float matFloat = gDiffuseTexture.Sample(samPoint, pIn.Tex).w * 255.0f;
+	materialIndex = round(matFloat);
 
 	Material curMat;
 
