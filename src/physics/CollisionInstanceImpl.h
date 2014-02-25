@@ -29,7 +29,8 @@ class CollisionInstanceImpl : public CollisionInstance
 
 	private:
 		CollisionModel* Model;
-		
+		Sphere Sphere;
+
 		bool _isActive;
 
 		Vec3 Position;
