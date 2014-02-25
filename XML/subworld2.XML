@@ -49,8 +49,8 @@
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform3grass" id="12" isCollidible="1" isVisible="1" isAnimated="0" xPos="-150.654158319" yPos="31.2559988012" zPos="139.67353372" xRot="-0.0993061245312" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform3mud" id="13" isCollidible="1" isVisible="1" isAnimated="0" xPos="-151.252846238" yPos="31.6663704536" zPos="141.225919174" xRot="-0.0940898913328" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform3cloud" id="14" isCollidible="0" isVisible="1" isAnimated="0" xPos="-151.252846238" yPos="31.6663704536" zPos="141.225919174" xRot="-0.0940898913328" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
-    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\bollplankcloud" id="15" isCollidible="0" isVisible="1" isAnimated="0" xPos="-202.428319014" yPos="22.7084459802" zPos="5.0458748685" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
-    <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\bollPlank" id="16" isCollidible="1" isVisible="1" isAnimated="0" xPos="-202.428319014" yPos="22.7084459802" zPos="5.0458748685" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
+    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\bollplankcloud" id="15" isCollidible="0" isVisible="1" isAnimated="0" xPos="-230.428319014" yPos="22.7084459802" zPos="5.0458748685" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
+    <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\bollPlank" id="16" isCollidible="1" isVisible="1" isAnimated="0" xPos="-230.428319014" yPos="22.7084459802" zPos="5.0458748685" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\puzzleCloud" id="17" isCollidible="0" isVisible="1" isAnimated="0" xPos="-157.600363012" yPos="50.5123231386" zPos="536.664685297" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.34041258643" yScale="1.34041258643" zScale="1.34041258643"/>
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\puzzleplattform" id="18" isCollidible="1" isVisible="1" isAnimated="0" xPos="-157.600363012" yPos="50.5123231386" zPos="536.664685297" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.34041258643" yScale="1.34041258643" zScale="1.34041258643"/>
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2grass" id="19" isCollidible="1" isVisible="1" isAnimated="0" xPos="-144.81328308" yPos="21.8113617626" zPos="8.49696289447" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
@@ -116,8 +116,8 @@
         <Movement speed="20"/>
         <Throwable/>
     </Entity>
-    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\ButtonBase" id="53" isCollidible="1" isVisible="1" isAnimated="0" xPos="-200.696871708" yPos="31.1388093654" zPos="6.07379709632" xRot="-0.0" yRot="-0.0" zRot="1.55639585521" xScale="1.799104476" yScale="1.799104476" zScale="1.799104476"/>
-    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\Button" id="54" isCollidible="1" isVisible="1" isAnimated="0" xPos="-200.696871708" yPos="31.1388093654" zPos="6.07379709632" xRot="-0.0" yRot="-0.0" zRot="-1.55639585521" xScale="1.799104476" yScale="1.799104476" zScale="1.799104476">
+    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\ButtonBase" id="53" isCollidible="1" isVisible="1" isAnimated="0" xPos="-228.696871708" yPos="55.1388093654" zPos="6.07379709632" xRot="-0.0" yRot="-0.0" zRot="1.55639585521" xScale="1.799104476" yScale="1.799104476" zScale="1.799104476"/>
+    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\Button" id="54" isCollidible="1" isVisible="1" isAnimated="0" xPos="-228.696871708" yPos="55.1388093654" zPos="6.07379709632" xRot="-0.0" yRot="-0.0" zRot="-1.55639585521" xScale="1.799104476" yScale="1.799104476" zScale="1.799104476">
         <WallButton/>
 		<Event script="blinkingLights" />
     </Entity>
