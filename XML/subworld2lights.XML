@@ -1,6 +1,6 @@
 <root>
     <Entity type="light" id="195" >
-        <SpotLight  xPos="-122.25639555" yPos="65.452823515" zPos="-15.6426041247" r="1.0" g="1.0" b="1.0" intensity="1.0" xDir="0" yDir="-1" zDir="0" angle="45"/>
+        <SpotLight  xPos="-122.25639555" yPos="265.452823515" zPos="-15.6426041247" r="1.0" g="1.0" b="1.0" intensity="1.0" xDir="0" yDir="-1" zDir="0" angle="45"/>
     </Entity>
     <Entity type="light" id="196" >
         <SpotLight  xPos="82.0846498422" yPos="176.9141675967" zPos="1.66533453694" r="1.0" g="1.0" b="1.0" intensity="1.0" xDir="0" yDir="-1" zDir="0" angle="45" />

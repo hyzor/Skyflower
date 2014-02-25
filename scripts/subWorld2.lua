@@ -59,7 +59,7 @@ function update_temporaryFlowers(id, dt)
 		--Print(platformTimer)
 		if stairdown then
 			platformTimer = 0
-			MoveToTarget(26)
+			MoveToTarget(22)
 			MoveToTarget(27)
 			MoveToTarget(28)
 			MoveToTarget(29)
@@ -68,7 +68,7 @@ function update_temporaryFlowers(id, dt)
 		end
 	else
 		if not stairdown then
-			MoveToSpawn(26)
+			MoveToSpawn(22)
 			MoveToSpawn(27)
 			MoveToSpawn(28)
 			MoveToSpawn(29)
@@ -261,7 +261,7 @@ end
 
 timer = 0
 function update_blinkingLights(id, dt)
-	if IsDown(id) then
+	if IsActivated(id) then
 		timer = timer + dt
 		if timer < 1 then
 			Lit(196, 1)
