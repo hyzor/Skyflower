@@ -12,7 +12,7 @@
         <SpotLight  xPos="-173.83492749" yPos="334.564570483" zPos="319.680460046" r="0.0" g="0.0" b="1.0" intensity="1.0" xDir="0" yDir="-1" zDir="0" angle="45" />
     </Entity>
     <Entity type="light" id="199" >
-        <SpotLight  xPos="-257.986716391" yPos="606.056801136" zPos="708.637676847" r="1.0" g="1.0" b="1.0" intensity="1.0" xDir="0" yDir="-1" zDir="0" angle="45" />
+        <SpotLight  xPos="-163.986716391" yPos="500.056801136" zPos="550.637676847" r="1.0" g="1.0" b="1.0" intensity="1.0" xDir="0" yDir="-1" zDir="0" angle="45" />
     </Entity>
     <Entity type="light" id="200" >
         <SpotLight  xPos="-787.935304229" yPos="369.331173166" zPos="715.323814977" r="1.0" g="1.0" b="1.0" intensity="1.0" xDir="0" yDir="-1" zDir="0" angle="45" />
