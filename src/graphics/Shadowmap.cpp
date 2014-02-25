@@ -244,6 +244,7 @@ void ShadowMap::DrawSceneToShadowMap(
 
 	for (UINT i = 0; i < mAnimatedInstances.size(); ++i)
 	{
+		/*
 		if (mAnimatedInstances[i]->IsVisible())
 		{
 			world = mAnimatedInstances[i]->GetWorld();
@@ -258,6 +259,24 @@ void ShadowMap::DrawSceneToShadowMap(
 			{
 				sShadowShader->UpdatePerObj(deviceContext);
 				mAnimatedInstances[i]->model->mInstance.model->meshes[j].draw(deviceContext);
+			}
+		}
+		*/
+
+		if (mAnimatedInstances[i]->IsVisible())
+		{
+			world = mAnimatedInstances[i]->GetWorld();
+			worldViewProj = world * viewProj;
+
+			sShadowShader->SetLightWVP(deviceContext, worldViewProj);
+			sShadowShader->SetBoneTransforms(deviceContext,
+				mAnimatedInstances[i]->mSkinnedInstance->FinalTransforms.data(),
+				(UINT)mAnimatedInstances[i]->mSkinnedInstance->FinalTransforms.size());
+
+			for (UINT j = 0; j < mAnimatedInstances[i]->mSkinnedInstance->model->numMeshes; ++j)
+			{
+				sShadowShader->UpdatePerObj(deviceContext);
+				mAnimatedInstances[i]->mSkinnedInstance->model->meshes[j].draw(deviceContext);
 			}
 		}
 	}
@@ -310,6 +329,7 @@ void ShadowMap::DrawSceneToShadowMap(const std::vector<ModelInstanceImpl*>& mode
 
 	for (UINT i = 0; i < mAnimatedInstances.size(); ++i)
 	{
+		/*
 		if (mAnimatedInstances[i]->IsVisible())
 		{
 			world = mAnimatedInstances[i]->GetWorld();
@@ -324,6 +344,24 @@ void ShadowMap::DrawSceneToShadowMap(const std::vector<ModelInstanceImpl*>& mode
 			{
 				skinnedShadowShader->UpdatePerObj(deviceContext);
 				mAnimatedInstances[i]->model->mInstance.model->meshes[j].draw(deviceContext);
+			}
+		}
+		*/
+
+		if (mAnimatedInstances[i]->IsVisible())
+		{
+			world = mAnimatedInstances[i]->GetWorld();
+			worldViewProj = world * viewProj;
+
+			skinnedShadowShader->SetLightWVP(deviceContext, worldViewProj);
+			skinnedShadowShader->SetBoneTransforms(deviceContext,
+				mAnimatedInstances[i]->mSkinnedInstance->FinalTransforms.data(),
+				(UINT)mAnimatedInstances[i]->mSkinnedInstance->FinalTransforms.size());
+
+			for (UINT j = 0; j < mAnimatedInstances[i]->mSkinnedInstance->model->numMeshes; ++j)
+			{
+				skinnedShadowShader->UpdatePerObj(deviceContext);
+				mAnimatedInstances[i]->mSkinnedInstance->model->meshes[j].draw(deviceContext);
 			}
 		}
 	}

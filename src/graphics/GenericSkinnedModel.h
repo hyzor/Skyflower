@@ -56,6 +56,7 @@ struct GenericSkinnedModelInstance
 	bool animationDone;
 
 	GenericSkinnedModelInstance();
+	~GenericSkinnedModelInstance();
 	void Update(float dt);
 };
 

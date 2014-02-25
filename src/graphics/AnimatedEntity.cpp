@@ -5,7 +5,7 @@
 
 AnimatedEntity::AnimatedEntity(GenericSkinnedModel* model, XMFLOAT3 position)
 {
-	mInstance.model = model;
+	//mInstance.model = model;
 	mInstance.isVisible = true;
 	mInstance.TimePos = 0.0f;
 	mInstance.AnimationName = "animation";
