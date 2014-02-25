@@ -88,6 +88,7 @@ class CheckBox : public MenuItem
 public:
 	CheckBox(GUI *gui, Vec3 position, int width, int height, string textureNormal, string textureChecked);
 	void setOnClick(const std::function<void()> &handler);
+	void setChecked(bool checked);
 	void onMouseClick(Vec3 mousePos);
 	void setVisible(bool state);
 	bool isChecked();

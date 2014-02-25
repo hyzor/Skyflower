@@ -36,9 +36,8 @@ void GravityComponent::update(float dt)
 	if (this->enabled)
 	{
 		this->p->AddGravityCalc(pos);
+		getOwner()->updatePos(pos);
 	}
-
-	getOwner()->updatePos(pos);
 
 	getOwner()->wall = nullptr;
 	Entity *ground = nullptr;
@@ -343,7 +342,7 @@ void GravityComponent::calculateGroundNormal(Entity* e, Entity* ground)
 
 void GravityComponent::sphereCollision(float dt)
 {
-	if (getOwner()->sphere)
+	/*if (getOwner()->sphere)
 	{
 		for (int j = 0; j < getEntityManager()->getNrOfEntities(); j++)
 		{
@@ -357,7 +356,7 @@ void GravityComponent::sphereCollision(float dt)
 				}
 			}
 		}
-	}
+	}*/
 }
 
 

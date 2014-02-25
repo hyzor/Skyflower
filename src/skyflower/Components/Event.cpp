@@ -562,7 +562,7 @@ int Event::CanThrow(lua_State* L)
 		if (n == 1)
 			lua_pushboolean(L, entity->getComponent<Throw*>("Throw")->getIsHoldingThrowable());
 		else
-			lua_pushboolean(L, entity->getComponent<Throw*>("Throw")->getHoldingEntityId() == lua_tointeger(L, 2));
+			lua_pushboolean(L, entity->getComponent<Throw*>("Throw")->getHeldEntity()->fId == lua_tointeger(L, 2));
 	}
 
 	return 1;

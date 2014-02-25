@@ -143,6 +143,8 @@ void Application::Start()
 
 	m_menuCameraRotation = 0.0f;
 
+	m_showHelpTexts = true;
+
 	mGameTime = 0.0;
 	m_oldTime = GetTime();
 	mStartTime = GetTime();
@@ -302,6 +304,15 @@ void Application::updateMenu(float dt, float gameTime)
 		m_graphicsEngine->SetFullscreen(false);
 		this->OnWindowResized(1024, 768);
 		m_oldTime = GetTime();
+	}
+
+	if (m_showHelpTexts != m_menu->getSettings()._showHelpTexts)
+	{
+		m_showHelpTexts = m_menu->getSettings()._showHelpTexts;
+		if (m_showHelpTexts)
+			m_entityManager->sendGlobalMessage("Show helptexts");
+		else
+			m_entityManager->sendGlobalMessage("Hide helptexts");
 	}
 
 	if (m_camera->GetMouseSense() != m_menu->getSettings()._mouseSense)
@@ -549,6 +560,12 @@ void Application::OnKeyDown(unsigned short key)
 			m_menu->setActive(true);
 
 		break;
+	case VK_RETURN:
+		if (gameState == GameState::game)
+		{
+			m_entityManager->sendGlobalMessage("enter pressed");
+		}
+		break;
 	case 'Z':
 		m_showCharts = !m_showCharts;
 
@@ -561,14 +578,14 @@ void Application::OnKeyDown(unsigned short key)
 		break;
 	case 'R':
 		m_graphicsEngine->ClearLights();
-		levelHandler->queue(5);
-		//m_entityManager->loadXML("subworld2Lights.XML");
-			
+		levelHandler->queue(levelHandler->currentLevel());
 		break;
 	case VK_SPACE:
 		if (m_cutscene->isPlaying())
 			m_cutscene->stop();
-
+		break;
+	case 'L':
+		m_entityManager->loadXML("subworld2Lights.XML");
 		break;
 	case 'Q':
 		m_entityManager->getEntity(1)->getComponent<Health*>("Health")->setHealth(0);

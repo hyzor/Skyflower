@@ -8,6 +8,9 @@ CollisionInstanceImpl::CollisionInstanceImpl(CollisionModel* Model, Vec3 Positio
 	this->Model = Model;
 	this->Position = Position;
 
+	this->Sphere = Model->GetSphere();
+	this->Sphere.Position += this->Position;
+
 	this->scaleInv = Vec3(1, 1, 1);
 
 	this->rot1Inv = Vec3(1, 0, 0);
@@ -193,6 +196,9 @@ void CollisionInstanceImpl::SetRotation(Vec3 rot)
 void CollisionInstanceImpl::SetPosition(Vec3 position)
 {
 	this->Position = position;
+
+	this->Sphere = Model->GetSphere();
+	this->Sphere.Position += this->Position;
 }
 
 CollisionModel *CollisionInstanceImpl::GetModel()
@@ -211,10 +217,7 @@ Box CollisionInstanceImpl::GetBox()
 
 Sphere CollisionInstanceImpl::GetSphere()
 {
-	Sphere sphere = Model->GetSphere();
-	sphere.Position += this->Position;
-
-	return sphere;
+	return this->Sphere;
 }
 
 Vec3 CollisionInstanceImpl::GetPosition()

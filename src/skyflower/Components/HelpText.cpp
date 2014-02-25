@@ -11,8 +11,11 @@ void HelpText::addedToEntity()
 	Entity *owner = getOwner();
 	assert(owner);
 
-	requestMessage("MenuActivated", &HelpText::deActivate);
-	requestMessage("MenuDeactivated", &HelpText::activate);
+	requestMessage("MenuActivated", &HelpText::menu_activate);
+	requestMessage("MenuDeactivated", &HelpText::menu_deActivate);
+	requestMessage("enter pressed", &HelpText::hide);
+	requestMessage("Hide helptexts", &HelpText::deActivate);
+	requestMessage("Show helptexts", &HelpText::activate);
 
 	orig = getOwner()->spawnpos;
 
@@ -42,7 +45,7 @@ void HelpText::removeFromEntity()
 
 void HelpText::update(float dt)
 {
-	if (m_active)
+	if (m_active && !m_menuActive)
 	{
 
 		GUI* gui = getOwner()->getModules()->gui;
@@ -64,12 +67,19 @@ void HelpText::update(float dt)
 
 			if (top < 153.6f)
 				top += dt*300;
-
+			else
+			{	
+				m_timer += dt;
+				if (m_timer > 0.02f && m_textToPrint.size() < m_text.size())
+				{
+					m_textToPrint += m_text[m_textToPrint.size()];
+				}
+			}
  			gui->GetGUIElement(bgID)->SetVisible(true);
 			gui->GetGUIElement(duckID)->SetVisible(true);
 			gui->GetGUIElement(bgID)->GetDrawInput()->pos.y = height - top + 85.0f;
 			gui->GetGUIElement(duckID)->GetDrawInput()->pos.y = height - top;
-			gui->printText(m_text, (int)(xPos), (int)(height - top +108.6f), Vec3(0.0f, 1.0f, 0.0f), 1.5f);
+			gui->printText(m_textToPrint, (int)(xPos), (int)(height - top + 108.6f), Vec3(0.0f, 1.0f, 0.0f), 1.5f);
 		}
 		else if (top > 0.0f)
 		{
@@ -79,11 +89,13 @@ void HelpText::update(float dt)
 
 			gui->GetGUIElement(bgID)->GetDrawInput()->pos.y = height - top + 85.0f;
 			gui->GetGUIElement(duckID)->GetDrawInput()->pos.y = height - top;
-			gui->printText(m_text, (int)(xPos), (int)(height - top + 108.6f), Vec3(0.0f, 1.0f, 0.0f), 1.5f);
+			gui->printText(m_textToPrint, (int)(xPos), (int)(height - top + 108.6f), Vec3(0.0f, 1.0f, 0.0f), 1.5f);
 
 		}
 		else
 		{
+			top = 0.0f;
+			m_textToPrint = "";
 			first = true;
 			gui->GetGUIElement(bgID)->SetVisible(false);
 			gui->GetGUIElement(duckID)->SetVisible(false);
@@ -92,13 +104,35 @@ void HelpText::update(float dt)
 	
 }
 
+void HelpText::menu_activate(Message const & msg)
+{
+	getOwner()->getModules()->gui->GetGUIElement(bgID)->SetVisible(false);
+	getOwner()->getModules()->gui->GetGUIElement(duckID)->SetVisible(false);
+	m_menuActive = true;
+}
+void HelpText::menu_deActivate(Message const & msg)
+{
+	m_menuActive = false;
+}
+
 void HelpText::activate(Message const & msg)
 {
 	m_active = true;
 }
 void HelpText::deActivate(Message const & msg)
 {
-	getOwner()->getModules()->gui->GetGUIElement(bgID)->SetVisible(false);
-	getOwner()->getModules()->gui->GetGUIElement(duckID)->SetVisible(false);
 	m_active = false;
+}
+void HelpText::hide(Message const & msg)
+{
+	float distance = (getEntityManager()->getEntity(1)->returnPos() - orig).Length();
+	if (distance < m_range)
+	{
+		top = 0.0f;
+		m_textToPrint = "";
+		first = true;
+		getOwner()->getModules()->gui->GetGUIElement(bgID)->SetVisible(false);
+		getOwner()->getModules()->gui->GetGUIElement(duckID)->SetVisible(false);
+		m_active = false;
+	}
 }

@@ -1075,6 +1075,9 @@ public:
 
 	void SetEmitParticles(bool emitParticles);
 
+	void SetRandomVelocity(XMFLOAT3 randomVelocity);
+
+	void RandomizeVelocity(bool randomize);
 	//void UpdatePerParticleSystem(ID3D11DeviceContext* dc);
 
 	void UpdateDrawShaders(ID3D11DeviceContext* dc);
@@ -1130,6 +1133,10 @@ private:
 
 		float scaleY;
 		XMFLOAT3 paddingScale;
+
+
+		int randomizeVelocity;
+		XMFLOAT3 randomVelocity;
 	};
 
 	struct BUFFERCACHE

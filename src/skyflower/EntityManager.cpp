@@ -1160,9 +1160,12 @@ Entity *EntityManager::getEntity(EntityId id)
 		}
 	}
 
-	stringstream ss;
+	/*stringstream ss;
 	ss << "Failed to get Entity " << id << ": it does not exist!";
-	error(ss);
+	error(ss);*/
+
+	cout << "Failed to get Entity " << id << ": it does not exist!" << endl;
+
 	return nullptr;
 }
 
