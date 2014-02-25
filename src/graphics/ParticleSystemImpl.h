@@ -30,19 +30,17 @@ public:
 	void SetEyePos(const XMFLOAT3& eyePosW);
 	void SetEmitPos(const XMFLOAT3& emitPosW);
 	void SetEmitDir(const XMFLOAT3& emitDirW);
-
 	void SetConstantAccel(XMFLOAT3 accelW);
-
 	void SetParticleFadeTime(float fadeTime);
-
 	void SetEmitFrequency(float emitFrequency);
 	void SetParticleAgeLimit(float particleAgeLimit);
-
 	void SetBlendingMethod(unsigned int blendingMethod);
-
 	void SetScale(XMFLOAT2 scale);
-
 	void SetParticleType(ParticleType particleType);
+	void SetRandomVelocityActive(bool active);
+	void SetRandomVelocity(XMFLOAT3 randomVelocity);
+
+	float GetAgeLimit() const;
 
 	void Init(ID3D11Device* device,
 		ParticleSystemShader* shader,
@@ -94,6 +92,9 @@ private:
 	UINT mParticleType;
 
 	XMFLOAT2 mScale;
+
+	bool mRandomizeVelocity;
+	XMFLOAT3 mRandomVelocity;
 };
 
 #endif

@@ -7,6 +7,11 @@
 using namespace std;
 using namespace Cistron;
 
+#define THROW_PARTICLE_EMIT_RATE 0.0175f
+#define THROW_PARTICLE_ACCELERATION 1.0f
+#define THROW_PARTICLE_SCALE 3.5f
+#define THROW_PARTICLE_AGE_LIMIT 0.50f
+#define THROW_PARTICLE_FADE_TIME 0.30f
 
 class Throwable : public Component {
 
@@ -29,6 +34,23 @@ public:
 
 		this->p = getOwner()->getPhysics();
 		getOwner()->sphere->Radius = 3.5f; // Throwable size
+
+		this->mParticleSystemThrow = getOwner()->getModules()->graphics->CreateParticleSystem();
+		this->mParticleSystemThrow->SetActive(false);
+		this->mParticleSystemThrow->SetParticleType(ParticleType::PT_PARTICLE);
+		this->mParticleSystemThrow->SetEmitFrequency(FLT_MAX);
+		this->mParticleSystemThrow->SetParticleAgeLimit(THROW_PARTICLE_AGE_LIMIT);
+		this->mParticleSystemThrow->SetScale(XMFLOAT2(THROW_PARTICLE_SCALE, THROW_PARTICLE_SCALE));
+		this->mParticleSystemThrow->SetParticleFadeTime(THROW_PARTICLE_FADE_TIME);
+		this->mParticleSystemThrow->SetRandomVelocityActive(false);
+	}
+
+	void removeFromEntity()
+	{
+		this->p = NULL;
+
+		getOwner()->getModules()->graphics->DeleteParticleSystem(this->mParticleSystemThrow);
+		this->mParticleSystemThrow = NULL;
 	}
 
 	void setIsBeingThrown(bool state, EntityId throwerId = -1);
@@ -48,6 +70,11 @@ private:
 	EntityId throwerId;
 	PhysicsEntity* p;
 	Vec3 targetPos;
+	ParticleSystem *mParticleSystemThrow;
+	Vec3 mPrevPos;
+	Vec3 mStartThrowPos;
+	float mCurrThrowParticleScale;
+	float mThrowParticleTimer;
 
 	void update(float deltaTime);
 	void setTargetPos(Vec3 pos);

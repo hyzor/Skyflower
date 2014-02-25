@@ -2,7 +2,7 @@
     <Entity type="light" id="201" xPos="0" yPos="0" zPos="0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="0.0" yScale="0.0" zScale="0.0" model="" isVisible="0" isCollidible="0" isAnimated="0">
 		<DirectionalLight xDir="0.604422748089" yDir="-0.785497128963" zDir="-0.132918924093" r="1.5" g="1.5" b="1.5" intensity="1.0" />
 	</Entity>
-	<Entity type="light" id="202" xPos="322.139103803" yPos="170.425268433" zPos="106.722895035" xRot="0.0" yRot="0.0" zRot="0.0" xScale="0.0" yScale="0.0" zScale="0.0" model="" isVisible="0" isCollidible="0" isAnimated="0">
+	<!--<Entity type="light" id="202" xPos="322.139103803" yPos="170.425268433" zPos="106.722895035" xRot="0.0" yRot="0.0" zRot="0.0" xScale="0.0" yScale="0.0" zScale="0.0" model="" isVisible="0" isCollidible="0" isAnimated="0">
 		<PointLight r="1.0" g="1.0" b="1.0" intensity="1.0" />
 	</Entity>
 	<Entity type="light" id="203" xPos="529.965116974" yPos="161.313973318" zPos="50.4737227476" xRot="0.0" yRot="0.0" zRot="0.0" xScale="0.0" yScale="0.0" zScale="0.0" model="" isVisible="0" isCollidible="0" isAnimated="0">
@@ -10,5 +10,5 @@
 	</Entity>
 	<Entity type="light" id="204" xPos="0.0" yPos="0.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="0.0" yScale="0.0" zScale="0.0" model="" isVisible="0" isCollidible="0" isAnimated="0">
 		<PointLight r="1.0" g="1.0" b="1.0" intensity="1.0" />
-	</Entity>
+	</Entity>-->
 </root>

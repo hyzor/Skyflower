@@ -65,6 +65,26 @@ void Throwable::update(float deltaTime)
 			}
 		}
 	}
+
+	if (this->isBeingThrown)
+	{
+		Vec3 currPos = this->getOwner()->returnPos();
+
+		this->mParticleSystemThrow->SetActive(true);
+		this->mParticleSystemThrow->SetEmitPos(XMFLOAT3(currPos.X, currPos.Y + 1.15f, currPos.Z));
+		this->mParticleSystemThrow->SetEmitFrequency(THROW_PARTICLE_EMIT_RATE);
+		this->mThrowParticleTimer = 0.0f;
+	}
+	else
+	{
+		this->mThrowParticleTimer += deltaTime;
+		this->mParticleSystemThrow->SetEmitFrequency(FLT_MAX);
+		if (this->mThrowParticleTimer > this->mParticleSystemThrow->GetAgeLimit())
+		{
+			this->mParticleSystemThrow->Reset();
+			this->mParticleSystemThrow->SetActive(false);
+		}
+	}
 }
 
 void Throwable::setTargetPos(Vec3 pos)

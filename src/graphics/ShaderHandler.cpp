@@ -2696,6 +2696,8 @@ void CompositeShader::SetDoFFarFieldTexture(ID3D11DeviceContext* dc, ID3D11Shade
 
 #pragma endregion CompositeShader
 
+#pragma region ParticleSystemShader
+
 ParticleSystemShader::ParticleSystemShader()
 {
 
@@ -3022,6 +3024,18 @@ void ParticleSystemShader::SetScale(float scaleX, float scaleY)
 	mBufferCache.streamOutGSPerFrameBuffer.scaleX = scaleX;
 	mBufferCache.streamOutGSPerFrameBuffer.scaleY = scaleY;
 }
+
+void ParticleSystemShader::SetRandomVelocity(XMFLOAT3 randomVelocity)
+{
+	mBufferCache.streamOutGSPerFrameBuffer.randomVelocity = randomVelocity;
+}
+
+void ParticleSystemShader::RandomizeVelocity(bool randomize)
+{
+	mBufferCache.streamOutGSPerFrameBuffer.randomizeVelocity = randomize;
+}
+
+#pragma endregion ParticleSystemShader
 
 BasicDeferredSkinnedSortedShader::BasicDeferredSkinnedSortedShader()
 {

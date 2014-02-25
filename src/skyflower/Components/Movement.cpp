@@ -58,10 +58,11 @@ void Movement::addedToEntity() {
 
 	this->mParticleSystemRun = getOwner()->getModules()->graphics->CreateParticleSystem();
 	this->mParticleSystemRun->SetActive(true);
-	this->mParticleSystemRun->SetParticleType(ParticleType::PT_PARTICLE);
+	this->mParticleSystemRun->SetParticleType(ParticleType::PT_DUST);
 	this->mParticleSystemRun->SetParticleAgeLimit(0.25f);
 	this->mParticleSystemRun->SetEmitFrequency(FLT_MAX);
-	this->mParticleSystemRun->SetScale(XMFLOAT2(4.0f, 4.0f));
+	this->mParticleSystemRun->SetRandomVelocity(XMFLOAT3(20.0f, 5.0f, 20.0f));
+	this->mParticleSystemRun->SetScale(XMFLOAT2(3.0f, 3.0f));
 
 	this->mParticleSystemDizzy = getOwner()->getModules()->graphics->CreateParticleSystem();
 	this->mParticleSystemDizzy->SetActive(false);

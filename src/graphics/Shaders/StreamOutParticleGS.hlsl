@@ -21,6 +21,9 @@ cbuffer cbPerFrame
 
 	float gScaleY;
 	float3 paddingScale;
+
+	int gRandomizeVelocity;
+	float3 gRandomVelocity;
 };
 
 // Random texture used to generate random numbers in shaders.
@@ -51,12 +54,21 @@ void main(point Particle gIn[1], inout PointStream<Particle> ptStream)
 		if (emitParticles && gIn[0].Age > gEmitFrequency)
 		{
 			float3 vRandom = RandUnitVec3(0.0f);
-			vRandom.x *= 0.5f;
-			vRandom.z *= 0.5f;
+			/*vRandom.x *= 0.5f;
+			vRandom.z *= 0.5f;*/
 
 			Particle p;
 			p.InitialPosW = gEmitPosW.xyz;
-			p.InitialVelW = 4.0f*vRandom;
+
+			if (gRandomizeVelocity == 0)
+				p.InitialVelW = float3(0.0f, 0.0f, 0.0f);
+			else
+			{
+				p.InitialVelW.x = gRandomVelocity.x*vRandom.x;
+				p.InitialVelW.y = gRandomVelocity.y*vRandom.y;
+				p.InitialVelW.z = gRandomVelocity.z*vRandom.z;
+			}
+
 			p.SizeW = float2(gScaleX, gScaleY);
 			p.Age = 0.0f;
 			p.Type = gParticleType;
