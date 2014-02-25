@@ -1,6 +1,12 @@
 player = 1 --player id
 
 function loaded()
+	Lit(195,1)
+	Lit(196,1)
+	Unlit(197,1)
+	Unlit(198,1)
+	Unlit(199,1)
+	Unlit(200,1)
 	--CutScenePlay("intro")
 end
 
@@ -274,19 +280,14 @@ function update_blinkingLights(id, dt)
 		elseif timer > 4 then
 			timer = 0
 		end
-	else
-		Unlit(195, 1)
-		Unlit(196, 1)
-		--Unlit(197, 1)
-		--Unlit(198, 1)
-		--Unlit(199, 1)
-		Unlit(200, 1)
-		--Lit(195, 1)
-		--Lit(196, 1)
-		--Lit(197, 3)
-		--Lit(198, 3)
-		--Lit(199, 1)
-		--Lit(200, 1)
+	end
+end
+
+function activated_light199(id)
+	Print("HEJ")
+	if IsActivated(id) then
+		Print("HI")
+		Lit(199,1)
 	end
 end
 
