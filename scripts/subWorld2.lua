@@ -1,7 +1,7 @@
 player = 1 --player id
 
 function loaded()
-	CutScenePlay("intro")
+	--CutScenePlay("intro")
 end
 
 
@@ -29,21 +29,7 @@ function load_player(id)
 end
 
 function update_player(id, dt)
-	PushAll(id)
-	
-	--player light
-	if IsLit(id) then
-		Unlit(id, 1)
-	elseif IsUnlit(id) then
-		Lit(id, 1)
-	end
-	
-	--sun
-	if IsLit(201) then
-		Unlit(201, 10)
-	elseif IsUnlit(201) then
-		Lit(201, 10)
-	end
+	--PushAll(id)
 end
 
 --platform_start script--
@@ -73,7 +59,7 @@ function update_temporaryFlowers(id, dt)
 		--Print(platformTimer)
 		if stairdown then
 			platformTimer = 0
-			MoveToTarget(26)
+			MoveToTarget(22)
 			MoveToTarget(27)
 			MoveToTarget(28)
 			MoveToTarget(29)
@@ -82,7 +68,7 @@ function update_temporaryFlowers(id, dt)
 		end
 	else
 		if not stairdown then
-			MoveToSpawn(26)
+			MoveToSpawn(22)
 			MoveToSpawn(27)
 			MoveToSpawn(28)
 			MoveToSpawn(29)
@@ -267,7 +253,45 @@ function activated_Goal(id)
 
 	CutScenePlay("Goal")
 	StartUpdate()
+end
 
+function load_blinkingLights(id)
+	StartUpdate()
+end
+
+timer = 0
+function update_blinkingLights(id, dt)
+	if IsActivated(id) then
+		timer = timer + dt
+		if timer < 1 then
+			Lit(196, 1)
+			Unlit(199, 1)
+		elseif timer > 1 and timer < 2 then
+			Lit(197, 1)
+			Unlit(196, 1)
+		elseif timer > 2 and timer < 3 then
+			Lit(198, 1)
+			Unlit(197, 1)
+		elseif timer > 3 and timer < 4 then
+			Lit(199, 1)
+			Unlit(198,1)
+		elseif timer > 4 then
+			timer = 0
+		end
+	else
+		--Unlit(195, 1)
+		--Unlit(196, 1)
+		--Unlit(197, 3)
+		--Unlit(198, 3)
+		--Unlit(199, 1)
+		--Unlit(200, 1)
+		Lit(195, 1)
+		Lit(196, 1)
+		Lit(197, 3)
+		Lit(198, 3)
+		Lit(199, 1)
+		Lit(200, 1)
+	end
 end
 
 

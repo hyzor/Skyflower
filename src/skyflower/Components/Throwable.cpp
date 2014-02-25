@@ -11,6 +11,13 @@ void Throwable::update(float deltaTime)
 		{
 			if (isBeingThrown)
 			{
+				if (getOwner()->wall)
+				{
+					if (getOwner()->wall->hasComponents("WallButton"))
+					{
+						getOwner()->wall->sendMessage("Wall", this);
+					}
+				}
 				//check if colliding with player or AI
 				if (entity->sphere != NULL && getOwner()->sphere != NULL && entity->sphere->Test(*getOwner()->sphere))
 				{

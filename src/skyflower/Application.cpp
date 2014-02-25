@@ -101,7 +101,7 @@ void Application::Start()
 	levelHandler->init(m_entityManager);
 
 	// Load Hub Level
-	levelHandler->queue(0);
+	levelHandler->queue(5);
 	levelHandler->loadQueued();
 
 	//m_entityManager->sendMessageToEntity("ActivateListener", "player");
@@ -560,7 +560,7 @@ void Application::OnKeyDown(unsigned short key)
 	case 'R':
 		m_graphicsEngine->ClearLights();
 		levelHandler->queue(5);
-		//m_entityManager->loadXML("subWorld2Lights.XML");
+		//m_entityManager->loadXML("subworld2Lights.XML");
 			
 		break;
 	case VK_SPACE:
