@@ -1,4 +1,8 @@
 <root>
+	<Entity type="aimMesh" model="Models\Throwable\Ball" id="5000" isVisible="0" isCollidible="0" isAnimated="0" xPos="0.0" yPos="0.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" />
+
+
+
 	<Entity type="player" id="1"
 		xPos="-122.25639555" yPos="25.452823515" zPos="-15.6426041247"
 		xRot="0.0" yRot="0.0" zRot="0.0" 
@@ -237,9 +241,4 @@
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\arenaRock6" id="106" isCollidible="1" isVisible="1" isAnimated="0" xPos="-361.139677368" yPos="103.955281407" zPos="786.164344506" xRot="-0.0" yRot="-1.34105212951" zRot="-0.0" xScale="8.60897590519" yScale="24.7583973747" zScale="8.60897590519"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\arenaRock7" id="107" isCollidible="1" isVisible="1" isAnimated="0" xPos="-383.63828629" yPos="106.958157793" zPos="858.997843837" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="7.71950536105" yScale="7.71950536105" zScale="7.71950536105"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\arenaRock8" id="108" isCollidible="1" isVisible="1" isAnimated="0" xPos="-519.752065995" yPos="109.633840584" zPos="842.256676362" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="16.5400609897" yScale="16.5400609897" zScale="30.1758537324"/>
-    
-    
-    
-    <Entity type="aimMesh" model="Models\Throwable\Ball" id="5000" isVisible="0" isCollidible="0" isAnimated="0" xPos="0.0" yPos="0.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" />
-    
 </root>

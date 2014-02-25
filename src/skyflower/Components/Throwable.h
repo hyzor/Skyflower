@@ -31,7 +31,15 @@ public:
 		getOwner()->sphere->Radius = 3.5f; // Throwable size
 	}
 
-	void setIsBeingThrown(bool state);
+	void setIsBeingThrown(bool state, EntityId throwerId = -1);
+
+	void setIsBeingPickedUp(bool state, EntityId throwerId = -1);
+	bool getIsBeingPickedUp();
+
+	PhysicsEntity*getPhysicsEntity()
+	{
+		return p;
+	}
 
 private:
 
