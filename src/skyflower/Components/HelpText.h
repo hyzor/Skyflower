@@ -18,10 +18,12 @@ public:
 	{ 
 		m_text = text;
 		m_range = range;
+		m_menuActive = false;
 		m_active = true;
 		//m_showFactor = 0.0f;
 		first = true;
-
+		m_textToPrint = "";
+		m_timer = 0.0f;
 	};
 	virtual ~HelpText() {};
 	void addedToEntity();
@@ -32,9 +34,11 @@ public:
 
 private:
 	string m_text;
+	string m_textToPrint;
+	float m_timer;
 	float m_range;
-	//float m_showFactor;
-	float top; // top right corner
+	float top; // top left corner
+	bool m_menuActive;
 	bool m_active;
 	bool first;
 
@@ -53,6 +57,10 @@ private:
 
 	void activate(Message const& msg);
 	void deActivate(Message const& msg);
+	void hide(Message const& msg);
+
+	void menu_activate(Message const& msg);
+	void menu_deActivate(Message const& msg);
 };
 
 #endif
