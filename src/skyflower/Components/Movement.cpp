@@ -379,6 +379,17 @@ void Movement::update(float deltaTime)
 		getOwner()->updateRot(nRot);
 		pRot = nRot;
 	}
+
+	if (getOwner()->fId == 1)
+	{
+		if (getOwner()->getModules()->input->isKeyDown('E'))
+		{
+			p->Walk(pos, speed*deltaTime, true);
+			Vec3 newVel = p->GetVelocity() + Vec3(0.0f, 300.0f*deltaTime, 0.0f);
+			p->SetVelocity(newVel);
+			getOwner()->updatePos(pos);
+		}
+	}
 }
 
 Vec3 Movement::GetLook()
