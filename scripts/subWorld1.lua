@@ -31,6 +31,7 @@ end
 function update_player(id, dt)
 	PushAll(id)
 	
+	--[[
 	--player light
 	if IsLit(id) then
 		Unlit(id, 1)
@@ -44,6 +45,7 @@ function update_player(id, dt)
 	elseif IsUnlit(201) then
 		Lit(201, 10)
 	end
+	--]]
 end
 
 --platform_start script--
