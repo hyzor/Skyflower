@@ -94,10 +94,10 @@
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2grass" id="43" isCollidible="1" isVisible="1" isAnimated="0" xPos="-300.352040734" yPos="105.442299131" zPos="832.938302363" xRot="-0.0" yRot="1.39316624316" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2mud" id="44" isCollidible="1" isVisible="1" isAnimated="0" xPos="-300.352040734" yPos="105.442299131" zPos="832.938302363" xRot="-0.0" yRot="1.39316624316" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2cloud" id="45" isCollidible="0" isVisible="1" isAnimated="0" xPos="-300.352040734" yPos="105.442299131" zPos="832.938302363" xRot="-0.0" yRot="1.39316624316" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
-    <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\fallingBallonPlattform" id="46" isCollidible="1" isVisible="1" isAnimated="0" xPos="-725.498624296" yPos="103.452839533" zPos="746.798563142" xRot="-0.0" yRot="1.34547503872" zRot="-0.0" xScale="4.82952212442" yScale="4.82952212442" zScale="4.82952212442">
-        <MoveTarget continuous="0" duration="2" easingPower="3" targetPosX="-695" targetPosY="2" targetPosZ="707"/>
+    <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\fallingBallonPlattform" id="46" isCollidible="1" isVisible="1" isAnimated="0" xPos="-730.498624296" yPos="103.452839533" zPos="740.798563142" xRot="-0.0" yRot="1.44547503872" zRot="0.05" xScale="4.82952212442" yScale="2" zScale="4.82952212442">
+        <MoveTarget continuous="0" duration="1" easingPower="1" targetPosX="-725" targetPosY="1" targetPosZ="740"/>
     </Entity>
-    <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\ballon" id="47" isCollidible="1" isVisible="1" isAnimated="0" xPos="-725.498624296" yPos="103.150512109" zPos="746.798563142" xRot="-0.0" yRot="1.34547503872" zRot="-0.0" xScale="4.82952212442" yScale="4.82952212442" zScale="4.82952212442">
+    <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\ballon" id="47" isCollidible="1" isVisible="1" isAnimated="0" xPos="-730.498624296" yPos="103.150512109" zPos="740.798563142" xRot="-0.0" yRot="1.44547503872" zRot="-0.0" xScale="4.82952212442" yScale="4.82952212442" zScale="4.82952212442">
         <Touch/>
         <Balloon/>
         <Event script="balloon"/>

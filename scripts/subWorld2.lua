@@ -236,11 +236,11 @@ end
 --------------------
 
 function activated_balloon(id)
-	Print("Touched")
-	if IsActivator(id, "Throwable") then
-		Print("POP!")
+	--if IsActivator(id, "Throwable") then
+		Print("mmmm you touched me")
 		Pop(id)
-	end
+		MoveToTarget(46)
+	--end
 end
 
 
