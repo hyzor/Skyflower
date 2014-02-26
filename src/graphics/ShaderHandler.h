@@ -12,9 +12,10 @@
 #include "RenderStates.h"
 #include "MathHelper.h"
 
+//If you are changing this, change the MAX_POINT_LIGHTS, MAX_DIR_LIGHTS and MAX_SPOT_LIGHTS in LightDef.hlsli
+#define MAX_POINT_LIGHTS 20
 #define MAX_DIR_LIGHTS 4
-#define MAX_POINT_LIGHTS 16
-#define MAX_SPOT_LIGHTS 8
+#define MAX_SPOT_LIGHTS 20
 #define MAX_CASC 3
 #define MAX_MATERIALS 64
 

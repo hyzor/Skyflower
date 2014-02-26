@@ -33,9 +33,7 @@
 #include "External/SMAA/AreaTex.h"
 #include "FullscreenTriangle.h"
 
-#define MAXPLIGHTS 20
-#define MAXDLIGHTS 5
-#define MAXSLIGHTS 10
+
 
 const float fovY = 0.785398f; // 0.25f * MathHelper::pi
 const float zNear = 1.0f;
