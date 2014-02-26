@@ -4,8 +4,10 @@
 cbuffer cPerObject : register(b0)
 {
 	Material gMaterial;
+	unsigned int gGlobalMaterialIndex;
 	int type;
-	float3 padding;
+	float2 padding;
+
 	float4 gNearDepths;
 	float4 gFarDepths;
 	int gNrOfCascades;
@@ -26,9 +28,9 @@ struct PixelOut
 {
 	float4 Color : SV_Target0;
 	float4 Normal : SV_Target1;
-	float4 Specular : SV_Target2;
+	//float4 Specular : SV_Target2;
 	//float4 Position : SV_Target3;
-	float2 Velocity : SV_Target3;
+	float2 Velocity : SV_Target2;
 };
 
 PixelOut main(VertexOut pIn)
@@ -37,7 +39,7 @@ PixelOut main(VertexOut pIn)
 
 	pOut.Color = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	pOut.Normal = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	pOut.Specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	//pOut.Specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	pOut.Velocity = float2(0.0f, 0.0f);
 
 	float shadowFactor = 1.0f;
@@ -89,47 +91,69 @@ PixelOut main(VertexOut pIn)
 
 	}
 
-	if (type == 0) //textured
+	// Textured
+	if (type == 0)
 	{
 		// Sample color from texture
 		pOut.Color = gDiffuseMap.Sample(samAnisotropic, pIn.Tex);
 
 		pOut.Normal = float4(pIn.NormalW, 0.0f);
 
-		pOut.Specular = gMaterial.Specular;
+		//pOut.Specular = gMaterial.Specular;
 
 		// Bake shadow factor into color w component
 		//float shadowFactor = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
 
-		pOut.Color.w = shadowFactor;
+		//pOut.Color.w = shadowFactor;
+		pOut.Normal.w = shadowFactor;
 	}
-	else if (type == 1) //cloud
+
+	// Cloud
+	else if (type == 1)
 	{
 		pOut.Color = gMaterial.Diffuse;
 
 		pOut.Normal = float4(pIn.NormalW, 1.0f);
 
-		pOut.Specular = gMaterial.Specular;
+		//pOut.Specular = gMaterial.Specular;
 
-		pOut.Color.w = 1.0f;
-
+		//pOut.Color.w = 1.0f;
+		pOut.Normal.w = shadowFactor;
 	}
-	else if (type == 2) //no texture
+
+	// No texture
+	else if (type == 2)
 	{
 		pOut.Color = gMaterial.Diffuse;
 
 		pOut.Normal = float4(pIn.NormalW, 0.0f);
 
-		pOut.Specular = gMaterial.Specular;
+		//pOut.Specular = gMaterial.Specular;
 
 		// Bake shadow factor into color w component
 		//float shadowFactor = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
 
-		pOut.Color.w = shadowFactor;
+		//pOut.Color.w = shadowFactor;
+		pOut.Normal.w = shadowFactor;
+	}
+	else
+	{
+		pOut.Color = gMaterial.Diffuse;
+
+		pOut.Normal = float4(pIn.NormalW, 0.0f);
+
+		pOut.Normal.w = shadowFactor;
 	}
 
 	//pOut.Position = float4(pIn.PosW, 1.0f);
 
+	// Output material index
+	//float globalMat = gGlobalMaterialIndex;
+	//pOut.Normal.w = globalMat / 255.0f;
+	pOut.Normal.w = shadowFactor;
+
+	pOut.Color.w = (float)gGlobalMaterialIndex / 255.0f;
+	//pOut.Color.w = shadowFactor;
 	
 	// Gamma correct color (make it linear)
 	pOut.Color.xyz = pow(pOut.Color.xyz, 2.2f);

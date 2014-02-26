@@ -7,7 +7,8 @@ cbuffer cPerObject : register(b0)
 	float4 gNearDepths;
 	float4 gFarDepths;
 	int gNrOfCascades;
-	float3 padding;
+	unsigned int gGlobalMaterialIndex;
+	float2 padding;
 }
 
 Texture2D gDiffuseMap : register(t0);
@@ -23,9 +24,9 @@ struct PixelOut
 {
 	float4 Color : SV_Target0;
 	float4 Normal : SV_Target1;
-	float4 Specular : SV_Target2;
+	//float4 Specular : SV_Target2;
 	//float4 Position : SV_Target3;
-	float2 Velocity : SV_Target3;
+	float2 Velocity : SV_Target2;
 };
 
 PixelOut main(VertexOut pIn)
@@ -37,7 +38,7 @@ PixelOut main(VertexOut pIn)
 
 	pOut.Normal = float4(pIn.NormalW, 0.0f);
 
-	pOut.Specular = gMaterial.Specular;
+	//pOut.Specular = gMaterial.Specular;
 
 	//pOut.Position = float4(pIn.PosW, 1.0f);
 
@@ -87,7 +88,10 @@ PixelOut main(VertexOut pIn)
 		shadowFactor = CalcShadowFactor(samShadow, gShadowMap3, shadowPosH3); //Cascade 3
 	}
 
-	pOut.Color.w = shadowFactor;
+	pOut.Normal.w = shadowFactor;
+
+	//pOut.Color.w = shadowFactor;
+	pOut.Color.w = gGlobalMaterialIndex / 255.0f;
 
 	// Gamma correct color (make it linear)
 	pOut.Color.xyz = pow(pOut.Color.xyz, 2.2f);

@@ -1,5 +1,6 @@
 #include "GraphicsEngineImpl.h"
 #include "Texture2DImpl.h"
+#include <algorithm>
 
 // Must be included last!
 #include "shared/debug.h"
@@ -9,9 +10,9 @@ GraphicsEngineImpl::GraphicsEngineImpl()
 	mRandom1DTexSRV = nullptr;
 	mParticlesTextureArray = nullptr;
 
-	mPointLights = new PLight[MAXPLIGHTS];
-	mDirLights = new DLight[MAXDLIGHTS];
-	mSpotLights = new SLight[MAXSLIGHTS];
+	mPointLights = new PLight[MAX_POINT_LIGHTS];
+	mDirLights = new DLight[MAX_DIR_LIGHTS];
+	mSpotLights = new SLight[MAX_SPOT_LIGHTS];
 
 	mPointLightsCount = 0;
 	mDirLightsCount = 0;
@@ -78,6 +79,8 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 	{
 		delete mMorphModels[i];
 	}
+
+	mMaterials.clear();
 
 	ReleaseCOM(mLineVertexBuffer);
 
@@ -410,13 +413,13 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 		mFullscreenTriangle);
 
 	std::string fontPath = mResourceDir + "buxton.spritefont";
-    std::string fontPathMonospace = mResourceDir + "monospace_8.spritefont";
-    std::wstring fontPathW(fontPath.begin(), fontPath.end());
-    std::wstring fontPatMonospacehW(fontPathMonospace.begin(), fontPathMonospace.end());
+	std::string fontPathMonospace = mResourceDir + "monospace_8.spritefont";
+	std::wstring fontPathW(fontPath.begin(), fontPath.end());
+	std::wstring fontPatMonospacehW(fontPathMonospace.begin(), fontPathMonospace.end());
 
-    mSpriteBatch = new SpriteBatch(mD3D->GetImmediateContext());
-    mSpriteFont = new SpriteFont(mD3D->GetDevice(), fontPathW.c_str());
-    mSpriteFontMonospace = new SpriteFont(mD3D->GetDevice(), fontPatMonospacehW.c_str());
+	mSpriteBatch = new SpriteBatch(mD3D->GetImmediateContext());
+	mSpriteFont = new SpriteFont(mD3D->GetDevice(), fontPathW.c_str());
+	mSpriteFontMonospace = new SpriteFont(mD3D->GetDevice(), fontPatMonospacehW.c_str());
 
 	// Create orthogonal window
 	mOrthoWindow = new OrthoWindow();
@@ -434,11 +437,11 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	/*
 	ParticleSystemImpl* testSystem1 = new ParticleSystemImpl();
 	testSystem1->Init(
-		mD3D->GetDevice(),
-		mShaderHandler->mParticleSystemShader,
-		mParticlesTextureArray,
-		mRandom1DTexSRV,
-		1000);
+	mD3D->GetDevice(),
+	mShaderHandler->mParticleSystemShader,
+	mParticlesTextureArray,
+	mRandom1DTexSRV,
+	1000);
 	testSystem1->SetEmitPos(XMFLOAT3(0.0f, -5.0f, 0.0f));
 	testSystem1->SetConstantAccel(XMFLOAT3(0.0f, 7.8f, 0.0f));
 	testSystem1->SetParticleType(ParticleType::PT_FLARE1);
@@ -515,7 +518,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mLineVertexBufferSize = 4096;
 
 	D3D11_BUFFER_DESC bufferDesc;
-	bufferDesc.ByteWidth = (UINT)(sizeof(float) * 2 * mLineVertexBufferSize);
+	bufferDesc.ByteWidth = (UINT)(sizeof(float)* 2 * mLineVertexBufferSize);
 	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
@@ -623,7 +626,7 @@ void GraphicsEngineImpl::DrawScene()
 		mShaderHandler->mSSAOShader->SetDepthTexture(mD3D->GetImmediateContext(), NULL);
 		mShaderHandler->mSSAOShader->SetNormalTexture(mD3D->GetImmediateContext(), NULL);
 		mShaderHandler->mSSAOShader->SetRandomTexture(mD3D->GetImmediateContext(), NULL);
-	
+
 		// Horizontal blur
 		renderTarget = mSSAOBlurTexture->GetRenderTargetView();
 		mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
@@ -664,7 +667,7 @@ void GraphicsEngineImpl::DrawScene()
 	}
 	else
 	{
-		float clearColor[4] = {1.0, 1.0, 1.0, 1.0};
+		float clearColor[4] = { 1.0, 1.0, 1.0, 1.0 };
 		mD3D->GetImmediateContext()->ClearRenderTargetView(mSSAOTexture->GetRenderTargetView(), clearColor);
 	}
 
@@ -744,7 +747,7 @@ void GraphicsEngineImpl::DrawScene()
 		renderTarget = mIntermediateTexture->GetRenderTargetView();
 		mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
 		// Reset viewport
- 		mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
+		mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
 
 		// Composite the result of the light pass with the depth of field.
 		mShaderHandler->mCompositeShader->SetFramebufferTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetLitSceneSRV());
@@ -857,9 +860,9 @@ void GraphicsEngineImpl::DrawScene()
 	//XMFLOAT4 test = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
 	XMVECTORF32 Green = { 0.000000000f, 1.000000000f, 0.000000000f, 1.000000000f };
 	mSpriteBatch->Begin();
-// 	mSpriteBatch->Draw(mD3D->GetDepthStencilSRView(), XMFLOAT2(0.0f, 0.0f), nullptr, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
-// 	mSpriteBatch->Draw(mDeferredBuffers->GetLitSceneSRV(), XMFLOAT2(0.0f, 400.0f), nullptr, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
-// 	mSpriteBatch->Draw(mD3D->GetDepthStencilSRView(), XMFLOAT2(0.0f, 200.0f), nullptr, Green, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
+	// 	mSpriteBatch->Draw(mD3D->GetDepthStencilSRView(), XMFLOAT2(0.0f, 0.0f), nullptr, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
+	// 	mSpriteBatch->Draw(mDeferredBuffers->GetLitSceneSRV(), XMFLOAT2(0.0f, 400.0f), nullptr, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
+	// 	mSpriteBatch->Draw(mD3D->GetDepthStencilSRView(), XMFLOAT2(0.0f, 200.0f), nullptr, Green, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
 	mSpriteBatch->Draw(mSMAA->GetSRV(SmaaBufferIndex::Edges), XMFLOAT2(0.0f, 0.0f), nullptr, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(1.0f, 1.0f));
 	mSpriteBatch->Draw(mSMAA->GetSRV(SmaaBufferIndex::Blend), XMFLOAT2(0.0f, 200.0f), nullptr, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
 	mSpriteBatch->Draw(mDepthStencilSRVCopy, XMFLOAT2(0.0f, 400.0f), nullptr, Colors::White, 0.0f, XMFLOAT2(0.0f, 0.0f), XMFLOAT2(0.25f, 0.25f));
@@ -873,7 +876,7 @@ void GraphicsEngineImpl::DrawScene()
 	renderTarget = mD3D->GetRenderTargetView();
 	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
 	// Reset viewport
- 	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
+	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
 
 	// Turn z-buffer back on
 	mD3D->GetImmediateContext()->OMSetDepthStencilState(RenderStates::mDefaultDSS, 1);
@@ -905,16 +908,16 @@ void GraphicsEngineImpl::UpdateScene(float dt, float gameTime)
 	/*
 	if (mMorphInstances.size() >= 1)
 	{
-		if (mMorphInstances.front()->weights.x >= 1.0f)
-			morphIncrease = false;
+	if (mMorphInstances.front()->weights.x >= 1.0f)
+	morphIncrease = false;
 
-		if (mMorphInstances.front()->weights.x <= 0.0f)
-			morphIncrease = true;
+	if (mMorphInstances.front()->weights.x <= 0.0f)
+	morphIncrease = true;
 
-		if (morphIncrease)
-			mMorphInstances.front()->weights.x += 2.0f * dt;
-		else
-			mMorphInstances.front()->weights.x -= 2.0f * dt;
+	if (morphIncrease)
+	mMorphInstances.front()->weights.x += 2.0f * dt;
+	else
+	mMorphInstances.front()->weights.x -= 2.0f * dt;
 	}
 	*/
 
@@ -951,7 +954,7 @@ void GraphicsEngineImpl::Draw2DTextureFile(const std::string file, const Draw2DI
 		input->pos,
 		0,
 		input->color,
-		input->rot, 
+		input->rot,
 		input->origin,
 		input->scale,
 		SpriteEffects::SpriteEffects_None,
@@ -962,14 +965,14 @@ void GraphicsEngineImpl::Draw2DTexture(Texture2D *texture, const Draw2DInput* in
 {
 	Texture2DImpl *textureImpl = (Texture2DImpl *)texture;
 	mSpriteBatch->Draw(
-		textureImpl->GetShaderResourceView(), 
-		input->pos, 
-		0, 
-		Colors::White, 
+		textureImpl->GetShaderResourceView(),
+		input->pos,
+		0,
+		Colors::White,
 		0.0f,
-		XMFLOAT2(0.0f,0.0f),
+		XMFLOAT2(0.0f, 0.0f),
 		input->scale,
-		SpriteEffects::SpriteEffects_None, 
+		SpriteEffects::SpriteEffects_None,
 		input->layerDepth);
 }
 
@@ -1031,7 +1034,7 @@ void GraphicsEngineImpl::DeleteInstance(ModelInstance* m)
 
 AnimatedInstance* GraphicsEngineImpl::CreateAnimatedInstance(std::string file)
 {
-	if (mModels.find(file) == mModels.end())
+	if (mSkinnedModels.find(file) == mSkinnedModels.end())
 	{
 		std::stringstream ss;
 		ss << file << ".dae";
@@ -1040,12 +1043,11 @@ AnimatedInstance* GraphicsEngineImpl::CreateAnimatedInstance(std::string file)
 			mResourceDir + ss.str());
 	}
 
-	AnimatedInstanceImpl* mi = new AnimatedInstanceImpl(Vec3(), Vec3(), Vec3(1, 1, 1));
-	mi->model = new AnimatedEntity(mSkinnedModels[file], XMFLOAT3(0, 0, 0));
-
+	AnimatedInstanceImpl* mi = new AnimatedInstanceImpl(Vec3(), Vec3(), Vec3(1, 1, 1), mSkinnedModels[file]);
 	mAnimatedInstances.push_back(mi);
 	return mi;
 }
+
 void GraphicsEngineImpl::DeleteInstance(AnimatedInstance* ai)
 {
 	AnimatedInstanceImpl* mi = (AnimatedInstanceImpl*)ai;
@@ -1056,7 +1058,7 @@ void GraphicsEngineImpl::DeleteInstance(AnimatedInstance* ai)
 	{
 		if (mi == mAnimatedInstances[i])
 			index = i;
-		else if (mi->model->mInstance.model == mAnimatedInstances[i]->model->mInstance.model)
+		else if (mi->mSkinnedInstance->model == mAnimatedInstances[i]->mSkinnedInstance->model)
 			found = true;
 	}
 
@@ -1067,14 +1069,13 @@ void GraphicsEngineImpl::DeleteInstance(AnimatedInstance* ai)
 	{
 		for (std::map<std::string, GenericSkinnedModel*>::iterator it = mSkinnedModels.begin(); it != mSkinnedModels.end(); it++)
 		{
-			if (it->second == mi->model->mInstance.model)
+			if (it->second == mi->mSkinnedInstance->model)
 			{
 				mSkinnedModels.erase(it);
 				break;
 			}
 		}
-		delete mi->model->mInstance.model;
-		delete mi->model;
+		delete mi->mSkinnedInstance->model;
 	}
 
 	delete mi;
@@ -1129,7 +1130,7 @@ void GraphicsEngineImpl::DeleteInstance(MorphModelInstance* mmi)
 Texture2D *GraphicsEngineImpl::CreateTexture2D(unsigned int width, unsigned int height, bool renderable)
 {
 	Texture2DImpl *texture = new Texture2DImpl(mD3D->GetDevice(), mD3D->GetImmediateContext(), width, height, DXGI_FORMAT_R8G8B8A8_UNORM, renderable);
- 
+
 	return (Texture2D *)texture;
 }
 
@@ -1251,7 +1252,7 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	mD3D->GetImmediateContext()->OMSetBlendState(RenderStates::mDefaultBS, blendFactor, 0xffffffff);
 
 	mD3D->GetImmediateContext()->RSSetState(RenderStates::mDefaultRS);
-	
+
 	//---------------------------------------------------------------------------------------
 	// Sky
 	//---------------------------------------------------------------------------------------
@@ -1276,8 +1277,6 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 		0.0f, -0.5f, 0.0f, 0.0f,
 		0.0f, 0.0f, 1.0f, 0.0f,
 		0.5f, 0.5f, 0.0f, 1.0f);
-
-	//mShaderHandler->mBasicDeferredShader->SetShadowMap(mD3D->GetImmediateContext(), mShadowMap->getDepthMapSRV());
 
 	//Set variables that are shared for all cascades
 	mShaderHandler->mBasicDeferredShader->SetEyeSpaceTransform(this->mCamera->GetViewMatrix());
@@ -1320,7 +1319,8 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 			{
 				UINT matIndex = mInstances[i]->model->meshes[j].MaterialIndex;
 
-				mShaderHandler->mBasicDeferredShader->SetMaterial(mInstances[i]->model->mat[matIndex]);
+				mShaderHandler->mBasicDeferredShader->SetMaterial(mInstances[i]->model->mat[matIndex],
+					mInstances[i]->model->mGlobalMaterialIndex[matIndex]);
 				mShaderHandler->mBasicDeferredShader->SetDiffuseMap(mD3D->GetImmediateContext(), mInstances[i]->model->diffuseMapSRV[matIndex]);
 				mShaderHandler->mBasicDeferredShader->UpdatePerObj(mD3D->GetImmediateContext());
 				mD3D->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -1365,7 +1365,7 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 		if (mAnimatedInstances[i]->IsVisible())
 		{
 			mShaderHandler->mBasicDeferredSkinnedShader->SetPrevWorldViewProj(mAnimatedInstances[i]->GetPrevWorld(), mCamera->GetPreviousViewProj());
-			mAnimatedInstances[i]->model->Draw(mD3D->GetImmediateContext(), mCamera, mShaderHandler->mBasicDeferredSkinnedShader, mAnimatedInstances[i]->GetWorld());
+			mAnimatedInstances[i]->Draw(mD3D->GetImmediateContext(), mCamera, mShaderHandler->mBasicDeferredSkinnedShader);
 		}
 	}
 
@@ -1418,7 +1418,8 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 			for (UINT j = 0; j < mMorphInstances[i]->model->mTargetModels.begin()->nrOfMeshes; ++j)
 			{
 				UINT matIndex = mMorphInstances[i]->model->mTargetModels.begin()->meshes[j].MaterialIndex;
-				mShaderHandler->mDeferredMorphShader->SetMaterial(mMorphInstances[i]->model->mat[matIndex]);
+				mShaderHandler->mDeferredMorphShader->SetMaterial(mMorphInstances[i]->model->mat[matIndex],
+					mMorphInstances[i]->model->mGlobalMaterialIndex[matIndex]);
 				mShaderHandler->mDeferredMorphShader->SetDiffuseMap(mD3D->GetImmediateContext(), mMorphInstances[i]->model->diffuseMapSRV[matIndex]);
 				mShaderHandler->mDeferredMorphShader->UpdatePerObj(mD3D->GetImmediateContext());
 
@@ -1474,7 +1475,8 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 			for (UINT j = 0; j < mSkinnedSortedInstances[i]->model->meshes.size(); ++j)
 			{
 				UINT matIndex = mSkinnedSortedInstances[i]->model->meshes[j].mMaterialIndex;
-				mShaderHandler->mBasicDeferredSkinnedSortedShader->SetMaterial(mSkinnedSortedInstances[i]->model->mat[matIndex]);
+				mShaderHandler->mBasicDeferredSkinnedSortedShader->SetMaterial(mSkinnedSortedInstances[i]->model->mat[matIndex],
+					mSkinnedSortedInstances[i]->model->mGlobalMaterialIndex[matIndex]);
 				mShaderHandler->mBasicDeferredSkinnedSortedShader->SetDiffuseMap(mD3D->GetImmediateContext(), mSkinnedSortedInstances[i]->model->diffuseMapSRV[matIndex]);
 				mShaderHandler->mBasicDeferredSkinnedSortedShader->UpdatePerObj(mD3D->GetImmediateContext());
 
@@ -1512,10 +1514,10 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	mShaderHandler->mLightDeferredToTextureShader->SetIsTransparencyPass(false);
 
 	mShaderHandler->mLightDeferredToTextureShader->UpdatePerFrame(mD3D->GetImmediateContext());
-	
- 	mShaderHandler->mLightDeferredToTextureShader->SetDiffuseTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Diffuse));
+
+	mShaderHandler->mLightDeferredToTextureShader->SetDiffuseTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Diffuse));
 	mShaderHandler->mLightDeferredToTextureShader->SetNormalTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Normal));
-	mShaderHandler->mLightDeferredToTextureShader->SetSpecularTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Specular));
+	//mShaderHandler->mLightDeferredToTextureShader->SetSpecularTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Specular));
 	mShaderHandler->mLightDeferredToTextureShader->SetVelocityTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Velocity));
 	mShaderHandler->mLightDeferredToTextureShader->SetSSAOTexture(mD3D->GetImmediateContext(), mSSAOTexture->GetShaderResourceView());
 
@@ -1554,7 +1556,7 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	mShaderHandler->mLightDeferredToTextureShader->SetVelocityTexture(mD3D->GetImmediateContext(), NULL);
 
 	// First layer of lit scene (opaque objects) should be done by now, begin drawing transparent objects
-	
+
 	//---------------------------------------------------------------------------------------
 	// Transparent objects
 	//---------------------------------------------------------------------------------------
@@ -1611,7 +1613,7 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 
 	mShaderHandler->mLightDeferredToTextureShader->SetDiffuseTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Diffuse));
 	mShaderHandler->mLightDeferredToTextureShader->SetNormalTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Normal));
-	mShaderHandler->mLightDeferredToTextureShader->SetSpecularTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Specular));
+	//mShaderHandler->mLightDeferredToTextureShader->SetSpecularTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Specular));
 	mShaderHandler->mLightDeferredToTextureShader->SetVelocityTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Velocity));
 	mShaderHandler->mLightDeferredToTextureShader->SetSSAOTexture(mD3D->GetImmediateContext(), mSSAOTexture->GetShaderResourceView());
 
@@ -1661,49 +1663,193 @@ void GraphicsEngineImpl::UpdateSceneData()
 	//--------------------------------------------------------
 	// Compute scene bounding box
 	//--------------------------------------------------------
-	    XMFLOAT3 minPt(+MathHelper::infinity, +MathHelper::infinity, +MathHelper::infinity);
-	    XMFLOAT3 maxPt(-MathHelper::infinity, -MathHelper::infinity, -MathHelper::infinity);
-	 
-	    // Get vertex positions from all models
-	    for (UINT i = 0; i < mInstances.size(); ++i)
-	    {
-			for (UINT j = 0; j < mInstances[i]->model->meshes.size(); ++j)
-	            {
+	XMFLOAT3 minPt(+MathHelper::infinity, +MathHelper::infinity, +MathHelper::infinity);
+	XMFLOAT3 maxPt(-MathHelper::infinity, -MathHelper::infinity, -MathHelper::infinity);
 
-					for (UINT k = 0; k < mInstances[i]->model->meshes.at(j).vertices.size(); ++k)
-					{
-						XMFLOAT3 vPos = mInstances[i]->model->meshes.at(j).vertices.at(k).position;
-						vPos.x += mInstances[i]->GetPosition().X;
-						vPos.y += mInstances[i]->GetPosition().Y;
-						vPos.z += mInstances[i]->GetPosition().Z;
+	// Get vertex positions from all models
+	for (UINT i = 0; i < mInstances.size(); ++i)
+	{
+		for (UINT j = 0; j < mInstances[i]->model->meshes.size(); ++j)
+		{
 
-						minPt.x = MathHelper::getMin(minPt.x, vPos.x);
-						minPt.y = MathHelper::getMin(minPt.y, vPos.y);
-						minPt.z = MathHelper::getMin(minPt.z, vPos.z);
+			for (UINT k = 0; k < mInstances[i]->model->meshes.at(j).vertices.size(); ++k)
+			{
+				XMFLOAT3 vPos = mInstances[i]->model->meshes.at(j).vertices.at(k).position;
+				vPos.x += mInstances[i]->GetPosition().X;
+				vPos.y += mInstances[i]->GetPosition().Y;
+				vPos.z += mInstances[i]->GetPosition().Z;
 
-						maxPt.x = MathHelper::getMax(maxPt.x, vPos.x);
-						maxPt.y = MathHelper::getMax(maxPt.y, vPos.y);
-						maxPt.z = MathHelper::getMax(maxPt.z, vPos.z);
-					}
-	            }
-	    }
+				minPt.x = MathHelper::getMin(minPt.x, vPos.x);
+				minPt.y = MathHelper::getMin(minPt.y, vPos.y);
+				minPt.z = MathHelper::getMin(minPt.z, vPos.z);
 
-		//Used when creating orthogonal projection matrix for cascades
-		BoundingBox::CreateFromPoints(this->mSceneBB, XMLoadFloat3(&minPt), XMLoadFloat3(&maxPt));
+				maxPt.x = MathHelper::getMax(maxPt.x, vPos.x);
+				maxPt.y = MathHelper::getMax(maxPt.y, vPos.y);
+				maxPt.z = MathHelper::getMax(maxPt.z, vPos.z);
+			}
+		}
+	}
 
-	    // Sphere center is at half of these new dimensions
-	    mSceneBounds.Center = XMFLOAT3(
-				0.5f*(minPt.x + maxPt.x),
-	            0.5f*(minPt.y + maxPt.y),
-	            0.5f*(minPt.z + maxPt.z));
-	 
-	    // Calculate the sphere radius
-	    XMFLOAT3 extent(
-				0.5f*(maxPt.x - minPt.x),
-	            0.5f*(maxPt.y - minPt.y),
-	            0.5f*(maxPt.z - minPt.z));
-	 
-	    mSceneBounds.Radius = sqrtf(extent.x*extent.x + extent.y*extent.y + extent.z*extent.z);
+	//Used when creating orthogonal projection matrix for cascades
+	BoundingBox::CreateFromPoints(this->mSceneBB, XMLoadFloat3(&minPt), XMLoadFloat3(&maxPt));
+
+	// Sphere center is at half of these new dimensions
+	mSceneBounds.Center = XMFLOAT3(
+		0.5f*(minPt.x + maxPt.x),
+		0.5f*(minPt.y + maxPt.y),
+		0.5f*(minPt.z + maxPt.z));
+
+	// Calculate the sphere radius
+	XMFLOAT3 extent(
+		0.5f*(maxPt.x - minPt.x),
+		0.5f*(maxPt.y - minPt.y),
+		0.5f*(maxPt.z - minPt.z));
+
+	mSceneBounds.Radius = sqrtf(extent.x*extent.x + extent.y*extent.y + extent.z*extent.z);
+
+	//--------------------------------------------------------------------
+	// Cache all the materials in this scene, by storing the addresses
+	//--------------------------------------------------------------------
+	// First clear the material cache
+	mMaterials.clear();
+
+	UINT curIndex = 0;
+
+	// Cache static object materials
+	for (auto& it(mModels.begin()); it != mModels.end(); ++it)
+	{
+		it->second->mGlobalMaterialIndex.clear();
+
+		for (UINT i = 0; i < it->second->mat.size(); ++i)
+		{
+
+			// Find if an identical material has already been loaded
+			int foundIndex = -1;
+
+			for (UINT j = 0; j < mMaterials.size(); ++j)
+			{
+				if (it->second->mat[i] == *mMaterials[j])
+				{
+					foundIndex = j;
+					break;
+				}
+			}
+
+			if (foundIndex >= 0)
+			{
+				it->second->mGlobalMaterialIndex.push_back(foundIndex);
+			}
+			else
+			{
+				mMaterials.push_back(&it->second->mat[i]);
+				it->second->mGlobalMaterialIndex.push_back(curIndex);
+				curIndex++;
+			}
+		}
+	}
+
+	// Cache skinned object materials
+	for (auto& it(mSkinnedModels.begin()); it != mSkinnedModels.end(); ++it)
+	{
+		it->second->mGlobalMaterialIndex.clear();
+
+		for (UINT i = 0; i < it->second->mat.size(); ++i)
+		{
+			// Find if an identical material has already been loaded
+			int foundIndex = -1;
+			for (UINT j = 0; j < mMaterials.size(); ++j)
+			{
+				if (it->second->mat[i] == *mMaterials[j])
+				{
+					foundIndex = j;
+					break;
+				}
+			}
+
+			if (foundIndex >= 0)
+			{
+				it->second->mGlobalMaterialIndex.push_back(foundIndex);
+			}
+			else
+			{
+				mMaterials.push_back(&it->second->mat[i]);
+				it->second->mGlobalMaterialIndex.push_back(curIndex);
+				curIndex++;
+			}
+		}
+		//}
+	}
+
+	// Cache morphed object materials
+	// NOTE/FIXME: Right now textures and materials are loaded for each morph target
+	// Even though the morph base model's materials and textures are the same as
+	// the targets.
+	// This takes up unnecessary space.
+	// TODO: Load only materials and textures for the base model and use them.
+	for (UINT i = 0; i < mMorphModels.size(); ++i)
+	{
+		mMorphModels[i]->mGlobalMaterialIndex.clear();
+
+		for (UINT j = 0; j < mMorphModels[i]->mat.size(); ++j)
+		{
+			// Find if an identical material has already been loaded
+			int foundIndex = -1;
+			for (UINT k = 0; k < mMaterials.size(); ++k)
+			{
+				if (mMorphModels[i]->mat[j] == *mMaterials[k])
+				{
+					foundIndex = k;
+					break;
+				}
+			}
+
+			if (foundIndex >= 0)
+			{
+				mMorphModels[i]->mGlobalMaterialIndex.push_back(foundIndex);
+			}
+			else
+			{
+				mMaterials.push_back(&mMorphModels[i]->mat[j]);
+				mMorphModels[i]->mGlobalMaterialIndex.push_back(curIndex);
+				curIndex++;
+			}
+		}
+		//}
+	}
+
+	// Cache skinned sorted object materials
+	for (auto& it(mSkinnedSortedModels.begin()); it != mSkinnedSortedModels.end(); ++it)
+	{
+		it->second->mGlobalMaterialIndex.clear();
+
+		for (UINT i = 0; i < it->second->mat.size(); ++i)
+		{
+			// Find if an identical material has already been loaded
+			int foundIndex = -1;
+			for (UINT j = 0; j < mMaterials.size(); ++j)
+			{
+				if (it->second->mat[i] == *mMaterials[j])
+				{
+					foundIndex = j;
+					break;
+				}
+			}
+
+			if (foundIndex >= 0)
+			{
+				it->second->mGlobalMaterialIndex.push_back(foundIndex);
+			}
+			else
+			{
+				mMaterials.push_back(&it->second->mat[i]);
+				it->second->mGlobalMaterialIndex.push_back(curIndex);
+				curIndex++;
+			}
+		}
+	}
+
+	mShaderHandler->mLightDeferredToTextureShader->SetMaterials(mD3D->GetImmediateContext(),
+		mMaterials.size(), mMaterials.data());
 }
 
 DirectionalLight* GraphicsEngineImpl::AddDirLight(Vec3 color, Vec3 direction, float intensity)
@@ -1817,7 +1963,7 @@ void GraphicsEngineImpl::SetPostProcessingEffects(unsigned int effects)
 }
 
 void GraphicsEngineImpl::SetDepthOfFieldFocusPlanes(float nearBlurryPlane, float nearSharpPlane, float farSharpPlane, float farBlurryPlane)
-{	
+{
 	mNearBlurryPlane = nearBlurryPlane;
 	mNearSharpPlane = nearSharpPlane;
 	mFarSharpPlane = farSharpPlane;
@@ -1897,32 +2043,32 @@ Vec3 GraphicsEngineImpl::GetMorphAnimWeigth(unsigned index)
 
 void GraphicsEngineImpl::ClearTexture(Texture2D *texture, const float color[4])
 {
-    assert(texture->IsRenderable());
+	assert(texture->IsRenderable());
 
-    Texture2DImpl *textureImpl = (Texture2DImpl *)texture;
-    mD3D->GetImmediateContext()->ClearRenderTargetView(textureImpl->GetRenderTargetView(), color);
+	Texture2DImpl *textureImpl = (Texture2DImpl *)texture;
+	mD3D->GetImmediateContext()->ClearRenderTargetView(textureImpl->GetRenderTargetView(), color);
 }
 
 void GraphicsEngineImpl::PrintTextMonospaceToTexture(Texture2D *texture, const std::string &text, const int position[2])
 {
-    assert(texture->IsRenderable());
+	assert(texture->IsRenderable());
 
-    Texture2DImpl *textureImpl = (Texture2DImpl *)texture;
-    ID3D11RenderTargetView *renderTarget = textureImpl->GetRenderTargetView();
-    D3D11_VIEWPORT viewport;
+	Texture2DImpl *textureImpl = (Texture2DImpl *)texture;
+	ID3D11RenderTargetView *renderTarget = textureImpl->GetRenderTargetView();
+	D3D11_VIEWPORT viewport;
 
-    viewport.TopLeftX = 0;
-    viewport.TopLeftY = 0;
-    viewport.Width = (float)texture->GetWidth();
-    viewport.Height = (float)texture->GetHeight();
-    viewport.MinDepth = 0.0f;
-    viewport.MaxDepth = 1.0f;
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.Width = (float)texture->GetWidth();
+	viewport.Height = (float)texture->GetHeight();
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
 
-    mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
-    mD3D->GetImmediateContext()->RSSetViewports(1, &viewport);
+	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
+	mD3D->GetImmediateContext()->RSSetViewports(1, &viewport);
 
-    std::wstring textWide(text.begin(), text.end());
-    mSpriteFontMonospace->DrawString(mSpriteBatch, textWide.c_str(), XMFLOAT2((float)position[0], (float)position[1]));
+	std::wstring textWide(text.begin(), text.end());
+	mSpriteFontMonospace->DrawString(mSpriteBatch, textWide.c_str(), XMFLOAT2((float)position[0], (float)position[1]));
 }
 
 void GraphicsEngineImpl::DrawLines(Texture2D *texture, const float *data, size_t count, const XMFLOAT3X3 &transformation, const float color[4])
@@ -1938,7 +2084,7 @@ void GraphicsEngineImpl::DrawLines(Texture2D *texture, const float *data, size_t
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
 	mD3D->GetImmediateContext()->Map(mLineVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	memcpy(mappedResource.pData, data, sizeof(float) * 2 * clampedCount);
+	memcpy(mappedResource.pData, data, sizeof(float)* 2 * clampedCount);
 	mD3D->GetImmediateContext()->Unmap(mLineVertexBuffer, 0);
 
 	mShaderHandler->mLineShader->SetTransformation(transformation);
@@ -1948,20 +2094,20 @@ void GraphicsEngineImpl::DrawLines(Texture2D *texture, const float *data, size_t
 	mShaderHandler->mLineShader->Update(mD3D->GetImmediateContext());
 	mShaderHandler->mLineShader->SetActive(mD3D->GetImmediateContext());
 
-    D3D11_VIEWPORT viewport;
-    viewport.TopLeftX = 0;
-    viewport.TopLeftY = 0;
-    viewport.Width = (float)texture->GetWidth();
-    viewport.Height = (float)texture->GetHeight();
-    viewport.MinDepth = 0.0f;
-    viewport.MaxDepth = 1.0f;
+	D3D11_VIEWPORT viewport;
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.Width = (float)texture->GetWidth();
+	viewport.Height = (float)texture->GetHeight();
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
 
 	ID3D11RenderTargetView *renderTarget = ((Texture2DImpl *)texture)->GetRenderTargetView();
-	UINT stride = sizeof(float) * 2;
+	UINT stride = sizeof(float)* 2;
 	UINT offset = 0;
 
-    mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
-    mD3D->GetImmediateContext()->RSSetViewports(1, &viewport);
+	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, NULL);
+	mD3D->GetImmediateContext()->RSSetViewports(1, &viewport);
 
 	mD3D->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
 	mD3D->GetImmediateContext()->IASetVertexBuffers(0, 1, &mLineVertexBuffer, &stride, &offset);
@@ -1973,4 +2119,9 @@ void GraphicsEngineImpl::ResetRenderTargetAndViewport()
 	ID3D11RenderTargetView *renderTarget = mD3D->GetRenderTargetView();
 	mD3D->GetImmediateContext()->OMSetRenderTargets(1, &renderTarget, mD3D->GetDepthStencilView());
 	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
+}
+
+void GraphicsEngineImpl::ClearTextures()
+{
+	mTextureMgr->Clear();
 }

@@ -2,9 +2,12 @@
 // Effect for calculating lights
 //-------------------------------------------------------------------------
 
+//If you are changing this, change the MAXPLIGHTS, MAXDLIGHTS and MAXSLIGHTS in GraphichsEngingeImpl.h
 #define MAX_POINT_LIGHTS 16
-#define MAX_DIR_LIGHTS 4
-#define MAX_SPOT_LIGHTS 8
+#define MAX_DIR_LIGHTS 2
+#define MAX_SPOT_LIGHTS 32
+
+#define MAX_MATERIALS 64
 
 // Suffixes: L (Local), W (World), V (View), H (Homogeneous)
 
@@ -216,6 +219,63 @@ void ComputePLight_Deferred_Ambient(
 	specularOut *= atten;
 }
 
+/*
+void ComputePLight_Deferred_Material(
+	Material mat,		// Material
+	PLight light,	// Point light source
+	float3 pos,			// Surface position
+	float3 normal,		// Surface normal
+	float3 toEye,		// Surface point being lit to the eye
+
+	out float4 ambientOut,
+	out float4 diffuseOut,
+	out float4 specularOut)
+{
+	// Initialize outputs
+	ambientOut = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	diffuseOut = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	specularOut = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+	// Define light vector (Direction from surface point to point light source)
+	float3 lightVec = light.Position - pos;
+
+	// Calculate distance from surface to light
+	float dist = length(lightVec);
+
+	// Test if out of range
+	if (dist > light.Range)
+		return;
+
+	// Normalize light vector
+	lightVec /= dist;
+
+	// Ambient
+	ambientOut = mat.Ambient * light.Ambient;
+
+	// Begin calculating diffuse and specular
+	float diffuseFactor = dot(lightVec, normal);
+
+	[flatten]
+	if (diffuseFactor > 0.0f)
+	{
+		float3 v = reflect(-lightVec, normal);
+		float specFactor = pow(max(dot(v, toEye), 0.0f), specular.w);
+
+		//ambientOut = light.Ambient;
+
+		diffuseOut = diffuseFactor * mat.Diffuse * light.Diffuse;
+		specularOut = specFactor * mat.Specular * light.Specular;
+	}
+
+	// Attenuate
+	float atten = 1.0f / dot(light.Attenuation, float3(1.0f, dist, dist*dist));
+
+	//ambientOut *= atten;
+	diffuseOut *= atten;
+	specularOut *= atten;
+}
+*/
+
 //=============================================================================
 // Directional light
 //=============================================================================
@@ -237,7 +297,7 @@ void ComputeDLight(
 	// Light vector aims opposite the direction the light rays travel
 	float3 lightVec = -light.Direction;
 
-		ambient = mat.Ambient * light.Ambient;
+	ambient = mat.Ambient * light.Ambient;
 
 	float diffuseFactor = dot(lightVec, normal);
 
@@ -245,7 +305,7 @@ void ComputeDLight(
 	if (diffuseFactor > 0.0f)
 	{
 		float3 v = reflect(-lightVec, normal);
-			float specFactor = pow(max(dot(v, toEye), 0.0f), mat.Specular.w);
+		float specFactor = pow(max(dot(v, toEye), 0.0f), mat.Specular.w);
 
 		diffuse = diffuseFactor * mat.Diffuse * light.Diffuse;
 		specular = specFactor * mat.Specular * light.Specular;

@@ -18,8 +18,8 @@ struct PixelOut
 {
 	float4 Color : SV_Target0;
 	float4 Normal : SV_Target1;
-	float4 Specular : SV_Target2;
-	float2 Velocity : SV_Target3;
+	//float4 Specular : SV_Target2;
+	float2 Velocity : SV_Target2;
 };
 
 PixelOut main(VertexOut pIn)// : SV_TARGET
@@ -28,15 +28,15 @@ PixelOut main(VertexOut pIn)// : SV_TARGET
 
 	pOut.Color = gCubeMap.Sample(samTriLinearSam, pIn.PosL);
 
-	// Skybox "always in shadow"
-	pOut.Color.w = 0.0f;
+	// Default material
+	pOut.Color.w = 1.0f;
 
-	pOut.Normal.xyz = 0.0f;
+	// No shadow
+	pOut.Normal.xyz = 1.0f;
 
-	// Diffuse is initially fully lit
-	pOut.Normal.w = 0.0f;
+	pOut.Normal.w = 1.0f;
 
-	pOut.Specular = float4(0.0f, 0.0f, 0.0f, 1.0f);
+	//pOut.Specular = float4(0.0f, 0.0f, 0.0f, 1.0f);
 
 	// Gamma correct color (make it linear)
 	pOut.Color.xyz = pow(pOut.Color.xyz, 2.2f);

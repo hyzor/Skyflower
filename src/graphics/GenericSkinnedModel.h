@@ -29,6 +29,8 @@ public:
 	std::vector<ID3D11ShaderResourceView*> diffuseMapSRV;
 	std::vector<ID3D11ShaderResourceView*> normalMapSRV;
 
+	std::vector<UINT> mGlobalMaterialIndex;
+
 	std::vector<GenericSkinnedMesh> meshes;
 
 	// Bounding box
@@ -54,6 +56,7 @@ struct GenericSkinnedModelInstance
 	bool animationDone;
 
 	GenericSkinnedModelInstance();
+	~GenericSkinnedModelInstance();
 	void Update(float dt);
 };
 

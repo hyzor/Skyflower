@@ -12,10 +12,12 @@
 #include "RenderStates.h"
 #include "MathHelper.h"
 
-#define MAX_DIR_LIGHTS 4
+//If you are changing this, change the MAX_POINT_LIGHTS, MAX_DIR_LIGHTS and MAX_SPOT_LIGHTS in LightDef.hlsli
 #define MAX_POINT_LIGHTS 16
-#define MAX_SPOT_LIGHTS 8
+#define MAX_DIR_LIGHTS 2
+#define MAX_SPOT_LIGHTS 32
 #define MAX_CASC 3
+#define MAX_MATERIALS 64
 
 using namespace DirectX;
 
@@ -482,7 +484,7 @@ public:
 
 	void SetShadowTransformLightViewProj(XMMATRIX& shadowTransform, XMMATRIX& lightView, XMMATRIX& lightProj);
 
-	void SetMaterial(const Material& mat);
+	void SetMaterial(const Material& mat, UINT globalMaterialIndex);
 	void SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetShadowMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetType(int type);
@@ -512,8 +514,11 @@ private:
 	struct PS_CPEROBJBUFFER
 	{
 		Material mat;
+
+		unsigned int globalMaterialIndex;
 		int type;
-		XMFLOAT3 padding;
+		XMFLOAT2 padding;
+
 		XMFLOAT4 nearDepths;
 		XMFLOAT4 farDepths;
 		int nrOfCascades;
@@ -555,7 +560,7 @@ public:
 
 	void SetPrevWorldViewProj(XMMATRIX& prevWorld, XMMATRIX& prevViewProj);
 
-	void SetMaterial(const Material& mat);
+	void SetMaterial(const Material& mat, UINT globalMaterialIndex);
 	void SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
 	void SetBoneTransforms(const XMFLOAT4X4 boneTransforms[], UINT numTransforms);
@@ -598,7 +603,8 @@ private:
 		XMFLOAT4 nearDepths;
 		XMFLOAT4 farDepths;
 		int nrOfCascades;
-		XMFLOAT3 padding1;
+		unsigned int globalMaterialIndex;
+		XMFLOAT2 padding1;
 	};
 
 	struct BUFFERCACHE
@@ -641,7 +647,7 @@ public:
 
 	void SetPrevWorldViewProj(XMMATRIX& prevWorld, XMMATRIX& prevViewProj);
 
-	void SetMaterial(const Material& mat);
+	void SetMaterial(const Material& mat, UINT globalMaterialIndex);
 	void SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
 	void SetBoneTransforms(const XMFLOAT4X4 lowerBodyTransforms[], UINT numLowerBodyTransforms, const XMFLOAT4X4 upperBodyTransforms[], UINT numUpperBodyTransforms);
@@ -693,7 +699,8 @@ private:
 		XMFLOAT4 nearDepths;
 		XMFLOAT4 farDepths;
 		int nrOfCascades;
-		XMFLOAT3 padding1;
+		unsigned int globalMaterialIndex;
+		XMFLOAT2 padding1;
 	};
 
 	struct BUFFERCACHE
@@ -741,6 +748,8 @@ public:
 	void SetDirLights(ID3D11DeviceContext* dc, UINT numDirLights, DLight dirLights[]);
 	void SetSLights(ID3D11DeviceContext* dc, UINT numSLights, SLight SLights[]);
 
+	void SetMaterials(ID3D11DeviceContext* dc, UINT numMaterials, Material* mats[]);
+
 	void SetDiffuseTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetNormalTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 	void SetSpecularTexture(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
@@ -779,22 +788,13 @@ private:
 	struct PS_CPERFRAMEBUFFER
 	{
 		PLight PLights[MAX_POINT_LIGHTS];
-
-		// 16 bytes
-		UINT numPLights;
-		int padding2, padding3, padding4;
-
 		DLight dirLights[MAX_DIR_LIGHTS];
-
-		// 16 bytes
-		UINT numDirLights;
-		int padding5, padding6, padding7;
-
 		SLight SLights[MAX_SPOT_LIGHTS];
 
-		// 16 bytes
+		UINT numPLights;
+		UINT numDirLights;
 		UINT numSLights;
-		int padding8, padding9, padding10;
+		UINT padding;
 
 		// Forms into a 4D vector
 		XMFLOAT3 gEyePosW;
@@ -809,16 +809,9 @@ private:
 		float targetFPS;
 		int skipLighting;
 
-		//XMMATRIX shadowTransform;
-		//XMMATRIX cameraViewMatrix;
-		//XMMATRIX cameraInvViewMatrix;
-		//XMMATRIX cameraWorldMatrix;
-		//XMMATRIX cameraProjMatrix;
 		XMMATRIX camViewProjInv;
-		//XMMATRIX lightWorldMatrix;
-		//XMMATRIX lightViewMatrix;
-		//XMMATRIX lightInvViewMatrix;
-		//XMMATRIX lightProjMatrix;
+
+		Material materials[MAX_MATERIALS];
 	};
 
 	struct BUFFERCACHE
@@ -972,7 +965,7 @@ public:
 
 	void SetPrevWorldViewProj(XMMATRIX& prevWorld, XMMATRIX& prevViewProj);
 
-	void SetMaterial(const Material& mat);
+	void SetMaterial(const Material& mat, UINT globalMaterialIndex);
 	void SetDiffuseMap(ID3D11DeviceContext* dc, ID3D11ShaderResourceView* tex);
 
 	void UpdatePerObj(ID3D11DeviceContext* dc);
@@ -1009,7 +1002,8 @@ private:
 		XMFLOAT4 nearDepths;
 		XMFLOAT4 farDepths;
 		int nrOfCascades;
-		XMFLOAT3 padding1;
+		unsigned int globalMaterialIndex;
+		XMFLOAT2 padding1;
 	};
 
 	struct BUFFERCACHE

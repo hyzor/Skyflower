@@ -222,14 +222,14 @@ void Cascade::DrawSceneToShadowMap(
 			worldViewProj = world * viewProj;
 
 			sShadowShader->SetLightWVP(deviceContext, worldViewProj);
-			sShadowShader->SetBoneTransforms(deviceContext, 
-				mAnimatedInstances[i]->model->mInstance.FinalTransforms.data(), 
-				(UINT)mAnimatedInstances[i]->model->mInstance.FinalTransforms.size());
+			sShadowShader->SetBoneTransforms(deviceContext,
+				mAnimatedInstances[i]->mSkinnedInstance->FinalTransforms.data(),
+				(UINT)mAnimatedInstances[i]->mSkinnedInstance->FinalTransforms.size());
 
-			for (UINT j = 0; j < mAnimatedInstances[i]->model->mInstance.model->numMeshes; ++j)
+			for (UINT j = 0; j < mAnimatedInstances[i]->mSkinnedInstance->model->numMeshes; ++j)
 			{
 				sShadowShader->UpdatePerObj(deviceContext);
-				mAnimatedInstances[i]->model->mInstance.model->meshes[j].draw(deviceContext);
+				mAnimatedInstances[i]->mSkinnedInstance->model->meshes[j].draw(deviceContext);
 			}
 		}
 	}
@@ -289,13 +289,13 @@ void Cascade::DrawSceneToShadowMap(const std::vector<ModelInstanceImpl*>& modelI
 
 			skinnedShadowShader->SetLightWVP(deviceContext, worldViewProj);
 			skinnedShadowShader->SetBoneTransforms(deviceContext,
-				mAnimatedInstances[i]->model->mInstance.FinalTransforms.data(),
-				(UINT)mAnimatedInstances[i]->model->mInstance.FinalTransforms.size());
+				mAnimatedInstances[i]->mSkinnedInstance->FinalTransforms.data(),
+				(UINT)mAnimatedInstances[i]->mSkinnedInstance->FinalTransforms.size());
 
-			for (UINT j = 0; j < mAnimatedInstances[i]->model->mInstance.model->numMeshes; ++j)
+			for (UINT j = 0; j < mAnimatedInstances[i]->mSkinnedInstance->model->numMeshes; ++j)
 			{
 				skinnedShadowShader->UpdatePerObj(deviceContext);
-				mAnimatedInstances[i]->model->mInstance.model->meshes[j].draw(deviceContext);
+				mAnimatedInstances[i]->mSkinnedInstance->model->meshes[j].draw(deviceContext);
 			}
 		}
 	}

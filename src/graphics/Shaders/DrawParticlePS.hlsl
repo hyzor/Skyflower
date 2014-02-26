@@ -13,9 +13,9 @@ struct PixelOut
 {
 	float4 Color : SV_Target0;
 	float4 Normal : SV_Target1;
-	float4 Specular : SV_Target2;
-	float2 Velocity : SV_Target3;
-	float4 Background : SV_Target4;
+	//float4 Specular : SV_Target2;
+	float2 Velocity : SV_Target2;
+	float4 Background : SV_Target3;
 };
 
 PixelOut main(GeoOut pIn)
@@ -95,13 +95,17 @@ PixelOut main(GeoOut pIn)
 		pOut.Background = float4(0.0f, 0.0f, 0.0f, 1.0f);
 	}
 
-	// No shadow cast on it
-	pOut.Color.w = 1.0f;
+	pOut.Color.w = -1.0f;
+
+	// This will set the light accumulation shader to use a default material
+	//pOut.Color.w = 1000.0f;
 
 	pOut.Normal.xyz = pIn.NormalW;
-	pOut.Normal.w = 0.0f;
 
-	pOut.Specular = float4(0.0f, 0.0f, 0.0f, 1.0f);
+	// No shadow cast on it
+	pOut.Normal.w = 1.0f;
+
+	//pOut.Specular = float4(0.0f, 0.0f, 0.0f, 1.0f);
 
 	// Gamma correct color (make it linear)
 	pOut.Color.xyz = pow(pOut.Color.xyz, 2.2f);

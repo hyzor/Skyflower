@@ -28,7 +28,7 @@ bool DeferredBuffers::Init(ID3D11Device* device, UINT width, UINT height)
 	DXGI_FORMAT formats[DeferredBuffersIndex::Count];
 	formats[DeferredBuffersIndex::Diffuse] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	formats[DeferredBuffersIndex::Normal] = DXGI_FORMAT_R16G16B16A16_FLOAT;
-	formats[DeferredBuffersIndex::Specular] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	//formats[DeferredBuffersIndex::Specular] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	formats[DeferredBuffersIndex::Velocity] = DXGI_FORMAT_R8G8_UNORM;
 	//formats[DeferredBuffersIndex::LitScene] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	formats[DeferredBuffersIndex::Background] = DXGI_FORMAT_R8G8B8A8_UNORM;

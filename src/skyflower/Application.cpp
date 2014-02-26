@@ -101,7 +101,7 @@ void Application::Start()
 	levelHandler->init(m_entityManager);
 
 	// Load Hub Level
-	levelHandler->queue(5);
+	levelHandler->queue(4);
 	levelHandler->loadQueued();
 
 	//m_entityManager->sendMessageToEntity("ActivateListener", "player");
@@ -235,6 +235,8 @@ void Application::Start()
 			m_GUI->Draw();
 			m_graphicsEngine->Present();
 
+			// TODO: Implement functionality for clearing textures that are not used in this next level
+			//m_graphicsEngine->ClearTextures();
 			levelHandler->loadQueued();
 			m_graphicsEngine->Clear();
 			m_graphicsEngine->UpdateSceneData();
