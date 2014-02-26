@@ -213,7 +213,7 @@ void Throw::setNotDizzy(Message const & msg)
 
 void Throw::updateAim()
 {
-	if (this->aimEntity && aimEntity)
+	if (getOwnerId() == 1 && this->aimEntity && aimEntity)
 	{
 		Collision *collision = getOwner()->getModules()->collision;
 		const std::vector<CollisionInstance *> &collisionInstances = collision->GetCollisionInstances();
