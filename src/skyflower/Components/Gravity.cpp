@@ -99,6 +99,10 @@ void GravityComponent::update(float dt)
 		//sphereCollision(dt);
 		calculateGroundNormal(getOwner(), getOwner()->ground);
 	}
+
+	if (getOwner()->ground)
+		if (!getOwner()->hasComponents("Throwable")) // bollar kan inte trycka knappar
+			getOwner()->ground->sendMessage("Ground", this);
 }
 
 void GravityComponent::setEnabled(bool enabled)
