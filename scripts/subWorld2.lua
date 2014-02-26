@@ -5,12 +5,16 @@ function loaded()
 	Lit(196,1)
 	Unlit(197,1)
 	Unlit(198,1)
-	--Unlit(199,1)
-	--Lit(199,1)
-	Unlit(201,1)
+	Unlit(199,1)
 	Unlit(200,1)
 	Unlit(201,1)
-	--Lit(200,1)
+	Unlit(202,1)
+	Unlit(203,1)
+	Unlit(204,1)
+	Unlit(205,1)
+	Unlit(206,1)
+	Unlit(207,1)
+	Unlit(208,1)
 	--CutScenePlay("intro")
 end
 
@@ -235,6 +239,9 @@ function activated_balloon(id)
 		Print("mmmm you touched me")
 		Pop(id)
 		MoveToTarget(46)
+		Lit(206,3)
+		Lit(207,3)
+		Lit(208,3)
 	--end
 end
 
@@ -296,6 +303,8 @@ end
 function activated_light200(id)
 	if IsActivated(id) then
 		Lit(200,1)
+		Lit(204,1)
+		Lit(205,1)
 	end
 end
 
