@@ -103,6 +103,7 @@ void Menu::init(GUI *g, int screenWidth, int screeenHeight, SoundEngine *sound)
 
 
 	Slider *volume = new Slider(g, Vec3(430, 330), 150, 40);
+	volume->setValue(1.0f);
 	m_pages[MenuPageSettings].sliders.push_back(volume);
 
 	Slider *mouseSense = new Slider(g, Vec3(430, 260), 150, 40);

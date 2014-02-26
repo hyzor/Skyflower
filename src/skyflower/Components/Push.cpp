@@ -44,7 +44,7 @@ void Push::update(float dt)
 	}
 	if (getOwner()->hasComponents("Throw"))
 	{
-		if (getOwner()->getComponent<Throw*>("Throw")->getIsHoldingThrowable())
+		if (getOwner()->getComponent<Throw*>("Throw")->getHeldEntity())
 			this->canPush = false;
 	}
 	if (getOwner()->hasComponents("Movement"))
@@ -98,7 +98,7 @@ void Push::update(float dt)
 		Throw* throwcomp = getOwner()->getComponent<Throw*>("Throw");
 		if (throwcomp)
 		{
-			if (throwcomp->getIsHoldingThrowable())
+			if (throwcomp->getHeldEntity())
 				canpush = false;
 		}
 

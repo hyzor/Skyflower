@@ -58,6 +58,11 @@ public:
 	void setIsBeingPickedUp(bool state, EntityId throwerId = -1);
 	bool getIsBeingPickedUp();
 
+	bool getIsBeingThrown()
+	{
+		return isBeingThrown;
+	}
+
 	PhysicsEntity*getPhysicsEntity()
 	{
 		return p;

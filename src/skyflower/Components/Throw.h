@@ -18,43 +18,34 @@ public:
 	virtual ~Throw();
 
 	void addedToEntity();
-	void removeFromEntity();
 
 	void update(float dt);
 
 	Entity* getHeldEntity();
-	bool getToThrow();
-	bool getIsHoldingThrowable();
-	bool getToPickUp();
-	bool getToPutDown();
-	bool getIsDizzy();
-	void setToPickUp(bool state);
-	void setToPutDown(bool state);
-	bool getHaveAim();
-	void setHaveAim(bool state);
-	void setIsHoldingThrowable(bool state);
-	void setToThrow(bool state);
+	
+	void ThrowAt(Entity* e);
+	void ThrowPlayer();
+	void PutDown();
+	void PickUp(Entity* e);
+	void PickUpAll();
 
 private:
 
 	bool toPickUp;
-	bool toPutDown;
-	bool isHoldingThrowable;
-	bool toThrow;
 	Entity* heldEntity;
-	Throwable* heldEntityThrowable;
 	Entity* aimEntity;
 	bool isDizzy;
-	bool haveAim;
+
 	void setAimVisibility(bool state);
-	void pickUpOrDown(Message const & msg);
 	void pickUp(Message const & msg);
 	void pickUpStop(Message const & msg);
 	void Throwing(Message const & msg);
-	void stopThrowing(Message const & msg);
 	void dropThrowable(Message const & msg);
+
 	void setIsDizzy(Message const &msg);
 	void setNotDizzy(Message const & msg);
+
+	void updateAim();
 	
 };
 

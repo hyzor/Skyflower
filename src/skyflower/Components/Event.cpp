@@ -524,12 +524,26 @@ int Event::SetContinous(lua_State* L)
 int Event::PickUp(lua_State* L)
 {
 	int n = lua_gettop(L);
+	assert(n == 2);
+
+	Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+	Entity* target = entityManager->getEntity((EntityId)lua_tointeger(L, 2));
+
+	Throw* throwComp = entity->getComponent<Throw*>("Throw");
+	throwComp->PickUp(target);
+
+	return 0;
+}
+
+int Event::PickUpAll(lua_State* L)
+{
+	int n = lua_gettop(L);
 	assert(n == 1);
 
 	Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
 
-	entity->sendMessage("PickUp");
-
+	Throw* throwComp = entity->getComponent<Throw*>("Throw");
+	throwComp->PickUpAll();
 
 	return 0;
 }
@@ -543,11 +557,11 @@ int Event::CanPick(lua_State* L)
 int Event::sThrow(lua_State* L)
 {
 	int n = lua_gettop(L);
-	assert(n == 1);
+	assert(n == 2);
 
 	Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
-
-	entity->sendMessage("Throw");
+	Throw* throwComp = entity->getComponent<Throw*>("Throw");
+	throwComp->ThrowAt(entityManager->getEntity((EntityId)lua_tointeger(L, 2)));
 
 	return 0;
 }
@@ -559,10 +573,11 @@ int Event::CanThrow(lua_State* L)
 	{
 		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
 
+		Throw* throwComp = entity->getComponent<Throw*>("Throw");
 		if (n == 1)
-			lua_pushboolean(L, entity->getComponent<Throw*>("Throw")->getIsHoldingThrowable());
+			lua_pushboolean(L, throwComp->getHeldEntity() != nullptr);
 		else
-			lua_pushboolean(L, entity->getComponent<Throw*>("Throw")->getHeldEntity()->fId == lua_tointeger(L, 2));
+			lua_pushboolean(L, throwComp->getHeldEntity() && throwComp->getHeldEntity()->fId == lua_tointeger(L, 2));
 	}
 
 	return 1;
