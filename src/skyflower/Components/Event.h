@@ -84,6 +84,11 @@ public:
 
 		lua_register(sh->L, "FallingPlatform", Event::FallingPlatform);
 		lua_register(sh->L, "OnAPlatform", Event::OnAPlatform);
+
+		//Determine which sign to use in the hubworld, with or without a mark that indicates that you have completed a subworld
+		lua_register(sh->L, "LevelIsCompleted", Event::LevelIsCompleted);
+		lua_register(sh->L, "SetActivated", Event::SetActivated);
+
 	};
 
 	// we are added to an Entity, and thus to the component system
@@ -110,14 +115,7 @@ private:
 	bool activated;
 
 	void Activated(Message const& msg);
-
 	void Deactivated(Message const& msg);
-
-	/*void Goal(Message const& msg)
-	{
-		//TO DO
-		//cout << "GOAL" << endl;
-	}*/
 
 	static int PlaySound(lua_State* L);
 	static int Jump(lua_State* L);
@@ -165,6 +163,9 @@ private:
 	static int ButtonUp(lua_State* L);
 	static int FallingPlatform(lua_State* L);
 	static int OnAPlatform(lua_State* L);
+
+	static int LevelIsCompleted(lua_State* L);
+	static int SetActivated(lua_State* L);
 };
 
 #endif

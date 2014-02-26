@@ -16,9 +16,6 @@ void Event::addedToEntity() {
 
 	requestMessage("Activated", &Event::Activated);
 	requestMessage("Deactivated", &Event::Deactivated);
-	//requestMessage("Goal", &Event::Goal);
-
-	
 }
 
 
@@ -842,4 +839,46 @@ int Event::OnAPlatform(lua_State* L)
 	lua_pushboolean(L, flag);
 
 	return 1;
+}
+
+int Event::LevelIsCompleted(lua_State* L)
+{
+	bool flag = false;
+	int n = lua_gettop(L);
+
+	if (n >= 1)
+	{
+		int levelID = (int)lua_tointeger(L, 1);
+		
+		if (levelHandler->isCompleted(levelID))
+		{
+			flag = true;
+		}
+	}
+	
+	lua_pushboolean(L, flag);
+
+	return 1;
+}
+
+int Event::SetActivated(lua_State* L)
+{
+	int n = lua_gettop(L);
+
+	if (n >= 1)
+	{
+		int entityToActivateID = (int)lua_tointeger(L, 1);
+		int active = lua_toboolean(L, 2);
+
+		if (active)
+		{
+			entityManager->activateEntity(entityToActivateID);
+		}
+		else
+		{
+			entityManager->deactivateEntity(entityToActivateID);
+		}
+	}
+
+	return 0;
 }
