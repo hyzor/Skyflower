@@ -9,9 +9,9 @@ GraphicsEngineImpl::GraphicsEngineImpl()
 	mRandom1DTexSRV = nullptr;
 	mParticlesTextureArray = nullptr;
 
-	mPointLights = new PLight[MAXPLIGHTS];
-	mDirLights = new DLight[MAXDLIGHTS];
-	mSpotLights = new SLight[MAXSLIGHTS];
+	mPointLights = new PLight[MAX_POINT_LIGHTS];
+	mDirLights = new DLight[MAX_DIR_LIGHTS];
+	mSpotLights = new SLight[MAX_SPOT_LIGHTS];
 
 	mPointLightsCount = 0;
 	mDirLightsCount = 0;
