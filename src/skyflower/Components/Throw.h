@@ -9,6 +9,7 @@
 using namespace std;
 using namespace Cistron;
 
+#define THROW_FORCE 150.0f
 
 class Throw : public Component {
 
@@ -17,18 +18,18 @@ public:
 	virtual ~Throw();
 
 	void addedToEntity();
+
 	void update(float dt);
 
 	Entity* getHeldEntity();
 	
 	void ThrowAt(Entity* e);
+	void ThrowPlayer();
 	void PutDown();
 	void PickUp(Entity* e);
 	void PickUpAll();
 
 private:
-
-	Vec3 throwTarget;
 
 	bool toPickUp;
 	Entity* heldEntity;

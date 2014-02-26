@@ -85,6 +85,7 @@ public:
 
 		lua_register(sh->L, "FallingPlatform", Event::FallingPlatform);
 		lua_register(sh->L, "OnAPlatform", Event::OnAPlatform);
+		lua_register(sh->L, "BoxOnButton", Event::BoxOnButton);
 
 		//Determine which sign to use in the hubworld, with or without a mark that indicates that you have completed a subworld
 		lua_register(sh->L, "LevelIsCompleted", Event::LevelIsCompleted);
@@ -168,6 +169,8 @@ private:
 
 	static int LevelIsCompleted(lua_State* L);
 	static int SetActivated(lua_State* L);
+
+	static int BoxOnButton(lua_State* L);
 };
 
 #endif

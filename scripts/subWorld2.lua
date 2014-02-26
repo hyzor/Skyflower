@@ -3,12 +3,13 @@ player = 1 --player id
 function loaded()
 	Lit(195,1)
 	Lit(196,1)
-	--Unlit(197,1)
-	--Unlit(198,1)
+	Unlit(197,1)
+	Unlit(198,1)
 	--Unlit(199,1)
 	--Lit(199,1)
 	Unlit(201,1)
 	Unlit(200,1)
+	Unlit(201,1)
 	--Lit(200,1)
 	--CutScenePlay("intro")
 end
@@ -23,13 +24,7 @@ function cutscene_intro()
 	AddPoint(140, 100, 20, -90, 30, 1)
 	AddPoint(-140, 40, 5, -90, -10, 1.5)
 	AddPoint(-120, 80, -120, 0, 20, 2)
-	AddPoint(120, 170, 900, -90, 25, 0.5)
-	AddPoint(-200, 260, 1300, -180, 25, 2)
-	AddPoint(-900, 260, 1100, -180, 45, 0.5)
-	AddPoint(-950, 150, 800, -220, 15, 2)
-	AddPoint(-50, 30, 40, -220, 15, 1)
-	--AddPoint(-180, 50, 60, -20, 15, 2)
-	
+	AddPoint(80, 30, 20, -110, 15, 1)	
 end
 
 --player script--
@@ -236,11 +231,11 @@ end
 --------------------
 
 function activated_balloon(id)
-	Print("Touched")
-	if IsActivator(id, "Throwable") then
-		Print("POP!")
+	--if IsActivator(id, "Throwable") then
+		Print("mmmm you touched me")
 		Pop(id)
-	end
+		MoveToTarget(46)
+	--end
 end
 
 
@@ -304,11 +299,26 @@ function activated_light200(id)
 	end
 end
 
-function activated_flower38(id)
-	Print("HEJ")
-	if IsActivated(id) then
-		MoveToTarget(38)
-		Lit(201,1)
+function load_boxPuzzle(id)
+	StartUpdate()
+end
+
+finished = false
+failed = false
+function update_boxPuzzle(id, dt)
+	-- blue, yellow, red
+	if BoxOnButton(56, 59) and BoxOnButton(66, 58) and BoxOnButton(64, 60) then
+		if not finished then
+			finished = true
+			failed = false
+			MoveToTarget(id)
+			Lit(201,1)
+		end
+	elseif finished and not failed then
+		MoveToSpawn(id)
+		Unlit(201,1)
+		finished = false
+		failed = true
 	end
 end
 

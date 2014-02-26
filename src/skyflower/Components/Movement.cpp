@@ -396,7 +396,7 @@ void Movement::update(float deltaTime)
 		{
 			speed = 150.0f;
 		}
-		else
+		else if (speed == 150.0f)
 		{
 			speed = 50.0f;
 		}

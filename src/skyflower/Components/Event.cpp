@@ -464,7 +464,10 @@ int Event::MoveToTarget(lua_State* L)
 		MoveTargetComponent *component = entity->getComponent<MoveTargetComponent *>("MoveTarget");
 
 		if (component)
+		{
 			component->moveToTarget();
+		}
+
 	}
 
 	return 0;
@@ -896,4 +899,30 @@ int Event::SetActivated(lua_State* L)
 	}
 
 	return 0;
+}
+
+int Event::BoxOnButton(lua_State* L)
+{
+	bool flag = false;
+	int n = lua_gettop(L);
+
+	if (n >= 1)
+	{
+		EntityId buttonId = (EntityId)lua_tointeger(L, 1);
+		EntityId boxId = (EntityId)lua_tointeger(L, 2);
+
+
+		Entity* boxEntity = entityManager->getEntity(boxId);
+
+		if (boxEntity->ground)
+		{
+			if (boxEntity->ground->fId == buttonId)
+			{
+				flag = true;
+			}
+		}
+	}
+
+	lua_pushboolean(L, flag);
+	return 1;
 }

@@ -100,6 +100,40 @@ void Throw::ThrowAt(Entity* e)
 	}
 }
 
+
+void Throw::ThrowPlayer()
+{
+	if (heldEntity)
+	{
+		Throwable* throwalble = heldEntity->getComponent<Throwable*>("Throwable");
+		if (throwalble && throwalble->getIsBeingPickedUp())
+		{
+			throwalble->setIsBeingPickedUp(false);
+			throwalble->setIsBeingThrown(true, getOwnerId());
+
+
+			Vec3 rotation = getOwner()->returnRot();
+			float pitch = getOwner()->getModules()->camera->GetPitch();
+			Vec3 aimDirection = Vec3(cosf(-rotation.Y - (float)M_PI_2), sinf(-pitch), sinf(-rotation.Y - (float)M_PI_2)).Normalize();
+			throwalble->getPhysicsEntity()->FireProjectile(getOwner()->returnPos(), aimDirection * THROW_FORCE);
+
+
+			// Make the aim invisible.
+			aimEntity->updateVisible(false);
+
+			Vec3 throwablePosition = heldEntity->returnPos();
+			getOwner()->getModules()->sound->PlaySound("swish.wav", 1.0f, &throwablePosition.X);
+
+			// Play throw animation
+			AnimatedInstance *animatedInstance = getOwner()->getAnimatedInstance();
+			if (animatedInstance && getOwnerId() == 1)
+				animatedInstance->SetAnimation(7, false);
+
+			this->heldEntity = nullptr;
+		}
+	}
+}
+
 void Throw::PutDown()
 {
 	if (heldEntity)
@@ -164,7 +198,7 @@ void Throw::pickUpStop(Message const & msg)
 void Throw::Throwing(Message const & msg)
 {
 	if (heldEntity && this->aimEntity->returnVisible())
-		ThrowAt(aimEntity);
+		ThrowPlayer();
 }
 
 void Throw::setIsDizzy(Message const &msg)
@@ -181,45 +215,61 @@ void Throw::updateAim()
 {
 	if (this->aimEntity && aimEntity)
 	{
-		Vec3 position = getOwner()->returnPos();
-		Vec3 rotation = getOwner()->returnRot();
-
-		const float maxRange = 200.0f;
-
-		float pitch = getOwner()->getModules()->camera->GetPitch();
-		Vec3 aimDirection = Vec3(cosf(-rotation.Y - (float)M_PI_2), sinf(-pitch), sinf(-rotation.Y - (float)M_PI_2)).Normalize();
-		Ray ray = Ray(heldEntity->returnPos(), aimDirection * maxRange);
+		Collision *collision = getOwner()->getModules()->collision;
+		const std::vector<CollisionInstance *> &collisionInstances = collision->GetCollisionInstances();
 
 		CollisionInstance *ownerCollision = getOwner()->returnCollision();
 		CollisionInstance *heldEntityCollision = this->heldEntity->returnCollision();
-
-		Collision *collision = getOwner()->getModules()->collision;
-		const std::vector<CollisionInstance *> &collisionInstances = collision->GetCollisionInstances();
 		CollisionInstance *collisionInstance;
 
-		for (size_t i = 0; i < collisionInstances.size(); i++)
+		Vec3 rotation = getOwner()->returnRot();
+		float pitch = getOwner()->getModules()->camera->GetPitch();
+		Vec3 aimDirection = Vec3(cosf(-rotation.Y - (float)M_PI_2), sinf(-pitch), sinf(-rotation.Y - (float)M_PI_2)).Normalize();
+		Vec3 aimPosition = heldEntity->returnPos();
+		Vec3 velocity = aimDirection * THROW_FORCE;
+
+		const float rayLength = 3.0f;
+
+		Vec3 direction = Vec3(cosf(-rotation.Y - (float)M_PI_2), 0.0f, sinf(-rotation.Y - (float)M_PI_2)).Normalize();
+		Vec3 rayDirection = Vec3((direction.X > 0.0f ? 1.0f : -1.0f), -1.0f, (direction.Z > 0.0f ? 1.0f : -1.0f)).Normalize();
+		Ray ray = Ray(aimPosition, rayDirection * rayLength);
+
+		this->aimEntity->updateVisible(false);
+
+		const float timeStep = 1.0f / 60.0f;
+		bool didHit = false;
+		int count = 0;
+
+		while (!didHit && aimPosition.Y > -100.0f && count < 50)
 		{
-			collisionInstance = collisionInstances[i];
+			count++;
 
-			if (collisionInstance == ownerCollision || collisionInstance == heldEntityCollision)
-				continue;
+			// This is basically a hax, ok?
+			aimPosition += GRAVITY_DEFAULT * (timeStep * timeStep) * 0.5f;
+			velocity += GRAVITY_DEFAULT * timeStep;
+			aimPosition += velocity * timeStep;
 
-			float t = collisionInstance->Test(ray);
+			ray.SetPos(aimPosition);
 
-			if (t > 0.0f)
+			for (size_t i = 0; i < collisionInstances.size(); i++)
 			{
-				Vec3 hitPosition = heldEntity->returnPos() + aimDirection * maxRange * t;
+				collisionInstance = collisionInstances[i];
 
-				this->throwTarget = hitPosition;
+				if (collisionInstance == ownerCollision || collisionInstance == heldEntityCollision)
+					continue;
 
-				this->aimEntity->updateRot(rotation);
-				this->aimEntity->updatePos(hitPosition);
-				this->aimEntity->updateVisible(true);
+				float t = collisionInstance->Test(ray);
 
-				break;
+				if (t > 0.0f)
+				{
+					this->aimEntity->updateRot(rotation);
+					this->aimEntity->updatePos(aimPosition + rayDirection * rayLength * t);
+					this->aimEntity->updateVisible(true);
+
+					didHit = true;
+					break;
+				}
 			}
-			else
-				this->aimEntity->updateVisible(false);
 		}
 	}
 }
