@@ -1,26 +1,68 @@
 <root>
+	<!-- first platform -->
     <Entity type="light" id="195" >
         <SpotLight  xPos="-65.0" yPos="200" zPos="15.0" r="1.0" g="1.0" b="1.0" intensity="1.0" xDir="0" yDir="-1" zDir="0" angle="45"/>
     </Entity>
+	
+	<!-- second platform -->
     <Entity type="light" id="196" >
         <SpotLight  xPos="-140.0846498422" yPos="176.9141675967" zPos="1.66533453694" r="1.0" g="1.0" b="1.0" intensity="1.0" xDir="0" yDir="-1" zDir="0" angle="45" />
     </Entity>
+	
+	<!-- first blinking light -->
     <Entity type="light" id="197" >
         <SpotLight  xPos="-146.392836816" yPos="271.469486359" zPos="168.142293777" r="1.0" g="0.0" b="1.0" intensity="1.0" xDir="0" yDir="-1" zDir="0" angle="45"/>
     </Entity>
+	
+	<!-- second blinking light -->
     <Entity type="light" id="198" >
         <SpotLight  xPos="-173.83492749" yPos="334.564570483" zPos="319.680460046" r="0.0" g="0.0" b="1.0" intensity="1.0" xDir="0" yDir="-1" zDir="0" angle="45" />
     </Entity>
+	
+	<!-- light above puzzle -->
     <Entity type="light" id="199" >
         <SpotLight  xPos="-163.986716391" yPos="500.056801136" zPos="550.637676847" r="1.0" g="1.0" b="1.0" intensity="1.0" xDir="0" yDir="-1" zDir="0" angle="45" />
     </Entity>
+	
+	<!-- AI arena -->
     <Entity type="light" id="200" >
-        <SpotLight  xPos="-440.0" yPos="450.331173166" zPos="810" r="1.0" g="1.0" b="1.0" intensity="1.0" xDir="0" yDir="-1" zDir="0" angle="45" />
+        <SpotLight  xPos="-440.0" yPos="500.331173166" zPos="810" r="1.0" g="1.0" b="1.0" intensity="1.0" xDir="0" yDir="-1" zDir="0" angle="45" />
     </Entity>
+	
+	<!-- before flower jumping puzzle -->
 	<Entity type="light" id="201" >
+        <SpotLight  xPos="-159" yPos="200.0400071584" zPos="723.563431628" r="1.0" g="1.0" b="1.0" intensity="1.0" xDir="0" yDir="-1.0" zDir="0" angle="45"/>
+    </Entity>
+	
+	<!-- First in flower jumping puzzle -->
+	<Entity type="light" id="202" >
+        <SpotLight  xPos="-166" yPos="200.0400071584" zPos="820.563431628" r="1.0" g="1.0" b="1.0" intensity="1.0" xDir="0" yDir="-1.0" zDir="0" angle="45"/>
+    </Entity>
+	
+	<!-- Second in flower jumping puzzle -->
+	<Entity type="light" id="203" >
+        <SpotLight  xPos="-215.229586079" yPos="250.0400071584" zPos="840.563431628" r="1.0" g="1.0" b="1.0" intensity="1.0" xDir="0" yDir="-1.0" zDir="0" angle="45"/>
+    </Entity>
+	
+	<!-- On platform in front of balloon -->
+	<Entity type="light" id="204" >
+        <SpotLight  xPos="-590.229586079" yPos="250.0400071584" zPos="770.563431628" r="1.0" g="1.0" b="1.0" intensity="1.0" xDir="0" yDir="-1.0" zDir="0" angle="45"/>
+    </Entity>
+	
+	<!-- Light on balloon -->
+	<Entity type="light" id="205" >
+        <SpotLight  xPos="-475.229586079" yPos="200.0400071584" zPos="790.563431628" r="1.0" g="1.0" b="1.0" intensity="1.0" xDir="-1.0" yDir="0" zDir="0.0" angle="45"/>
+    </Entity>
+	
+	<!----------- Checkpointljus /--------------> 
+	<Entity type="light" id="206" >
         <SpotLight  xPos="-180.25639555" yPos="55.452823515" zPos="6.0" r="0.1" g="1.0" b="0.23" intensity="1.0" xDir="-1" yDir="0.0" zDir="0" angle="179"/>
     </Entity>
-	<Entity type="light" id="202" >
+	<Entity type="light" id="207" >
         <SpotLight  xPos="-167.229586079" yPos="94.0400071584" zPos="415.563431628" r="0.01" g="1.0" b="0.95" intensity="1.0" xDir="0" yDir="-1.0" zDir="0" angle="179"/>
     </Entity>
+	<Entity type="light" id="208" >
+        <SpotLight  xPos="-269.0" yPos="140.0400071584" zPos="834.563431628" r="0.01" g="1.0" b="0.95" intensity="1.0" xDir="0" yDir="-1.0" zDir="0" angle="179"/>
+    </Entity>
+
 </root>

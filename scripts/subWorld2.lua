@@ -3,10 +3,11 @@ player = 1 --player id
 function loaded()
 	Lit(195,1)
 	Lit(196,1)
-	Unlit(197,1)
-	Unlit(198,1)
-	Unlit(199,1)
+	--Unlit(197,1)
+	--Unlit(198,1)
+	--Unlit(199,1)
 	--Lit(199,1)
+	Unlit(201,1)
 	Unlit(200,1)
 	--Lit(200,1)
 	--CutScenePlay("intro")
@@ -72,6 +73,8 @@ function update_temporaryFlowers(id, dt)
 			MoveToTarget(28)
 			MoveToTarget(29)
 			MoveToTarget(30)
+			Lit(202,1)
+			Lit(203,1)
 			stairdown = false
 		end
 	else
@@ -81,6 +84,8 @@ function update_temporaryFlowers(id, dt)
 			MoveToSpawn(28)
 			MoveToSpawn(29)
 			MoveToSpawn(30)
+			Unlit(202,1)
+			Unlit(203,1)
 			platformTimer = 0
 			stairdown = true
 		end
@@ -301,6 +306,7 @@ function activated_flower38(id)
 	Print("HEJ")
 	if IsActivated(id) then
 		MoveToTarget(38)
+		Lit(201,1)
 	end
 end
 

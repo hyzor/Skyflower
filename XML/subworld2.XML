@@ -4,7 +4,7 @@
 
 
 	<Entity type="player" id="1"
-		xPos="-122.25639555" yPos="25.452823515" zPos="-15.6426041247"
+		xPos="-269.379498537" yPos="109.316849944" zPos="834.99023128"
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="1.0" yScale="1.0" zScale="1.0"
 		model="Models/Player/playerAnimated"
@@ -62,7 +62,7 @@
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2grass" id="23" isCollidible="1" isVisible="1" isAnimated="0" xPos="-163.389924451" yPos="70.3488215152" zPos="446.390333732" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2mud" id="24" isCollidible="1" isVisible="1" isAnimated="0" xPos="-163.389924451" yPos="70.3488215152" zPos="446.390333732" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2cloud" id="25" isCollidible="0" isVisible="1" isAnimated="0" xPos="-163.389924451" yPos="70.3488215152" zPos="446.390333732" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
-    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\flowerPlattform" id="26" isCollidible="1" isVisible="1" isAnimated="0" xPos="-569.724906436" yPos="166.871464836" zPos="787.804331524" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0">
+    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\flowerPlattform" id="26" isCollidible="1" isVisible="1" isAnimated="0" xPos="-569.724906436" yPos="102.871464836" zPos="787.804331524" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <MoveTarget continuous="0" duration="2" easingPower="3" targetPosX="-570" targetPosY="98" targetPosZ="788"/>
         <Event script="arenaFlower"/>
     </Entity>
