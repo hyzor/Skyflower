@@ -14,6 +14,7 @@ static const enum ParticleType
 	PT_PARTICLE,
 	PT_BIRD,
 	PT_DUST,
+	PT_PORTAL,
 	NROFTYPES
 };
 

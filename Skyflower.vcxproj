@@ -38,6 +38,7 @@
     <ClCompile Include="src\skyflower\Components\Movement.cpp" />
     <ClCompile Include="src\skyflower\Components\MoveTarget.cpp" />
     <ClCompile Include="src\skyflower\Components\PointLightComp.cpp" />
+    <ClCompile Include="src\skyflower\Components\PortalEffect.cpp" />
     <ClCompile Include="src\skyflower\Components\Push.cpp" />
     <ClCompile Include="src\skyflower\Components\SpotLightComp.cpp" />
     <ClCompile Include="src\skyflower\Components\Throw.cpp" />
@@ -86,6 +87,7 @@
     <ClInclude Include="src\skyflower\Components\Movement.h" />
     <ClInclude Include="src\skyflower\Components\MoveTarget.h" />
     <ClInclude Include="src\skyflower\Components\PointLightComp.h" />
+    <ClInclude Include="src\skyflower\Components\PortalEffect.h" />
     <ClInclude Include="src\skyflower\Components\Push.h" />
     <ClInclude Include="src\skyflower\Components\Pushable.h" />
     <ClInclude Include="src\skyflower\Components\Rotating.h" />
