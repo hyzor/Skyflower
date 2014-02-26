@@ -32,7 +32,11 @@ GenericModel::GenericModel(ID3D11Device* device, TextureManager* textureMgr, con
 
 		if (mats[i].diffuseMapName != "")
 		{
-			ID3D11ShaderResourceView* _diffuseMapSRV = textureMgr->CreateTexture(mats[i].diffuseMapName);
+			Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> _diffuseMapSRV = nullptr;
+			//std::shared_ptr<ID3D11ShaderResourceView> _diffuseMapSRV = nullptr;
+			//_diffuseMapSRV = textureMgr->CreateLevelTexture(mats[i].diffuseMapName);
+			_diffuseMapSRV = textureMgr->CreateLevelTexture(mats[i].diffuseMapName);
+			//ID3D11ShaderResourceView* _diffuseMapSRV = textureMgr->CreateLevelTexture(mats[i].diffuseMapName);
 			diffuseMapSRV.push_back(_diffuseMapSRV);
 		}
 		else
@@ -42,7 +46,11 @@ GenericModel::GenericModel(ID3D11Device* device, TextureManager* textureMgr, con
 
 		if (mats[i].normalMapName != "")
 		{
-			ID3D11ShaderResourceView* _normalMapSRV = textureMgr->CreateTexture(mats[i].normalMapName);
+			//ID3D11ShaderResourceView* _normalMapSRV = textureMgr->CreateLevelTexture(mats[i].normalMapName);
+			//normalMapSRV.push_back(_normalMapSRV);
+
+			Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> _normalMapSRV = nullptr;
+			_normalMapSRV = textureMgr->CreateLevelTexture(mats[i].normalMapName);
 			normalMapSRV.push_back(_normalMapSRV);
 		}
 		else
@@ -90,6 +98,8 @@ GenericModel::GenericModel(ID3D11Device* device, TextureManager* textureMgr, con
 
 GenericModel::~GenericModel(void)
 {
+	diffuseMapSRV.clear();
+	normalMapSRV.clear();
 }
 
 Vertex::PosNormalTex* GenericModel::GetVertex(int index)

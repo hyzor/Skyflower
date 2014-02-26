@@ -359,7 +359,7 @@ void AnimatedInstanceImpl::Draw(ID3D11DeviceContext* dc, Camera* cam, BasicDefer
 		UINT matIndex = mSkinnedInstance->model->meshes[i].mMaterialIndex;
 
 		deferredShader->SetMaterial(mSkinnedInstance->model->mat[matIndex], mSkinnedInstance->model->mGlobalMaterialIndex[matIndex]);
-		deferredShader->SetDiffuseMap(dc, mSkinnedInstance->model->diffuseMapSRV[matIndex]);
+		deferredShader->SetDiffuseMap(dc, mSkinnedInstance->model->diffuseMapSRV[matIndex].Get());
 		//shader->SetNormalMap(dc, mInstance.model->normalMapSRV[matIndex]);
 		deferredShader->UpdatePerObj(dc);
 

@@ -27,8 +27,10 @@ public:
 	UINT numBones;
 
 	std::vector<Material> mat;
-	std::vector<ID3D11ShaderResourceView*> diffuseMapSRV;
-	std::vector<ID3D11ShaderResourceView*> normalMapSRV;
+	//std::vector<ID3D11ShaderResourceView*> diffuseMapSRV;
+	//std::vector<ID3D11ShaderResourceView*> normalMapSRV;
+	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> diffuseMapSRV;
+	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> normalMapSRV;
 
 	std::vector<GenericSkinnedMesh> meshes;
 

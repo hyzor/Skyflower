@@ -91,7 +91,6 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 	delete mSky;
 	delete mCascadedShadows;
 	delete mCamera;
-	delete mTextureMgr;
 
 	mDeferredBuffers->Shutdown();
 	delete mDeferredBuffers;
@@ -122,6 +121,8 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 	delete mSpriteFontMonospace;
 	delete mSpriteFont;
 	delete mSpriteBatch;
+
+	delete mTextureMgr;
 
 	mD3D->Shutdown();
 	delete mD3D;
@@ -172,7 +173,8 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mFarSharpPlane = 200.0f;
 	mFarBlurryPlane = 250.0f;
 
-	mSky = new Sky(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Textures\\SkyBox.dds", 2000.0f);
+	//mSky = new Sky(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Textures\\SkyBox.dds", 2000.0f);
+	mSky = new Sky(mD3D->GetDevice(), mTextureMgr, 2000.0f);
 	mCascadedShadows = new CascadedShadows(mD3D->GetDevice(), 2048, 2048, 3); //Remember that a const is defined in LightDef.hlsli 
 	mCascadedShadows->SetSplitMethod(FIT_TO_CASCADE);
 	mCascadedShadows->SetNearFarFitMethod(FIT_NEARFAR_AABB);
@@ -408,8 +410,10 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 
 	mSMAA->Init(mD3D->GetDevice(), width, height,
 		//mTextureMgr->CreateDDSTextureFromBytes(areaTexBytes, AREATEX_SIZE, "AreaTex"),
-		mTextureMgr->CreateTexture(mResourceDir + "Textures/SMAA/AreaTexDX11.dds"),
-		mTextureMgr->CreateTexture(mResourceDir + "Textures/SMAA/SearchTex.dds"),
+		//mTextureMgr->CreateLevelTexture(mResourceDir + "Textures/SMAA/AreaTexDX11.dds"),
+		//mTextureMgr->CreateLevelTexture(mResourceDir + "Textures/SMAA/SearchTex.dds"),
+		mTextureMgr->CreateStaticTexture(mResourceDir + "Textures/SMAA/AreaTexDX11.dds"),
+		mTextureMgr->CreateStaticTexture(mResourceDir + "Textures/SMAA/SearchTex.dds"),
 		mFullscreenTriangle);
 
 	std::string fontPath = mResourceDir + "buxton.spritefont";
@@ -610,7 +614,7 @@ void GraphicsEngineImpl::DrawScene()
 
 		mShaderHandler->mSSAOShader->SetDepthTexture(mD3D->GetImmediateContext(), mD3D->GetDepthStencilSRView());
 		mShaderHandler->mSSAOShader->SetNormalTexture(mD3D->GetImmediateContext(), mDeferredBuffers->GetSRV(DeferredBuffersIndex::Normal));
-		mShaderHandler->mSSAOShader->SetRandomTexture(mD3D->GetImmediateContext(), mTextureMgr->CreateTexture(mResourceDir + "Textures/random.png"));
+		mShaderHandler->mSSAOShader->SetRandomTexture(mD3D->GetImmediateContext(), mTextureMgr->CreateStaticTexture(mResourceDir + "Textures/random.png"));
 
 		mShaderHandler->mSSAOShader->SetInverseProjectionMatrix(XMMatrixInverse(nullptr, mCamera->GetProjMatrix()));
 		mShaderHandler->mSSAOShader->SetViewMatrix(mCamera->GetViewMatrix());
@@ -950,7 +954,8 @@ void GraphicsEngineImpl::End2D()
 void GraphicsEngineImpl::Draw2DTextureFile(const std::string file, const Draw2DInput* input)
 {
 	mSpriteBatch->Draw(
-		mTextureMgr->CreateTexture(file),
+		//mTextureMgr->CreateLevelTexture(file),
+		mTextureMgr->CreateStaticTexture(file),
 		input->pos,
 		0,
 		input->color,
@@ -1321,7 +1326,7 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 
 				mShaderHandler->mBasicDeferredShader->SetMaterial(mInstances[i]->model->mat[matIndex],
 					mInstances[i]->model->mGlobalMaterialIndex[matIndex]);
-				mShaderHandler->mBasicDeferredShader->SetDiffuseMap(mD3D->GetImmediateContext(), mInstances[i]->model->diffuseMapSRV[matIndex]);
+				mShaderHandler->mBasicDeferredShader->SetDiffuseMap(mD3D->GetImmediateContext(), mInstances[i]->model->diffuseMapSRV[matIndex].Get());
 				mShaderHandler->mBasicDeferredShader->UpdatePerObj(mD3D->GetImmediateContext());
 				mD3D->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 				mInstances[i]->model->meshes[j].Draw(mD3D->GetImmediateContext());
@@ -1420,7 +1425,7 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 				UINT matIndex = mMorphInstances[i]->model->mTargetModels.begin()->meshes[j].MaterialIndex;
 				mShaderHandler->mDeferredMorphShader->SetMaterial(mMorphInstances[i]->model->mat[matIndex],
 					mMorphInstances[i]->model->mGlobalMaterialIndex[matIndex]);
-				mShaderHandler->mDeferredMorphShader->SetDiffuseMap(mD3D->GetImmediateContext(), mMorphInstances[i]->model->diffuseMapSRV[matIndex]);
+				mShaderHandler->mDeferredMorphShader->SetDiffuseMap(mD3D->GetImmediateContext(), mMorphInstances[i]->model->diffuseMapSRV[matIndex].Get());
 				mShaderHandler->mDeferredMorphShader->UpdatePerObj(mD3D->GetImmediateContext());
 
 				mMorphInstances[i]->model->Draw(mD3D->GetImmediateContext());
@@ -1477,7 +1482,7 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 				UINT matIndex = mSkinnedSortedInstances[i]->model->meshes[j].mMaterialIndex;
 				mShaderHandler->mBasicDeferredSkinnedSortedShader->SetMaterial(mSkinnedSortedInstances[i]->model->mat[matIndex],
 					mSkinnedSortedInstances[i]->model->mGlobalMaterialIndex[matIndex]);
-				mShaderHandler->mBasicDeferredSkinnedSortedShader->SetDiffuseMap(mD3D->GetImmediateContext(), mSkinnedSortedInstances[i]->model->diffuseMapSRV[matIndex]);
+				mShaderHandler->mBasicDeferredSkinnedSortedShader->SetDiffuseMap(mD3D->GetImmediateContext(), mSkinnedSortedInstances[i]->model->diffuseMapSRV[matIndex].Get());
 				mShaderHandler->mBasicDeferredSkinnedSortedShader->UpdatePerObj(mD3D->GetImmediateContext());
 
 				mSkinnedSortedInstances[i]->model->meshes[j].draw(mD3D->GetImmediateContext());
@@ -2121,7 +2126,100 @@ void GraphicsEngineImpl::ResetRenderTargetAndViewport()
 	mD3D->GetImmediateContext()->RSSetViewports(1, &mD3D->GetScreenViewport());
 }
 
-void GraphicsEngineImpl::ClearTextures()
+void GraphicsEngineImpl::ClearLevelTextures()
 {
-	mTextureMgr->Clear();
+	//mTextureMgr->ClearLevel();
+
+	for (auto& itTex(mTextureMgr->mLevelTextureSRV.begin()); itTex != mTextureMgr->mLevelTextureSRV.end();)
+	{
+		bool textureIsUsed = false;
+
+		for (auto& it(mModels.begin()); it != mModels.end(); ++it)
+		{
+			for (UINT i = 0; i < it->second->diffuseMapSRV.size(); ++i)
+			{
+				if (it->second->diffuseMapSRV[i].Get() == itTex->second.Get())
+				{
+					textureIsUsed = true;
+					break;
+				}
+			}
+		}
+
+		if (!textureIsUsed)
+		{
+			for (auto& it(mSkinnedModels.begin()); it != mSkinnedModels.end(); ++it)
+			{
+				for (UINT i = 0; i < it->second->diffuseMapSRV.size(); ++i)
+				{
+					if (it->second->diffuseMapSRV[i].Get() == itTex->second.Get())
+					{
+						textureIsUsed = true;
+						break;
+					}
+				}
+			}
+		}
+
+		if (!textureIsUsed)
+		{
+			for (UINT j = 0; j < mMorphModels.size(); ++j)
+			{
+				for (UINT i = 0; i < mMorphModels[j]->diffuseMapSRV.size(); ++i)
+				{
+					if (mMorphModels[j]->diffuseMapSRV[i].Get() == itTex->second.Get())
+					{
+						textureIsUsed = true;
+						break;
+					}
+				}
+			}
+		}
+
+
+		if (!textureIsUsed)
+		{
+			for (auto& it(mSkinnedSortedModels.begin()); it != mSkinnedSortedModels.end(); ++it)
+			{
+				for (UINT i = 0; i < it->second->diffuseMapSRV.size(); ++i)
+				{
+					if (it->second->diffuseMapSRV[i].Get() == itTex->second.Get())
+					{
+						textureIsUsed = true;
+						break;
+					}
+				}
+			}
+		}
+
+		if (!textureIsUsed)
+		{
+			itTex->second = nullptr;
+			mTextureMgr->mLevelTextureSRV.erase(itTex++);
+		}
+		else
+		{
+			++itTex;
+		}
+	}
+}
+
+void GraphicsEngineImpl::SetSkyTexture(const std::string& fileName)
+{
+	mSky->SetTexture(mResourceDir + fileName, mTextureMgr);
+}
+
+void GraphicsEngineImpl::ClearModelInstances()
+{
+	for (UINT i = 0; i < mInstances.size(); ++i)
+		DeleteInstance(mInstances[i]);
+
+	for (UINT i = 0; i < mAnimatedInstances.size(); ++i)
+		DeleteInstance(mAnimatedInstances[i]);
+
+	for (UINT i = 0; i < mMorphInstances.size(); ++i)
+		DeleteInstance(mMorphInstances[i]);
+
+	for (UINT i = 0; i < mSkinnedSortedInstances.size(); ++i)
+		delete mSkinnedSortedInstances[i];
 }

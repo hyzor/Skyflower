@@ -26,8 +26,11 @@ public:
 	void Resize(ID3D11Device* d3dDevice, int width, int height);
 
 private:
-	ID3D11Device* m_d3dDevice;
-	ID3D11DeviceContext *m_d3dDeviceContext;
+	//Microsoft::WRL::ComPtr<ID3D11Device> m_d3dDevice;
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_d3dDeviceContext;
+
+	//ID3D11Device* m_d3dDevice;
+	//ID3D11DeviceContext *m_d3dDeviceContext;
 
 	ID3D11Texture2D *m_texture;
 	ID3D11ShaderResourceView *m_shaderResourceView;
