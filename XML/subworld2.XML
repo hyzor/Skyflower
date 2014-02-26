@@ -120,6 +120,7 @@
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\ButtonBase" id="53" isCollidible="1" isVisible="1" isAnimated="0" xPos="-228.696871708" yPos="55.1388093654" zPos="6.07379709632" xRot="-0.0" yRot="-0.0" zRot="1.55639585521" xScale="1.799104476" yScale="1.799104476" zScale="1.799104476"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\Button" id="54" isCollidible="1" isVisible="1" isAnimated="0" xPos="-228.696871708" yPos="55.1388093654" zPos="6.07379709632" xRot="-0.0" yRot="-0.0" zRot="-1.55639585521" xScale="1.799104476" yScale="1.799104476" zScale="1.799104476">
         <WallButton/>
+		<HelpText text="If you can't reach a button, why not throw a ball at it? *quack*" range="110"/>
 		<Event script="blinkingLights" />
     </Entity>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\ButtonBase" id="55" isCollidible="1" isVisible="1" isAnimated="0" xPos="-195.927164058" yPos="48.7098579087" zPos="549.842093616" xRot="-0.0" yRot="-0.0" zRot="0.00439782962308" xScale="2.80160419054" yScale="2.80160419054" zScale="2.80160419054"/>
@@ -154,6 +155,7 @@
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\ButtonBase" id="61" isCollidible="1" isVisible="1" isAnimated="0" xPos="-160.829834703" yPos="74.204870955" zPos="474.785142098" xRot="-0.0" yRot="-0.0" zRot="0.00439782962308" xScale="1.799104476" yScale="1.799104476" zScale="1.799104476"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\Button" id="62" isCollidible="1" isVisible="1" isAnimated="0" xPos="-160.829834703" yPos="74.204870955" zPos="474.785142098" xRot="-0.0" yRot="-0.0" zRot="0.00439782962308" xScale="1.799104476" yScale="1.799104476" zScale="1.799104476">
         <Button toggle="1"/>
+		<HelpText text="It looks like you need to solve the puzzle to be able to continue." range="60" />
         <!--Event script="buttonPuzzle"/-->
     </Entity>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\ButtonBase" id="63" isCollidible="1" isVisible="1" isAnimated="0" xPos="-169.900011669" yPos="48.7098579087" zPos="500.696490125" xRot="-0.0" yRot="-0.0" zRot="0.00439782962308" xScale="2.94557554482" yScale="2.94557554482" zScale="2.94557554482"/>
