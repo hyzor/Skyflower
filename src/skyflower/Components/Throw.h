@@ -3,6 +3,7 @@
 
 #include "Cistron.h"
 #include "Entity.h"
+#include "Components/Throwable.h"
 #include <string>
 #include <iostream>
 using namespace std;
@@ -18,7 +19,7 @@ public:
 	void addedToEntity();
 	void update(float dt);
 
-	EntityId getHoldingEntityId();
+	Entity* getHeldEntity();
 	bool getToThrow();
 	bool getIsHoldingThrowable();
 	bool getToPickUp();
@@ -30,15 +31,18 @@ public:
 	void setHaveAim(bool state);
 	void setIsHoldingThrowable(bool state);
 	void setToThrow(bool state);
-	void setHoldingEntityId(EntityId id);
 
 private:
+
+	Vec3 throwTarget;
 
 	bool toPickUp;
 	bool toPutDown;
 	bool isHoldingThrowable;
 	bool toThrow;
-	EntityId holdingEntityId;
+	Entity* heldEntity;
+	Throwable* heldEntityThrowable;
+	Entity* aimEntity;
 	bool isDizzy;
 	bool haveAim;
 	void setAimVisibility(bool state);

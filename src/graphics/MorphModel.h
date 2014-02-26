@@ -28,6 +28,8 @@ public:
 	//std::vector<Mesh> meshes;
 	std::vector<TargetMesh> mTargetModels;
 
+	std::vector<UINT> mGlobalMaterialIndex;
+
 	// Bounding box
 	DirectX::BoundingBox boundingBox;
 

@@ -82,7 +82,8 @@ GenericSkinnedModel::~GenericSkinnedModel(void)
 
 GenericSkinnedModelInstance::GenericSkinnedModelInstance()
 {
-	model = NULL;
+	//model = NULL;
+	model = nullptr;
 	isVisible = false;
 	AnimationName = "";
 	AnimationIndex = 0;
@@ -92,6 +93,11 @@ GenericSkinnedModelInstance::GenericSkinnedModelInstance()
 	playAnimForward = true;
 	loop = true;
 	animationDone = false;
+}
+
+GenericSkinnedModelInstance::~GenericSkinnedModelInstance()
+{
+
 }
 
 void GenericSkinnedModelInstance::Update(float dt)

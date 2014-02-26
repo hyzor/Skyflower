@@ -52,6 +52,7 @@ public:
 	};
 	struct Settings
 	{
+		bool _showHelpTexts;
 		bool _isFullscreen;
 		bool _mouseInverted;
 		float _soundVolume;

@@ -878,7 +878,8 @@ bool GenericObjectLoader::LoadSkinnedObjectSorted(
 // Materials
 //=================================================================================
 void GenericObjectLoader::ReadMaterials(const aiScene* scene,
-							std::vector<GenericMaterial>& materials, const std::string &path)
+							std::vector<GenericMaterial>& materials,
+							const std::string &path)
 {
 	if (scene->HasMaterials())
 	{
@@ -1004,7 +1005,6 @@ void GenericObjectLoader::ReadMaterials(const aiScene* scene,
 				genMat.normalMapName = normalMapPathStr;
 			}
 
-			// Push our material into the vector
 			materials.push_back(genMat);
 		}
 

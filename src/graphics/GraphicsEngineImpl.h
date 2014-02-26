@@ -18,7 +18,6 @@
 #include <DirectXTK/SpriteBatch.h>
 #include <DirectXTK/SpriteFont.h>
 
-#include "Character.h"
 #include "GraphicsEngine.h"
 #include "InstanceImpl.h"
 
@@ -40,7 +39,7 @@
 
 const float fovY = 0.785398f; // 0.25f * MathHelper::pi
 const float zNear = 1.0f;
-const float zFar = 1000.0f;
+const float zFar = 2500.0f;
 
 static const enum BlendingMethods
 {
@@ -117,6 +116,8 @@ public:
 	void DrawLines(Texture2D *texture, const float *data, size_t count, const XMFLOAT3X3 &transformation, const float color[4]);
 
 	void ResetRenderTargetAndViewport();
+
+	void ClearTextures();
 
 private:
 	Direct3D* mD3D;
@@ -198,6 +199,9 @@ private:
 	//GenericSkinnedModelSortedInstance* mSkinnedSortedTestInstance;
 	std::vector<GenericSkinnedModelSortedInstance*> mSkinnedSortedInstances;
 	std::map<std::string, GenericSkinnedModelSorted*> mSkinnedSortedModels;
+
+	// Keep a list of all the materials used in a specific level
+	std::vector<Material*> mMaterials;
 
 	SMAA* mSMAA;
 

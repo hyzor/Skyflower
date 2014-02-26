@@ -36,6 +36,9 @@ ParticleSystemImpl::ParticleSystemImpl()
 	mBlendingMethod = 0;
 
 	mScale = XMFLOAT2(1.0f, 1.0f);
+
+	mRandomizeVelocity = true;
+	mRandomVelocity = XMFLOAT3(4.0f, 4.0f, 4.0f);
 }
 
 ParticleSystemImpl::~ParticleSystemImpl()
@@ -58,6 +61,11 @@ bool ParticleSystemImpl::IsActive() const
 float ParticleSystemImpl::GetAge() const
 {
 	return mAge;
+}
+
+float ParticleSystemImpl::GetAgeLimit() const
+{
+	return mParticleAgeLimit;
 }
 
 void ParticleSystemImpl::SetEyePos(const XMFLOAT3& eyePosW)
@@ -128,6 +136,9 @@ void ParticleSystemImpl::Draw(ID3D11DeviceContext* dc, const Camera& cam)
 
 	mShader->SetBlendingMethod(mBlendingMethod);
 	mShader->SetScale(mScale.x, mScale.y);
+
+	mShader->RandomizeVelocity(mRandomizeVelocity);
+	mShader->SetRandomVelocity(mRandomVelocity);
 
 	mShader->ActivateStreamShaders(dc);
 	mShader->UpdateStreamOutShaders(dc);
@@ -244,4 +255,14 @@ void ParticleSystemImpl::SetBlendingMethod(unsigned int blendingMethod)
 void ParticleSystemImpl::SetScale(XMFLOAT2 scale)
 {
 	mScale = scale;
+}
+
+void ParticleSystemImpl::SetRandomVelocityActive(bool active)
+{
+	mRandomizeVelocity = active;
+}
+
+void ParticleSystemImpl::SetRandomVelocity(XMFLOAT3 randomVelocity)
+{
+	mRandomVelocity = randomVelocity;
 }

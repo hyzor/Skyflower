@@ -53,7 +53,7 @@ MorphModel::MorphModel(ID3D11Device* device, TextureManager* textureMgr, const s
 	// Models actually got loaded
 	if (!failed)
 	{
-		materialCount = (UINT)mats.size();
+		materialCount = (UINT)mats.size() / mTargetModels.size();
 
 		// ASSUME EVERY TARGET MODEL HAS THE SAME NUMBER OF MESHES AND VERTICES
 

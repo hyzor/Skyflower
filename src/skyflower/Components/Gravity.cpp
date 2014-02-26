@@ -33,8 +33,10 @@ void GravityComponent::update(float dt)
 {
 	Vec3 pos = getOwner()->returnPos();
 	if (this->enabled && !getOwner()->ground)
+	{
 		this->p->AddGravityCalc(pos);
-	getOwner()->updatePos(pos);
+		getOwner()->updatePos(pos);
+	}
 
 
 	if (prevPos != getOwner()->getRelativePos())
@@ -344,7 +346,7 @@ void GravityComponent::calculateGroundNormal(Entity* e, Entity* ground)
 
 void GravityComponent::sphereCollision(float dt)
 {
-	if (getOwner()->sphere)
+	/*if (getOwner()->sphere)
 	{
 		for (int j = 0; j < getEntityManager()->getNrOfEntities(); j++)
 		{
@@ -358,7 +360,7 @@ void GravityComponent::sphereCollision(float dt)
 				}
 			}
 		}
-	}
+	}*/
 }
 
 

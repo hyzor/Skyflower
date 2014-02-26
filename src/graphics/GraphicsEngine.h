@@ -79,6 +79,8 @@ public:
 	virtual void GetWindowResolution(UINT& width, UINT& height) = 0;
 	virtual void Clear() = 0;
 
+	virtual void ClearTextures() = 0;
+
 	virtual unsigned int GetPostProcessingEffects() = 0;
 	virtual void SetPostProcessingEffects(unsigned int effects) = 0;
 	virtual void SetDepthOfFieldFocusPlanes(float nearBlurryPlane, float nearSharpPlane, float farSharpPlane, float farBlurryPlane) = 0;

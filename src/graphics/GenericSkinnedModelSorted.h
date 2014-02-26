@@ -32,6 +32,8 @@ public:
 
 	std::vector<GenericSkinnedMesh> meshes;
 
+	std::vector<UINT> mGlobalMaterialIndex;
+
 	// Bounding box
 	DirectX::BoundingBox boundingBox;
 

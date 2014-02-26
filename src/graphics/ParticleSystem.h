@@ -13,6 +13,7 @@ static const enum ParticleType
 	PT_FLARE1,
 	PT_PARTICLE,
 	PT_BIRD,
+	PT_DUST,
 	NROFTYPES
 };
 
@@ -37,6 +38,13 @@ public:
 
 	virtual void SetParticleType(ParticleType particleType) = 0;
 	virtual void SetScale(XMFLOAT2 scale) = 0;
+
+	virtual void SetRandomVelocityActive(bool active) = 0;
+	virtual void SetRandomVelocity(XMFLOAT3 randomVelocity) = 0;
+
+	virtual float GetAgeLimit() const = 0;
+
+	virtual void Reset() = 0;
 };
 
 #endif

@@ -95,3 +95,13 @@ ID3D11ShaderResourceView* TextureManager::CreateDDSTextureFromBytes(const unsign
 
 	return srv;
 }
+
+void TextureManager::Clear()
+{
+	for (auto it = mTextureSRV.begin(); it != mTextureSRV.end(); ++it)
+	{
+		ReleaseCOM(it->second);
+	}
+
+	mTextureSRV.clear();
+}

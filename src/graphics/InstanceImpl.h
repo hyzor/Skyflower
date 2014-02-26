@@ -3,9 +3,10 @@
 
 #include "shared/platform.h"
 #include "GenericModel.h"
-#include "AnimatedEntity.h"
+//#include "AnimatedEntity.h"
 #include "Instance.h"
 #include "MorphModel.h"
+#include "Camera.h"
 
 class ModelInstanceImpl : public ModelInstance
 {
@@ -45,13 +46,13 @@ private:
 	Vec3 pos;
 	Vec3 rot;
 	Vec3 scale;
-
 };
 
 class AnimatedInstanceImpl : public AnimatedInstance
 {
 public:
-	AnimatedInstanceImpl(Vec3 pos, Vec3 rot, Vec3 scale);
+	//AnimatedInstanceImpl(Vec3 pos, Vec3 rot, Vec3 scale);
+	AnimatedInstanceImpl(Vec3 pos, Vec3 rot, Vec3 scale, GenericSkinnedModel* model);
 	~AnimatedInstanceImpl();
 
 	bool IsVisible();
@@ -72,13 +73,20 @@ public:
 
 	void CreateAnimation(int id, int start, int frames);
 	void CreateAnimation(int id, int start, int frames, bool playForwards);
-	void SetAnimation(UINT id, bool loop);
+	void SetAnimation(UINT index, bool loop);
+
+	void Draw(ID3D11DeviceContext* dc, Camera* cam, BasicDeferredSkinnedShader* deferredShader);
 
 	XMMATRIX GetWorld();
 
 	void Update(float deltaTime);
 
-	AnimatedEntity* model;
+	void SetModel(GenericSkinnedModel* model);
+
+	//AnimatedEntity* model;
+
+	//GenericSkinnedModel* mModel;
+	GenericSkinnedModelInstance* mSkinnedInstance;
 
 private:
 	XMFLOAT4X4 modelOffset;
@@ -87,11 +95,39 @@ private:
 	XMFLOAT4X4 modelWorld;
 	XMFLOAT4X4 mPrevWorld; // World matrix from previous frame
 
-	bool isVisible;
-	Vec3 pos;
-	Vec3 rot;
-	Vec3 scale;
+	bool mIsVisible;
+	Vec3 mPos;
+	Vec3 mRot;
+	Vec3 mScale;
 
+	UINT mCurAnim;
+
+	struct Animation
+	{
+		Animation(UINT animationType, UINT frameStart, UINT frameEnd)
+		{
+			this->AnimationType = animationType;
+			this->FrameStart = frameStart;
+			this->FrameEnd = frameEnd;
+			this->playForwards = true;
+		}
+
+		Animation(UINT animationType, UINT frameStart, UINT frameEnd, bool playForwards)
+		{
+			this->AnimationType = animationType;
+			this->FrameStart = frameStart;
+			this->FrameEnd = frameEnd;
+			this->playForwards = playForwards;
+		}
+
+		UINT FrameStart, FrameEnd;
+		UINT AnimationType;
+		bool playForwards;
+	};
+
+	std::vector<Animation> mAnimations;
+
+	bool mFirstAnimation;
 };
 
 class MorphModelInstanceImpl : public MorphModelInstance
