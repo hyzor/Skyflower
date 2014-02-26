@@ -244,11 +244,11 @@ end
 
 function cutscene_Goal()
 	Print("cutscene_goal")
-	x, y, z = GetCameraPos()
-	yaw, pitch = GetYawPitch()
+	--x, y, z = GetCameraPos()
+	--yaw, pitch = GetYawPitch()
 
-	AddPoint(500, 190, 51.8, 90, 45, 2)
-	AddPoint(545, 140, 51.8, 90, 30, 2)
+	AddPoint(-1000, 100, 707, 90, 45, 2)
+	AddPoint(-1200, 200, 707, 110, 20, 2)
 end
 
 function update_Goal(id)
