@@ -203,6 +203,13 @@ void Slider::setVisible(bool state)
 	guiPtr->GetGUIElement(textureIDs[1])->SetVisible(state);
 }
 
+void Slider::setValue(float value)
+{
+	this->value = value;
+	sliderBounds._position.X = position.X + (bounds._width*value);
+	guiPtr->GetGUIElement(textureIDs[1])->GetDrawInput()->pos.x = sliderBounds._position.X - (sliderBounds._width / 2);
+}
+
 void Slider::onMouseClick(Vec3 mousePos)
 {
 	if (bounds._isInside(mousePos) || sliderBounds._isInside(mousePos))
@@ -214,7 +221,6 @@ void Slider::onMouseClick(Vec3 mousePos)
 			wasClicked = true;
 		else
 			wasClicked = false;
-
 	}
 	else
 		wasClicked = false;

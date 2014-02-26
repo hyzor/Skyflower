@@ -54,14 +54,29 @@
         <SpotLight  xPos="-475.229586079" yPos="200.0400071584" zPos="790.563431628" r="1.0" g="1.0" b="1.0" intensity="1.0" xDir="-1.0" yDir="0" zDir="0.0" angle="45"/>
     </Entity>
 	
-	<!----------- Checkpointljus /--------------> 
+	<!-- Light on balloon platform when it has fallen down-->
 	<Entity type="light" id="206" >
+        <SpotLight  xPos="-724.229586079" yPos="150.0400071584" zPos="750.563431628" r="1.0" g="1.0" b="1.0" intensity="1.0" xDir="0.0" yDir="-1.0" zDir="0.0" angle="30"/>
+    </Entity>
+	
+	<!--Before heart platform-->
+	<Entity type="light" id="207" >
+        <SpotLight  xPos="-830.229586079" yPos="150.0400071584" zPos="730.563431628" r="1.0" g="1.0" b="1.0" intensity="1.0" xDir="0.0" yDir="-1.0" zDir="0.0" angle="30"/>
+    </Entity>
+	
+	<!-- On heart platform-->
+	<Entity type="light" id="208" >
+        <SpotLight  xPos="-935.229586079" yPos="200.0400071584" zPos="710.563431628" r="1.0" g="1.0" b="1.0" intensity="1.0" xDir="0.0" yDir="-1.0" zDir="0.0" angle="30"/>
+    </Entity>
+	
+	<!----------- Checkpointljus /--------------> 
+	<Entity type="light" id="209" >
         <SpotLight  xPos="-180.25639555" yPos="55.452823515" zPos="6.0" r="0.1" g="1.0" b="0.23" intensity="1.0" xDir="-1" yDir="0.0" zDir="0" angle="179"/>
     </Entity>
-	<Entity type="light" id="207" >
+	<Entity type="light" id="210" >
         <SpotLight  xPos="-167.229586079" yPos="94.0400071584" zPos="415.563431628" r="0.01" g="1.0" b="0.95" intensity="1.0" xDir="0" yDir="-1.0" zDir="0" angle="179"/>
     </Entity>
-	<Entity type="light" id="208" >
+	<Entity type="light" id="211" >
         <SpotLight  xPos="-269.0" yPos="140.0400071584" zPos="834.563431628" r="0.01" g="1.0" b="0.95" intensity="1.0" xDir="0" yDir="-1.0" zDir="0" angle="179"/>
     </Entity>
 

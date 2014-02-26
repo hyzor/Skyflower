@@ -103,9 +103,11 @@ void Menu::init(GUI *g, int screenWidth, int screeenHeight, SoundEngine *sound)
 
 
 	Slider *volume = new Slider(g, Vec3(430, 330), 150, 40);
+	volume->setValue(1.0f);
 	m_pages[MenuPageSettings].sliders.push_back(volume);
 
 	Slider *mouseSense = new Slider(g, Vec3(430, 260), 150, 40);
+	mouseSense->setValue(1.0f / 3.3f);
 	m_pages[MenuPageSettings].sliders.push_back(mouseSense);
 
 	// Instructions page
@@ -346,5 +348,5 @@ void Menu::onMouseDown(Vec3 mousePos)
 	}
 
 	settings._soundVolume = m_pages[MenuPageSettings].sliders[0]->getValue();
-	settings._mouseSense = m_pages[MenuPageSettings].sliders[1]->getValue()*2 + 0.3f; // mouse sense ranges from 0.3 - 2.3
+	settings._mouseSense = m_pages[MenuPageSettings].sliders[1]->getValue()*3 + 0.3f; // mouse sense ranges from 0.3 - 3.3
 }

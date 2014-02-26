@@ -107,7 +107,7 @@ public:
 	void onMouseClick(Vec3 mousePos);
 	void onMouseDown(Vec3 mousePos);
 	void updateScreenRes(unsigned int x, unsigned int y);
-
+	void setValue(float value);
 	// Value between 0 - 1
 	float getValue();
 private:
