@@ -103,7 +103,7 @@ void Push::update(float dt)
 		}
 
 		//release pusher from box
-		if (!canpush || box->getComponent<BoxComp*>("Box")->isFalling() || (dir != Vec3() && ((dir != boxDir && !canDrag) || (canDrag && dir*boxDir == Vec3()))))
+		if (!canpush || box->getComponent<BoxComp*>("Box")->isFalling() || (dir != Vec3() && ((dir != boxDir && !canDrag) || (canDrag && dir*boxDir == Vec3()))) || (canDrag && getOwner()->wall && getOwner()->wall != box))
 		{
 			relativePos = Vec3();
 			box = nullptr;
