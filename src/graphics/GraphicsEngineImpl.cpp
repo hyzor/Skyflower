@@ -10,9 +10,9 @@ GraphicsEngineImpl::GraphicsEngineImpl()
 	mRandom1DTexSRV = nullptr;
 	mParticlesTextureArray = nullptr;
 
-	mPointLights = new PLight[MAXPLIGHTS];
-	mDirLights = new DLight[MAXDLIGHTS];
-	mSpotLights = new SLight[MAXSLIGHTS];
+	mPointLights = new PLight[MAX_POINT_LIGHTS];
+	mDirLights = new DLight[MAX_DIR_LIGHTS];
+	mSpotLights = new SLight[MAX_SPOT_LIGHTS];
 
 	mPointLightsCount = 0;
 	mDirLightsCount = 0;
@@ -179,7 +179,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mCascadedShadows->SetSplitMethod(FIT_TO_CASCADE);
 	mCascadedShadows->SetNearFarFitMethod(FIT_NEARFAR_AABB);
 	mCascadedShadows->SetSplitDepth(0.125f, 0);
-	mCascadedShadows->SetSplitDepth(0.25f, 1);
+	mCascadedShadows->SetSplitDepth(0.35f, 1);
 
 	mGameTime = 0.0f;
 

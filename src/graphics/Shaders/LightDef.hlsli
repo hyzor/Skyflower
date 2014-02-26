@@ -2,9 +2,10 @@
 // Effect for calculating lights
 //-------------------------------------------------------------------------
 
+//If you are changing this, change the MAXPLIGHTS, MAXDLIGHTS and MAXSLIGHTS in GraphichsEngingeImpl.h
 #define MAX_POINT_LIGHTS 16
-#define MAX_DIR_LIGHTS 4
-#define MAX_SPOT_LIGHTS 8
+#define MAX_DIR_LIGHTS 2
+#define MAX_SPOT_LIGHTS 32
 
 #define MAX_MATERIALS 64
 

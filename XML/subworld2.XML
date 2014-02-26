@@ -1,10 +1,11 @@
 <root>
 	<Entity type="aimMesh" model="Models\Throwable\Ball" id="5000" isVisible="0" isCollidible="0" isAnimated="0" xPos="0.0" yPos="0.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" />
-
+<!-- Startingpos for player -->
+<!-- xPos="0.0" yPos="0.0" zPos="-10.0" -->
 
 
 	<Entity type="player" id="1"
-		xPos="-122.25639555" yPos="25.452823515" zPos="-15.6426041247"
+		xPos="0.0" yPos="0.0" zPos="-10.0"
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="1.0" yScale="1.0" zScale="1.0"
 		model="Models/Player/playerAnimated"
@@ -17,8 +18,8 @@
 			<Push />
 			<Pushable />
 			<Health maxHP = "100" />
-			<Event script="player" />
 			<Throw haveAim="true"/>
+			<Event script="player" />
 	</Entity>
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform1grass" id="2" isCollidible="1" isVisible="1" isAnimated="0" xPos="-6.37177594061" yPos="-10.4756680473" zPos="8.49696289447" xRot="" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform1mud" id="3" isCollidible="1" isVisible="1" isAnimated="0" xPos="-6.37177594061" yPos="-10.4756680473" zPos="8.49696289447" xRot="" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
@@ -62,7 +63,7 @@
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2grass" id="23" isCollidible="1" isVisible="1" isAnimated="0" xPos="-163.389924451" yPos="70.3488215152" zPos="446.390333732" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2mud" id="24" isCollidible="1" isVisible="1" isAnimated="0" xPos="-163.389924451" yPos="70.3488215152" zPos="446.390333732" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2cloud" id="25" isCollidible="0" isVisible="1" isAnimated="0" xPos="-163.389924451" yPos="70.3488215152" zPos="446.390333732" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
-    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\flowerPlattform" id="26" isCollidible="1" isVisible="1" isAnimated="0" xPos="-569.724906436" yPos="166.871464836" zPos="787.804331524" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0">
+    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\flowerPlattform" id="26" isCollidible="1" isVisible="1" isAnimated="0" xPos="-569.724906436" yPos="102.871464836" zPos="787.804331524" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <MoveTarget continuous="0" duration="2" easingPower="3" targetPosX="-570" targetPosY="98" targetPosZ="788"/>
         <Event script="arenaFlower"/>
     </Entity>
@@ -86,6 +87,7 @@
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2cloud" id="37" isCollidible="0" isVisible="1" isAnimated="0" xPos="-159.730631736" yPos="51.467582351" zPos="729.792758621" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\flowerPlattform" id="38" isCollidible="1" isVisible="1" isAnimated="0" xPos="-144.323374518" yPos="123.687268297" zPos="641.598382801" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <MoveTarget continuous="0" duration="2" easingPower="3" targetPosX="-144" targetPosY="48" targetPosZ="641"/>
+		<Event script="boxPuzzle" />
     </Entity>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform5cloud" id="39" isCollidible="0" isVisible="1" isAnimated="0" xPos="-628.509548622" yPos="-10.4756680473" zPos="763.745610687" xRot="-0.0" yRot="-0.19262245895" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform5grass" id="40" isCollidible="1" isVisible="1" isAnimated="0" xPos="-628.509548622" yPos="-10.4756680473" zPos="763.745610687" xRot="-0.0" yRot="-0.19262245895" zRot="-0.0" xScale="1.33933780942" yScale="1.0" zScale="1.0"/>
@@ -94,10 +96,10 @@
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2grass" id="43" isCollidible="1" isVisible="1" isAnimated="0" xPos="-300.352040734" yPos="105.442299131" zPos="832.938302363" xRot="-0.0" yRot="1.39316624316" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2mud" id="44" isCollidible="1" isVisible="1" isAnimated="0" xPos="-300.352040734" yPos="105.442299131" zPos="832.938302363" xRot="-0.0" yRot="1.39316624316" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2cloud" id="45" isCollidible="0" isVisible="1" isAnimated="0" xPos="-300.352040734" yPos="105.442299131" zPos="832.938302363" xRot="-0.0" yRot="1.39316624316" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
-    <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\fallingBallonPlattform" id="46" isCollidible="1" isVisible="1" isAnimated="0" xPos="-725.498624296" yPos="103.452839533" zPos="746.798563142" xRot="-0.0" yRot="1.34547503872" zRot="-0.0" xScale="4.82952212442" yScale="4.82952212442" zScale="4.82952212442">
-        <MoveTarget continuous="0" duration="2" easingPower="3" targetPosX="-695" targetPosY="2" targetPosZ="707"/>
+    <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\fallingBallonPlattform" id="46" isCollidible="1" isVisible="1" isAnimated="0" xPos="-730.498624296" yPos="103.452839533" zPos="740.798563142" xRot="-0.0" yRot="1.44547503872" zRot="0.05" xScale="4.82952212442" yScale="2" zScale="4.82952212442">
+        <MoveTarget continuous="0" duration="1" easingPower="1" targetPosX="-725" targetPosY="1" targetPosZ="740"/>
     </Entity>
-    <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\ballon" id="47" isCollidible="1" isVisible="1" isAnimated="0" xPos="-725.498624296" yPos="103.150512109" zPos="746.798563142" xRot="-0.0" yRot="1.34547503872" zRot="-0.0" xScale="4.82952212442" yScale="4.82952212442" zScale="4.82952212442">
+    <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\ballon" id="47" isCollidible="1" isVisible="1" isAnimated="0" xPos="-730.498624296" yPos="103.150512109" zPos="740.798563142" xRot="-0.0" yRot="1.44547503872" zRot="-0.0" xScale="4.82952212442" yScale="4.82952212442" zScale="4.82952212442">
         <Touch/>
         <Balloon/>
         <Event script="balloon"/>
@@ -119,6 +121,7 @@
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\ButtonBase" id="53" isCollidible="1" isVisible="1" isAnimated="0" xPos="-228.696871708" yPos="55.1388093654" zPos="6.07379709632" xRot="-0.0" yRot="-0.0" zRot="1.55639585521" xScale="1.799104476" yScale="1.799104476" zScale="1.799104476"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\Button" id="54" isCollidible="1" isVisible="1" isAnimated="0" xPos="-228.696871708" yPos="55.1388093654" zPos="6.07379709632" xRot="-0.0" yRot="-0.0" zRot="-1.55639585521" xScale="1.799104476" yScale="1.799104476" zScale="1.799104476">
         <WallButton/>
+		<HelpText text="If you can't reach a button, why not throw a ball at it? *quack*" range="110"/>
 		<Event script="blinkingLights" />
     </Entity>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\ButtonBase" id="55" isCollidible="1" isVisible="1" isAnimated="0" xPos="-195.927164058" yPos="48.7098579087" zPos="549.842093616" xRot="-0.0" yRot="-0.0" zRot="0.00439782962308" xScale="2.80160419054" yScale="2.80160419054" zScale="2.80160419054"/>
@@ -153,8 +156,8 @@
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\ButtonBase" id="61" isCollidible="1" isVisible="1" isAnimated="0" xPos="-160.829834703" yPos="74.204870955" zPos="474.785142098" xRot="-0.0" yRot="-0.0" zRot="0.00439782962308" xScale="1.799104476" yScale="1.799104476" zScale="1.799104476"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\Button" id="62" isCollidible="1" isVisible="1" isAnimated="0" xPos="-160.829834703" yPos="74.204870955" zPos="474.785142098" xRot="-0.0" yRot="-0.0" zRot="0.00439782962308" xScale="1.799104476" yScale="1.799104476" zScale="1.799104476">
         <Button toggle="1"/>
+		<HelpText text="It looks like you need to solve the puzzle to be able to continue." range="60" />
         <!--Event script="buttonPuzzle"/-->
-		<Event script="flower38" />
     </Entity>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\ButtonBase" id="63" isCollidible="1" isVisible="1" isAnimated="0" xPos="-169.900011669" yPos="48.7098579087" zPos="500.696490125" xRot="-0.0" yRot="-0.0" zRot="0.00439782962308" xScale="2.94557554482" yScale="2.94557554482" zScale="2.94557554482"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\ButtonRed" id="64" isCollidible="1" isVisible="1" isAnimated="0" xPos="-169.900011669" yPos="48.7098579087" zPos="500.696490125" xRot="-0.0" yRot="-0.0" zRot="0.00439782962308" xScale="2.94557554482" yScale="2.94557554482" zScale="2.94557554482">

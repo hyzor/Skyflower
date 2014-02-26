@@ -6,9 +6,15 @@ function loaded()
 	Unlit(197,1)
 	Unlit(198,1)
 	Unlit(199,1)
-	--Lit(199,1)
 	Unlit(200,1)
-	--Lit(200,1)
+	Unlit(201,1)
+	Unlit(202,1)
+	Unlit(203,1)
+	Unlit(204,1)
+	Unlit(205,1)
+	Unlit(206,1)
+	Unlit(207,1)
+	Unlit(208,1)
 	--CutScenePlay("intro")
 end
 
@@ -19,14 +25,10 @@ end
 function cutscene_intro()
 -- syntax: AddPoint(x, y, z, yaw, pitch, speed)
 	SetCamera(0, 0, 0, 0, 45)
-	AddPoint(0, 100, -130, 0, 45, 1)
-	AddPoint(180, 150, -120, 0, 45, 2)
-	AddPoint(110, 100, 100, 90, 20, 2)
-	AddPoint(320, 130, 80, 0, 30, 1)
-	AddPoint(450, 200, -50, 0, 45, 1)
-	AddPoint(380, 150, 60, 90, 20, 1)
-	AddPoint(750, 250, 60, -90, 20, 1)
-	AddPoint(60, 30, 0, -90, 20, 1)
+	AddPoint(140, 100, 20, -90, 30, 1)
+	AddPoint(-140, 40, 5, -90, -10, 1.5)
+	AddPoint(-120, 80, -120, 0, 20, 2)
+	AddPoint(80, 30, 20, -110, 15, 1)	
 end
 
 --player script--
@@ -72,6 +74,8 @@ function update_temporaryFlowers(id, dt)
 			MoveToTarget(28)
 			MoveToTarget(29)
 			MoveToTarget(30)
+			Lit(202,1)
+			Lit(203,1)
 			stairdown = false
 		end
 	else
@@ -81,6 +85,8 @@ function update_temporaryFlowers(id, dt)
 			MoveToSpawn(28)
 			MoveToSpawn(29)
 			MoveToSpawn(30)
+			Unlit(202,1)
+			Unlit(203,1)
 			platformTimer = 0
 			stairdown = true
 		end
@@ -229,11 +235,14 @@ end
 --------------------
 
 function activated_balloon(id)
-	Print("Touched")
-	if IsActivator(id, "Throwable") then
-		Print("POP!")
+	--if IsActivator(id, "Throwable") then
+		Print("mmmm you touched me")
 		Pop(id)
-	end
+		MoveToTarget(46)
+		Lit(206,3)
+		Lit(207,3)
+		Lit(208,3)
+	--end
 end
 
 
@@ -242,11 +251,11 @@ end
 
 function cutscene_Goal()
 	Print("cutscene_goal")
-	x, y, z = GetCameraPos()
-	yaw, pitch = GetYawPitch()
+	--x, y, z = GetCameraPos()
+	--yaw, pitch = GetYawPitch()
 
-	AddPoint(500, 190, 51.8, 90, 45, 2)
-	AddPoint(545, 140, 51.8, 90, 30, 2)
+	AddPoint(-1000, 100, 707, 90, 45, 2)
+	AddPoint(-1200, 200, 707, 110, 20, 2)
 end
 
 function update_Goal(id)
@@ -294,13 +303,31 @@ end
 function activated_light200(id)
 	if IsActivated(id) then
 		Lit(200,1)
+		Lit(204,1)
+		Lit(205,1)
 	end
 end
 
-function activated_flower38(id)
-	Print("HEJ")
-	if IsActivated(id) then
-		MoveToTarget(38)
+function load_boxPuzzle(id)
+	StartUpdate()
+end
+
+finished = false
+failed = false
+function update_boxPuzzle(id, dt)
+	-- blue, yellow, red
+	if BoxOnButton(56, 59) and BoxOnButton(66, 58) and BoxOnButton(64, 60) then
+		if not finished then
+			finished = true
+			failed = false
+			MoveToTarget(id)
+			Lit(201,1)
+		end
+	elseif finished and not failed then
+		MoveToSpawn(id)
+		Unlit(201,1)
+		finished = false
+		failed = true
 	end
 end
 

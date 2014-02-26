@@ -42,8 +42,14 @@ void CutScene::update(float dt)
 	if (mWaypoints.size() > 0)
 	{
 		WayPoint target = mWaypoints.at(mCurrentWP);
+		float percentLeft = 1.0f;
 		float distance = (mCameraPtr->GetPosition() - target.position).Length();
-		if (distance < 5.0f)
+		if (mCurrentWP > 0)
+		{
+			percentLeft = distance / (mWaypoints[mCurrentWP - 1].position - target.position).Length();
+		}
+
+		if (percentLeft < 0.05f || distance < 5.0f) // go to next wp if less than 5% left
 		{
 			mCurrentWP++;
 			if ((unsigned)mCurrentWP >= mWaypoints.size())

@@ -106,7 +106,7 @@ void Application::Start()
 	levelHandler->init(m_entityManager);
 
 	// Load Hub Level
-	levelHandler->queue(4);
+	levelHandler->queue(5);
 	//levelHandler->loadQueued();
 	levelHandler->LoadQueued(mXmlResourceDir);
 
@@ -586,14 +586,17 @@ void Application::OnKeyDown(unsigned short key)
 		g_quakeSounds = !g_quakeSounds;
 		break;
 	case 'R':
-		m_graphicsEngine->ClearLights();
-		levelHandler->queue(levelHandler->currentLevel());
+		m_scriptHandler->Load("subWorld2.lua");
+		m_cutscene->play("intro");
+		//m_graphicsEngine->ClearLights();
+		//levelHandler->queue(levelHandler->currentLevel());
 		break;
 	case VK_SPACE:
 		if (m_cutscene->isPlaying())
 			m_cutscene->stop();
 		break;
 	case 'L':
+		m_graphicsEngine->ClearLights();
 		m_entityManager->loadXML("subworld2Lights.XML");
 		break;
 	case 'Q':

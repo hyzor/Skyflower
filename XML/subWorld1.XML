@@ -4,7 +4,7 @@
 
 
 	<Entity type="player" id="1"
-		xPos="290.030637847" yPos="78" zPos="152.252250723"
+		xPos="0.0" yPos="20.0" zPos="0.0"
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="1.0" yScale="1.0" zScale="1.0"
 		model="Models/Player/playerAnimated"

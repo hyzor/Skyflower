@@ -434,8 +434,8 @@ void Entity::updateVisible(bool isVisible)
 void Entity::setIsActive(bool status)
 {
 	this->isActive = status;
-	if (this->isVisible)
-	{
+	//if (this->isVisible)
+	//{
 		this->modelInst->SetVisibility(status);
 		if (this->isAnimated)
 		{
@@ -445,7 +445,7 @@ void Entity::setIsActive(bool status)
 		{
 			this->collInst->setIsActive(status);
 		}
-	}
+	//}
 
 	for (auto iter1 = this->fComponents.begin(); iter1 != this->fComponents.end(); iter1++)
 	{

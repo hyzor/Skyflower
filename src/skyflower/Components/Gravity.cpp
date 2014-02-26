@@ -32,69 +32,77 @@ void GravityComponent::removeFromEntity()
 void GravityComponent::update(float dt)
 {
 	Vec3 pos = getOwner()->returnPos();
-	
-	if (this->enabled)
+	if (this->enabled && !getOwner()->ground)
 	{
 		this->p->AddGravityCalc(pos);
 		getOwner()->updatePos(pos);
 	}
 
-	getOwner()->wall = nullptr;
-	Entity *ground = nullptr;
 
-	for (size_t k = 0; k < groundRays.size(); k++)
+	if (prevPos != getOwner()->getRelativePos())
 	{
-		isGroundColl[k] = false;
+		getOwner()->wall = nullptr;
+		Entity *ground = nullptr;
 
-		//test feet and head
-		float t = testMove(groundRays[k], getOwner(), ground, true, (int)k);
-
-		//reset jump
-		if (t == -1)
+		for (size_t k = 0; k < groundRays.size(); k++)
 		{
-			Vec3 vel = getOwner()->mPhysicsEntity->GetVelocity();
+			isGroundColl[k] = false;
 
-			if (vel.Y < 0)
-				vel = Vec3();
+			//test feet and head
+			float t = testMove(groundRays[k], getOwner(), ground, true, (int)k);
 
-			getOwner()->mPhysicsEntity->SetVelocity(vel);
-			getOwner()->mPhysicsEntity->GetStates()->isJumping = false;
-			getOwner()->mPhysicsEntity->GetStates()->isActiveProjectile = false;
+			//reset jump
+			if (t == -1)
+			{
+				Vec3 vel = getOwner()->mPhysicsEntity->GetVelocity();
 
+				if (vel.Y < 0)
+					vel = Vec3();
+
+				getOwner()->mPhysicsEntity->SetVelocity(vel);
+				getOwner()->mPhysicsEntity->GetStates()->isJumping = false;
+				getOwner()->mPhysicsEntity->GetStates()->isActiveProjectile = false;
+			}
+			else if (t == 1)
+			{
+				getOwner()->mPhysicsEntity->SetVelocity(Vec3());
+				ground = nullptr;
+			}
+		}
+
+		getOwner()->changeRelative(ground);
+
+
+		for (size_t k = 0; k < wallRays.size(); k++)
+			testMove(wallRays[k], getOwner(), getOwner()->wall, false, (int)k);
+
+		prevPos = getOwner()->getRelativePos();
+
+		//activate event for ground
+		if (getOwner()->ground)
+		{
 			getOwner()->sendMessage("StopBeingThrown", this);
+			if (!getOwner()->hasComponents("Throwable")) // bollar kan inte trycka knappar
+				getOwner()->ground->sendMessage("Ground", this);
+
+			//so that you can't jump while falling from something
+			getOwner()->sendMessage("notInAir", this);
 		}
-		else if (t == 1)
-		{
-			getOwner()->mPhysicsEntity->SetVelocity(Vec3());
-			ground = nullptr;
-		}
+		else
+			getOwner()->sendMessage("inAir", this);
+
+		//activate event for wall
+		if (getOwner()->wall)
+			getOwner()->wall->sendMessage("Wall", this);
+
+
+		//sphereCollision(dt);
+		calculateGroundNormal(getOwner(), getOwner()->ground);
 	}
 
-	getOwner()->changeRelative(ground);
-
-	for (size_t k = 0; k < wallRays.size(); k++)
-		testMove(wallRays[k], getOwner(), getOwner()->wall, false, (int)k);
-
-	//activate event for ground
 	if (getOwner()->ground)
-	{
 		if (!getOwner()->hasComponents("Throwable")) // bollar kan inte trycka knappar
 			getOwner()->ground->sendMessage("Ground", this);
-
-		//so that you can't jump while falling from something
-		getOwner()->sendMessage("notInAir", this);
-	}
-	else
-	{
-		getOwner()->sendMessage("inAir", this);
-	}
-
-	//activate event for wall
-	if (getOwner()->wall)
-		getOwner()->wall->sendMessage("Wall", this);
-
-	sphereCollision(dt);
-	calculateGroundNormal(getOwner(), getOwner()->ground);
 }
 
 void GravityComponent::setEnabled(bool enabled)
@@ -168,9 +176,9 @@ float GravityComponent::testMove(Ray r, Entity* e, Entity* &out, bool groundRay,
 	float dir = 0;
 	if (col > 0.5f) //feet
 	{
-		if (groundRay && r.GetDir().Y * col > r.GetDir().Y + 5)
+		if (groundRay && r.GetDir().Y * col > r.GetDir().Y + 5 * getOwner()->returnScale().Y)
 		{
-			float t = (r.GetDir().Y * col) / (r.GetDir().Y + 5);
+			float t = (r.GetDir().Y * col) / (r.GetDir().Y + 5 * getOwner()->returnScale().Y);
 			Vec3 rDir = r.GetDir();
 			e->updatePos(pos - rDir*(1 - t));
 			dir = -1;
@@ -204,17 +212,17 @@ void GravityComponent::createRays()
 	{
 		Box bounds = getOwner()->collInst->GetBox();
 		bounds.Position -= getOwner()->collInst->GetPosition();
-		//bounds.Size *= getOwner()->returnScale();
+		bounds.Size *= getOwner()->returnScale();
 
 		Box small = bounds;
-		small.Position += Vec3(2, 2, 2);
-		small.Size -= Vec3(2, 2, 2) * 2;
+		small.Position += Vec3(2, 2, 2) * getOwner()->returnScale();
+		small.Size -= Vec3(2, 2, 2) * 2 * getOwner()->returnScale();
 
 		//ground rays
-		int amountX = (int)(small.Size.X / 1.5f);
+		int amountX = (int)(small.Size.X / (1.5f*getOwner()->returnScale().X));
 		for (int kx = 1; kx <= amountX; kx++)
 		{
-			int amountZ = (int)(small.Size.Z / 1.5f);
+			int amountZ = (int)(small.Size.Z / (1.5f*getOwner()->returnScale().Z));
 			for (int kz = 1; kz <= amountZ; kz++)
 			{
 				Vec3 p = small.Position;
@@ -222,18 +230,18 @@ void GravityComponent::createRays()
 				p.X = -small.Size.X / 2 + (small.Size.X / (amountX + 1))*kx;
 				p.Z = -small.Size.Z / 2 + (small.Size.Z / (amountZ + 1))*kz;
 
-				groundRays.push_back(Ray(p, Vec3(0, -bounds.Size.Y-5, 0)));
+				groundRays.push_back(Ray(p, Vec3(0, -bounds.Size.Y-5*getOwner()->returnScale().Y, 0)));
 				isGroundColl.push_back(false);
 			}
 		}
 
 		//wall rays
-		int amountY = (int)(small.Size.Y / 2);
+		int amountY = (int)(small.Size.Y / (2 * getOwner()->returnScale().Y));
 		for (int ky = 1; ky <= amountY; ky++)
 		{
 			float pY = small.Position.Y + (small.Size.Y / (amountY + 1))*ky;
 
-			int amountX = (int)(small.Size.X / 2);
+			int amountX = (int)(small.Size.X / (2 * getOwner()->returnScale().X));
 			for (int kx = 1; kx <= amountX; kx++)
 			{
 				float pX = -small.Size.X / 2 + (small.Size.X / (amountX + 1))*kx;
@@ -251,8 +259,6 @@ void GravityComponent::createRays()
 				wallRays.push_back(Ray(Vec3(pX, pY, pZ), Vec3(bounds.Size.X, 0, 0)));
 			}
 		}
-
-
 	}
 	else
 	{
@@ -274,23 +280,6 @@ void GravityComponent::createRays()
 			wallRays.push_back(Ray(Vec3(-3 * 0.71f, 8.5f, -3 * 0.71f), Vec3(6 * 0.71f, 0, 6 * 0.71f))); // extra test
 			wallRays.push_back(Ray(Vec3(-3 * 0.71f, 8.5f, 3 * 0.71f), Vec3(6 * 0.71f, 0, -6 * 0.71f))); // extra test
 		}
-	}
-
-	for (unsigned int i = 0; i < wallRays.size(); i++)
-	{
-		Vec3 pos = wallRays[i].GetPos();
-		Vec3 dir = wallRays[i].GetDir();
-		pos *= getOwner()->returnScale();
-		dir *= getOwner()->returnScale();
-		wallRays[i] = Ray(pos, dir);
-	}
-	for (unsigned int i = 0; i < groundRays.size(); i++)
-	{
-		Vec3 pos = groundRays[i].GetPos();
-		Vec3 dir = groundRays[i].GetDir();
-		pos *= getOwner()->returnScale();
-		dir *= getOwner()->returnScale();
-		groundRays[i] = Ray(pos, dir);
 	}
 }
 

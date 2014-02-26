@@ -385,15 +385,18 @@ void Movement::update(float deltaTime)
 		if (getOwner()->getModules()->input->isKeyDown('E'))
 		{
 			Vec3 newVel = p->GetVelocity() + Vec3(0.0f, 300.0f*deltaTime, 0.0f);
-			p->SetVelocity(newVel);
-			p->GetStates()->isJumping = true;
-			getOwner()->updatePos(pos);
+			if (newVel.Y < 150.0f)
+			{
+				p->SetVelocity(newVel);
+				p->GetStates()->isJumping = true;
+				getOwner()->updatePos(pos);
+			}
 		}
-		if (getOwner()->getModules()->input->isKeyDown('F'))
+		if (getOwner()->getModules()->input->isKeyDown(VK_SHIFT))
 		{
 			speed = 150.0f;
 		}
-		else
+		else if (speed == 150.0f)
 		{
 			speed = 50.0f;
 		}
