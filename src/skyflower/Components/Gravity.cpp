@@ -32,70 +32,71 @@ void GravityComponent::removeFromEntity()
 void GravityComponent::update(float dt)
 {
 	Vec3 pos = getOwner()->returnPos();
-	
-	if (this->enabled)
-	{
+	if (this->enabled && !getOwner()->ground)
 		this->p->AddGravityCalc(pos);
-	}
-
 	getOwner()->updatePos(pos);
 
-	getOwner()->wall = nullptr;
-	Entity *ground = nullptr;
 
-	for (size_t k = 0; k < groundRays.size(); k++)
+	if (prevPos != getOwner()->getRelativePos())
 	{
-		isGroundColl[k] = false;
+		getOwner()->wall = nullptr;
+		Entity *ground = nullptr;
 
-		//test feet and head
-		float t = testMove(groundRays[k], getOwner(), ground, true, (int)k);
-
-		//reset jump
-		if (t == -1)
+		for (size_t k = 0; k < groundRays.size(); k++)
 		{
-			Vec3 vel = getOwner()->mPhysicsEntity->GetVelocity();
+			isGroundColl[k] = false;
 
-			if (vel.Y < 0)
-				vel = Vec3();
+			//test feet and head
+			float t = testMove(groundRays[k], getOwner(), ground, true, (int)k);
 
-			getOwner()->mPhysicsEntity->SetVelocity(vel);
-			getOwner()->mPhysicsEntity->GetStates()->isJumping = false;
-			getOwner()->mPhysicsEntity->GetStates()->isActiveProjectile = false;
+			//reset jump
+			if (t == -1)
+			{
+				Vec3 vel = getOwner()->mPhysicsEntity->GetVelocity();
 
+				if (vel.Y < 0)
+					vel = Vec3();
+
+				getOwner()->mPhysicsEntity->SetVelocity(vel);
+				getOwner()->mPhysicsEntity->GetStates()->isJumping = false;
+				getOwner()->mPhysicsEntity->GetStates()->isActiveProjectile = false;
+			}
+			else if (t == 1)
+			{
+				getOwner()->mPhysicsEntity->SetVelocity(Vec3());
+				ground = nullptr;
+			}
+		}
+
+		getOwner()->changeRelative(ground);
+
+
+		for (size_t k = 0; k < wallRays.size(); k++)
+			testMove(wallRays[k], getOwner(), getOwner()->wall, false, (int)k);
+
+		prevPos = getOwner()->getRelativePos();
+
+		//activate event for ground
+		if (getOwner()->ground)
+		{
 			getOwner()->sendMessage("StopBeingThrown", this);
+			if (!getOwner()->hasComponents("Throwable")) // bollar kan inte trycka knappar
+				getOwner()->ground->sendMessage("Ground", this);
+
+			//so that you can't jump while falling from something
+			getOwner()->sendMessage("notInAir", this);
 		}
-		else if (t == 1)
-		{
-			getOwner()->mPhysicsEntity->SetVelocity(Vec3());
-			ground = nullptr;
-		}
+		else
+			getOwner()->sendMessage("inAir", this);
+
+		//activate event for wall
+		if (getOwner()->wall)
+			getOwner()->wall->sendMessage("Wall", this);
+
+
+		//sphereCollision(dt);
+		calculateGroundNormal(getOwner(), getOwner()->ground);
 	}
-
-	getOwner()->changeRelative(ground);
-
-	for (size_t k = 0; k < wallRays.size(); k++)
-		testMove(wallRays[k], getOwner(), getOwner()->wall, false, (int)k);
-
-	//activate event for ground
-	if (getOwner()->ground)
-	{
-		if (!getOwner()->hasComponents("Throwable")) // bollar kan inte trycka knappar
-			getOwner()->ground->sendMessage("Ground", this);
-
-		//so that you can't jump while falling from something
-		getOwner()->sendMessage("notInAir", this);
-	}
-	else
-	{
-		getOwner()->sendMessage("inAir", this);
-	}
-
-	//activate event for wall
-	if (getOwner()->wall)
-		getOwner()->wall->sendMessage("Wall", this);
-
-	sphereCollision(dt);
-	calculateGroundNormal(getOwner(), getOwner()->ground);
 }
 
 void GravityComponent::setEnabled(bool enabled)

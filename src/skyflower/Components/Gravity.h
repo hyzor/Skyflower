@@ -43,6 +43,8 @@ private:
 	Vec3 groundNormal;
 	bool foundGroundNormal;
 
+	Vec3 prevPos;
+
 	vector<Ray> groundRays;
 	vector<bool> isGroundColl;
 	vector<Ray> wallRays;
