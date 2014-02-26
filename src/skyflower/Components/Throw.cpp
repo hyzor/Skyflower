@@ -197,7 +197,7 @@ void Throw::pickUpStop(Message const & msg)
 //if the entity should throw something away
 void Throw::Throwing(Message const & msg)
 {
-	if (heldEntity && this->aimEntity->returnVisible())
+	if (heldEntity)
 		ThrowPlayer();
 }
 
