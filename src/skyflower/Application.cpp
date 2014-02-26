@@ -587,6 +587,7 @@ void Application::OnKeyDown(unsigned short key)
 			m_cutscene->stop();
 		break;
 	case 'L':
+		m_graphicsEngine->ClearLights();
 		m_entityManager->loadXML("subworld2Lights.XML");
 		break;
 	case 'Q':
