@@ -20,14 +20,16 @@ end
 function cutscene_intro()
 -- syntax: AddPoint(x, y, z, yaw, pitch, speed)
 	SetCamera(0, 0, 0, 0, 45)
-	AddPoint(0, 100, -130, 0, 45, 1)
-	AddPoint(180, 150, -120, 0, 45, 2)
-	AddPoint(110, 100, 100, 90, 20, 2)
-	AddPoint(320, 130, 80, 0, 30, 1)
-	AddPoint(450, 200, -50, 0, 45, 1)
-	AddPoint(380, 150, 60, 90, 20, 1)
-	AddPoint(750, 250, 60, -90, 20, 1)
-	AddPoint(60, 30, 0, -90, 20, 1)
+	AddPoint(140, 100, 20, -90, 30, 1)
+	AddPoint(-140, 40, 5, -90, -10, 1.5)
+	AddPoint(-120, 80, -120, 0, 20, 2)
+	AddPoint(120, 170, 900, -90, 25, 0.5)
+	AddPoint(-200, 260, 1300, -180, 25, 2)
+	AddPoint(-900, 260, 1100, -180, 45, 0.5)
+	AddPoint(-950, 150, 800, -220, 15, 2)
+	AddPoint(-50, 30, 40, -220, 15, 1)
+	--AddPoint(-180, 50, 60, -20, 15, 2)
+	
 end
 
 --player script--

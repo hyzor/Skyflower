@@ -577,8 +577,10 @@ void Application::OnKeyDown(unsigned short key)
 		g_quakeSounds = !g_quakeSounds;
 		break;
 	case 'R':
-		m_graphicsEngine->ClearLights();
-		levelHandler->queue(levelHandler->currentLevel());
+		m_scriptHandler->Load("subWorld2.lua");
+		m_cutscene->play("intro");
+		//m_graphicsEngine->ClearLights();
+		//levelHandler->queue(levelHandler->currentLevel());
 		break;
 	case VK_SPACE:
 		if (m_cutscene->isPlaying())
