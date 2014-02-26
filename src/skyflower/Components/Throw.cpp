@@ -42,6 +42,10 @@ void Throw::addedToEntity()
 	this->aimEntity = getEntityManager()->getEntity(5000);
 }
 
+void Throw::removeFromEntity()
+{
+}
+
 void Throw::update(float dt)
 {
 	if (isDizzy)
@@ -137,7 +141,7 @@ void Throw::update(float dt)
 				this->heldEntity->getPhysics()->SetVelocity(Vec3(0.0f, 0.0f, 0.0f));
 
 				// Entity want to throw throwable.
-				if (getToThrow() && this->aimEntity->returnVisible())
+				if (getToThrow())
 				{
 					setIsHoldingThrowable(false);
 					setToThrow(false);
@@ -148,7 +152,10 @@ void Throw::update(float dt)
 
 					setToPutDown(false);
 
-					this->heldEntityThrowable->getPhysicsEntity()->FireProjectileAt(owner->returnPos(), throwTarget);
+					float pitch = owner->getModules()->camera->GetPitch();
+					Vec3 aimDirection = Vec3(cosf(-rotation.Y - (float)M_PI_2), sinf(-pitch), sinf(-rotation.Y - (float)M_PI_2)).Normalize();
+
+					this->heldEntityThrowable->getPhysicsEntity()->FireProjectile(owner->returnPos(), aimDirection * THROW_FORCE);
 					//sendMessageToEntity(entity->fId, "canPush");
 
 					// Make the aim invisible.
@@ -170,43 +177,58 @@ void Throw::update(float dt)
 				// Update aim.
 				else if (this->aimEntity && getHaveAim())
 				{
-					const float maxRange = 200.0f;
-
-					float pitch = owner->getModules()->camera->GetPitch();
-					Vec3 aimDirection = Vec3(cosf(-rotation.Y - (float)M_PI_2), sinf(-pitch), sinf(-rotation.Y - (float)M_PI_2)).Normalize();
-					Ray ray = Ray(throwablePosition, aimDirection * maxRange);
+					Collision *collision = owner->getModules()->collision;
+					const std::vector<CollisionInstance *> &collisionInstances = collision->GetCollisionInstances();
 
 					CollisionInstance *ownerCollision = owner->returnCollision();
 					CollisionInstance *heldEntityCollision = this->heldEntity->returnCollision();
-
-					Collision *collision = owner->getModules()->collision;
-					const std::vector<CollisionInstance *> &collisionInstances = collision->GetCollisionInstances();
 					CollisionInstance *collisionInstance;
 
-					for (size_t i = 0; i < collisionInstances.size(); i++)
+					float pitch = owner->getModules()->camera->GetPitch();
+					Vec3 aimDirection = Vec3(cosf(-rotation.Y - (float)M_PI_2), sinf(-pitch), sinf(-rotation.Y - (float)M_PI_2)).Normalize();
+					Vec3 aimPosition = throwablePosition;
+					Vec3 velocity = aimDirection * THROW_FORCE;
+
+					const float rayLength = 3.0f;
+
+					Vec3 rayDirection = Vec3((direction.X > 0.0f? 1.0f : -1.0f), -1.0f, (direction.Z > 0.0f? 1.0f : -1.0f)).Normalize();
+					Ray ray = Ray(throwablePosition, rayDirection * rayLength);
+
+					this->aimEntity->updateVisible(false);
+
+					const float timeStep = 1.0f / 60.0f;
+					bool didHit = false;
+					int count = 0;
+
+					while (!didHit && aimPosition.Y > -100.0f && count < 50)
 					{
-						collisionInstance = collisionInstances[i];
+						count++;
 
-						if (collisionInstance == ownerCollision || collisionInstance == heldEntityCollision)
-							continue;
+						// This is basically a hax, ok?
+						aimPosition += GRAVITY_DEFAULT * (timeStep * timeStep) * 0.5f;
+						velocity += GRAVITY_DEFAULT * timeStep;
+						aimPosition += velocity * timeStep;
 
-						float t = collisionInstance->Test(ray);
+						ray.SetPos(aimPosition);
 
-						if (t > 0.0f)
+						for (size_t i = 0; i < collisionInstances.size(); i++)
 						{
-							Vec3 hitPosition = throwablePosition + aimDirection * maxRange * t;
+							collisionInstance = collisionInstances[i];
 
-							this->throwTarget = hitPosition;
+							if (collisionInstance == ownerCollision || collisionInstance == heldEntityCollision)
+								continue;
 
-							this->aimEntity->updateRot(rotation);
-							this->aimEntity->updatePos(hitPosition);
-							this->aimEntity->updateVisible(true);
+							float t = collisionInstance->Test(ray);
 
-							break;
-						}
-						else
-						{
-							this->aimEntity->updateVisible(false);
+							if (t > 0.0f)
+							{
+								this->aimEntity->updateRot(rotation);
+								this->aimEntity->updatePos(aimPosition + rayDirection * rayLength * t);
+								this->aimEntity->updateVisible(true);
+
+								didHit = true;
+								break;
+							}
 						}
 					}
 				}
