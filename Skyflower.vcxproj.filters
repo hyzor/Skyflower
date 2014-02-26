@@ -144,6 +144,9 @@
     <ClCompile Include="src\skyflower\Components\Push.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="src\skyflower\Components\ParticleSystemComp.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\skyflower\Application.h">
@@ -283,6 +286,9 @@
     </ClInclude>
     <ClInclude Include="src\skyflower\resources\resource.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\Components\ParticleSystemComp.h">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

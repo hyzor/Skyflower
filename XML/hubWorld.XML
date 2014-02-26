@@ -39,7 +39,6 @@
 	1 pointlight is also created in order to light the sign properly. 
 	-->
 	<Entity type="Sign" id="536" isVisible="1" isCollidible="1" isAnimated="0" xPos="-2.0" yPos="5.0" zPos="131.0344042124" xRot="0.0" yRot="-0.55" zRot="0.0" xScale="1.88018653941" yScale="1.95493788201" zScale="1.88018653941" model="Models\\placeHolder Subworld\\level1sign">
-		<!--Event script = "Sign1" /-->
 	</Entity>
 	<Entity type="Sign" id="537" isVisible="0" isCollidible="1" isAnimated="0" xPos="-2.0" yPos="5.0" zPos="131.0344042124" xRot="0.0" yRot="-0.55" zRot="0.0" xScale="1.88018653941" yScale="1.95493788201" zScale="1.88018653941" model="Models\\placeHolder Subworld\\level1signdone">
 	</Entity>
@@ -60,6 +59,7 @@
 	
 	<Entity type="skyFlower" model="" id="10" isVisible="1" isCollidible="0" isAnimated="0" xPos="23" yPos="-10" zPos="89" xRot="0.0" yRot="1.64" zRot="0.0" xScale="1" yScale="1" zScale="1">
         <MorphAnimation path="Models/skyflower meshar/Skyflower_Final/" file="skyflower.morph" />
+		
     </Entity>
 
 </root>
