@@ -145,8 +145,8 @@ void AnimatedEntity::Draw(ID3D11DeviceContext* dc, Camera* cam, NormalMappedSkin
 		UINT matIndex = mInstance.model->meshes[i].mMaterialIndex;
 
 		shader->SetMaterial(dc, mInstance.model->mat[matIndex]);
-		shader->SetDiffuseMap(dc, mInstance.model->diffuseMapSRV[matIndex]);
-		shader->SetNormalMap(dc, mInstance.model->normalMapSRV[matIndex]);
+		shader->SetDiffuseMap(dc, mInstance.model->diffuseMapSRV[matIndex].Get());
+		shader->SetNormalMap(dc, mInstance.model->normalMapSRV[matIndex].Get());
 		shader->UpdatePerObj(dc);
 
 		mInstance.model->meshes[i].draw(dc);
@@ -172,7 +172,7 @@ void AnimatedEntity::Draw(ID3D11DeviceContext* dc, Camera* cam, BasicDeferredSki
 		UINT matIndex = mInstance.model->meshes[i].mMaterialIndex;
 
 		deferredShader->SetMaterial(mInstance.model->mat[matIndex], mInstance.model->mGlobalMaterialIndex[matIndex]);
-		deferredShader->SetDiffuseMap(dc, mInstance.model->diffuseMapSRV[matIndex]);
+		deferredShader->SetDiffuseMap(dc, mInstance.model->diffuseMapSRV[matIndex].Get());
 		//shader->SetNormalMap(dc, mInstance.model->normalMapSRV[matIndex]);
 		deferredShader->UpdatePerObj(dc);
 

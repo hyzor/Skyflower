@@ -34,11 +34,15 @@ void Application::Start()
 	m_window = new Window(1024, 768, L"Skyflower");
 	m_window->SetListener(this);
 
+	mResourceDir = "../../content/";
+	mXmlResourceDir = "../../XML/";
+
 	m_inputHandler = m_window->GetInputHandler();
 
 	// Create graphics engine
 	m_graphicsEngine = CreateGraphicsEngine();
-	m_graphicsEngine->Init(m_window->GetHandle(), m_window->GetWidth(), m_window->GetHeight(), "../../content/");
+	//m_graphicsEngine->Init(m_window->GetHandle(), m_window->GetWidth(), m_window->GetHeight(), "../../content/");
+	m_graphicsEngine->Init(m_window->GetHandle(), m_window->GetWidth(), m_window->GetHeight(), mResourceDir);
 
 	// FIXME: Tweaka dessa när vi har en riktig bana i spelet.
 	m_SSAOradius = 0.7f;
@@ -96,13 +100,15 @@ void Application::Start()
 	// Start playing some background music for the menu.
 	setBackgroundMusicList(m_backgroundMusicMenu);
 
-	m_entityManager = new EntityManager("../../XML/", &modules);
+	//m_entityManager = new EntityManager("../../XML/", &modules);
+	m_entityManager = new EntityManager(mXmlResourceDir, &modules);
 
 	levelHandler->init(m_entityManager);
 
 	// Load Hub Level
 	levelHandler->queue(4);
-	levelHandler->loadQueued();
+	//levelHandler->loadQueued();
+	levelHandler->LoadQueued(mXmlResourceDir);
 
 	//m_entityManager->sendMessageToEntity("ActivateListener", "player");
 	m_graphicsEngine->UpdateSceneData();
@@ -235,9 +241,12 @@ void Application::Start()
 			m_GUI->Draw();
 			m_graphicsEngine->Present();
 
-			// TODO: Implement functionality for clearing textures that are not used in this next level
-			//m_graphicsEngine->ClearTextures();
-			levelHandler->loadQueued();
+			//m_graphicsEngine->ClearLevelTextures();
+			//m_graphicsEngine->ClearModelInstances();
+
+			levelHandler->LoadQueued(mXmlResourceDir);
+			
+			m_graphicsEngine->ClearLevelTextures();
 			m_graphicsEngine->Clear();
 			m_graphicsEngine->UpdateSceneData();
 

@@ -117,7 +117,10 @@ public:
 
 	void ResetRenderTargetAndViewport();
 
-	void ClearTextures();
+	void ClearLevelTextures();
+	void SetSkyTexture(const std::string& fileName);
+
+	void ClearModelInstances();
 
 private:
 	Direct3D* mD3D;

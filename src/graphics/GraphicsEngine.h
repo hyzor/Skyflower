@@ -79,8 +79,6 @@ public:
 	virtual void GetWindowResolution(UINT& width, UINT& height) = 0;
 	virtual void Clear() = 0;
 
-	virtual void ClearTextures() = 0;
-
 	virtual unsigned int GetPostProcessingEffects() = 0;
 	virtual void SetPostProcessingEffects(unsigned int effects) = 0;
 	virtual void SetDepthOfFieldFocusPlanes(float nearBlurryPlane, float nearSharpPlane, float farSharpPlane, float farBlurryPlane) = 0;
@@ -93,6 +91,10 @@ public:
 	virtual void DrawLines(Texture2D *texture, const float *data, size_t count, const XMFLOAT3X3 &transformation, const float color[4]) = 0;
 
 	virtual void ResetRenderTargetAndViewport() = 0;
+
+	virtual void ClearLevelTextures() = 0;
+	virtual void SetSkyTexture(const std::string& fileName) = 0;
+	virtual void ClearModelInstances() = 0;
 };
 
 DLL_API GraphicsEngine* CreateGraphicsEngine();

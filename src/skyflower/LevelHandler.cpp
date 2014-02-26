@@ -135,3 +135,73 @@ bool LevelHandler::isLoading() const
 {
 	return m_loading;
 }
+
+void LevelHandler::LoadQueued(const std::string& xmlResourceDir)
+{
+	m_hasQueued = false;
+
+	//get all entities to remove later
+	std::vector<Entity*> old;
+	int nrEntities = m_entityManager->getNrOfEntities();
+	for (int i = 0; i < nrEntities; i++)
+	{
+		Entity* remove = m_entityManager->getEntityByIndex(0);
+		old.push_back(remove);
+		m_entityManager->removeEntity(remove);
+	}
+	m_entityManager->modules->graphics->ClearLights();
+
+	//m_entityManager->modules->graphics->ClearModelInstances();
+
+	//load new entities
+	std::string xmlfile = m_levels.at(m_queueID).path;
+	std::string skyFileStr = xmlfile;
+	skyFileStr += ".sky";
+	xmlfile += ".xml";
+	m_entityManager->loadXML(xmlfile);
+	m_current = m_queueID;
+
+	//load lights
+	xmlfile = m_levels.at(m_queueID).path;
+	xmlfile += "lights.xml";
+	m_entityManager->loadXML(xmlfile);
+
+	// Load sky
+	ifstream skyFile;
+	std::string skyFilePath = xmlResourceDir + skyFileStr;
+	skyFile.open(skyFilePath.c_str(), ios::in);
+
+	if (!skyFile.is_open())
+	{
+		std::stringstream ErrorStream;
+		ErrorStream << "Failed to load sky file " << skyFileStr;
+		std::string ErrorStreamStr = ErrorStream.str();
+		LPCSTR Text = ErrorStreamStr.c_str();
+		MessageBoxA(0, Text, 0, 0);
+	}
+	else
+	{
+		std::string texName;
+		std::getline(skyFile, texName);
+
+		m_entityManager->modules->graphics->SetSkyTexture(texName);
+
+		skyFile.close();
+	}
+
+	//remove old entities
+	for (unsigned int i = 0; i < old.size(); i++)
+		delete old[i];
+
+	//load lua file
+	std::string luafile = m_levels.at(m_queueID).path;
+	luafile += ".lua";
+	m_entityManager->modules->script->Run(luafile);
+
+	//run loaded function
+	Event::entityManager = m_entityManager;
+	lua_getglobal(m_entityManager->modules->script->L, "loaded");
+	lua_pcall(m_entityManager->modules->script->L, 0, 0, 0);
+
+	m_loading = false;
+}

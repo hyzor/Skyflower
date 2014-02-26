@@ -24,8 +24,11 @@ public:
 	UINT materialCount;
 
 	std::vector<Material> mat;
-	std::vector<ID3D11ShaderResourceView*> diffuseMapSRV;
-	std::vector<ID3D11ShaderResourceView*> normalMapSRV;
+	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> diffuseMapSRV;
+	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> normalMapSRV;
+	//std::vector<std::shared_ptr<ID3D11ShaderResourceView>> diffuseMapSRV;
+	//std::vector<ID3D11ShaderResourceView*> diffuseMapSRV;
+	//std::vector<ID3D11ShaderResourceView*> normalMapSRV;
 
 	std::vector<Mesh> meshes;
 	std::vector<UINT> mGlobalMaterialIndex;

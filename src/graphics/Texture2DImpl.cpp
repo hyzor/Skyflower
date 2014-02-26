@@ -7,7 +7,7 @@
 
 Texture2DImpl::Texture2DImpl(ID3D11Device *d3dDevice, ID3D11DeviceContext *d3dDeviceContext, unsigned int width, unsigned int height, DXGI_FORMAT format, bool renderable)
 {
-	m_d3dDevice = d3dDevice;
+	//m_d3dDevice = d3dDevice;
 	m_d3dDeviceContext = d3dDeviceContext;
 
 	m_texture = NULL;

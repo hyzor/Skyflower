@@ -104,6 +104,9 @@ private:
 	float m_oldVolume;
 
 	float m_menuCameraRotation;
+
+	std::string mXmlResourceDir;
+	std::string mResourceDir;
 };
 
 std::string GetPlayerSoundFile(const std::string &file);

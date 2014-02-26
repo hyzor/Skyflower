@@ -233,7 +233,13 @@ MorphModel::MorphModel(ID3D11Device* device, TextureManager* textureMgr, const s
 
 			if (mats[i].diffuseMapName != "")
 			{
-				ID3D11ShaderResourceView* _diffuseMapSRV = textureMgr->CreateTexture(mats[i].diffuseMapName);
+				/*
+				ID3D11ShaderResourceView* _diffuseMapSRV = textureMgr->CreateLevelTexture(mats[i].diffuseMapName);
+				diffuseMapSRV.push_back(_diffuseMapSRV);
+				*/
+
+				Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> _diffuseMapSRV = nullptr;
+				_diffuseMapSRV = textureMgr->CreateLevelTexture(mats[i].diffuseMapName);
 				diffuseMapSRV.push_back(_diffuseMapSRV);
 			}
 			else
@@ -243,7 +249,11 @@ MorphModel::MorphModel(ID3D11Device* device, TextureManager* textureMgr, const s
 
 			if (mats[i].normalMapName != "")
 			{
-				ID3D11ShaderResourceView* _normalMapSRV = textureMgr->CreateTexture(mats[i].normalMapName);
+// 				ID3D11ShaderResourceView* _normalMapSRV = textureMgr->CreateLevelTexture(mats[i].normalMapName);
+// 				normalMapSRV.push_back(_normalMapSRV);
+
+				Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> _normalMapSRV = nullptr;
+				_normalMapSRV = textureMgr->CreateLevelTexture(mats[i].normalMapName);
 				normalMapSRV.push_back(_normalMapSRV);
 			}
 
@@ -287,6 +297,9 @@ MorphModel::~MorphModel()
 {
 	ReleaseCOM(mVertexBuffer);
 	ReleaseCOM(mIndexBuffer);
+
+	diffuseMapSRV.clear();
+	normalMapSRV.clear();
 }
 
 void MorphModel::Draw(ID3D11DeviceContext* dc)

@@ -44,6 +44,7 @@ public:
 
 	// Load a queued level. Call queue() to queue a level.
 	void loadQueued();
+	void LoadQueued(const std::string& xmlResourceDir);
 
 	// Returns true if a level is currently loading. Useful when loading on a seperate thread.
 	bool isLoading() const;
