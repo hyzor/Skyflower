@@ -291,7 +291,7 @@ void Movement::update(float deltaTime)
 					animatedInstance->SetAnimation(9, true);
 				}
 			}
-			else if (throwComponent && throwComponent->getIsHoldingThrowable())
+			else if (throwComponent && throwComponent->getHeldEntity())
 			{
 				// Holding ball
 				animatedInstance->SetAnimation(6, true);

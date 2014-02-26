@@ -159,7 +159,7 @@ end
 
 throwtime = 0
 currtarget = 511;
-function update_testAI(id, dt)
+function skit(id, dt)
 	SetTarget(id, currtarget)
 	if InRange(id, currtarget, 4) then
 		if currtarget == 511 then
@@ -170,19 +170,19 @@ function update_testAI(id, dt)
 	end
 end
 
-function skit(id, dt)
-	PickUp(id)
+function update_testAI(id, dt)
 	if not CanThrow(id, 98713) then
 		SetTarget(id, 98713)
+		PickUp(id, 98713)
 	else
 		if InRange(id, player, 60) then
 			throwtime = throwtime + dt
 			SetTarget(id, player)
 			if throwtime > 2 then
-				Throw(id)
+				Throw(id, player)
 				throwtime = 0
 			end
-		else --patrulera
+		else --patrullera
 			SetTarget(id, currtarget)
 			if InRange(id, currtarget, 4) then
 				if currtarget == 511 then
