@@ -27,5 +27,6 @@
 #include "Components/WallButton.h"
 #include "Components/Balloon.h"
 #include "Components/HelpText.h"
+#include "Components/PortalEffect.h"
 
 #endif

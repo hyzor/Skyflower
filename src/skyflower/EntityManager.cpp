@@ -999,6 +999,11 @@ bool EntityManager::loadXML(string xmlFile)
 				HelpText* h = new HelpText(text, range);
 				this->addComponent(entity, h);
 			}
+			else if (componentName == "PortalEffect")
+			{
+				PortalEffectComponent *portalEffect = new PortalEffectComponent();
+				this->addComponent(entity, portalEffect);
+			}
 			else
 			{
 				cout << xmlFile << ": Unknown component with name " << componentName << " in entity " << entityName << endl;
