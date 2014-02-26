@@ -3,10 +3,11 @@ player = 1 --player id
 function loaded()
 	Lit(195,1)
 	Lit(196,1)
-	Unlit(197,1)
-	Unlit(198,1)
-	Unlit(199,1)
+	--Unlit(197,1)
+	--Unlit(198,1)
+	--Unlit(199,1)
 	--Lit(199,1)
+	Unlit(201,1)
 	Unlit(200,1)
 	--Lit(200,1)
 	--CutScenePlay("intro")
@@ -19,14 +20,16 @@ end
 function cutscene_intro()
 -- syntax: AddPoint(x, y, z, yaw, pitch, speed)
 	SetCamera(0, 0, 0, 0, 45)
-	AddPoint(0, 100, -130, 0, 45, 1)
-	AddPoint(180, 150, -120, 0, 45, 2)
-	AddPoint(110, 100, 100, 90, 20, 2)
-	AddPoint(320, 130, 80, 0, 30, 1)
-	AddPoint(450, 200, -50, 0, 45, 1)
-	AddPoint(380, 150, 60, 90, 20, 1)
-	AddPoint(750, 250, 60, -90, 20, 1)
-	AddPoint(60, 30, 0, -90, 20, 1)
+	AddPoint(140, 100, 20, -90, 30, 1)
+	AddPoint(-140, 40, 5, -90, -10, 1.5)
+	AddPoint(-120, 80, -120, 0, 20, 2)
+	AddPoint(120, 170, 900, -90, 25, 0.5)
+	AddPoint(-200, 260, 1300, -180, 25, 2)
+	AddPoint(-900, 260, 1100, -180, 45, 0.5)
+	AddPoint(-950, 150, 800, -220, 15, 2)
+	AddPoint(-50, 30, 40, -220, 15, 1)
+	--AddPoint(-180, 50, 60, -20, 15, 2)
+	
 end
 
 --player script--
@@ -72,6 +75,8 @@ function update_temporaryFlowers(id, dt)
 			MoveToTarget(28)
 			MoveToTarget(29)
 			MoveToTarget(30)
+			Lit(202,1)
+			Lit(203,1)
 			stairdown = false
 		end
 	else
@@ -81,6 +86,8 @@ function update_temporaryFlowers(id, dt)
 			MoveToSpawn(28)
 			MoveToSpawn(29)
 			MoveToSpawn(30)
+			Unlit(202,1)
+			Unlit(203,1)
 			platformTimer = 0
 			stairdown = true
 		end
@@ -301,6 +308,7 @@ function activated_flower38(id)
 	Print("HEJ")
 	if IsActivated(id) then
 		MoveToTarget(38)
+		Lit(201,1)
 	end
 end
 

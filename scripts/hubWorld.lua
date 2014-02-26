@@ -7,7 +7,8 @@ end
 
 function loaded()
 	if CompletedLevelCount() == 1 then
-		StartMorph(10,1,0,0,0.2)
+		skyflowerID = 10
+		StartMorph(skyflowerID, 1,0,0,0.2)
 		CutScenePlay("intro")
 	end	
 	
