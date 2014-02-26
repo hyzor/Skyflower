@@ -3,12 +3,13 @@ player = 1 --player id
 function loaded()
 	Lit(195,1)
 	Lit(196,1)
-	--Unlit(197,1)
-	--Unlit(198,1)
+	Unlit(197,1)
+	Unlit(198,1)
 	--Unlit(199,1)
 	--Lit(199,1)
 	Unlit(201,1)
 	Unlit(200,1)
+	Unlit(201,1)
 	--Lit(200,1)
 	--CutScenePlay("intro")
 end
@@ -304,11 +305,26 @@ function activated_light200(id)
 	end
 end
 
-function activated_flower38(id)
-	Print("HEJ")
-	if IsActivated(id) then
-		MoveToTarget(38)
-		Lit(201,1)
+function load_boxPuzzle(id)
+	StartUpdate()
+end
+
+finished = false
+failed = false
+function update_boxPuzzle(id, dt)
+	-- blue, yellow, red
+	if BoxOnButton(56, 59) and BoxOnButton(66, 58) and BoxOnButton(64, 60) then
+		if not finished then
+			finished = true
+			failed = false
+			MoveToTarget(id)
+			Lit(201,1)
+		end
+	elseif finished and not failed then
+		MoveToSpawn(id)
+		Unlit(201,1)
+		finished = false
+		failed = true
 	end
 end
 
