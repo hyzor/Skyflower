@@ -83,13 +83,19 @@ public:
 		//to deactivate the button
 		lua_register(sh->L, "ButtonUp", Event::ButtonUp);
 
+		//for platform-puzzles
 		lua_register(sh->L, "FallingPlatform", Event::FallingPlatform);
-		lua_register(sh->L, "OnAPlatform", Event::OnAPlatform);
+
+		//for box-puzzle
 		lua_register(sh->L, "BoxOnButton", Event::BoxOnButton);
+		lua_register(sh->L, "BoxIsAlive", Event::BoxIsAlive);
+		lua_register(sh->L, "RespawnBox", Event::RespawnBox);
 
 		//Determine which sign to use in the hubworld, with or without a mark that indicates that you have completed a subworld
 		lua_register(sh->L, "LevelIsCompleted", Event::LevelIsCompleted);
 		lua_register(sh->L, "SetActivated", Event::SetActivated);
+
+
 
 	};
 
@@ -164,13 +170,15 @@ private:
 	static int CompletedLevelCount(lua_State* L);
 
 	static int ButtonUp(lua_State* L);
+
 	static int FallingPlatform(lua_State* L);
-	static int OnAPlatform(lua_State* L);
 
 	static int LevelIsCompleted(lua_State* L);
 	static int SetActivated(lua_State* L);
 
 	static int BoxOnButton(lua_State* L);
+	static int BoxIsAlive(lua_State* L);
+	static int RespawnBox(lua_State* L);
 };
 
 #endif

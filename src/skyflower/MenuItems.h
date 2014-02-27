@@ -6,6 +6,20 @@
 #include "GUI.h"
 #include "GUIElement.h"
 
+#define DEFAULT_SCREEN_WIDTH 1024
+#define DEFAULT_SCREEN_HEIGHT 768
+
+#define CHECKBOX_TEXTURE_HEIGHT 20
+#define CHECKBOX_TEXTURE_WIDTH 20
+
+#define SLIDER_BG_TEXTURE_WIDTH 150
+#define SLIDER_BG_TEXTURE_HEIGHT 40
+#define SLIDER_TEXTURE_WIDTH 20
+#define SLIDER_TEXTURE_HEIGHT 50
+
+#define BUTTON_TEXTURE_WIDTH 174
+#define BUTTON_TEXTURE_HEIGHT 80
+
 using namespace std;
 
 class MenuItem
@@ -41,8 +55,6 @@ public:
 		this->width = width;
 		this->height = height;
 		this->bounds = Rectangle(position, width, height);
-		this->origScreenWidth = 1024;
-		this->origScreenHeigh = 768;
 		this->originalWidth = width;
 		this->originalHeight = height;
 		this->origPos = position;
@@ -59,7 +71,7 @@ protected:
 	Rectangle bounds;
 	int width, height;
 	GUI *guiPtr;
-	int origScreenWidth, origScreenHeigh, originalWidth, originalHeight;
+	int originalWidth, originalHeight;
 	Vec3 origPos;
 	vector<int> textureIDs;
 };
@@ -68,7 +80,7 @@ class MenuButton : public MenuItem
 {
 public:
 	
-	MenuButton(GUI *gui, Vec3 position, int width, int height, string textureNormal, string textureHover);
+	MenuButton(GUI *gui, Vec3 position, int textureWidth, int textureHeight, string textureNormal, string textureHover);
 	virtual ~MenuButton();
 	void setHighlighted(bool highlighted);
 	bool isHighlighted();
@@ -86,12 +98,12 @@ private:
 class CheckBox : public MenuItem
 {
 public:
-	CheckBox(GUI *gui, Vec3 position, int width, int height, string textureNormal, string textureChecked);
+	CheckBox(GUI *gui, Vec3 position, int width = CHECKBOX_TEXTURE_WIDTH, int height = CHECKBOX_TEXTURE_HEIGHT);
 	void setOnClick(const std::function<void()> &handler);
 	void setChecked(bool checked);
 	void onMouseClick(Vec3 mousePos);
 	void setVisible(bool state);
-	bool isChecked();
+	bool isChecked() const;
 	
 
 private:
@@ -102,14 +114,15 @@ private:
 class Slider : public MenuItem
 {
 public:
-	Slider(GUI *gui, Vec3 position, int width, int height);
+	Slider(GUI *gui, Vec3 position, int width = SLIDER_BG_TEXTURE_WIDTH, int height = SLIDER_BG_TEXTURE_HEIGHT);
 	void setVisible(bool state);
 	void onMouseClick(Vec3 mousePos);
 	void onMouseDown(Vec3 mousePos);
 	void updateScreenRes(unsigned int x, unsigned int y);
-	void setValue(float value);
-	// Value between 0 - 1
-	float getValue();
+	int getWidth() const;
+	int getHeight() const;
+	void setValue(float value);  // Value between 0 - 1
+	float getValue() const; // Value between 0 - 1
 private:
 	Rectangle sliderBounds;
 	bool mouseDown;

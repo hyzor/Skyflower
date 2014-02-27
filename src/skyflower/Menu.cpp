@@ -91,22 +91,22 @@ void Menu::init(GUI *g, int screenWidth, int screeenHeight, SoundEngine *sound)
 		m_pages[m_activePage].buttons.at(selectedButton)->setHighlighted(true);
 	});
 	m_pages[MenuPageSettings].buttons.push_back(back);
-	CheckBox *helpTexts = new CheckBox(g, Vec3(430, 460), 20, 20, "checkbox_unchecked.png", "checkbox_checked.png");
+	CheckBox *helpTexts = new CheckBox(g, Vec3(430, 460));
 	helpTexts->setChecked(this->settings._showHelpTexts);
 	m_pages[MenuPageSettings].checkboxes.push_back(helpTexts);
 
-	CheckBox *fullScreen = new CheckBox(g, Vec3(430, 430), 20, 20, "checkbox_unchecked.png", "checkbox_checked.png");
+	CheckBox *fullScreen = new CheckBox(g, Vec3(430, 430));
 	m_pages[MenuPageSettings].checkboxes.push_back(fullScreen);
 
-	CheckBox *mouseInverted = new CheckBox(g, Vec3(430, 400), 20, 20, "checkbox_unchecked.png", "checkbox_checked.png");
+	CheckBox *mouseInverted = new CheckBox(g, Vec3(430, 400));
 	m_pages[MenuPageSettings].checkboxes.push_back(mouseInverted);
 
 
-	Slider *volume = new Slider(g, Vec3(430, 330), 150, 40);
+	Slider *volume = new Slider(g, Vec3(430, 330), 200);
 	volume->setValue(1.0f);
 	m_pages[MenuPageSettings].sliders.push_back(volume);
 
-	Slider *mouseSense = new Slider(g, Vec3(430, 260), 150, 40);
+	Slider *mouseSense = new Slider(g, Vec3(430, 260), 200);
 	mouseSense->setValue(1.0f / 3.3f);
 	m_pages[MenuPageSettings].sliders.push_back(mouseSense);
 
@@ -157,10 +157,12 @@ void Menu::draw()
 		guiPtr->printText("Invert Camera", (int)(mouseInvertPos.X + 30 * scaleX), (int)mouseInvertPos.Y, Vec3(1.0f, 1.0f, 1.0f), scaleX);
 
 		Vec3 soundVolumePos = m_pages[MenuPageSettings].sliders.at(0)->getPosition();
-		guiPtr->printText("Sound Volume", (int)(soundVolumePos.X + 160 * scaleX), (int)soundVolumePos.Y+ 10, Vec3(1.0f, 1.0f, 1.0f), scaleX);
+		int volumeWidth = m_pages[MenuPageSettings].sliders.at(0)->getWidth();
+		guiPtr->printText("Sound Volume", (int)(soundVolumePos.X + volumeWidth + 15.0f), (int)soundVolumePos.Y + 10, Vec3(1.0f, 1.0f, 1.0f), scaleX);
 
 		Vec3 mouseSensePos = m_pages[MenuPageSettings].sliders.at(1)->getPosition();
-		guiPtr->printText("Mouse sense", (int)(mouseSensePos.X + 160 * scaleX), (int)mouseSensePos.Y + 10, Vec3(1.0f, 1.0f, 1.0f), scaleX);
+		int senseWidth = m_pages[MenuPageSettings].sliders.at(1)->getWidth();
+		guiPtr->printText("Mouse sense", (int)(mouseSensePos.X + senseWidth + 15.0f), (int)mouseSensePos.Y + 10, Vec3(1.0f, 1.0f, 1.0f), scaleX);
 	}
 }
 

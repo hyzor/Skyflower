@@ -24,7 +24,6 @@
     <ClInclude Include="include\Sound\SoundSource.h" />
     <ClInclude Include="src\sound\AudioDecoder.h" />
     <ClInclude Include="src\sound\AudioDecoderOpus.h" />
-    <ClInclude Include="src\sound\AudioDecoderSineWave.h" />
     <ClInclude Include="src\sound\AudioDecoderWAV.h" />
     <ClInclude Include="src\sound\AudioResource.h" />
     <ClInclude Include="src\sound\Config.h" />
@@ -41,7 +40,6 @@
   <ItemGroup>
     <ClCompile Include="src\sound\AudioDecoder.cpp" />
     <ClCompile Include="src\sound\AudioDecoderOpus.cpp" />
-    <ClCompile Include="src\sound\AudioDecoderSineWave.cpp" />
     <ClCompile Include="src\sound\AudioDecoderWAV.cpp" />
     <ClCompile Include="src\sound\AudioResource.cpp" />
     <ClCompile Include="src\sound\ListenerImpl.cpp" />

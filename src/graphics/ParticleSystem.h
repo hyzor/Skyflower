@@ -15,6 +15,7 @@ static const enum ParticleType
 	PT_BIRD,
 	PT_DUST,
 	PT_PORTAL,
+	PT_AIM,
 	NROFTYPES
 };
 
@@ -44,6 +45,7 @@ public:
 	virtual void SetRandomVelocity(XMFLOAT3 randomVelocity) = 0;
 
 	virtual float GetAgeLimit() const = 0;
+	virtual float GetEmitFrequency() const = 0;
 
 	virtual void Reset() = 0;
 };

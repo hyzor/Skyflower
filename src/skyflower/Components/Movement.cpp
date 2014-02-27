@@ -43,6 +43,7 @@ Movement::Movement(float speed) : Component("Movement")
 	this->dizzyMaxTimer = 2.0f;
 	this->isDizzy = false;
 	this->yaw = 0;
+	this->respawnTimer = 0;
 
 	this->mParticleSystemRun = NULL;
 	this->mParticleSystemDizzy = NULL;
@@ -149,17 +150,25 @@ void Movement::update(float deltaTime)
 		if (pos.Y < -100)
 		{
 			health->setHealth(0);
-				
-			if (getOwnerId() == 1)
-			{
-				getOwner()->getModules()->sound->PlaySound(GetPlayerSoundFile(fallingSounds[rand()  % ARRAY_SIZE(fallingSounds)]), 0.05f);
-			}
 		}
 
 		if (!health->isAlive())
 		{
-			getOwner()->sendMessage("Respawn", this);
-			return;
+			if (this->respawnTimer < 0.2)
+			{
+				this->respawnTimer += deltaTime;
+			}
+			else
+			{
+				getOwner()->sendMessage("Respawn", this);
+				if (getOwnerId() == 1)
+				{
+					getOwner()->getModules()->sound->PlaySound(GetPlayerSoundFile(fallingSounds[rand() % ARRAY_SIZE(fallingSounds)]), 0.05f);
+				}
+				this->respawnTimer = 0.0f;
+				return;
+			}
+
 		}
 	}
 
@@ -261,6 +270,7 @@ void Movement::update(float deltaTime)
 		if (getOwnerId() == 1)
 		{
 			// Player animations
+			//cout << "x: " << pos.X << " y: " << pos.Y << " z: " << pos.Z << endl;
 
 			Push *pushComponent = getOwner()->getComponent<Push *>("Push");
 			Throw *throwComponent = getOwner()->getComponent<Throw *>("Throw");
