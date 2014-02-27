@@ -44,8 +44,8 @@ void CameraControllImpl::Update(float dt)
 		o.Z = sin(yaw)*cos(pitch);
 		o = o.Normalize();
 
-		pitch = Lerp(pitch, targetPitch, dt * 8*mouseSense);
-		yaw = Lerp(yaw, targetYaw, dt * 8*mouseSense);
+		pitch = Lerp(pitch, targetPitch, dt * 6*mouseSense);
+		yaw = Lerp(yaw, targetYaw, dt * 6*mouseSense);
 
 		
 		if (std::abs(targetY - target.Y) > MAX_CAMERA_DISTANCE)
