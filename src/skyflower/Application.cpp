@@ -60,7 +60,7 @@ void Application::Start()
 
 	m_menu = new Menu();
 	m_menu->init(m_GUI, m_window->GetWidth(), m_window->GetHeight(), m_soundEngine);
-	m_menu->setActive(false);
+	m_menu->setActive(true);
 
 	m_camera = m_graphicsEngine->CreateCameraController();
 	m_physicsEngine = CreatePhysicsEngine();
@@ -155,6 +155,8 @@ void Application::Start()
 	m_oldTime = GetTime();
 	mStartTime = GetTime();
 	m_quit = false;
+
+	changeGameState(GameState::menu);
 
 	while(!m_quit)
 	{

@@ -5,7 +5,7 @@
 
 Menu::Menu()
 {
-	m_active = false;
+	m_active = true;
 	status = MenuStatus::none;
 	selectedButton = 0;
 	settings._showHelpTexts = true;
