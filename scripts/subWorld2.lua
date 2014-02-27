@@ -471,7 +471,7 @@ function update_pusher1(id, dt)
 		push1ChangeTargetTime = push1ChangeTargetTime - dt
 		if push1ChangeTargetTime < 0 then
 			push1ChangeTargetTime = math.random(2, 7)
-			push1Target = math.floor(math.random(102, 109.99))
+			push1Target = math.random(102, 109)
 		end
 		
 		SetTarget(id, push1Target)
