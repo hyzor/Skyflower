@@ -99,6 +99,7 @@ private:
 	float dizzyCounter;
 	bool isDizzy;
 	Vec3 pRot;
+	float respawnTimer;
 
 	ParticleSystem *mParticleSystemRun;
 	ParticleSystem *mParticleSystemDizzy;

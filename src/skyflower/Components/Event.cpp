@@ -911,3 +911,44 @@ int Event::BoxOnButton(lua_State* L)
 	lua_pushboolean(L, flag);
 	return 1;
 }
+
+int Event::BoxIsAlive(lua_State* L)
+{
+	bool flag = false;
+	int n = lua_gettop(L);
+
+	if (n >= 1)
+	{
+		EntityId boxId = (EntityId)lua_tointeger(L, 1);
+
+		Entity* boxEntity = entityManager->getEntity(boxId);
+
+		if (boxEntity->hasComponents("Health"))
+		{
+			flag = boxEntity->getComponent<Health*>("Health")->isAlive();
+		}
+	}
+
+	lua_pushboolean(L, flag);
+	return 1;
+}
+
+int Event::RespawnBox(lua_State* L)
+{
+	bool flag = false;
+	int n = lua_gettop(L);
+
+	if (n >= 1)
+	{
+		EntityId boxId = (EntityId)lua_tointeger(L, 1);
+		Entity* boxEntity = entityManager->getEntity(boxId);
+
+		if (boxEntity->hasComponents("Health"))
+		{
+			boxEntity->sendMessage("Respawn");			
+		}
+	}
+
+	lua_pushboolean(L, flag);
+	return 1;
+}
