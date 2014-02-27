@@ -1,9 +1,9 @@
 #ifndef SOUND_CONFIG_H
 #define SOUND_CONFIG_H
 
-// How many times per second the sound sources should be culled.
-#define SOUNDENGINE_CULLING_FREQUENCY      1
-#define SOUNDENGINE_CULLING_DISTANCE       100.0f
+// How often the sound sources should be culled (in seconds).
+#define SOUNDENGINE_CULL_FREQUENCY      1.0f
+#define SOUNDENGINE_CULL_DISTANCE       100.0f
 
 #define SOUNDENGINE_SOURCE_POOL_SIZE       32
 // Twice as many since streaming sources will use double buffering.

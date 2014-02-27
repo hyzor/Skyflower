@@ -18,7 +18,7 @@ static float vec3_length_squared(const float vec[3])
 
 static float vec3_distance_squared(const float vec1[3], const float vec2[3])
 {
-	float difference[3] = {
+	const float difference[3] = {
 		vec2[0] - vec1[0],
 		vec2[1] - vec1[1],
 		vec2[2] - vec1[2]
@@ -29,8 +29,11 @@ static float vec3_distance_squared(const float vec1[3], const float vec2[3])
 
 static std::vector<SoundSourceImpl *> ApplyCullingDistance(const Listener *listener, const std::vector<SoundSourceImpl *> &sources)
 {
+	static const float cullDistanceSquared = SOUNDENGINE_CULL_DISTANCE * SOUNDENGINE_CULL_DISTANCE;
+
 	std::vector<SoundSourceImpl *> result;
-	float listenerPosition[3], sourcePosition[3];
+	float listenerPosition[3];
+	float sourcePosition[3];
 	float distanceSquared;
 	SoundSourceImpl *source;
 
@@ -48,7 +51,7 @@ static std::vector<SoundSourceImpl *> ApplyCullingDistance(const Listener *liste
 			distanceSquared = vec3_distance_squared(listenerPosition, sourcePosition);
 		}
 
-		if (distanceSquared <= (SOUNDENGINE_CULLING_DISTANCE * SOUNDENGINE_CULLING_DISTANCE)) {
+		if (distanceSquared < cullDistanceSquared) {
 			result.push_back(source);
 		}
 	}
@@ -92,7 +95,15 @@ bool SoundEngineImpl::Init(const std::string &resourceDir)
 	//printf("Available OpenAL extensions: %s\n", alGetString(AL_EXTENSIONS));
 
 	// AL_EXT_float32 is required by the opus decoder.
-	assert(alIsExtensionPresent("AL_EXT_float32"));
+	if (!alIsExtensionPresent("AL_EXT_float32")) {
+		printf("AL_EXT_float32 is required!\n");
+
+		alcMakeContextCurrent(NULL);
+		alcDestroyContext(m_context);
+		alcCloseDevice(m_device);
+
+		return false;
+	}
 
 #if 1
 	ALCenum error = alcGetError(m_device);
@@ -267,7 +278,7 @@ void SoundEngineImpl::Update(float deltaTime)
 
 	m_timeAccumulationCulling += deltaTime;
 
-	if (m_timeAccumulationCulling >= (1.0f / SOUNDENGINE_CULLING_FREQUENCY)) {
+	if (m_timeAccumulationCulling > SOUNDENGINE_CULL_FREQUENCY) {
 		m_timeAccumulationCulling = 0.0f;
 
 		// Concatenate m_sources and m_temporarySources to get a list of all sources.
