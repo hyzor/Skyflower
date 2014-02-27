@@ -5,9 +5,6 @@
 
 #include "AudioResource.h"
 
-// Must be included last!
-#include "debug.h"
-
 struct AudioResource *CreateAudioResource(const std::string &file)
 {
 	int fd = _open(file.c_str(), O_RDONLY, 0);

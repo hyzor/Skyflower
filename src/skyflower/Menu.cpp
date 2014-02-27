@@ -13,6 +13,7 @@ Menu::Menu()
 	settings._mouseInverted = false;
 	settings._soundVolume = 1.0f;
 	settings._mouseSense = 1.0f;
+	this->first = true;
 }
 
 Menu::~Menu()
@@ -120,7 +121,32 @@ void Menu::init(GUI *g, int screenWidth, int screeenHeight, SoundEngine *sound)
 	back_credits->setOnClick([this]() { setActivePage(MenuPageMain); });
 	m_pages[MenuPageCredits].buttons.push_back(back_credits);
 
-	m_activePage = MenuPageMain;
+	// Start menu
+	MenuButton *start = new MenuButton(g, Vec3(30, 150), 253, 78, "buttons/start.png", "buttons/start_highlighted.png");
+	start->setOnClick([this]()
+	{
+		buttonResumeClicked();
+		setActivePage(MenuPageMain);
+	});
+	m_pages[MenuPageStart].buttons.push_back(start);
+
+	MenuButton *startSettings = new MenuButton(g, Vec3(30, 240), 251, 89, "buttons/settings.png", "buttons/settings_highlighted.png");
+	startSettings->setOnClick([this]() { setActivePage(MenuPageSettings); });
+	m_pages[MenuPageStart].buttons.push_back(startSettings);
+
+	MenuButton *startInstructions = new MenuButton(g, Vec3(30, 330), 376, 80, "buttons/instructions.png", "buttons/instructions_highlighted.png");
+	startInstructions->setOnClick([this]() { setActivePage(MenuPageInstructions); });
+	m_pages[MenuPageStart].buttons.push_back(startInstructions);
+
+	MenuButton *startCredits = new MenuButton(g, Vec3(30, 420), 230, 80, "buttons/credits.png", "buttons/credits_highlighted.png");
+	startCredits->setOnClick([this]() { setActivePage(MenuPageCredits); });
+	m_pages[MenuPageStart].buttons.push_back(startCredits);
+
+	MenuButton *startExit = new MenuButton(g, Vec3(30, 510), 161, 81, "buttons/exit.png", "buttons/exit_highlighted.png");
+	startExit->setOnClick([this]() {buttonExitClicked(); });
+	m_pages[MenuPageStart].buttons.push_back(startExit);
+
+	m_activePage = MenuPageStart;
 }
 
 bool Menu::isActive()
@@ -253,7 +279,10 @@ void Menu::setVisible(bool visible)
 	for (int i = 0; i < MenuPageCount; i++)
 	{
 		if (visible && i == m_activePage)
+		{
 			m_pages[i].setVisible(true);
+		}
+
 		else
 			m_pages[i].setVisible(false);
 	}
@@ -321,7 +350,10 @@ void Menu::onMouseMove(Vec3 mousePos)
 
 	for (UINT i = 0; i < m_pages[m_activePage].buttons.size(); i++)
 	{
-		m_pages[m_activePage].buttons[i]->onMouseMove(mousePos);
+		if (m_pages[m_activePage].buttons[i]->getVisible())
+		{
+			m_pages[m_activePage].buttons[i]->onMouseMove(mousePos);
+		}
 
 		m_pages[m_activePage].buttons[i]->isHighlighted();
 		if (m_pages[m_activePage].buttons[i]->isHighlighted())
@@ -352,3 +384,13 @@ void Menu::onMouseDown(Vec3 mousePos)
 	settings._soundVolume = m_pages[MenuPageSettings].sliders[0]->getValue();
 	settings._mouseSense = m_pages[MenuPageSettings].sliders[1]->getValue()*3 + 0.3f; // mouse sense ranges from 0.3 - 3.3
 }
+
+void Menu::setFirst(bool status)
+{
+	this->first = status;
+}
+
+//bool Menu::getFirst()
+//{
+//	return this->first;
+//}

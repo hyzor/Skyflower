@@ -7,9 +7,6 @@
 #include "AudioResource.h"
 #include "Config.h"
 
-// Must be included last!
-#include "debug.h"
-
 #ifndef FOURCC
 #define FOURCC(a, b, c, d) ((uint32_t)(((d) << 24) | ((c) << 16) | ((b) << 8) | (a)))
 #endif

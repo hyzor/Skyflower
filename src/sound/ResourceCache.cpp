@@ -12,9 +12,6 @@
 #include "ResourceCache.h"
 #include "TaskQueue.h"
 
-// Must be included last!
-#include "debug.h"
-
 /* Based on http://www.w3.org/TR/PNG/#D-CRCAppendix */
 static uint32_t util_hash32(const void *data, unsigned int size)
 {
@@ -155,6 +152,7 @@ uint32_t ResourceCache::PrefetchResource(const std::string &name)
 			AudioResource *resource = CreateAudioResource(path);
 
 			// FIXME: unordered_map is not thread safe and this can potentially cause problems.
+			// Solve it by queueing the rest of the closure on the main thread?
 			m_resources[hash] = resource;
 			m_resourcesLoading[hash] = false;
 

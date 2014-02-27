@@ -48,6 +48,7 @@ public:
 		MenuPageSettings,
 		MenuPageInstructions,
 		MenuPageCredits,
+		MenuPageStart,
 		MenuPageCount
 	};
 	struct Settings
@@ -70,6 +71,7 @@ public:
 	 bool isActive();
 
 	 void setActivePage(int page);
+	 void setFirst(bool status);
 
 	// Draw the menu
 	 void draw();
@@ -103,6 +105,7 @@ private:
 	 GUI* guiPtr;
 	 SoundEngine* soundEngine;
 	 Settings settings;
+	 bool first = true;
 private:
 	 void setVisible(bool visible);
 	 int width, height;

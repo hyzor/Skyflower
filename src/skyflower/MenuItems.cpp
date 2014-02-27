@@ -78,6 +78,21 @@ void MenuButton::setVisible(bool state)
 	}
 }
 
+bool MenuButton::getVisible()
+{
+	bool flag = false;
+	if (guiPtr->GetGUIElement(textureIDs[0])->GetVisible())
+	{
+		flag = true;
+	}
+	if (guiPtr->GetGUIElement(textureIDs[1])->GetVisible())
+	{
+		flag = true;
+	}
+
+	return flag;
+}
+
 void MenuButton::onMouseClick(Vec3 mousePos)
 {
 	if (this->bounds._isInside(mousePos))
