@@ -332,15 +332,8 @@ end
 
 
 
-
-
-
 --thrower script--
 -----------------
-
-function load_thrower(id)
-	StartUpdate()
-end
 
 heldtime = 0
 respawnballtime = 0
@@ -369,15 +362,10 @@ function update_thrower(id, dt)
 	end
 end
 
-
---pusher2 script--
+--pusher script--
 -----------------
 
-function load_pusher2(id)
-	StartUpdate()
-end
-
-function update_pusher2(id, dt)
+function update_pusher(id, dt)
 	if not IsDizzy(player) and IsAlive(73) then
 		SetSpeed(id, 30)
 		if InRange(id, player, 40) then
@@ -394,6 +382,101 @@ function update_pusher2(id, dt)
 		if CanPush(id, player) then
 			Push(id, player)
 		end
+	end
+end
+
+
+
+
+--thrower1 script--
+-------------------
+
+function load_thrower1(id)
+	StartUpdate()
+end
+
+throw1JumpTime = 2
+throw1ChangeTargetTime = 0
+throw1Target = 0
+function update_thrower1(id, dt)
+	if not InRange(id, player, 130) then
+		throw1JumpTime = throw1JumpTime - dt
+		if throw1JumpTime < 0 then
+			throw1JumpTime = math.random(1, 5)
+			Jump(id)
+		end
+		
+		throw1ChangeTargetTime = throw1ChangeTargetTime - dt
+		if throw1ChangeTargetTime < 0 then
+			throw1ChangeTargetTime = math.random(2, 7)
+			throw1Target = math.floor(math.random(102, 109.99))
+		end
+		
+		SetTarget(id, throw1Target)
+	else
+		update_thrower(id, dt)
+	end
+end
+
+
+--pusher2 script--
+------------------
+
+function load_pusher2(id)
+	StartUpdate()
+end
+
+push2JumpTime = 2
+push2ChangeTargetTime = 0
+push2Target = 0
+function update_pusher2(id, dt)
+	if not InRange(id, player, 130) then
+		push2JumpTime = push2JumpTime - dt
+		if push2JumpTime < 0 then
+			push2JumpTime = math.random(1, 5)
+			Jump(id)
+		end
+		
+		push2ChangeTargetTime = push2ChangeTargetTime - dt
+		if push2ChangeTargetTime < 0 then
+			push2ChangeTargetTime = math.random(2, 7)
+			push2Target = math.floor(math.random(102, 109.99))
+		end
+		
+		SetTarget(id, push2Target)
+	else
+		update_pusher(id, dt)
+	end
+end
+
+
+--pusher1 script--
+------------------
+
+function load_pusher1(id)
+	StartUpdate()
+end
+
+push1JumpTime = 2
+push1ChangeTargetTime = 0
+push1Target = 0
+function update_pusher1(id, dt)
+	if not InRange(id, player, 130) then
+		push1JumpTime = push1JumpTime - dt
+		if push1JumpTime < 0 then
+			push1JumpTime = math.random(1, 5)
+			Jump(id)
+		end
+		
+		push1ChangeTargetTime = push1ChangeTargetTime - dt
+		if push1ChangeTargetTime < 0 then
+			push1ChangeTargetTime = math.random(2, 7)
+			push1Target = math.floor(math.random(102, 109.99))
+		end
+		
+		SetTarget(id, push1Target)
+	else
+		update_pusher(id, dt)
 	end
 end
 

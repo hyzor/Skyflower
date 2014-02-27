@@ -939,9 +939,9 @@ int Event::IsAlive(lua_State* L)
 		Entity* boxEntity = entityManager->getEntity(boxId);
 
 		if (boxEntity->hasComponents("Health"))
-		{
 			flag = boxEntity->getComponent<Health*>("Health")->isAlive();
-		}
+		else
+			flag = boxEntity->returnPos().Y > -100;
 	}
 
 	lua_pushboolean(L, flag);

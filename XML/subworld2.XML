@@ -94,14 +94,20 @@
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\arenaPlattformMud" id="32" relativeid="43" isCollidible="1" isVisible="1" isAnimated="0" xPos="-442.480831447" yPos="63.360206076" zPos="809.890439593" xRot="-0.0" yRot="-0.55792431228" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\arenaPlattformClouds" id="33" isCollidible="0" isVisible="1" isAnimated="0" xPos="-442.480831447" yPos="63.360206076" zPos="809.890439593" xRot="-0.0" yRot="-0.55792431228" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     
-	
 	<Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform5cloud" id="39" isCollidible="0" isVisible="1" isAnimated="0" xPos="-628.509548622" yPos="-10.4756680473" zPos="763.745610687" xRot="-0.0" yRot="-0.19262245895" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform5grass" id="40" relativeid="41" isCollidible="1" isVisible="1" isAnimated="0" xPos="-628.509548622" yPos="-10.4756680473" zPos="763.745610687" xRot="-0.0" yRot="-0.19262245895" zRot="-0.0" xScale="1.33933780942" yScale="1.0" zScale="1.0"/>
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform5mud" id="41" relativeid="42" isCollidible="1" isVisible="1" isAnimated="0" xPos="-628.509548622" yPos="-10.4756680473" zPos="763.745610687" xRot="-0.0" yRot="-0.19262245895" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform5rocks" id="42" isCollidible="1" isVisible="1" isAnimated="0" xPos="-628.509548622" yPos="-10.4756680473" zPos="763.745610687" xRot="-0.0" yRot="-0.19262245895" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     
 	
-	
+    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\arenaRock2" id="102" relativeid="31" isCollidible="1" isVisible="1" isAnimated="0" xPos="-407.670807811" yPos="104.581935499" zPos="736.651379185" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="6.82188672274" yScale="6.82188672274" zScale="6.82188672274"/>
+    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\arenaRock3" id="103" relativeid="31" isCollidible="1" isVisible="1" isAnimated="0" xPos="-498.566741532" yPos="103.990131432" zPos="753.804854018" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="7.96895533892" yScale="7.96895533892" zScale="7.96895533892"/>
+    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\arenaRock4" id="104" relativeid="31" isCollidible="0" isVisible="1" isAnimated="0" xPos="-425.454733931" yPos="107.375411742" zPos="895.411653795" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="7.29578020813" yScale="7.29578020813" zScale="7.29578020813"/>
+    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\arenaRock5" id="105" relativeid="31" isCollidible="1" isVisible="1" isAnimated="0" xPos="-467.269222858" yPos="107.3136591" zPos="729.50677237" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="16.439576364" yScale="16.439576364" zScale="16.439576364"/>
+    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\arenaRock6" id="106" relativeid="31" isCollidible="1" isVisible="1" isAnimated="0" xPos="-361.139677368" yPos="103.955281407" zPos="786.164344506" xRot="-0.0" yRot="-1.34105212951" zRot="-0.0" xScale="8.60897590519" yScale="24.7583973747" zScale="8.60897590519"/>
+    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\arenaRock7" id="107" relativeid="31" isCollidible="1" isVisible="1" isAnimated="0" xPos="-383.63828629" yPos="106.958157793" zPos="858.997843837" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="7.71950536105" yScale="7.71950536105" zScale="7.71950536105"/>
+    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\arenaRock8" id="108" relativeid="31" isCollidible="1" isVisible="1" isAnimated="0" xPos="-519.752065995" yPos="109.633840584" zPos="842.256676362" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="16.5400609897" yScale="16.5400609897" zScale="30.1758537324"/>
+	<Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\arenaRock1" id="109" relativeid="31" isCollidible="1" isVisible="1" isAnimated="0" xPos="-475.494815116" yPos="104.479298659" zPos="881.118202127" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="3.09032437965" yScale="3.09032437965" zScale="3.09032437965"/>
 	
 	
 	
@@ -211,10 +217,10 @@
 		<Push />
 		<Pushable />
 		<Throw />
-		<Health />
+		<!--Health /-->
 		<Footsteps />
         <Movement speed="20"/>
-		<Event script="pusher2" />
+		<Event script="pusher1" />
     </Entity>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\Puncha" id="72" isCollidible="0" isVisible="1" isAnimated="1" xPos="-458.434638847" yPos="124.23260422" zPos="848.313119286" xRot="-0.0" yRot="-1.86242290338" zRot="-0.0" xScale="1" yScale="1" zScale="1">
         <Gravity/>
@@ -222,7 +228,7 @@
 		<Push />
 		<Pushable />
 		<Throw />
-		<Health />
+		<!--Health /-->
 		<Footsteps />
         <Movement speed="20"/>
 		<Event script="pusher2" />
@@ -236,7 +242,7 @@
 		<!--Health /-->
 		<Footsteps />
         <Movement speed="30"/>
-		<Event script="thrower" />
+		<Event script="thrower1" />
     </Entity>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\tree1" id="74" isCollidible="1" isVisible="1" isAnimated="0" xPos="-804.189885752" yPos="-0.612800428275" zPos="760.928729495" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.88118716529" yScale="1.88118716529" zScale="1.88118716529"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\tree2" id="75" isCollidible="1" isVisible="1" isAnimated="0" xPos="-244.633790721" yPos="104.696978236" zPos="830.619681596" xRot="-0.0" yRot="0.238323707233" zRot="-0.0" xScale="1.46080002716" yScale="1.46080002716" zScale="1.46080002716"/>
@@ -265,12 +271,5 @@
         <Movement speed="20"/>
         <Throwable/>
     </Entity>
-    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\arenaRock1" id="34" isCollidible="1" isVisible="1" isAnimated="0" xPos="-475.494815116" yPos="104.479298659" zPos="881.118202127" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="3.09032437965" yScale="3.09032437965" zScale="3.09032437965"/>
-    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\arenaRock2" id="102" isCollidible="1" isVisible="1" isAnimated="0" xPos="-407.670807811" yPos="104.581935499" zPos="736.651379185" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="6.82188672274" yScale="6.82188672274" zScale="6.82188672274"/>
-    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\arenaRock3" id="103" isCollidible="1" isVisible="1" isAnimated="0" xPos="-498.566741532" yPos="103.990131432" zPos="753.804854018" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="7.96895533892" yScale="7.96895533892" zScale="7.96895533892"/>
-    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\arenaRock4" id="104" isCollidible="1" isVisible="1" isAnimated="0" xPos="-425.454733931" yPos="107.375411742" zPos="895.411653795" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="7.29578020813" yScale="7.29578020813" zScale="7.29578020813"/>
-    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\arenaRock5" id="105" isCollidible="1" isVisible="1" isAnimated="0" xPos="-467.269222858" yPos="107.3136591" zPos="729.50677237" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="16.439576364" yScale="16.439576364" zScale="16.439576364"/>
-    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\arenaRock6" id="106" isCollidible="1" isVisible="1" isAnimated="0" xPos="-361.139677368" yPos="103.955281407" zPos="786.164344506" xRot="-0.0" yRot="-1.34105212951" zRot="-0.0" xScale="8.60897590519" yScale="24.7583973747" zScale="8.60897590519"/>
-    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\arenaRock7" id="107" isCollidible="1" isVisible="1" isAnimated="0" xPos="-383.63828629" yPos="106.958157793" zPos="858.997843837" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="7.71950536105" yScale="7.71950536105" zScale="7.71950536105"/>
-    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\arenaRock8" id="108" isCollidible="1" isVisible="1" isAnimated="0" xPos="-519.752065995" yPos="109.633840584" zPos="842.256676362" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="16.5400609897" yScale="16.5400609897" zScale="30.1758537324"/>
+
 </root>
