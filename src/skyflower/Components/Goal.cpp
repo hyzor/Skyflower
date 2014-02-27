@@ -28,7 +28,7 @@ void Goal::Activate(Message const& msg)
 	if (activated <= 0)
 	{
 		getOwner()->sendMessage("Activated", this); //event managment
-		getOwner()->getModules()->sound->PlaySound("doink-doink.wav", 0.75f);
+		getOwner()->getModules()->sound->PlaySound("player_fanfare.wav", 0.75f);
 	}
 	activated = 1;
 }
