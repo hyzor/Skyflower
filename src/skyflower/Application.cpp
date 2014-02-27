@@ -106,7 +106,7 @@ void Application::Start()
 	levelHandler->init(m_entityManager);
 
 	// Load Hub Level
-	levelHandler->queue(4);
+	levelHandler->queue(5);
 	//levelHandler->loadQueued();
 	levelHandler->LoadQueued(mXmlResourceDir);
 
@@ -391,7 +391,7 @@ void Application::updateGame(float dt, float gameTime)
 	//std::vector<CollisionInstance*> cols = m_collision->GetCollisionInstances();
 	for (int i = 0; i < m_entityManager->getNrOfEntities(); i++)
 	{
-		if (m_entityManager->getEntityByIndex(i)->getType() == "plattform")
+		if (m_entityManager->getEntityByIndex(i)->getType() == "plattform" && m_entityManager->getEntityByIndex(i)->collInst)
 		{
 			float t = m_entityManager->getEntityByIndex(i)->collInst->Test(ray);
 			if (t > 0)
@@ -586,10 +586,10 @@ void Application::OnKeyDown(unsigned short key)
 		g_quakeSounds = !g_quakeSounds;
 		break;
 	case 'R':
-		m_scriptHandler->Load("subWorld2.lua");
-		m_cutscene->play("intro");
-		//m_graphicsEngine->ClearLights();
-		//levelHandler->queue(levelHandler->currentLevel());
+		//m_scriptHandler->Load("subWorld2.lua");
+		//m_cutscene->play("intro");
+		//_graphicsEngine->ClearLights();
+		levelHandler->queue(levelHandler->currentLevel());
 		break;
 	case VK_SPACE:
 		if (m_cutscene->isPlaying())

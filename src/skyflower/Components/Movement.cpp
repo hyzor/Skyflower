@@ -126,7 +126,7 @@ void Movement::update(float deltaTime)
 					Vec3 AIPos = entity->returnPos();
 					Vec3 entityPos = getOwner()->returnPos();
 
-					if (entityPos.Y > AIPos.Y)
+					if (entityPos.Y-5 > AIPos.Y)
 						entity->sendMessage("isDizzy", this);
 				}
 			}

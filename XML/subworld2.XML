@@ -5,7 +5,7 @@
 
 
 	<Entity type="player" id="1"
-		xPos="0.0" yPos="0.0" zPos="-10.0"
+		xPos="-269.379498537" yPos="109.316849944" zPos="834.99023128"
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="1.0" yScale="1.0" zScale="1.0"
 		model="Models/Player/playerAnimated"
@@ -79,23 +79,41 @@
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\flowerPlattform" id="30" isCollidible="1" isVisible="1" isAnimated="0" xPos="-201.028982437" yPos="-228.457179814" zPos="865.646125873" xRot="-0.0" yRot="0.336442043616" zRot="-0.0" xScale="1.39099147167" yScale="1.39099147167" zScale="1.39099147167">
         <MoveTarget continuous="0" duration="2" easingPower="3" targetPosX="-201" targetPosY="97" targetPosZ="866"/>
     </Entity>
-    <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\arenaPlattformGrass" id="31" isCollidible="1" isVisible="1" isAnimated="0" xPos="-442.480831447" yPos="63.360206076" zPos="809.890439593" xRot="-0.0" yRot="-0.55792431228" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
-    <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\arenaPlattformMud" id="32" isCollidible="1" isVisible="1" isAnimated="0" xPos="-442.480831447" yPos="63.360206076" zPos="809.890439593" xRot="-0.0" yRot="-0.55792431228" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
+	
+	
+	
+	
+	
+	
+	
+	<Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2grass" id="43" relativeid="44" isCollidible="1" isVisible="1" isAnimated="0" xPos="-300.352040734" yPos="105.442299131" zPos="832.938302363" xRot="-0.0" yRot="1.39316624316" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
+    <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2mud" id="44" relativeid="40" isCollidible="1" isVisible="1" isAnimated="0" xPos="-300.352040734" yPos="105.442299131" zPos="832.938302363" xRot="-0.0" yRot="1.39316624316" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
+    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2cloud" id="45" isCollidible="0" isVisible="1" isAnimated="0" xPos="-300.352040734" yPos="105.442299131" zPos="832.938302363" xRot="-0.0" yRot="1.39316624316" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
+	
+    <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\arenaPlattformGrass" id="31" relativeid="32" isCollidible="1" isVisible="1" isAnimated="0" xPos="-442.480831447" yPos="63.360206076" zPos="809.890439593" xRot="-0.0" yRot="-0.55792431228" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
+    <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\arenaPlattformMud" id="32" relativeid="43" isCollidible="1" isVisible="1" isAnimated="0" xPos="-442.480831447" yPos="63.360206076" zPos="809.890439593" xRot="-0.0" yRot="-0.55792431228" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\arenaPlattformClouds" id="33" isCollidible="0" isVisible="1" isAnimated="0" xPos="-442.480831447" yPos="63.360206076" zPos="809.890439593" xRot="-0.0" yRot="-0.55792431228" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
-    <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2grass" id="35" isCollidible="1" isVisible="1" isAnimated="0" xPos="-159.730631736" yPos="51.467582351" zPos="729.792758621" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
+    
+	
+	<Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform5cloud" id="39" isCollidible="0" isVisible="1" isAnimated="0" xPos="-628.509548622" yPos="-10.4756680473" zPos="763.745610687" xRot="-0.0" yRot="-0.19262245895" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
+    <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform5grass" id="40" relativeid="41" isCollidible="1" isVisible="1" isAnimated="0" xPos="-628.509548622" yPos="-10.4756680473" zPos="763.745610687" xRot="-0.0" yRot="-0.19262245895" zRot="-0.0" xScale="1.33933780942" yScale="1.0" zScale="1.0"/>
+    <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform5mud" id="41" relativeid="42" isCollidible="1" isVisible="1" isAnimated="0" xPos="-628.509548622" yPos="-10.4756680473" zPos="763.745610687" xRot="-0.0" yRot="-0.19262245895" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
+    <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform5rocks" id="42" relativeid="47" isCollidible="1" isVisible="1" isAnimated="0" xPos="-628.509548622" yPos="-10.4756680473" zPos="763.745610687" xRot="-0.0" yRot="-0.19262245895" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
+    
+	
+	
+	
+	
+	
+	
+	
+	<Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2grass" id="35" isCollidible="1" isVisible="1" isAnimated="0" xPos="-159.730631736" yPos="51.467582351" zPos="729.792758621" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2mud" id="36" isCollidible="1" isVisible="1" isAnimated="0" xPos="-159.730631736" yPos="51.467582351" zPos="729.792758621" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2cloud" id="37" isCollidible="0" isVisible="1" isAnimated="0" xPos="-159.730631736" yPos="51.467582351" zPos="729.792758621" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\flowerPlattform" id="38" isCollidible="1" isVisible="1" isAnimated="0" xPos="-144.323374518" yPos="123.687268297" zPos="641.598382801" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <MoveTarget continuous="0" duration="2" easingPower="3" targetPosX="-144" targetPosY="48" targetPosZ="641"/>
 		<Event script="boxPuzzle" />
     </Entity>
-    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform5cloud" id="39" isCollidible="0" isVisible="1" isAnimated="0" xPos="-628.509548622" yPos="-10.4756680473" zPos="763.745610687" xRot="-0.0" yRot="-0.19262245895" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
-    <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform5grass" id="40" isCollidible="1" isVisible="1" isAnimated="0" xPos="-628.509548622" yPos="-10.4756680473" zPos="763.745610687" xRot="-0.0" yRot="-0.19262245895" zRot="-0.0" xScale="1.33933780942" yScale="1.0" zScale="1.0"/>
-    <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform5mud" id="41" isCollidible="1" isVisible="1" isAnimated="0" xPos="-628.509548622" yPos="-10.4756680473" zPos="763.745610687" xRot="-0.0" yRot="-0.19262245895" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
-    <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform5rocks" id="42" isCollidible="1" isVisible="1" isAnimated="0" xPos="-628.509548622" yPos="-10.4756680473" zPos="763.745610687" xRot="-0.0" yRot="-0.19262245895" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
-    <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2grass" id="43" isCollidible="1" isVisible="1" isAnimated="0" xPos="-300.352040734" yPos="105.442299131" zPos="832.938302363" xRot="-0.0" yRot="1.39316624316" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
-    <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2mud" id="44" isCollidible="1" isVisible="1" isAnimated="0" xPos="-300.352040734" yPos="105.442299131" zPos="832.938302363" xRot="-0.0" yRot="1.39316624316" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
-    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2cloud" id="45" isCollidible="0" isVisible="1" isAnimated="0" xPos="-300.352040734" yPos="105.442299131" zPos="832.938302363" xRot="-0.0" yRot="1.39316624316" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\fallingBallonPlattform" id="46" isCollidible="1" isVisible="1" isAnimated="0" xPos="-730.498624296" yPos="103.452839533" zPos="740.798563142" xRot="-0.0" yRot="1.44547503872" zRot="0.05" xScale="4.82952212442" yScale="2" zScale="4.82952212442">
         <MoveTarget continuous="0" duration="1" easingPower="1" targetPosX="-725" targetPosY="1" targetPosZ="740"/>
     </Entity>
@@ -187,29 +205,38 @@
         <Goal/>
         <Event script="Goal"/>
     </Entity>
-    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\Puncha" id="71" isCollidible="1" isVisible="1" isAnimated="1" xPos="-446.229879321" yPos="104.23260422" zPos="756.500382396" xRot="-0.0" yRot="-1.86242290338" zRot="-0.0" xScale="3.14296495185" yScale="3.14296495185" zScale="3.14296495185">
+    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\Puncha" id="71" isCollidible="0" isVisible="1" isAnimated="1" xPos="-446.229879321" yPos="124.23260422" zPos="756.500382396" xRot="-0.0" yRot="-1.86242290338" zRot="-0.0" xScale="1" yScale="1" zScale="1">
         <Gravity/>
-        <AI/>
-        <Movement speed="30"/>
-        <Pushable/>
-        <Event script="pusher1"/>
-        <Push/>
+        <AI />
+		<Push />
+		<Pushable />
+		<Throw />
+		<Health />
+		<Footsteps />
+        <Movement speed="10"/>
+		<Event script="aiPush" />
     </Entity>
-    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\Puncha" id="72" isCollidible="1" isVisible="1" isAnimated="1" xPos="-458.434638847" yPos="104.23260422" zPos="848.313119286" xRot="-0.0" yRot="-1.86242290338" zRot="-0.0" xScale="3.14296495185" yScale="3.14296495185" zScale="3.14296495185">
+    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\Puncha" id="72" isCollidible="0" isVisible="1" isAnimated="1" xPos="-458.434638847" yPos="124.23260422" zPos="848.313119286" xRot="-0.0" yRot="-1.86242290338" zRot="-0.0" xScale="1" yScale="1" zScale="1">
         <Gravity/>
-        <AI/>
-        <Movement speed="30"/>
-        <Pushable/>
-        <Event script="pusher2"/>
-        <Push/>
+        <AI />
+		<Push />
+		<Pushable />
+		<Throw />
+		<Health />
+		<Footsteps />
+        <Movement speed="10"/>
+		<Event script="aiPush" />
     </Entity>
-    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\Puncha" id="73" isCollidible="1" isVisible="1" isAnimated="1" xPos="-488.605049724" yPos="104.23260422" zPos="804.748585899" xRot="-0.0" yRot="-1.86242290338" zRot="-0.0" xScale="3.14296495185" yScale="3.14296495185" zScale="3.14296495185">
+    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\Puncha" id="73" isCollidible="0" isVisible="1" isAnimated="1" xPos="-488.605049724" yPos="124.23260422" zPos="804.748585899" xRot="-0.0" yRot="-1.86242290338" zRot="-0.0" xScale="1" yScale="1" zScale="1">
         <Gravity/>
-        <AI/>
-        <Movement speed="30"/>
-        <Pushable/>
-        <Event script="thrower"/>
-        <Throw haveAim=""/>
+        <AI />
+		<Push />
+		<Pushable />
+		<Throw />
+		<Health />
+		<Footsteps />
+        <Movement speed="10"/>
+		<Event script="aiPush" />
     </Entity>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\tree1" id="74" isCollidible="1" isVisible="1" isAnimated="0" xPos="-804.189885752" yPos="-0.612800428275" zPos="760.928729495" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.88118716529" yScale="1.88118716529" zScale="1.88118716529"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\tree2" id="75" isCollidible="1" isVisible="1" isAnimated="0" xPos="-244.633790721" yPos="104.696978236" zPos="830.619681596" xRot="-0.0" yRot="0.238323707233" zRot="-0.0" xScale="1.46080002716" yScale="1.46080002716" zScale="1.46080002716"/>
@@ -224,14 +251,14 @@
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\tree4" id="84" isCollidible="1" isVisible="1" isAnimated="0" xPos="-206.149719235" yPos="46.3211381959" zPos="166.42261931" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="2.04007931219" yScale="2.04007931219" zScale="2.04007931219"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\tree1" id="85" isCollidible="1" isVisible="1" isAnimated="0" xPos="-119.36320268" yPos="25.5729684056" zPos="1.90160739617" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\tree3" id="86" isCollidible="1" isVisible="1" isAnimated="0" xPos="-133.990623905" yPos="25.790105134" zPos="-17.2472954467" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
-    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\rock8" id="87" isCollidible="1" isVisible="1" isAnimated="0" xPos="-788.401405977" yPos="-6.62283545427" zPos="714.125339765" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="21.9663391223" yScale="21.9663391223" zScale="21.9663391223"/>
+    <!--Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\rock8" id="87" isCollidible="1" isVisible="1" isAnimated="0" xPos="-788.401405977" yPos="-6.62283545427" zPos="714.125339765" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="21.9663391223" yScale="21.9663391223" zScale="21.9663391223"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\rock6" id="88" isCollidible="1" isVisible="1" isAnimated="0" xPos="-149.326950058" yPos="54.5652975513" zPos="757.290837107" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="11.1388659323" yScale="11.1388659323" zScale="11.1388659323"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\rock2" id="89" isCollidible="1" isVisible="1" isAnimated="0" xPos="-125.727218158" yPos="24.5662125922" zPos="30.1401844849" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="4.56123903905" yScale="4.56123903905" zScale="4.56123903905"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\rock7" id="90" isCollidible="1" isVisible="1" isAnimated="0" xPos="-281.28505582" yPos="105.958288895" zPos="855.1243104" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="15.740693156" yScale="15.740693156" zScale="15.740693156"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\rock3" id="91" isCollidible="1" isVisible="1" isAnimated="0" xPos="-217.663888771" yPos="81.6924872386" zPos="330.562385224" xRot="-6.46289958911" yRot="-0.0" zRot="-0.0" xScale="3.22727364384" yScale="5.93699430247" zScale="3.22727364384"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\rock1" id="92" isCollidible="1" isVisible="1" isAnimated="0" xPos="11.2211471191" yPos="-5.06486099817" zPos="-14.9682041674" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="2.60277897762" yScale="2.60277897762" zScale="2.60277897762"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\rock4" id="93" isCollidible="1" isVisible="1" isAnimated="0" xPos="-147.973365336" yPos="72.3831857673" zPos="432.672143587" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="6.43610528086" yScale="6.43610528086" zScale="6.43610528086"/>
-    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\rock5" id="94" isCollidible="1" isVisible="1" isAnimated="0" xPos="-170.979903078" yPos="51.7240075632" zPos="710.228571418" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="16.1176503768" yScale="16.1176503768" zScale="16.1176503768"/>
+    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\rock5" id="94" isCollidible="1" isVisible="1" isAnimated="0" xPos="-170.979903078" yPos="51.7240075632" zPos="710.228571418" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="16.1176503768" yScale="16.1176503768" zScale="16.1176503768"/-->
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\Ball" id="101" isCollidible="0" isVisible="1" isAnimated="0" xPos="-474.541327764" yPos="105.157878124" zPos="809.530671275" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <Gravity/>
         <Health/>

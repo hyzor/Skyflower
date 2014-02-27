@@ -176,9 +176,9 @@ float GravityComponent::testMove(Ray r, Entity* e, Entity* &out, bool groundRay,
 	float dir = 0;
 	if (col > 0.5f) //feet
 	{
-		if (groundRay && r.GetDir().Y * col > r.GetDir().Y + 5 * getOwner()->returnScale().Y)
+		if (groundRay && r.GetDir().Y * col > r.GetDir().Y + 5)
 		{
-			float t = (r.GetDir().Y * col) / (r.GetDir().Y + 5 * getOwner()->returnScale().Y);
+			float t = (r.GetDir().Y * col) / (r.GetDir().Y + 5);
 			Vec3 rDir = r.GetDir();
 			e->updatePos(pos - rDir*(1 - t));
 			dir = -1;
@@ -230,7 +230,7 @@ void GravityComponent::createRays()
 				p.X = -small.Size.X / 2 + (small.Size.X / (amountX + 1))*kx;
 				p.Z = -small.Size.Z / 2 + (small.Size.Z / (amountZ + 1))*kz;
 
-				groundRays.push_back(Ray(p, Vec3(0, -bounds.Size.Y-5*getOwner()->returnScale().Y, 0)));
+				groundRays.push_back(Ray(p, Vec3(0, -bounds.Size.Y-5, 0)));
 				isGroundColl.push_back(false);
 			}
 		}
@@ -263,7 +263,7 @@ void GravityComponent::createRays()
 	else
 	{
 		//body
-		groundRays.push_back(Ray(Vec3(0, 10, 0), Vec3(0, -15, 0)));
+		groundRays.push_back(Ray(Vec3(0, 10, 0), Vec3(0, -10-5, 0)));
 		isGroundColl.push_back(false);
 
 		//feet

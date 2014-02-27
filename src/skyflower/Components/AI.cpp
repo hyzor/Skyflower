@@ -31,13 +31,6 @@ void AI::update(float dt)
 	Vec3 pos = getOwner()->returnPos();
 	Ray r = Ray(pos + Vec3(0, 15, 0), Vec3(0, -30, 0));
 
-
-	/*getEntityManager()->getEntity(8)->field->Active = false;
-	getEntityManager()->getEntity(15)->field->Active = false;
-	getEntityManager()->getEntity(16)->field->Active = false;
-	getEntityManager()->getEntity(12)->field->Active = false;
-	getEntityManager()->getEntity(13)->field->Active = false;*/
-
 	//set fields to deactivate
 	getOwner()->ActiveteField(false);
 	
