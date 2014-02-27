@@ -89,6 +89,7 @@ public:
 	void pressed();
 	void setVisible(bool state);
 	void setOnClick(const std::function<void()> &handler);
+	bool getVisible();
 
 private:
 	bool highlighted;
