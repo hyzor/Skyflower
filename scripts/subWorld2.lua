@@ -97,35 +97,117 @@ function update_temporaryFlowers(id, dt)
 	end
 end
 
-function load_fallingPlatform(id)
+function load_fallingPlatform5(id)
 	StartUpdate()
 end
 
-standingTimer = 0
-downTimer = 0
-function update_fallingPlatform(id, dt)	
-	if FallingPlatform(id) then
-		downTimer = 0
-		standingTimer = standingTimer +dt;
-		if standingTimer > 0.8 then
+standingTimer5 = 0
+downTimer5 = 0
+movingDown5 = false
+function update_fallingPlatform5(id, dt)	
+	if FallingPlatform(id) and not movingDown5 then
+		downTimer5 = 0
+		standingTimer5 = standingTimer5 +dt;
+		if standingTimer5 > 0.3 then
 			MoveToTarget(id)
-			standingTimer = 0
+			standingTimer5 = 0
+			movingDown5 = true
 		end	
 	end
-	if not OnAPlatform() then
-		downTimer = downTimer + dt
-		--Print(downTimer)
-		if downTimer > 6 then
-			downTimer = 0
-			MoveToSpawn(5)
-			MoveToSpawn(6)
-			MoveToSpawn(7)
-			MoveToSpawn(8)
+	if not FallingPlatform(id) then
+		downTimer5 = downTimer5 + dt
+		standingTimer5 = 0
+		if downTimer5 > 2 then
+			downTimer5 = 0
+			MoveToSpawn(id)
+			movingDown5 = false
 		end
 	end
 end
 
+function load_fallingPlatform6(id)
+	StartUpdate()
+end
 
+standingTimer6 = 0
+downTimer6 = 0
+movingDown6 = false
+function update_fallingPlatform6(id, dt)	
+	if FallingPlatform(id) and not movingDown6 then
+		downTimer6 = 0
+		standingTimer6 = standingTimer6 +dt;
+		if standingTimer6 > 0.3 then
+			MoveToTarget(id)
+			standingTimer6 = 0
+			movingDown6 = true
+		end	
+	end
+	if not FallingPlatform(id) then
+		downTimer6 = downTimer6 + dt
+		standingTimer6 = 0
+		if downTimer6 > 2 then
+			downTimer6 = 0
+			MoveToSpawn(id)
+			movingDown6 = false
+		end
+	end
+end
+
+function load_fallingPlatform7(id)
+	StartUpdate()
+end
+
+standingTimer7 = 0
+downTimer7 = 0
+movingDown7 = false
+function update_fallingPlatform7(id, dt)	
+	if FallingPlatform(id) and not movingDown7 then
+		downTimer7 = 0
+		standingTimer7 = standingTimer7 +dt;
+		if standingTimer7 > 0.3 then
+			MoveToTarget(id)
+			standingTimer7 = 0
+			movingDown7 = true
+		end	
+	end
+	if not FallingPlatform(id) then
+		downTimer7 = downTimer7 + dt
+		standingTimer7 = 0
+		if downTimer7 > 2 then
+			downTimer7 = 0
+			MoveToSpawn(id)
+			movingDown7 = false
+		end
+	end
+end
+
+function load_fallingPlatform8(id)
+	StartUpdate()
+end
+
+standingTimer8 = 0
+downTimer8 = 0
+movingDown8 = false
+function update_fallingPlatform8(id, dt)	
+	if FallingPlatform(id) and not movingDown8 then
+		downTimer8 = 0
+		standingTimer8 = standingTimer8 +dt;
+		if standingTimer8 > 0.3 then
+			MoveToTarget(id)
+			standingTimer8 = 0
+			movingDown8 = true
+		end	
+	end
+	if not FallingPlatform(id) then
+		downTimer8 = downTimer8 + dt
+		standingTimer8 = 0
+		if downTimer8 > 2 then
+			downTimer8 = 0
+			movingDown8 = false
+			MoveToSpawn(id)
+		end
+	end
+end
 
 --aiPush script--
 -----------------
