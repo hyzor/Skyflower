@@ -100,6 +100,7 @@ private:
 	bool isDizzy;
 	Vec3 pRot;
 	float respawnTimer;
+	float turnAngle;
 
 	ParticleSystem *mParticleSystemRun;
 	ParticleSystem *mParticleSystemDizzy;

@@ -44,6 +44,7 @@ Movement::Movement(float speed) : Component("Movement")
 	this->isDizzy = false;
 	this->yaw = 0;
 	this->respawnTimer = 0;
+	this->turnAngle = 0.0f;
 
 	this->mParticleSystemRun = NULL;
 	this->mParticleSystemDizzy = NULL;
@@ -179,6 +180,7 @@ void Movement::update(float deltaTime)
 	}
 	else if (canMove)
 	{
+		float oldTargetRot = targetRot;
 		bool backwards = isMovingBackward;
 		//Push* push = getOwner()->getComponent<Push*>("Push");
 		//if (push)
@@ -218,23 +220,22 @@ void Movement::update(float deltaTime)
 
 		if (backwards || isMovingForward || isMovingLeft || isMovingRight)
 		{
-			/*char buffer[50];
-			sprintf(buffer, "Current Rotation: %f         Target rotation: %f", walkAngle, targetRot);
-			string t = buffer;
-			getOwner()->getModules()->gui->printText(t, 50, 20); */
+			if (walkAngle < -180)
+				walkAngle += 360;
+			else if (walkAngle > 180)
+				walkAngle -= 360;
 
-			if (std::abs((((int)targetRot) % 360) - ((int)walkAngle % 360)) > 1)
-			{
-				float tot = targetRot - walkAngle;
-				if (tot > 180)
-					tot -= 360;
-				if (tot < -180)
-					tot += 360;
+			float fR1 = walkAngle - targetRot;
+			float fR2 = targetRot - walkAngle;
+			if (fR1 < 0.0f)
+				fR1 += 360.0f;
+			if (fR2 < 0.0f)
+				fR2 += 360.0f;
 
-				walkAngle += tot * deltaTime * 14;
-			}
+			if (fR2 < fR1)
+				walkAngle += deltaTime*400;
 			else
-				walkAngle = targetRot;
+				walkAngle -= deltaTime*400;
 
 			p->GetStates()->isMoving = true;
 			float totalSpeed = this->speed;
@@ -269,6 +270,11 @@ void Movement::update(float deltaTime)
 	{
 		if (getOwnerId() == 1)
 		{
+			/*char buffer[100];
+			string str;
+			sprintf(buffer, "Current rot: %f      Target rot: %f", walkAngle, targetRot);
+			str = buffer;
+			getOwner()->getModules()->gui->printText(str, 20, 20, Vec3(), 1.5f); */
 			// Player animations
 			//cout << "x: " << pos.X << " y: " << pos.Y << " z: " << pos.Z << endl;
 
@@ -375,20 +381,22 @@ void Movement::update(float deltaTime)
 	getOwner()->updatePos(pos);
 
 	// Update player and AI rotation.
-	if (getOwnerId() == 1 || ai)
+	if (ai)
 	{
 		float d = (rot.Y - pRot.Y);
 
 		if (d > 3.14f)
 			d -= 3.14f*2;
 		else if (d < -3.14f)
-			d += 3.14f*2;
+			d += 3.14f*2; 
 
 		Vec3 nRot = pRot + Vec3(0,d,0) * 14 *deltaTime;
 
 		getOwner()->updateRot(nRot);
 		pRot = nRot;
 	}
+	else
+		getOwner()->updateRot(rot);
 
 	if (getOwner()->fId == 1)
 	{
