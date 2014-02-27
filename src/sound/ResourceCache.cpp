@@ -152,6 +152,7 @@ uint32_t ResourceCache::PrefetchResource(const std::string &name)
 			AudioResource *resource = CreateAudioResource(path);
 
 			// FIXME: unordered_map is not thread safe and this can potentially cause problems.
+			// Solve it by queueing the rest of the closure on the main thread?
 			m_resources[hash] = resource;
 			m_resourcesLoading[hash] = false;
 
