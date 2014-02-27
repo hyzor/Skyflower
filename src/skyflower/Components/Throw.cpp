@@ -138,10 +138,7 @@ void Throw::ThrowPlayer()
 			throwalble->setIsBeingPickedUp(false);
 			throwalble->setIsBeingThrown(true, getOwnerId());
 
-
-			Vec3 rotation = getOwner()->returnRot();
-			float pitch = getOwner()->getModules()->camera->GetPitch();
-			Vec3 aimDirection = Vec3(cosf(-rotation.Y - (float)M_PI_2), sinf(-pitch), sinf(-rotation.Y - (float)M_PI_2)).Normalize();
+			Vec3 aimDirection = getAimDirection();
 			throwalble->getPhysicsEntity()->FireProjectile(getOwner()->returnPos(), aimDirection * THROW_FORCE);
 
 			hideAim();
@@ -241,6 +238,15 @@ void Throw::setNotDizzy(Message const & msg)
 	this->isDizzy = false;
 }
 
+Vec3 Throw::getAimDirection()
+{
+	Vec3 rotation = getOwner()->returnRot();
+	float pitch = getOwner()->getModules()->camera->GetPitch();
+	pitch -= 0.2f;
+
+	return Vec3(cosf(-rotation.Y - (float)M_PI_2), sinf(-pitch), sinf(-rotation.Y - (float)M_PI_2)).Normalize();
+}
+
 void Throw::updateAim(float deltaTime)
 {
 	if (getOwnerId() != 1)
@@ -254,9 +260,7 @@ void Throw::updateAim(float deltaTime)
 	{
 		this->nextAimParticleSystemTime = 0.75f;
 
-		Vec3 rotation = getOwner()->returnRot();
-		float pitch = getOwner()->getModules()->camera->GetPitch();
-		Vec3 aimDirection = Vec3(cosf(-rotation.Y - (float)M_PI_2), sinf(-pitch), sinf(-rotation.Y - (float)M_PI_2)).Normalize();
+		Vec3 aimDirection = getAimDirection();
 
 		particleSystem = &this->aimParticleSystems[this->nextAimParticleSystemIndex];
 		particleSystem->particleSystem->SetEmitFrequency(THROW_PARTICLE_EMIT_FREQUENCY);

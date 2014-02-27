@@ -57,6 +57,7 @@ private:
 	void setIsDizzy(Message const &msg);
 	void setNotDizzy(Message const & msg);
 
+	Vec3 getAimDirection();
 	void updateAim(float deltaTime);
 	
 };
