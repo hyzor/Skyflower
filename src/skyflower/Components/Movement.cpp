@@ -150,11 +150,6 @@ void Movement::update(float deltaTime)
 		if (pos.Y < -100)
 		{
 			health->setHealth(0);
-				
-			if (getOwnerId() == 1)
-			{
-				getOwner()->getModules()->sound->PlaySound(GetPlayerSoundFile(fallingSounds[rand()  % ARRAY_SIZE(fallingSounds)]), 0.05f);
-			}
 		}
 
 		if (!health->isAlive())
@@ -166,6 +161,10 @@ void Movement::update(float deltaTime)
 			else
 			{
 				getOwner()->sendMessage("Respawn", this);
+				if (getOwnerId() == 1)
+				{
+					getOwner()->getModules()->sound->PlaySound(GetPlayerSoundFile(fallingSounds[rand() % ARRAY_SIZE(fallingSounds)]), 0.05f);
+				}
 				this->respawnTimer = 0.0f;
 				return;
 			}
