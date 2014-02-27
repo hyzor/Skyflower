@@ -77,6 +77,8 @@ public:
 	 void draw();
 
 	 int getStatus();
+	 int getActivePage();
+	 int isFirst();
 
 	 void keyPressed(unsigned short key);
 
@@ -93,7 +95,7 @@ public:
 private:
 	 bool m_active;
 	 int selectedButton;
-	 //int m_bg;
+	 int m_bg;
 	 int m_instructionsWidth;
 	 int m_instructions;
 	 int m_creditsWidth;

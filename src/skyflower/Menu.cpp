@@ -46,8 +46,8 @@ void Menu::init(GUI *g, int screenWidth, int screeenHeight, SoundEngine *sound)
 	scaleX = 1.0f;
 	scaleY = 1.0f;
 
-	//m_bg = g->CreateGUIElementAndBindTexture(Vec3(0, 0), "Menygrafik\\fyraTreRatio.png");
-	//g->GetGUIElement(m_bg)->SetVisible(false);
+	m_bg = g->CreateGUIElementAndBindTexture(Vec3(0, 0), "Menygrafik\\fyraTreRatio.png");
+	g->GetGUIElement(m_bg)->SetVisible(false);
 
 	// FIXME: Hardcoding ;(
 	m_instructionsWidth = 736;
@@ -88,7 +88,7 @@ void Menu::init(GUI *g, int screenWidth, int screeenHeight, SoundEngine *sound)
 	MenuButton *back = new MenuButton(g, Vec3(30, 150), 174, 80, "buttons/back.png", "buttons/back_highlighted.png");
 	back->setOnClick([this]()
 	{
-		setActivePage(MenuPageMain);
+		setActivePage(this->isFirst()? MenuPageStart : MenuPageMain);
 		m_pages[m_activePage].buttons.at(selectedButton)->setHighlighted(true);
 	});
 	m_pages[MenuPageSettings].buttons.push_back(back);
@@ -113,18 +113,19 @@ void Menu::init(GUI *g, int screenWidth, int screeenHeight, SoundEngine *sound)
 
 	// Instructions page
 	MenuButton *back_inst = new MenuButton(g, Vec3(30, 150), 174, 80, "buttons/back.png", "buttons/back_highlighted.png");
-	back_inst->setOnClick([this]() { setActivePage(MenuPageMain); });
+	back_inst->setOnClick([this]() { setActivePage(this->isFirst()? MenuPageStart : MenuPageMain); });
 	m_pages[MenuPageInstructions].buttons.push_back(back_inst);
 
 	// Credits page
 	MenuButton *back_credits = new MenuButton(g, Vec3(30, 150), 174, 80, "buttons/back.png", "buttons/back_highlighted.png");
-	back_credits->setOnClick([this]() { setActivePage(MenuPageMain); });
+	back_credits->setOnClick([this]() { setActivePage(this->isFirst()? MenuPageStart : MenuPageMain); });
 	m_pages[MenuPageCredits].buttons.push_back(back_credits);
 
 	// Start menu
 	MenuButton *start = new MenuButton(g, Vec3(30, 150), 253, 78, "buttons/start.png", "buttons/start_highlighted.png");
 	start->setOnClick([this]()
 	{
+		setFirst(false);
 		buttonResumeClicked();
 		setActivePage(MenuPageMain);
 	});
@@ -257,9 +258,22 @@ int Menu::getStatus()
 	return status;
 }
 
+int Menu::getActivePage()
+{
+	return m_activePage;
+}
+
+int Menu::isFirst()
+{
+	return this->first;
+}
+
 void Menu::setVisible(bool visible)
 {
-	//guiPtr->GetGUIElement(m_bg)->SetVisible(visible);
+	if (visible && this->first)
+		guiPtr->GetGUIElement(m_bg)->SetVisible(true);
+	else
+		guiPtr->GetGUIElement(m_bg)->SetVisible(false);
 
 	if (visible && m_activePage == MenuPageInstructions)
 		guiPtr->GetGUIElement(m_instructions)->SetVisible(true);
@@ -279,10 +293,7 @@ void Menu::setVisible(bool visible)
 	for (int i = 0; i < MenuPageCount; i++)
 	{
 		if (visible && i == m_activePage)
-		{
 			m_pages[i].setVisible(true);
-		}
-
 		else
 			m_pages[i].setVisible(false);
 	}
@@ -331,7 +342,7 @@ void Menu::onResize(unsigned int width, unsigned int height)
 		}
 	}
 
-	//guiPtr->GetGUIElement(m_bg)->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
+	guiPtr->GetGUIElement(m_bg)->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
 
 	guiPtr->GetGUIElement(m_instructions)->GetDrawInput()->pos = XMFLOAT2(width - m_instructionsWidth - 6.0f, 6.0f);
 	guiPtr->GetGUIElement(m_credits)->GetDrawInput()->pos = XMFLOAT2(width - m_creditsWidth - 6.0f, 6.0f);

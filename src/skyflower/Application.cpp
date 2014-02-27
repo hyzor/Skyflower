@@ -565,17 +565,10 @@ void Application::OnKeyDown(unsigned short key)
 	switch (key)
 	{
 	case VK_ESCAPE:
-		if (m_menu->isActive())
-		{
+		if (m_menu->isActive() && !m_menu->isFirst())
 			m_menu->setActive(false);
-			m_menu->setActivePage(Menu::MenuPageMain);
-		}
 		else
-		{
 			m_menu->setActive(true);
-		}
-
-			
 
 		break;
 	case VK_RETURN:
