@@ -98,7 +98,7 @@
 	<Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform5cloud" id="39" isCollidible="0" isVisible="1" isAnimated="0" xPos="-628.509548622" yPos="-10.4756680473" zPos="763.745610687" xRot="-0.0" yRot="-0.19262245895" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform5grass" id="40" relativeid="41" isCollidible="1" isVisible="1" isAnimated="0" xPos="-628.509548622" yPos="-10.4756680473" zPos="763.745610687" xRot="-0.0" yRot="-0.19262245895" zRot="-0.0" xScale="1.33933780942" yScale="1.0" zScale="1.0"/>
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform5mud" id="41" relativeid="42" isCollidible="1" isVisible="1" isAnimated="0" xPos="-628.509548622" yPos="-10.4756680473" zPos="763.745610687" xRot="-0.0" yRot="-0.19262245895" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
-    <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform5rocks" id="42" relativeid="47" isCollidible="1" isVisible="1" isAnimated="0" xPos="-628.509548622" yPos="-10.4756680473" zPos="763.745610687" xRot="-0.0" yRot="-0.19262245895" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
+    <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform5rocks" id="42" isCollidible="1" isVisible="1" isAnimated="0" xPos="-628.509548622" yPos="-10.4756680473" zPos="763.745610687" xRot="-0.0" yRot="-0.19262245895" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     
 	
 	
