@@ -59,6 +59,11 @@ function load_temporaryFlowers(id)
 	StartUpdate()
 end
 
+activateAI = false
+function activated_temporaryFlowers(id)
+	activateAI = true
+end
+
 
 platformTimer = 0;
 stairdown = true
@@ -399,22 +404,24 @@ throw1JumpTime = 2
 throw1ChangeTargetTime = 0
 throw1Target = 0
 function update_thrower1(id, dt)
-	if not InRange(id, player, 130) then
-		throw1JumpTime = throw1JumpTime - dt
-		if throw1JumpTime < 0 then
-			throw1JumpTime = math.random(1, 5)
-			Jump(id)
+	if activateAI then
+		if not InRange(id, player, 130) then
+			throw1JumpTime = throw1JumpTime - dt
+			if throw1JumpTime < 0 then
+				throw1JumpTime = math.random(1, 5)
+				Jump(id)
+			end
+			
+			throw1ChangeTargetTime = throw1ChangeTargetTime - dt
+			if throw1ChangeTargetTime < 0 then
+				throw1ChangeTargetTime = math.random(2, 7)
+				throw1Target = math.floor(math.random(102, 109.99))
+			end
+			
+			SetTarget(id, throw1Target)
+		else
+			update_thrower(id, dt)
 		end
-		
-		throw1ChangeTargetTime = throw1ChangeTargetTime - dt
-		if throw1ChangeTargetTime < 0 then
-			throw1ChangeTargetTime = math.random(2, 7)
-			throw1Target = math.floor(math.random(102, 109.99))
-		end
-		
-		SetTarget(id, throw1Target)
-	else
-		update_thrower(id, dt)
 	end
 end
 
@@ -430,22 +437,24 @@ push2JumpTime = 2
 push2ChangeTargetTime = 0
 push2Target = 0
 function update_pusher2(id, dt)
-	if not InRange(id, player, 130) then
-		push2JumpTime = push2JumpTime - dt
-		if push2JumpTime < 0 then
-			push2JumpTime = math.random(1, 5)
-			Jump(id)
+	if activateAI then
+		if not InRange(id, player, 130) then
+			push2JumpTime = push2JumpTime - dt
+			if push2JumpTime < 0 then
+				push2JumpTime = math.random(1, 5)
+				Jump(id)
+			end
+			
+			push2ChangeTargetTime = push2ChangeTargetTime - dt
+			if push2ChangeTargetTime < 0 then
+				push2ChangeTargetTime = math.random(2, 7)
+				push2Target = math.floor(math.random(102, 109.99))
+			end
+			
+			SetTarget(id, push2Target)
+		else
+			update_pusher(id, dt)
 		end
-		
-		push2ChangeTargetTime = push2ChangeTargetTime - dt
-		if push2ChangeTargetTime < 0 then
-			push2ChangeTargetTime = math.random(2, 7)
-			push2Target = math.floor(math.random(102, 109.99))
-		end
-		
-		SetTarget(id, push2Target)
-	else
-		update_pusher(id, dt)
 	end
 end
 
@@ -461,22 +470,24 @@ push1JumpTime = 2
 push1ChangeTargetTime = 0
 push1Target = 0
 function update_pusher1(id, dt)
-	if not InRange(id, player, 130) then
-		push1JumpTime = push1JumpTime - dt
-		if push1JumpTime < 0 then
-			push1JumpTime = math.random(1, 5)
-			Jump(id)
+	if activateAI then
+		if not InRange(id, player, 130) then
+			push1JumpTime = push1JumpTime - dt
+			if push1JumpTime < 0 then
+				push1JumpTime = math.random(1, 5)
+				Jump(id)
+			end
+			
+			push1ChangeTargetTime = push1ChangeTargetTime - dt
+			if push1ChangeTargetTime < 0 then
+				push1ChangeTargetTime = math.random(2, 7)
+				push1Target = math.random(102, 109)
+			end
+			
+			SetTarget(id, push1Target)
+		else
+			update_pusher(id, dt)
 		end
-		
-		push1ChangeTargetTime = push1ChangeTargetTime - dt
-		if push1ChangeTargetTime < 0 then
-			push1ChangeTargetTime = math.random(2, 7)
-			push1Target = math.random(102, 109)
-		end
-		
-		SetTarget(id, push1Target)
-	else
-		update_pusher(id, dt)
 	end
 end
 
