@@ -825,40 +825,6 @@ int Event::FallingPlatform(lua_State* L)
 	return 1;
 }
 
-int Event::OnAPlatform(lua_State* L)
-{
-	bool flag = false;
-	int n = lua_gettop(L);
-	if (n >= 1)
-	{
-		Entity* player = entityManager->getEntity(1);
-
-		if (player->ground != NULL)
-		{
-			if (player->ground->fId == 5)
-			{
-				flag = true;
-			}
-			if (player->ground->fId == 6)
-			{
-				flag = true;
-			}
-			if (player->ground->fId == 7)
-			{
-				flag = true;
-			}
-			if (player->ground->fId == 8)
-			{
-				flag = true;
-			}
-		}
-	}
-
-	lua_pushboolean(L, flag);
-
-	return 1;
-}
-
 int Event::LevelIsCompleted(lua_State* L)
 {
 	bool flag = false;

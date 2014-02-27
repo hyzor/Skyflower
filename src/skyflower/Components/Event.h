@@ -85,7 +85,6 @@ public:
 
 		//for platform-puzzles
 		lua_register(sh->L, "FallingPlatform", Event::FallingPlatform);
-		lua_register(sh->L, "OnAPlatform", Event::OnAPlatform);
 
 		//for box-puzzle
 		lua_register(sh->L, "BoxOnButton", Event::BoxOnButton);
@@ -171,8 +170,8 @@ private:
 	static int CompletedLevelCount(lua_State* L);
 
 	static int ButtonUp(lua_State* L);
+
 	static int FallingPlatform(lua_State* L);
-	static int OnAPlatform(lua_State* L);
 
 	static int LevelIsCompleted(lua_State* L);
 	static int SetActivated(lua_State* L);
