@@ -415,7 +415,7 @@ function update_thrower1(id, dt)
 			throw1ChangeTargetTime = throw1ChangeTargetTime - dt
 			if throw1ChangeTargetTime < 0 then
 				throw1ChangeTargetTime = math.random(2, 7)
-				throw1Target = math.floor(math.random(102, 109.99))
+				throw1Target = math.random(102, 109)
 			end
 			
 			SetTarget(id, throw1Target)
@@ -448,7 +448,7 @@ function update_pusher2(id, dt)
 			push2ChangeTargetTime = push2ChangeTargetTime - dt
 			if push2ChangeTargetTime < 0 then
 				push2ChangeTargetTime = math.random(2, 7)
-				push2Target = math.floor(math.random(102, 109.99))
+				push2Target = math.random(102, 109)
 			end
 			
 			SetTarget(id, push2Target)
