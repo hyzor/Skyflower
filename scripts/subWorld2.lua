@@ -314,8 +314,22 @@ end
 
 finished = false
 failed = false
+spawning = false
+timer = 0
 function update_boxPuzzle(id, dt)
 	-- blue, yellow, red
+	if not BoxIsAlive(59) or not BoxIsAlive(58) or not BoxIsAlive(60) or not spawning then
+		RespawnBox(1)
+		RespawnBox(59)
+		RespawnBox(58)
+		RespawnBox(60)
+		
+		spawning = true
+	end
+	timer = timer + dt
+	if timer > 4 then
+		spawning = true
+	end
 	if BoxOnButton(56, 59) and BoxOnButton(66, 58) and BoxOnButton(64, 60) then
 		if not finished then
 			finished = true
