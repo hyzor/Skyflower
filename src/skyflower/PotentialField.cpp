@@ -24,58 +24,6 @@ Field* PotentialField::CreateField(float weight, float size, Vec3 pos)
 
 Field* PotentialField::CreateField(CollisionInstance* collinst, Vec3 pos, float scale)
 {
-	/*//load obj
-	std::stringstream ss;
-	ss << "../../content/" << file << ".obj";
-	std::ifstream infile(ss.str());
-	std::string line;
-
-	int count = 0;
-	Vec3 center;
-	std::vector<Vec3> positions;
-	while (std::getline(infile, line))
-	{
-		std::vector<std::string> elements = split(line);
-		if (elements.size() > 0)
-		{
-			if (elements.at(0) == "v")
-			{
-				Vec3 v = Vec3((float)atof(elements.at(1).c_str()), (float)atof(elements.at(2).c_str()), (float)atof(elements.at(3).c_str()))*scale;
-				center += v;
-				count++;
-				positions.push_back(v);
-			}
-		}
-	}
-	infile.close();
-
-	Vec3 vMin = Vec3::Max();
-	Vec3 vMax = Vec3::Min();
-	center /= count;
-	float radius = 0;
-	for (unsigned int i = 0; i < positions.size(); i++)
-	{
-		//calculate sphere
-		Vec3 p = positions[i];
-		p.Y = center.Y; // skipp height
-		float len = (p - center).Length();
-		if (len > radius)
-			radius = len;
-
-		//calculate bounds
-		vMin = Vec3::Min(vMin, positions[i]);
-		vMax = Vec3::Max(vMax, positions[i]);
-	}
-
-	Box bounds = Box(vMin, vMax - vMin);
-
-
-	float size = radius*1.5f;
-	if (bounds.Size.Y <= 2)
-		size = 0;
-
-	Field* f = new Field(size, radius*1.5f, pos + center, bounds);*/
-
 	Sphere s = collinst->GetSphere();
 	s.Position -= collinst->GetPosition();
 	Box b = collinst->GetBox();
@@ -89,7 +37,7 @@ Field* PotentialField::CreateField(CollisionInstance* collinst, Vec3 pos, float 
 	float size = s.Radius*1.5f;
 	if (b.Size.Y <= 2 || b.Size.X > 50 || b.Size.Z > 50) //platformarna räknas inte in
 		size = 0;
-	Field* f = new Field(size, s.Radius*1.5f, s.Position, pos, b);
+	Field* f = new Field(size*0.9f, s.Radius*1.2f, s.Position, pos, b);
 	fields.push_back(f);
 
 	return f;

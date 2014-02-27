@@ -54,12 +54,14 @@ public:
 		lua_register(sh->L, "Push", Event::push);
 		lua_register(sh->L, "PushAll", Event::pushAll);
 		lua_register(sh->L, "SetSpeed", Event::SetSpeed);
+		lua_register(sh->L, "IsDizzy", Event::IsDizzy);
 		//Throw
 		lua_register(sh->L, "PickUp", Event::PickUp);
 		lua_register(sh->L, "PickUpAll", Event::PickUpAll);
 		lua_register(sh->L, "CanPick", Event::CanPick);
 		lua_register(sh->L, "Throw", Event::sThrow);
 		lua_register(sh->L, "CanThrow", Event::CanThrow);
+		lua_register(sh->L, "IsHeld", Event::IsHeld);
 
 		// MoveTarget component
 		lua_register(sh->L, "MoveToTarget", Event::MoveToTarget);
@@ -87,9 +89,9 @@ public:
 		lua_register(sh->L, "FallingPlatform", Event::FallingPlatform);
 
 		//for box-puzzle
-		lua_register(sh->L, "BoxOnButton", Event::BoxOnButton);
-		lua_register(sh->L, "BoxIsAlive", Event::BoxIsAlive);
-		lua_register(sh->L, "RespawnBox", Event::RespawnBox);
+		lua_register(sh->L, "OnButton", Event::OnButton);
+		lua_register(sh->L, "IsAlive", Event::IsAlive);
+		lua_register(sh->L, "Respawn", Event::Respawn);
 
 		//Determine which sign to use in the hubworld, with or without a mark that indicates that you have completed a subworld
 		lua_register(sh->L, "LevelIsCompleted", Event::LevelIsCompleted);
@@ -146,12 +148,14 @@ private:
 	static int push(lua_State* L);
 	static int pushAll(lua_State* L);
 	static int SetSpeed(lua_State* L);
+	static int IsDizzy(lua_State* L);
 
 	static int PickUp(lua_State* L);
 	static int PickUpAll(lua_State* L);
 	static int CanPick(lua_State* L);
 	static int sThrow(lua_State* L);
 	static int CanThrow(lua_State* L);
+	static int IsHeld(lua_State* L);
 
 	static int MoveToTarget(lua_State* L);
 	static int MoveToSpawn(lua_State* L);
@@ -176,9 +180,9 @@ private:
 	static int LevelIsCompleted(lua_State* L);
 	static int SetActivated(lua_State* L);
 
-	static int BoxOnButton(lua_State* L);
-	static int BoxIsAlive(lua_State* L);
-	static int RespawnBox(lua_State* L);
+	static int OnButton(lua_State* L);
+	static int IsAlive(lua_State* L);
+	static int Respawn(lua_State* L);
 };
 
 #endif

@@ -53,7 +53,7 @@ function deactivated_platform_start(id)
 end
 
 
---btnStair script--
+--temporaryFlowers script--
 -------------------
 function load_temporaryFlowers(id)
 	StartUpdate()
@@ -357,11 +357,11 @@ spawning = false
 timer = 0
 function update_boxPuzzle(id, dt)
 	-- blue, yellow, red
-	if not BoxIsAlive(59) or not BoxIsAlive(58) or not BoxIsAlive(60) or not spawning then
-		RespawnBox(1)
-		RespawnBox(59)
-		RespawnBox(58)
-		RespawnBox(60)
+	if not IsAlive(59) or not IsAlive(58) or not IsAlive(60) or not spawning then
+		Respawn(1)
+		Respawn(59)
+		Respawn(58)
+		Respawn(60)
 		
 		spawning = true
 	end
@@ -369,7 +369,7 @@ function update_boxPuzzle(id, dt)
 	if timer > 4 then
 		spawning = true
 	end
-	if BoxOnButton(56, 59) and BoxOnButton(66, 58) and BoxOnButton(64, 60) then
+	if OnButton(56, 59) and OnButton(66, 58) and OnButton(64, 60) then
 		if not finished then
 			finished = true
 			failed = false
@@ -381,6 +381,76 @@ function update_boxPuzzle(id, dt)
 		Unlit(201,1)
 		finished = false
 		failed = true
+	end
+end
+
+
+
+
+
+
+
+
+
+--thrower script--
+-----------------
+
+function load_thrower(id)
+	StartUpdate()
+end
+
+heldtime = 0
+respawnballtime = 0
+function update_thrower(id, dt)
+	if not CanThrow(id, 101) then
+		if not IsHeld(101) then
+			SetTarget(id, 101)
+			PickUp(id, 101)
+			respawnballtime = respawnballtime + dt
+			if respawnballtime > 10 then
+				Respawn(101)
+				respawnballtime = 0
+			end
+		else
+			respawnballtime = 0
+			SetTarget(id, player, 100)
+		end
+	else
+		respawnballtime = 0
+		SetTarget(id, player, 60)
+		heldtime = heldtime + dt
+		if InRange(id, player, 60) and heldtime > 1 then
+			Throw(id, player)
+			heldtime = 0
+		end
+	end
+end
+
+
+--pusher2 script--
+-----------------
+
+function load_pusher2(id)
+	StartUpdate()
+end
+
+function update_pusher2(id, dt)
+	if not IsDizzy(player) and IsAlive(73) then
+		SetSpeed(id, 30)
+		if InRange(id, player, 40) then
+			SetTarget(id, player)
+			if CanPush(id, player) then
+				Push(id, player)
+			end
+		else
+			SetTarget(id, player, 60)
+		end
+	else
+		SetSpeed(id, 40)
+		SetTarget(id, player)
+		if CanPush(id, player) then
+			Push(id, player)
+		end
 	end
 end
 

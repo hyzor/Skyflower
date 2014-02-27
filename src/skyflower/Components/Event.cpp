@@ -450,6 +450,22 @@ int Event::SetSpeed(lua_State* L)
 	return 0;
 }
 
+
+int Event::IsDizzy(lua_State* L)
+{
+	bool ret = false;
+
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		Entity* entityAi = entityManager->getEntity((Cistron::EntityId)lua_tointeger(L, 1));
+		ret = entityAi->getComponent<Movement*>("Movement")->getIsDizzy();
+	}
+
+	lua_pushboolean(L, ret);
+	return 1;
+}
+
 int Event::MoveToTarget(lua_State* L)
 {
 	int n = lua_gettop(L);
@@ -582,6 +598,24 @@ int Event::CanThrow(lua_State* L)
 
 	return 1;
 }
+
+int Event::IsHeld(lua_State* L)
+{
+	bool ret = false;
+
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		Entity* entity = entityManager->getEntity((EntityId)lua_tointeger(L, 1));
+
+		Throwable* throwComp = entity->getComponent<Throwable*>("Throwable");
+		ret = throwComp->getIsBeingPickedUp();
+	}
+
+	lua_pushboolean(L, ret);
+	return 1;
+}
+
 
 int Event::Lit(lua_State* L)
 {
@@ -867,7 +901,7 @@ int Event::SetActivated(lua_State* L)
 	return 0;
 }
 
-int Event::BoxOnButton(lua_State* L)
+int Event::OnButton(lua_State* L)
 {
 	bool flag = false;
 	int n = lua_gettop(L);
@@ -893,7 +927,7 @@ int Event::BoxOnButton(lua_State* L)
 	return 1;
 }
 
-int Event::BoxIsAlive(lua_State* L)
+int Event::IsAlive(lua_State* L)
 {
 	bool flag = false;
 	int n = lua_gettop(L);
@@ -914,7 +948,7 @@ int Event::BoxIsAlive(lua_State* L)
 	return 1;
 }
 
-int Event::RespawnBox(lua_State* L)
+int Event::Respawn(lua_State* L)
 {
 	bool flag = false;
 	int n = lua_gettop(L);
