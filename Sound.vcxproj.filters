@@ -60,9 +60,6 @@
     <ClInclude Include="src\sound\AudioDecoderOpus.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\sound\debug.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\sound\win32\TaskQueueWin32.h">
       <Filter>Source Files\win32</Filter>
     </ClInclude>

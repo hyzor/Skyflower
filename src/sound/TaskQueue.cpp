@@ -1,9 +1,6 @@
 #include "TaskQueue.h"
 #include "win32/TaskQueueWin32.h"
 
-// Must be included last!
-#include "debug.h"
-
 TaskQueue *TaskQueue::Create()
 {
 	TaskQueue *taskQueue = NULL;

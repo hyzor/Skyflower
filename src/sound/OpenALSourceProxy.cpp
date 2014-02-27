@@ -6,9 +6,6 @@
 #include "OpenALSourceProxy.h"
 #include "SoundSourceImpl.h"
 
-// Must be included last!
-#include "debug.h"
-
 OpenALSourceProxy::OpenALSourceProxy(const SoundSourceImpl *owner)
 {
 	assert(owner);
