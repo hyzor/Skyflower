@@ -10,10 +10,12 @@
 // Must be included last!
 #include "shared/debug.h"
 
+#define THROW_FORCE 150.0f
+#define THROW_PARTICLE_EMIT_FREQUENCY (1.0f / 25.0f)
+
 Throw::Throw(bool haveAim) : Component("Throw")
 {
 	this->heldEntity = nullptr;
-	this->aimEntity = nullptr;
 	this->toPickUp = false;
 	this->isDizzy = false;
 }
@@ -32,7 +34,33 @@ void Throw::addedToEntity()
 	requestMessage("isDizzy", &Throw::setIsDizzy);
 	requestMessage("notDizzy", &Throw::setNotDizzy);
 
-	this->aimEntity = getEntityManager()->getEntity(5000);
+	this->nextAimParticleSystemIndex = 0;
+	this->nextAimParticleSystemTime = 0.0f;
+
+	for (int i = 0; i < THROW_NUM_PARTICLE_SYSTEMS; i++)
+	{
+		ParticleSystem *particleSystem = getOwner()->getModules()->graphics->CreateParticleSystem();
+		particleSystem->SetActive(false);
+		particleSystem->SetParticleType(ParticleType::PT_AIM);
+		particleSystem->SetEmitFrequency(THROW_PARTICLE_EMIT_FREQUENCY);
+		particleSystem->SetParticleAgeLimit(0.75f);
+		particleSystem->SetParticleFadeTime(0.75f);
+		particleSystem->SetScale(XMFLOAT2(3.0f, 3.0f));
+		particleSystem->SetConstantAccel(XMFLOAT3(0.0f, 0.0f, 0.0f));
+		particleSystem->SetRandomVelocityActive(false);
+		//particleSystem->SetRandomVelocity(XMFLOAT3(1.0f, 1.0f, 1.0f));
+
+		this->aimParticleSystems[i].particleSystem = particleSystem;
+	}
+}
+
+void Throw::removeFromEntity()
+{
+	for (int i = 0; i < THROW_NUM_PARTICLE_SYSTEMS; i++)
+	{
+		getOwner()->getModules()->graphics->DeleteParticleSystem(this->aimParticleSystems[i].particleSystem);
+		this->aimParticleSystems[i].particleSystem = NULL;
+	}
 }
 
 void Throw::update(float dt)
@@ -64,7 +92,7 @@ void Throw::update(float dt)
 			this->heldEntity->updatePos(throwablePosition);
 			this->heldEntity->getPhysics()->SetVelocity(Vec3(0.0f, 0.0f, 0.0f));
 
-			updateAim();
+			updateAim(dt);
 		}
 	}
 
@@ -84,8 +112,7 @@ void Throw::ThrowAt(Entity* e)
 			throwalble->setIsBeingThrown(true, getOwnerId());
 			throwalble->getPhysicsEntity()->FireProjectileAt(getOwner()->returnPos(), e->returnPos());
 
-			// Make the aim invisible.
-			aimEntity->updateVisible(false);
+			hideAim();
 
 			Vec3 throwablePosition = heldEntity->returnPos();
 			getOwner()->getModules()->sound->PlaySound("swish.wav", 1.0f, &throwablePosition.X);
@@ -117,9 +144,7 @@ void Throw::ThrowPlayer()
 			Vec3 aimDirection = Vec3(cosf(-rotation.Y - (float)M_PI_2), sinf(-pitch), sinf(-rotation.Y - (float)M_PI_2)).Normalize();
 			throwalble->getPhysicsEntity()->FireProjectile(getOwner()->returnPos(), aimDirection * THROW_FORCE);
 
-
-			// Make the aim invisible.
-			aimEntity->updateVisible(false);
+			hideAim();
 
 			Vec3 throwablePosition = heldEntity->returnPos();
 			getOwner()->getModules()->sound->PlaySound("swish.wav", 1.0f, &throwablePosition.X);
@@ -142,8 +167,8 @@ void Throw::PutDown()
 		if (throwalble && throwalble->getIsBeingPickedUp())
 		{
 			throwalble->setIsBeingPickedUp(false);
-			if (this->aimEntity)
-				this->aimEntity->updateVisible(false);
+			hideAim();
+
 			this->heldEntity = nullptr;
 		}
 	}
@@ -179,9 +204,14 @@ void Throw::dropThrowable(Message const & msg)
 	PutDown();
 }
 
-void Throw::setAimVisibility(bool state)
+void Throw::hideAim()
 {
-	this->aimEntity->updateVisible(state);
+	this->nextAimParticleSystemTime = 0.0f;
+
+	for (int i = 0; i < THROW_NUM_PARTICLE_SYSTEMS; i++)
+	{
+		this->aimParticleSystems[i].particleSystem->SetActive(false);
+	}
 }
 
 void Throw::pickUp(Message const & msg)
@@ -211,65 +241,83 @@ void Throw::setNotDizzy(Message const & msg)
 	this->isDizzy = false;
 }
 
-void Throw::updateAim()
+void Throw::updateAim(float deltaTime)
 {
-	if (getOwnerId() == 1 && this->aimEntity && aimEntity)
-	{
-		Collision *collision = getOwner()->getModules()->collision;
-		const std::vector<CollisionInstance *> &collisionInstances = collision->GetCollisionInstances();
+	if (getOwnerId() != 1)
+		return;
 
-		CollisionInstance *ownerCollision = getOwner()->returnCollision();
-		CollisionInstance *heldEntityCollision = this->heldEntity->returnCollision();
-		CollisionInstance *collisionInstance;
+	ThrowAimParticleSystem *particleSystem;
+
+	this->nextAimParticleSystemTime -= deltaTime;
+
+	if (this->nextAimParticleSystemTime < 0.0f)
+	{
+		this->nextAimParticleSystemTime = 0.75f;
 
 		Vec3 rotation = getOwner()->returnRot();
 		float pitch = getOwner()->getModules()->camera->GetPitch();
 		Vec3 aimDirection = Vec3(cosf(-rotation.Y - (float)M_PI_2), sinf(-pitch), sinf(-rotation.Y - (float)M_PI_2)).Normalize();
-		Vec3 aimPosition = heldEntity->returnPos();
-		Vec3 velocity = aimDirection * THROW_FORCE;
 
-		const float rayLength = 3.0f;
+		particleSystem = &this->aimParticleSystems[this->nextAimParticleSystemIndex];
+		particleSystem->particleSystem->SetEmitFrequency(THROW_PARTICLE_EMIT_FREQUENCY);
+		particleSystem->particleSystem->SetActive(true);
+		particleSystem->position = heldEntity->returnPos();
+		particleSystem->velocity = aimDirection * THROW_FORCE;
 
-		Vec3 direction = Vec3(cosf(-rotation.Y - (float)M_PI_2), 0.0f, sinf(-rotation.Y - (float)M_PI_2)).Normalize();
-		Vec3 rayDirection = Vec3((direction.X > 0.0f ? 1.0f : -1.0f), -1.0f, (direction.Z > 0.0f ? 1.0f : -1.0f)).Normalize();
-		Ray ray = Ray(aimPosition, rayDirection * rayLength);
+		this->nextAimParticleSystemIndex = (this->nextAimParticleSystemIndex + 1) % THROW_NUM_PARTICLE_SYSTEMS;
+	}
 
-		this->aimEntity->updateVisible(false);
+	const float rayLength = 3.0f;
 
-		const float timeStep = 1.0f / 60.0f;
-		bool didHit = false;
-		int count = 0;
+	Collision *collision = getOwner()->getModules()->collision;
+	const std::vector<CollisionInstance *> &collisionInstances = collision->GetCollisionInstances();
 
-		while (!didHit && aimPosition.Y > -100.0f && count < 50)
+	CollisionInstance *ownerCollision = getOwner()->returnCollision();
+	CollisionInstance *heldEntityCollision = this->heldEntity->returnCollision();
+	CollisionInstance *collisionInstance;
+
+	Vec3 direction;
+	Ray ray;
+
+	for (int i = 0; i < THROW_NUM_PARTICLE_SYSTEMS; i++)
+	{
+		particleSystem = &this->aimParticleSystems[i];
+
+		if (!particleSystem->particleSystem->IsActive() || particleSystem->particleSystem->GetEmitFrequency() == FLT_MAX)
+			continue;
+
+		// This is basically a hax, ok?
+		particleSystem->position += GRAVITY_DEFAULT * (deltaTime * deltaTime) * 0.5f;
+		particleSystem->velocity += GRAVITY_DEFAULT * deltaTime;
+		particleSystem->position += particleSystem->velocity * deltaTime;
+
+		if (particleSystem->position.Y < -100.0f)
 		{
-			count++;
+			particleSystem->particleSystem->SetEmitFrequency(FLT_MAX);
+			continue;
+		}
 
-			// This is basically a hax, ok?
-			aimPosition += GRAVITY_DEFAULT * (timeStep * timeStep) * 0.5f;
-			velocity += GRAVITY_DEFAULT * timeStep;
-			aimPosition += velocity * timeStep;
+		direction = particleSystem->velocity;
+		direction.Normalize();
 
-			ray.SetPos(aimPosition);
+		ray = Ray(particleSystem->position, direction * rayLength);
 
-			for (size_t i = 0; i < collisionInstances.size(); i++)
+		for (size_t i = 0; i < collisionInstances.size(); i++)
+		{
+			collisionInstance = collisionInstances[i];
+
+			if (collisionInstance == ownerCollision || collisionInstance == heldEntityCollision)
+				continue;
+
+			float t = collisionInstance->Test(ray);
+
+			if (t > 0.0f)
 			{
-				collisionInstance = collisionInstances[i];
-
-				if (collisionInstance == ownerCollision || collisionInstance == heldEntityCollision)
-					continue;
-
-				float t = collisionInstance->Test(ray);
-
-				if (t > 0.0f)
-				{
-					this->aimEntity->updateRot(rotation);
-					this->aimEntity->updatePos(aimPosition + rayDirection * rayLength * t);
-					this->aimEntity->updateVisible(true);
-
-					didHit = true;
-					break;
-				}
+				particleSystem->particleSystem->SetEmitFrequency(FLT_MAX);
+				break;
 			}
 		}
+
+		particleSystem->particleSystem->SetEmitPos(XMFLOAT3(particleSystem->position.X, particleSystem->position.Y, particleSystem->position.Z));
 	}
 }

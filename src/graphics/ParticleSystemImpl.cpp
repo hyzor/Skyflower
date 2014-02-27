@@ -68,6 +68,11 @@ float ParticleSystemImpl::GetAgeLimit() const
 	return mParticleAgeLimit;
 }
 
+float ParticleSystemImpl::GetEmitFrequency() const
+{
+	return mEmitFrequency;
+}
+
 void ParticleSystemImpl::SetEyePos(const XMFLOAT3& eyePosW)
 {
 	mEyePosW = eyePosW;

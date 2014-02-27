@@ -41,6 +41,7 @@ public:
 	void SetRandomVelocity(XMFLOAT3 randomVelocity);
 
 	float GetAgeLimit() const;
+	float GetEmitFrequency() const;
 
 	void Init(ID3D11Device* device,
 		ParticleSystemShader* shader,

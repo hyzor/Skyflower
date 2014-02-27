@@ -4,12 +4,20 @@
 #include "Cistron.h"
 #include "Entity.h"
 #include "Components/Throwable.h"
+#include "graphics/ParticleSystem.h"
 #include <string>
 #include <iostream>
 using namespace std;
 using namespace Cistron;
 
-#define THROW_FORCE 150.0f
+#define THROW_NUM_PARTICLE_SYSTEMS 5
+
+struct ThrowAimParticleSystem
+{
+	ParticleSystem *particleSystem;
+	Vec3 velocity;
+	Vec3 position;
+};
 
 class Throw : public Component {
 
@@ -18,6 +26,7 @@ public:
 	virtual ~Throw();
 
 	void addedToEntity();
+	void removeFromEntity();
 
 	void update(float dt);
 
@@ -33,10 +42,13 @@ private:
 
 	bool toPickUp;
 	Entity* heldEntity;
-	Entity* aimEntity;
 	bool isDizzy;
 
-	void setAimVisibility(bool state);
+	int nextAimParticleSystemIndex;
+	float nextAimParticleSystemTime;
+	ThrowAimParticleSystem aimParticleSystems[THROW_NUM_PARTICLE_SYSTEMS];
+
+	void hideAim();
 	void pickUp(Message const & msg);
 	void pickUpStop(Message const & msg);
 	void Throwing(Message const & msg);
@@ -45,7 +57,7 @@ private:
 	void setIsDizzy(Message const &msg);
 	void setNotDizzy(Message const & msg);
 
-	void updateAim();
+	void updateAim(float deltaTime);
 	
 };
 

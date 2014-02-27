@@ -5,3 +5,4 @@
 #define PT_BIRD 4
 #define PT_DUST 5
 #define PT_PORTAL 6
+#define PT_AIM 7
