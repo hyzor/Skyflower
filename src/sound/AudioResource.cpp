@@ -8,35 +8,8 @@
 // Must be included last!
 #include "debug.h"
 
-static bool forceSineWave = false;
-
 struct AudioResource *CreateAudioResource(const std::string &file)
 {
-	if (forceSineWave) {
-		struct AudioResource *resource = new AudioResource;
-		resource->decoder = &audioDecoderSineWave;
-		resource->file = NULL;
-
-		assert(resource->decoder->init(resource));
-
-		assert(resource->info.totalSamples > 0);
-		assert(resource->info.samplesPerBuffer > 0);
-		assert(resource->info.channels > 0);
-		assert(resource->info.sampleRate > 0);
-		assert(resource->info.bitDepth > 0);
-
-		resource->info.duration = ((float)resource->info.totalSamples / resource->info.channels) / resource->info.sampleRate;
-		resource->info.bufferCount = (unsigned int)(resource->info.totalSamples / resource->info.samplesPerBuffer);
-
-		if (resource->info.totalSamples % resource->info.samplesPerBuffer > 0) {
-			resource->info.bufferCount++;
-		}
-
-		printf("duration=%.2f, bufferCount=%u\n", resource->info.duration, resource->info.bufferCount);
-
-		return resource;
-	}
-
 	int fd = _open(file.c_str(), O_RDONLY, 0);
 
 	if (fd < 0) {

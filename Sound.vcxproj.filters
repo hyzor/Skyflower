@@ -60,9 +60,6 @@
     <ClInclude Include="src\sound\AudioDecoderOpus.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\sound\AudioDecoderSineWave.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\sound\debug.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -102,9 +99,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\sound\AudioDecoderOpus.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\sound\AudioDecoderSineWave.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\sound\TaskQueue.cpp">
