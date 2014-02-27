@@ -37,29 +37,34 @@ void Throw::addedToEntity()
 	this->nextAimParticleSystemIndex = 0;
 	this->nextAimParticleSystemTime = 0.0f;
 
-	for (int i = 0; i < THROW_NUM_PARTICLE_SYSTEMS; i++)
+	if (getOwnerId() == 1)
 	{
-		ParticleSystem *particleSystem = getOwner()->getModules()->graphics->CreateParticleSystem();
-		particleSystem->SetActive(false);
-		particleSystem->SetParticleType(ParticleType::PT_AIM);
-		particleSystem->SetEmitFrequency(THROW_PARTICLE_EMIT_FREQUENCY);
-		particleSystem->SetParticleAgeLimit(0.75f);
-		particleSystem->SetParticleFadeTime(0.75f);
-		particleSystem->SetScale(XMFLOAT2(3.0f, 3.0f));
-		particleSystem->SetConstantAccel(XMFLOAT3(0.0f, 0.0f, 0.0f));
-		particleSystem->SetRandomVelocityActive(false);
-		//particleSystem->SetRandomVelocity(XMFLOAT3(1.0f, 1.0f, 1.0f));
+		for (int i = 0; i < THROW_NUM_PARTICLE_SYSTEMS; i++)
+		{
+			ParticleSystem *particleSystem = getOwner()->getModules()->graphics->CreateParticleSystem();
+			particleSystem->SetActive(true);
+			particleSystem->SetParticleType(ParticleType::PT_AIM);
+			particleSystem->SetEmitFrequency(FLT_MAX);
+			particleSystem->SetParticleAgeLimit(0.75f);
+			particleSystem->SetParticleFadeTime(0.75f);
+			particleSystem->SetScale(XMFLOAT2(3.0f, 3.0f));
+			particleSystem->SetConstantAccel(XMFLOAT3(0.0f, 0.0f, 0.0f));
+			particleSystem->SetRandomVelocityActive(false);
 
-		this->aimParticleSystems[i].particleSystem = particleSystem;
+			this->aimParticleSystems[i].particleSystem = particleSystem;
+		}
 	}
 }
 
 void Throw::removeFromEntity()
 {
-	for (int i = 0; i < THROW_NUM_PARTICLE_SYSTEMS; i++)
+	if (getOwnerId() == 1)
 	{
-		getOwner()->getModules()->graphics->DeleteParticleSystem(this->aimParticleSystems[i].particleSystem);
-		this->aimParticleSystems[i].particleSystem = NULL;
+		for (int i = 0; i < THROW_NUM_PARTICLE_SYSTEMS; i++)
+		{
+			getOwner()->getModules()->graphics->DeleteParticleSystem(this->aimParticleSystems[i].particleSystem);
+			this->aimParticleSystems[i].particleSystem = NULL;
+		}
 	}
 }
 
@@ -203,11 +208,14 @@ void Throw::dropThrowable(Message const & msg)
 
 void Throw::hideAim()
 {
+	if (getOwnerId() != 1)
+		return;
+
 	this->nextAimParticleSystemTime = 0.0f;
 
 	for (int i = 0; i < THROW_NUM_PARTICLE_SYSTEMS; i++)
 	{
-		this->aimParticleSystems[i].particleSystem->SetActive(false);
+		this->aimParticleSystems[i].particleSystem->SetEmitFrequency(FLT_MAX);
 	}
 }
 
@@ -264,7 +272,6 @@ void Throw::updateAim(float deltaTime)
 
 		particleSystem = &this->aimParticleSystems[this->nextAimParticleSystemIndex];
 		particleSystem->particleSystem->SetEmitFrequency(THROW_PARTICLE_EMIT_FREQUENCY);
-		particleSystem->particleSystem->SetActive(true);
 		particleSystem->position = heldEntity->returnPos();
 		particleSystem->velocity = aimDirection * THROW_FORCE;
 
@@ -287,7 +294,7 @@ void Throw::updateAim(float deltaTime)
 	{
 		particleSystem = &this->aimParticleSystems[i];
 
-		if (!particleSystem->particleSystem->IsActive() || particleSystem->particleSystem->GetEmitFrequency() == FLT_MAX)
+		if (particleSystem->particleSystem->GetEmitFrequency() == FLT_MAX)
 			continue;
 
 		// This is basically a hax, ok?
