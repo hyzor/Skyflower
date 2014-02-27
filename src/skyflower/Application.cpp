@@ -60,7 +60,7 @@ void Application::Start()
 
 	m_menu = new Menu();
 	m_menu->init(m_GUI, m_window->GetWidth(), m_window->GetHeight(), m_soundEngine);
-	m_menu->setActive(false);
+	m_menu->setActive(true);
 
 	m_camera = m_graphicsEngine->CreateCameraController();
 	m_physicsEngine = CreatePhysicsEngine();
@@ -155,6 +155,8 @@ void Application::Start()
 	m_oldTime = GetTime();
 	mStartTime = GetTime();
 	m_quit = false;
+
+	changeGameState(GameState::menu);
 
 	while(!m_quit)
 	{
@@ -563,17 +565,10 @@ void Application::OnKeyDown(unsigned short key)
 	switch (key)
 	{
 	case VK_ESCAPE:
-		if (m_menu->isActive())
-		{
+		if (m_menu->isActive() && !m_menu->isFirst())
 			m_menu->setActive(false);
-			m_menu->setActivePage(Menu::MenuPageMain);
-		}
 		else
-		{
 			m_menu->setActive(true);
-		}
-
-			
 
 		break;
 	case VK_RETURN:
