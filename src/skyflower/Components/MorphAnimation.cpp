@@ -12,6 +12,8 @@ void MorphAnimation::addedToEntity()
 	m_model = getOwner()->getModules()->graphics->CreateMorphAnimatedInstance(path, model, Vec3());
 	m_model->Set(pos, rot, scale, Vec3(0.0f, 0.0f, 0.0f));
 	m_model->SetVisibility(getOwner()->returnVisible());
+
+	this->requestMessage("StartMorphingTest", &MorphAnimation::testStartMorphing);
 }
 
 void MorphAnimation::removeFromEntity()
@@ -40,6 +42,7 @@ void MorphAnimation::update(float dt)
 		{
 			m_model->SetWeights(targetWeight);
 			this->isMorphing = false;
+			this->getOwner()->sendMessage("StopParticleSystem", this);
 		}
 	}
 }
@@ -50,6 +53,7 @@ void MorphAnimation::startMorphing(Vec3 targetWeight, float speed)
 	this->morphSpeed = (targetWeight - m_model->GetWeights()) * speed;
 	this->isMorphing = true;
 	this->speed = speed;
+	this->getOwner()->sendMessage("StartParticleSystem", this);
 }
 
 void MorphAnimation::setWeights(Vec3 weights)
@@ -60,4 +64,9 @@ void MorphAnimation::setWeights(Vec3 weights)
 Vec3 MorphAnimation::getWeights() const
 {
 	return m_model->GetWeights();
+}
+
+void MorphAnimation::testStartMorphing(const Message& message)
+{
+	this->startMorphing(Vec3(1.0f,0.0f,0.0f), 0.2f);
 }

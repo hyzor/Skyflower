@@ -9,6 +9,9 @@ cbuffer cbFixed : register (b0)
 	float fadeTime;
 	float gTimeStep;
 	float2 paddingFadeTime;
+
+	float3 gColor;
+	float colorPadding;
 };
 
 struct Particle
@@ -44,7 +47,7 @@ VertexOut main(Particle vIn)
 
 	// fade color with time
 	float opacity = 1.0f - smoothstep(0.0f, 1.0f, (t / fadeTime) / 1.0f);
-	vOut.Color = float4(1.0f, 1.0f, 1.0f, opacity);
+	vOut.Color = float4(gColor.x, gColor.y, gColor.z, opacity);
 
 	vOut.SizeW = vIn.SizeW;
 	vOut.Type = vIn.Type;

@@ -1004,6 +1004,13 @@ bool EntityManager::loadXML(string xmlFile)
 				PortalEffectComponent *portalEffect = new PortalEffectComponent();
 				this->addComponent(entity, portalEffect);
 			}
+			else if (componentName == "ParticleSystemComp")
+			{
+				string scriptName = GetStringAttribute(e, "script", entityName, componentName);
+				UINT particleSystemID = GetIntAttribute(e, "particleSystemID", entityName, xmlFile, componentName);
+				ParticleSystemComp* psc = new ParticleSystemComp(scriptName, particleSystemID);
+				this->addComponent(entity, psc);
+			}
 			else
 			{
 				cout << xmlFile << ": Unknown component with name " << componentName << " in entity " << entityName << endl;

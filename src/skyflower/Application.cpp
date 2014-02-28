@@ -68,6 +68,7 @@ void Application::Start()
 	m_potentialField = new PotentialField();
 	m_scriptHandler = new ScriptHandler();
 	Event::Register(m_scriptHandler);
+	ParticleSystemComp::Register(m_scriptHandler);
 
 	Modules modules;
 	modules.input = m_inputHandler;
@@ -106,9 +107,10 @@ void Application::Start()
 	levelHandler->init(m_entityManager);
 
 	// Load Hub Level
-	levelHandler->queue(5);
+	levelHandler->queue(0);
 	//levelHandler->loadQueued();
 	levelHandler->LoadQueued(mXmlResourceDir);
+	//levelHandler->loadQueued();
 
 	//m_entityManager->sendMessageToEntity("ActivateListener", "player");
 	m_graphicsEngine->UpdateSceneData();

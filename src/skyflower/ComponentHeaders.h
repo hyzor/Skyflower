@@ -28,5 +28,6 @@
 #include "Components/Balloon.h"
 #include "Components/HelpText.h"
 #include "Components/PortalEffect.h"
+#include "Components/ParticleSystemComp.h"
 
 #endif

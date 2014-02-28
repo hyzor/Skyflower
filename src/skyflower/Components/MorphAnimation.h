@@ -39,6 +39,8 @@ private:
 	Vec3 targetWeight;
 	bool isMorphing;
 	float speed;
+
+	void testStartMorphing(const Message& message);
 };
 
 #endif

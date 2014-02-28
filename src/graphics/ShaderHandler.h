@@ -1079,6 +1079,8 @@ public:
 	void SetRandomVelocity(XMFLOAT3 randomVelocity);
 
 	void RandomizeVelocity(bool randomize);
+
+	void SetColor(XMFLOAT3 color);
 	//void UpdatePerParticleSystem(ID3D11DeviceContext* dc);
 
 	void UpdateDrawShaders(ID3D11DeviceContext* dc);
@@ -1095,6 +1097,9 @@ private:
 		float fadeTime;
 		float timeStep;
 		XMFLOAT2 fadeTimePadding;
+
+		XMFLOAT3 color;
+		float colorPadding;
 	};
 
 	struct DRAW_GS_PERFRAMEBUFFER
