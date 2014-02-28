@@ -1512,7 +1512,7 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 	//mShaderHandler->mLightDeferredToTextureShader->SetLightWorldViewProj(mShadowMap->GetLightWorld(), mShadowMap->GetLightView(), mShadowMap->GetLightProj());
 
 	// TODO: Instead of hard coding these properties, get them from some modifiable settings collection
-	mShaderHandler->mLightDeferredToTextureShader->SetFogProperties(1, 0.0195f, -125.0f, 0.105f, XMFLOAT4(0.86f, 0.86f, 0.9f, 1.0f));
+	//mShaderHandler->mLightDeferredToTextureShader->SetFogProperties(1, 0.0195f, -125.0f, 0.105f, XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 	mShaderHandler->mLightDeferredToTextureShader->SetMotionBlurProperties(1);
 	mShaderHandler->mLightDeferredToTextureShader->SetFpsValues(mCurFPS, mTargetFPS);
 	mShaderHandler->mLightDeferredToTextureShader->SetSkipLighting(false);
@@ -2117,6 +2117,11 @@ void GraphicsEngineImpl::DrawLines(Texture2D *texture, const float *data, size_t
 	mD3D->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
 	mD3D->GetImmediateContext()->IASetVertexBuffers(0, 1, &mLineVertexBuffer, &stride, &offset);
 	mD3D->GetImmediateContext()->Draw((UINT)clampedCount, 0);
+}
+
+void GraphicsEngineImpl::SetFogProperties(int enableFogging, float heightFalloff, float heightOffset, float globalDensity, XMFLOAT4 fogColor)
+{
+	mShaderHandler->mLightDeferredToTextureShader->SetFogProperties(enableFogging, heightFalloff, heightOffset, globalDensity, XMFLOAT4(fogColor));
 }
 
 void GraphicsEngineImpl::ResetRenderTargetAndViewport()
