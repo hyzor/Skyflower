@@ -59,12 +59,6 @@ end
 
 -- Variables --
 -- TODO: Vec3?? --
-offsetMaxXZ = 5
-offsetMinXZ = -5
-
-xTravelDir = 1.0
-zTravelDir = 1.0
-
 xPos = 0.0 yPos = 0.0 zPos = 0.0
 xAcc = 0.0 yAcc = 0.0 zAcc = 0.0
 xDir = 0.0 yDir = 0.0 zDir = 0.0
@@ -74,26 +68,29 @@ emitFrequency = 0.0
 ageLimit = 0.0
 fadeTime = 0.0
 timePassed = 0.0
-
+offsetMaxXZ = 5.5
+offsetMinXZ = -5.5
+xTravelDir = 1.0
+zTravelDir = 1.0
+angle = 1.0
+yFactor = 0.01
+yFactor1 = 0.01
+yFactor2 = 0.01
 useRandomVelocity = false
-
---function start_skyflowerparticles(_xPos, _yPos, _zPos, _xVel, _yVel, _zVel, _xAcc, _yAcc, _zAcc, _xDir, _yDir, _zDir, )
-	
-	
---end
 
 -- Set starting values --
 function start_skyflowerparticles()
 	SetEmitPos(10, 0, 0.0, 0.0, 0.0)
-	SetAcceleration(10, 0, 10.0, 1.0, 1.0)
-	SetDirection(10, 0, 10.0, 1.0, 1.0)
-	SetRandomVelocity(10, 0, 10.0, 10.0, 10.0)
+	SetAcceleration(10, 0, 1.0, 1.0, 1.0)
+	SetDirection(10, 0, 1.0, 1.0, 1.0)
+	SetRandomVelocity(10, 0, 20.0, 5.0, 20.0)
 	SetEmitFrequency(10, 0, 0.1)
-	SetAgeLimit(10, 0, 0.5)
-	SetFadeTime(10, 0, 0.5)
+	SetAgeLimit(10, 0, 2.5)
+	SetFadeTime(10, 0, 1.5)
 	SetRandomVelocityActive(10, 0, true)
 	SetParticleType(10, 0, 2)
 	SetScale(10, 0, 5.0, 5.0)
+	SetFadeLimit(10, 0, 2.5)
 	Activate(10, 0)
 end
 
@@ -115,10 +112,11 @@ end
 
 function update_skyflowerparticles(dt)
 	timePassed = timePassed + dt
+	angle = angle + dt * 5
 	
 	xPos = xPos + (xTravelDir * dt * 20)
 	zPos = zPos + (zTravelDir * dt * 20)
-	Print(xPos)
+	yPos = yPos + (dt * 25)
 	
 	if (xPos > offsetMaxXZ) or (xPos < offsetMinXZ) then
 		xTravelDir = xTravelDir * -1.0
@@ -128,18 +126,35 @@ function update_skyflowerparticles(dt)
 		zTravelDir = zTravelDir * -1.0
 	end
 	
-	yPos = yPos + (dt * 20)
-	
-	if(yPos > 25.0) then
-		SetEmitFrequency(10, 0, 0.001)
+	if(yPos > 20.0) then
+		yFactor1 = yFactor1 + (dt * 0.25)
+		SetEmitFrequency(10, 0, 0.05 * (0.1/yFactor1))
 	end
 	
-	SetEmitPos(10, 0, xPos, yPos, zPos)
+	if(yPos > 40.0) then
+		yFactor2 = yFactor2 + (dt * 0.25)
+		SetEmitFrequency(10, 0, 0.01 * ( 0.1/yFactor2))
+	end
+	
+	if(yPos > 70.0) then
+		yFactor = yFactor + (dt * 0.75)
+		SetEmitFrequency(10, 0, 0.001 * (0.1/yFactor))
+		SetDirection(10, 0, math.cos(angle), 1.0, math.sin(angle))
+		SetAcceleration(10, 0, 1.0, -10.0, 1.0)
+		SetRandomVelocity(10, 0, 50.0 * yFactor, 10.0, 50.0 * yFactor)
+	end
+	
+	if(yPos < 70.0) then
+		SetDirection(10, 0, math.cos(angle), -1.0, math.sin(angle))
+		SetAcceleration(10, 0, math.cos(angle) * 5.0, -2.5, math.sin(angle) * 5.0)
+	end
+	
+	SetEmitPos(10, 0, xPos, yPos, zPos)	
 end
 
-function settype_skyflowerparticles()
-	SetParticleType(10, 0, 3) -- (Entity ID, particlesystem ID, particle type)
-end
+--function settype_skyflowerparticles()
+	--SetParticleType(10, 0, 3) -- (Entity ID, particlesystem ID, particle type)
+--end
 
 
 
