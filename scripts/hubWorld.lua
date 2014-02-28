@@ -6,11 +6,11 @@ end
 
 
 function loaded()
-	if CompletedLevelCount() == 1 then
-		skyflowerID = 10
-		StartMorph(skyflowerID, 1,0,0,0.2)
-		CutScenePlay("intro")
-	end	
+	skyflowerID = 10
+	targetX = CompletedLevelCount() * 0.5
+	StartMorph(skyflowerID, targetX,0,0,0.2)
+	CutScenePlay("intro")
+
 	
 	-- Load correct signs in the hubworld, depending on if the subworlds are completed or not. --
 	
