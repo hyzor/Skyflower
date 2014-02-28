@@ -46,7 +46,7 @@ void Menu::init(GUI *g, int screenWidth, int screeenHeight, SoundEngine *sound)
 	scaleX = 1.0f;
 	scaleY = 1.0f;
 
-	m_bg = g->CreateGUIElementAndBindTexture(Vec3(0, 0), "Menygrafik\\fyraTreRatio.png");
+	m_bg = g->CreateGUIElementAndBindTexture(Vec3(0, 0), "Menygrafik\\logoFyraTre.png");
 	g->GetGUIElement(m_bg)->SetVisible(false);
 
 	// FIXME: Hardcoding ;(
@@ -64,28 +64,28 @@ void Menu::init(GUI *g, int screenWidth, int screeenHeight, SoundEngine *sound)
 	g->GetGUIElement(settingsBox)->SetVisible(false);
 
 	// Main page
-	MenuButton *resume = new MenuButton(g, Vec3(30, 150), 253, 78, "buttons/resume.png", "buttons/resume_highlighted.png");
+	MenuButton *resume = new MenuButton(g, Vec3(30, 250), 253, 78, "buttons/resume.png", "buttons/resume_highlighted.png");
 	resume->setOnClick([this]() {buttonResumeClicked();});
 	m_pages[MenuPageMain].buttons.push_back(resume);
 	
-	MenuButton *settings = new MenuButton(g, Vec3(30, 240), 251, 89, "buttons/settings.png", "buttons/settings_highlighted.png");
+	MenuButton *settings = new MenuButton(g, Vec3(30, 340), 251, 89, "buttons/settings.png", "buttons/settings_highlighted.png");
 	settings->setOnClick([this]() { setActivePage(MenuPageSettings); });
 	m_pages[MenuPageMain].buttons.push_back(settings);
 	
-	MenuButton *instructions = new MenuButton(g, Vec3(30, 330), 376, 80, "buttons/instructions.png", "buttons/instructions_highlighted.png");
+	MenuButton *instructions = new MenuButton(g, Vec3(30, 430), 376, 80, "buttons/instructions.png", "buttons/instructions_highlighted.png");
 	instructions->setOnClick([this]() { setActivePage(MenuPageInstructions); });
 	m_pages[MenuPageMain].buttons.push_back(instructions);
 	
-	MenuButton *credits = new MenuButton(g, Vec3(30, 420), 230, 80, "buttons/credits.png", "buttons/credits_highlighted.png");
+	MenuButton *credits = new MenuButton(g, Vec3(30, 520), 230, 80, "buttons/credits.png", "buttons/credits_highlighted.png");
 	credits->setOnClick([this]() { setActivePage(MenuPageCredits); });
 	m_pages[MenuPageMain].buttons.push_back(credits);
 
-	MenuButton *exit = new MenuButton(g, Vec3(30, 510), 161, 81, "buttons/exit.png", "buttons/exit_highlighted.png");
+	MenuButton *exit = new MenuButton(g, Vec3(30, 610), 161, 81, "buttons/exit.png", "buttons/exit_highlighted.png");
 	exit->setOnClick([this]() {buttonExitClicked(); });
 	m_pages[MenuPageMain].buttons.push_back(exit);
 
 	// Settings page
-	MenuButton *back = new MenuButton(g, Vec3(30, 150), 174, 80, "buttons/back.png", "buttons/back_highlighted.png");
+	MenuButton *back = new MenuButton(g, Vec3(30, 250), 174, 80, "buttons/back.png", "buttons/back_highlighted.png");
 	back->setOnClick([this]()
 	{
 		setActivePage(this->isFirst()? MenuPageStart : MenuPageMain);
@@ -112,17 +112,17 @@ void Menu::init(GUI *g, int screenWidth, int screeenHeight, SoundEngine *sound)
 	m_pages[MenuPageSettings].sliders.push_back(mouseSense);
 
 	// Instructions page
-	MenuButton *back_inst = new MenuButton(g, Vec3(30, 150), 174, 80, "buttons/back.png", "buttons/back_highlighted.png");
+	MenuButton *back_inst = new MenuButton(g, Vec3(30, 250), 174, 80, "buttons/back.png", "buttons/back_highlighted.png");
 	back_inst->setOnClick([this]() { setActivePage(this->isFirst()? MenuPageStart : MenuPageMain); });
 	m_pages[MenuPageInstructions].buttons.push_back(back_inst);
 
 	// Credits page
-	MenuButton *back_credits = new MenuButton(g, Vec3(30, 150), 174, 80, "buttons/back.png", "buttons/back_highlighted.png");
+	MenuButton *back_credits = new MenuButton(g, Vec3(30, 250), 174, 80, "buttons/back.png", "buttons/back_highlighted.png");
 	back_credits->setOnClick([this]() { setActivePage(this->isFirst()? MenuPageStart : MenuPageMain); });
 	m_pages[MenuPageCredits].buttons.push_back(back_credits);
 
 	// Start menu
-	MenuButton *start = new MenuButton(g, Vec3(30, 150), 253, 78, "buttons/start.png", "buttons/start_highlighted.png");
+	MenuButton *start = new MenuButton(g, Vec3(30, 250), 253, 78, "buttons/start.png", "buttons/start_highlighted.png");
 	start->setOnClick([this]()
 	{
 		setFirst(false);
@@ -131,19 +131,19 @@ void Menu::init(GUI *g, int screenWidth, int screeenHeight, SoundEngine *sound)
 	});
 	m_pages[MenuPageStart].buttons.push_back(start);
 
-	MenuButton *startSettings = new MenuButton(g, Vec3(30, 240), 251, 89, "buttons/settings.png", "buttons/settings_highlighted.png");
+	MenuButton *startSettings = new MenuButton(g, Vec3(30, 340), 251, 89, "buttons/settings.png", "buttons/settings_highlighted.png");
 	startSettings->setOnClick([this]() { setActivePage(MenuPageSettings); });
 	m_pages[MenuPageStart].buttons.push_back(startSettings);
 
-	MenuButton *startInstructions = new MenuButton(g, Vec3(30, 330), 376, 80, "buttons/instructions.png", "buttons/instructions_highlighted.png");
+	MenuButton *startInstructions = new MenuButton(g, Vec3(30, 430), 376, 80, "buttons/instructions.png", "buttons/instructions_highlighted.png");
 	startInstructions->setOnClick([this]() { setActivePage(MenuPageInstructions); });
 	m_pages[MenuPageStart].buttons.push_back(startInstructions);
 
-	MenuButton *startCredits = new MenuButton(g, Vec3(30, 420), 230, 80, "buttons/credits.png", "buttons/credits_highlighted.png");
+	MenuButton *startCredits = new MenuButton(g, Vec3(30, 520), 230, 80, "buttons/credits.png", "buttons/credits_highlighted.png");
 	startCredits->setOnClick([this]() { setActivePage(MenuPageCredits); });
 	m_pages[MenuPageStart].buttons.push_back(startCredits);
 
-	MenuButton *startExit = new MenuButton(g, Vec3(30, 510), 161, 81, "buttons/exit.png", "buttons/exit_highlighted.png");
+	MenuButton *startExit = new MenuButton(g, Vec3(30, 610), 161, 81, "buttons/exit.png", "buttons/exit_highlighted.png");
 	startExit->setOnClick([this]() {buttonExitClicked(); });
 	m_pages[MenuPageStart].buttons.push_back(startExit);
 
