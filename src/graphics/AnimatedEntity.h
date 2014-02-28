@@ -21,6 +21,7 @@ public:
 	void RotateXYZ(XMFLOAT3 rot, float yaw, XMVECTOR Up);
 
 	void SetAnimation(UINT index, bool loop);
+	void SetAnimationSpeed(UINT index, float speed);
 
 	XMFLOAT3 Position;
 	XMFLOAT3 Scale;
@@ -41,12 +42,13 @@ public:
 
 	struct Animation
 	{
-		Animation(UINT animationType, UINT frameStart, UINT frameEnd)
+		Animation(UINT animationType, UINT frameStart, UINT frameEnd, float animationSpeed)
 		{
 			this->AnimationType = animationType;
 			this->FrameStart = frameStart;
 			this->FrameEnd = frameEnd;
 			this->playForwards = true;
+			this->AnimationSpeed = animationSpeed;
 		}
 
 		Animation(UINT animationType, UINT frameStart, UINT frameEnd, bool playForwards)
@@ -60,6 +62,7 @@ public:
 		UINT FrameStart, FrameEnd;
 		UINT AnimationType;
 		bool playForwards;
+		float AnimationSpeed;
 	};
 
 	std::vector<Animation> mAnimations;

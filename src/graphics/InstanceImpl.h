@@ -67,7 +67,7 @@ public:
 	void SetRotation(Vec3 rot);
 	void SetScale(Vec3 scale);
 	void Set(Vec3 pos, Vec3 rot, Vec3 scale);
-
+	void SetAnimationSpeed(UINT id, float speed);
 	void SetPrevWorld(XMMATRIX& prevWorld);
 	XMMATRIX GetPrevWorld();
 
@@ -104,22 +104,25 @@ private:
 
 	struct Animation
 	{
-		Animation(UINT animationType, UINT frameStart, UINT frameEnd)
+		Animation(UINT animationType, UINT frameStart, UINT frameEnd, float animationSpeed)
 		{
 			this->AnimationType = animationType;
 			this->FrameStart = frameStart;
 			this->FrameEnd = frameEnd;
 			this->playForwards = true;
+			this->AnimationSpeed = animationSpeed;
 		}
 
-		Animation(UINT animationType, UINT frameStart, UINT frameEnd, bool playForwards)
+		Animation(UINT animationType, UINT frameStart, UINT frameEnd, bool playForwards, float animationSpeed)
 		{
 			this->AnimationType = animationType;
 			this->FrameStart = frameStart;
 			this->FrameEnd = frameEnd;
 			this->playForwards = playForwards;
+			this->AnimationSpeed = animationSpeed;
 		}
 
+		float AnimationSpeed;
 		UINT FrameStart, FrameEnd;
 		UINT AnimationType;
 		bool playForwards;

@@ -179,3 +179,8 @@ void AnimatedEntity::Draw(ID3D11DeviceContext* dc, Camera* cam, BasicDeferredSki
 		mInstance.model->meshes[i].draw(dc);
 	}
 }
+
+void AnimatedEntity::SetAnimationSpeed(UINT index, float speed)
+{
+	this->mAnimations[index].AnimationSpeed = speed;
+}

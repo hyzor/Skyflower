@@ -318,6 +318,7 @@ void Movement::update(float deltaTime)
 				{
 					// Run
 					animatedInstance->SetAnimation(0, true);
+					animatedInstance->SetAnimationSpeed(0, speed/25.0f);
 				}
 				else
 				{

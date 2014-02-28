@@ -45,6 +45,7 @@ public:
 	virtual void CreateAnimation(int id, int start, int frames) = 0;
 	virtual void CreateAnimation(int id, int start, int frames, bool playForwards) = 0;
 	virtual void SetAnimation(UINT id, bool loop) = 0;
+	virtual void SetAnimationSpeed(UINT id, float speed) = 0;
 
 };
 

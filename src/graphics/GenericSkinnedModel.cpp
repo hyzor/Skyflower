@@ -109,7 +109,7 @@ GenericSkinnedModelInstance::~GenericSkinnedModelInstance()
 
 void GenericSkinnedModelInstance::Update(float dt)
 {
-	TimePos += dt;
+	TimePos += dt * animationSpeed;
 
 	if (!loop)
 	{

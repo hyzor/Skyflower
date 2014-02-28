@@ -56,6 +56,7 @@ struct GenericSkinnedModelInstance
 	bool playAnimForward;
 	bool loop;
 	bool animationDone;
+	float animationSpeed;
 
 	GenericSkinnedModelInstance();
 	~GenericSkinnedModelInstance();

@@ -286,13 +286,13 @@ XMMATRIX AnimatedInstanceImpl::GetWorld()
 void AnimatedInstanceImpl::CreateAnimation(int id, int start, int frames)
 {
 	//model->mAnimations.push_back(AnimatedEntity::Animation(id, start, frames));
-	mAnimations.push_back(Animation(id, start, frames));
+	mAnimations.push_back(Animation(id, start, frames, 1.0f));
 }
 
 void AnimatedInstanceImpl::CreateAnimation(int id, int start, int frames, bool playForwards)
 {
 	//model->mAnimations.push_back(AnimatedEntity::Animation(id, start, frames, playForwards));
-	mAnimations.push_back(Animation(id, start, frames, playForwards));
+	mAnimations.push_back(Animation(id, start, frames, playForwards, 1.0f));
 }
 
 void AnimatedInstanceImpl::SetAnimation(UINT index, bool loop)
@@ -307,6 +307,7 @@ void AnimatedInstanceImpl::SetAnimation(UINT index, bool loop)
 	mSkinnedInstance->frameStart = mAnimations[index].FrameStart;
 	mSkinnedInstance->frameEnd = mAnimations[index].FrameEnd;
 	mSkinnedInstance->loop = loop;
+	mSkinnedInstance->animationSpeed = mAnimations[index].AnimationSpeed;
 	mSkinnedInstance->animationDone = false;
 
 	if (mAnimations[index].playForwards)
@@ -338,6 +339,12 @@ void AnimatedInstanceImpl::Update(float deltaTime)
 void AnimatedInstanceImpl::SetModel(GenericSkinnedModel* model)
 {
 	mSkinnedInstance->model = model;
+}
+
+void AnimatedInstanceImpl::SetAnimationSpeed(UINT id, float speed)
+{
+	this->mAnimations[id].AnimationSpeed = speed;
+	this->mSkinnedInstance->animationSpeed = speed;
 }
 
 void AnimatedInstanceImpl::Draw(ID3D11DeviceContext* dc, Camera* cam, BasicDeferredSkinnedShader* deferredShader)
