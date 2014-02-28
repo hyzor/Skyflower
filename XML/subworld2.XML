@@ -144,7 +144,7 @@
     </Entity>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\ButtonBase" id="53" isCollidible="1" isVisible="1" isAnimated="0" xPos="-228.696871708" yPos="55.1388093654" zPos="6.07379709632" xRot="-0.0" yRot="-0.0" zRot="1.55639585521" xScale="1.799104476" yScale="1.799104476" zScale="1.799104476"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\Button" id="54" isCollidible="1" isVisible="1" isAnimated="0" xPos="-228.696871708" yPos="55.1388093654" zPos="6.07379709632" xRot="-0.0" yRot="-0.0" zRot="-1.55639585521" xScale="1.799104476" yScale="1.799104476" zScale="1.799104476">
-        <WallButton/>
+        <WallButton xDir="-1" zDir="0"/>
 		<HelpText text="If you can't reach a button, why not throw a ball at it? *quack*" range="110"/>
 		<Event script="blinkingLights" />
     </Entity>
