@@ -260,14 +260,12 @@ void Application::Start()
 				setBackgroundMusicList(m_backgroundMusicGameHubworld);
 				m_graphicsEngine->SetFogProperties(1, 0.0195f, -125.0f, 0.105f, XMFLOAT4(0.86f, 0.86f, 0.9f, 1.0f));
 			}
-
 			//level 1
 			else if (levelHandler->currentLevel() == 4)
 			{
 				setBackgroundMusicList(m_backgroundMusicLevel1);
 				m_graphicsEngine->SetFogProperties(1, 0.0195f, -125.0f, 0.105f, XMFLOAT4(0.86f, 0.86f, 0.9f, 1.0f));
 			}
-
 			//level 2
 			else if (levelHandler->currentLevel() == 5)
 			{
@@ -446,12 +444,24 @@ void Application::changeGameState(GameState newState)
 	switch (newState)
 	{
 	case GameState::game:
+		//hub
 		if (levelHandler->currentLevel() == 0)
+		{
 			setBackgroundMusicList(m_backgroundMusicGameHubworld);
+			m_graphicsEngine->SetFogProperties(1, 0.0195f, -125.0f, 0.105f, XMFLOAT4(0.86f, 0.86f, 0.9f, 1.0f));
+		}
+		//level 1
 		else if (levelHandler->currentLevel() == 4)
+		{
 			setBackgroundMusicList(m_backgroundMusicLevel1);
+			m_graphicsEngine->SetFogProperties(1, 0.0195f, -125.0f, 0.105f, XMFLOAT4(0.86f, 0.86f, 0.9f, 1.0f));
+		}
+		//level 2
 		else if (levelHandler->currentLevel() == 5)
+		{
 			setBackgroundMusicList(m_backgroundMusicLevel2);
+			m_graphicsEngine->SetFogProperties(1, 0.0195f, -125.0f, 0.105f, XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+		}
 
 		break;
 	case GameState::menu:
