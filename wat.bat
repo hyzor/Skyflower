@@ -7,7 +7,7 @@ cd ..\Skyflower_hej
 
 echo Removing files...
 rd /s /q .git build external include src
-del /q .gitignore README.md wat.bat *.vcxproj* *.opensdf *.sdf *.sln *.suo
+del /q .gitignore README.md wat.bat *.vcxproj* *.opensdf *.sdf *.sln *.suo *.aps
 rd /s /q content\.SyncArchive
 rd /s /q content\Tools
 del /q /a:H content\.SyncID content\.SyncIgnore
