@@ -49,14 +49,13 @@ void Menu::init(GUI *g, int screenWidth, int screeenHeight, SoundEngine *sound)
 	m_bg = g->CreateGUIElementAndBindTexture(Vec3(0, 0), "Menygrafik\\logoFyraTre.png");
 	g->GetGUIElement(m_bg)->SetVisible(false);
 
+	m_credits = g->CreateGUIElementAndBindTexture(Vec3(0.0f, 0.0f), "Menygrafik\\credits.png");
+	g->GetGUIElement(m_credits)->SetVisible(false);
+
 	// FIXME: Hardcoding ;(
 	m_instructionsWidth = 736;
 	m_instructions = g->CreateGUIElementAndBindTexture(Vec3(screenWidth - m_instructionsWidth - 6.0f, 6.0f), "Menygrafik\\instructions.png");
 	g->GetGUIElement(m_instructions)->SetVisible(false);
-
-	m_creditsWidth = 512;
-	m_credits = g->CreateGUIElementAndBindTexture(Vec3(screenWidth - m_creditsWidth - 6.0f, 6.0f), "Menygrafik\\credits.png");
-	g->GetGUIElement(m_credits)->SetVisible(false);
 
 	settingsBox = g->CreateGUIElementAndBindTexture(Vec3(400, 100), "Menygrafik\\bg_settings.png");
 	g->GetGUIElement(settingsBox)->GetDrawInput()->color = XMVectorSet(1.0f, 1.0f, 1.0f, 0.9f);
@@ -343,9 +342,7 @@ void Menu::onResize(unsigned int width, unsigned int height)
 	}
 
 	guiPtr->GetGUIElement(m_bg)->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
-
-	guiPtr->GetGUIElement(m_instructions)->GetDrawInput()->pos = XMFLOAT2(width - m_instructionsWidth - 6.0f, 6.0f);
-	guiPtr->GetGUIElement(m_credits)->GetDrawInput()->pos = XMFLOAT2(width - m_creditsWidth - 6.0f, 6.0f);
+	guiPtr->GetGUIElement(m_credits)->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
 
 	XMFLOAT2 oldPos(400, 100);
 	guiPtr->GetGUIElement(settingsBox)->GetDrawInput()->pos = XMFLOAT2(oldPos.x *scaleX, oldPos.y*scaleY);

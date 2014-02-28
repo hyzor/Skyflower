@@ -96,10 +96,9 @@ private:
 	 bool m_active;
 	 int selectedButton;
 	 int m_bg;
+	 int m_credits;
 	 int m_instructionsWidth;
 	 int m_instructions;
-	 int m_creditsWidth;
-	 int m_credits;
 	 int settingsBox;
 	 MenuPage m_pages[MenuPageCount];
 	 int m_activePage;
