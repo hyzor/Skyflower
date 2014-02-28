@@ -47,7 +47,7 @@ void Throw::addedToEntity()
 			particleSystem->SetEmitFrequency(FLT_MAX);
 			particleSystem->SetParticleAgeLimit(0.75f);
 			particleSystem->SetParticleFadeTime(0.75f);
-			particleSystem->SetScale(XMFLOAT2(3.0f, 3.0f));
+			particleSystem->SetScale(XMFLOAT2(2.0f, 2.0f));
 			particleSystem->SetConstantAccel(XMFLOAT3(0.0f, 0.0f, 0.0f));
 			particleSystem->SetRandomVelocityActive(false);
 
