@@ -68,6 +68,7 @@ xAcc = 0.0 yAcc = 0.0 zAcc = 0.0
 xDir = 0.0 yDir = 0.0 zDir = 0.0
 xRandomVel = 0.0 yRandomVel = 0.0 zRandomVel = 0.0
 
+
 emitFrequency = 0.0
 ageLimit = 0.0
 fadeTime = 0.0
@@ -80,21 +81,24 @@ angle = 1.0
 yFactor = 0.01
 yFactor1 = 0.01
 yFactor2 = 0.01
+yFactor3 = 0.01
 useRandomVelocity = false
 
 -- Set starting values --
 function start_skyflowerparticles()
+	math.randomseed( os.time() )
 	SetEmitPos(10, 0, 0.0, 0.0, 0.0)
 	SetAcceleration(10, 0, 1.0, 1.0, 1.0)
 	SetDirection(10, 0, 1.0, 1.0, 1.0)
 	SetRandomVelocity(10, 0, 20.0, 5.0, 20.0)
-	SetEmitFrequency(10, 0, 0.1)
+	SetEmitFrequency(10, 0, 1.0)
 	SetAgeLimit(10, 0, 2.5)
 	SetFadeTime(10, 0, 1.5)
 	SetRandomVelocityActive(10, 0, true)
 	SetParticleType(10, 0, 3)
-	SetScale(10, 0, 5.0, 5.0)
+	SetScale(10, 0, 3.0, 3.0)
 	SetFadeLimit(10, 0, 2.5)
+	SetColor(10, 0, 1.0, 0.0, 1.0)
 	Activate(10, 0)
 end
 
@@ -130,29 +134,68 @@ function update_skyflowerparticles(dt)
 		zTravelDir = zTravelDir * -1.0
 	end
 	
+	if(yPos > 0.0 and yPos < 20.0) then
+		yFactor3 = yFactor3 + (dt * 0.25)
+		SetEmitFrequency(10, 0, 0.1 * (0.1 / yFactor3))
+		SetScale(10, 0, 4.0 * yFactor3, 4.0 * yFactor3)
+	end
+	
+	
 	if(yPos > 20.0 and yPos < 40.0) then
 		yFactor1 = yFactor1 + (dt * 0.25)
 		SetEmitFrequency(10, 0, 0.05 * (0.1 / yFactor1))
+		SetScale(10, 0, 4.0 * (yFactor1 + yFactor3), 4.0 * (yFactor1 + yFactor3))
 	end
 	
 	if(yPos > 40.0 and yPos < 70.0) then
 		yFactor2 = yFactor2 + (dt * 0.25)
 		SetEmitFrequency(10, 0, 0.01 * (0.1 / yFactor2))
+		SetScale(10, 0, 4.0 * (yFactor2 + yFactor1 + yFactor3), 4.0 * (yFactor2 + yFactor1 + yFactor3))
 	end
 	
 	if(yPos > 70.0) then
 		yFactor = yFactor + (dt * 0.75)
 		SetEmitFrequency(10, 0, 0.001 * (0.1 / yFactor))
+		SetScale(10, 0, 3.0 * (yFactor + yFactor1 + yFactor2 + yFactor3), 3.0 * (yFactor + yFactor1 + yFactor2 + yFactor3))
 		--SetDirection(10, 0, math.cos(angle), -1.0, math.sin(angle))
 		--SetAcceleration(10, 0, math.cos(angle), -10.0, math.sin(angle))
-		SetRandomVelocity(10, 0, 100.0 * yFactor, 100.0 * yFactor, 100.0 * yFactor)
+		SetRandomVelocity(10, 0, 75.0 * yFactor, 100.0 * yFactor, 75.0 * yFactor)
 	end
 	
 	if(yPos < 70.0) then
 		SetDirection(10, 0, math.cos(angle), -1.0, math.sin(angle))
 		SetAcceleration(10, 0, math.cos(angle) * 10.0, -2.5, math.sin(angle) * 10.0)
 	end
-	
+
+	if timePassed > 0.05 then
+		nr = math.random(1, 5)	
+		red = 1.0
+		green = 1.0
+		blue = 1.0
+		if nr == 1 then
+			red = 1.0
+			green = 0.0
+			blue = 0.0
+		elseif nr == 2 then
+			red = 1.0
+			green = 1.0
+			blue = 0.0
+		elseif nr == 3 then
+			red = 0.0
+			green = 0.0
+			blue = 1.0
+		elseif nr == 4 then
+			red = 0.0
+			green = 1.0
+			blue = 0.0
+		elseif nr == 5 then
+			red = 1.0
+			green = 0.0
+			blue = 1.0
+		end
+		--SetColor(10, 0, red, green, blue)
+		timePassed = 0.0
+	end
 	SetEmitPos(10, 0, xPos, yPos, zPos)
 end
 

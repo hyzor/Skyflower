@@ -16,8 +16,6 @@ using namespace Cistron;
 class ParticleSystemComp : public Component
 {
 private:
-	XMFLOAT3 color;
-
 	//Pointer to the actual object that will be rendered by the graphics engine
 	ParticleSystem* mParticleSystem;
 
@@ -45,6 +43,7 @@ private:
 	static int SetParticleType(lua_State* L);
 	static int SetScale(lua_State* L);
 	static int SetFadeLimit(lua_State* L);
+	static int SetColor(lua_State* L);
 	static int Activate(lua_State* L);
 	static int Deactivate(lua_State* L);
 
@@ -84,6 +83,7 @@ public:
 		lua_register(sh->L, "SetParticleType", ParticleSystemComp::SetParticleType);
 		lua_register(sh->L, "SetScale", ParticleSystemComp::SetScale);
 		lua_register(sh->L, "SetFadeLimit", ParticleSystemComp::SetFadeLimit);
+		lua_register(sh->L, "SetColor", ParticleSystemComp::SetColor);
 		lua_register(sh->L, "Activate", ParticleSystemComp::Activate);
 		lua_register(sh->L, "Deactivate", ParticleSystemComp::Deactivate);
 	};

@@ -14,7 +14,6 @@ ParticleSystemComp::ParticleSystemComp(string scriptName, UINT ID)
 	this->mParticleSystemIsActive = false;
 	this->mParticleSystemFadeTime = 0.0;
 	this->mParticleSystemCurrFadeTime = 0.0;
-	this->color = XMFLOAT3(1.0f, 1.0f, 1.0f);
 };
 
 void ParticleSystemComp::addedToEntity()
@@ -406,6 +405,32 @@ int ParticleSystemComp::SetFadeLimit(lua_State* L)
 			if (psc)
 			{
 				psc->SetParticleSystemFadeLimit(fadeLimit);
+			}
+		}
+	}
+
+	return 0;
+}
+
+int ParticleSystemComp::SetColor(lua_State* L)
+{
+	int n = lua_gettop(L);
+
+	if (n >= 5)
+	{
+		int entityID = (int)lua_tointeger(L, 1);
+		int particleSystemID = (int)lua_tointeger(L, 2);
+		float x = (float)lua_tonumber(L, 3);
+		float y = (float)lua_tonumber(L, 4);
+		float z = (float)lua_tonumber(L, 5);
+
+		Entity* entity = mEntityManager->getEntity(entityID);
+		if (entity)
+		{
+			ParticleSystemComp* psc = entity->getComponent<ParticleSystemComp*>("ParticleSystemComp");
+			if (psc)
+			{
+				psc->GetParticleSystem()->SetColor(XMFLOAT3(x, y, z));
 			}
 		}
 	}
