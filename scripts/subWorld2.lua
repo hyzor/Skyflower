@@ -294,9 +294,9 @@ end
 
 function load_boxPuzzle(id)
 	StartUpdate()
-	Lit(200,1)
-	Lit(204,1)
-	Lit(205,1)
+	--Lit(200,1)
+	--Lit(204,1)
+	--Lit(205,1)
 end
 
 finished = false

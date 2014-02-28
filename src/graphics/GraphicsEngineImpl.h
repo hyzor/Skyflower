@@ -113,6 +113,8 @@ public:
 	void PrintTextMonospaceToTexture(Texture2D *texture, const std::string &text, const int position[2]);
 	void DrawLines(Texture2D *texture, const float *data, size_t count, const XMFLOAT3X3 &transformation, const float color[4]);
 
+	void SetFogProperties(int enableFogging, float heightFalloff, float heightOffset, float globalDensity, XMFLOAT4 fogColor);
+
 	void ResetRenderTargetAndViewport();
 
 	void ClearLevelTextures();
