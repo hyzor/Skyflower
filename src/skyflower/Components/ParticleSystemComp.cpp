@@ -14,11 +14,13 @@ ParticleSystemComp::ParticleSystemComp(string scriptName, UINT ID)
 	this->mParticleSystemIsActive = false;
 	this->mParticleSystemFadeTime = 0.0;
 	this->mParticleSystemCurrFadeTime = 0.0;
+	this->color = XMFLOAT3(1.0f, 1.0f, 1.0f);
 };
 
 void ParticleSystemComp::addedToEntity()
 {
 	this->mParticleSystem = getOwner()->getModules()->graphics->CreateParticleSystem();
+	this->mParticleSystem->SetColor(XMFLOAT3(1.0f, 0.0f, 1.0f));
 	this->mParticleSystem->SetActive(false);
 	this->mEntityManager = getEntityManager();
 

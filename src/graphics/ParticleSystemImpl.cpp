@@ -39,6 +39,8 @@ ParticleSystemImpl::ParticleSystemImpl()
 
 	mRandomizeVelocity = true;
 	mRandomVelocity = XMFLOAT3(4.0f, 4.0f, 4.0f);
+
+	mColor = XMFLOAT3(1.0f, 1.0f, 1.0f);
 }
 
 ParticleSystemImpl::~ParticleSystemImpl()
@@ -81,6 +83,11 @@ void ParticleSystemImpl::SetEmitPos(const XMFLOAT3& emitPosW)
 void ParticleSystemImpl::SetEmitDir(const XMFLOAT3& emitDirW)
 {
 	mEmitDirW = emitDirW;
+}
+
+void ParticleSystemImpl::SetColor(XMFLOAT3 color)
+{
+	mColor = color;
 }
 
 void ParticleSystemImpl::Init(ID3D11Device* device,
@@ -139,6 +146,8 @@ void ParticleSystemImpl::Draw(ID3D11DeviceContext* dc, const Camera& cam)
 
 	mShader->RandomizeVelocity(mRandomizeVelocity);
 	mShader->SetRandomVelocity(mRandomVelocity);
+
+	mShader->SetColor(mColor);
 
 	mShader->ActivateStreamShaders(dc);
 	mShader->UpdateStreamOutShaders(dc);

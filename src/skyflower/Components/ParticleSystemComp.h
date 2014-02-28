@@ -16,6 +16,7 @@ using namespace Cistron;
 class ParticleSystemComp : public Component
 {
 private:
+	XMFLOAT3 color;
 
 	//Pointer to the actual object that will be rendered by the graphics engine
 	ParticleSystem* mParticleSystem;

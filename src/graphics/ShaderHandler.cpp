@@ -2850,6 +2850,11 @@ void ParticleSystemShader::SetTime(float gameTime, float dt)
 	mBufferCache.drawVSInitBuffer.timeStep = dt;
 }
 
+void ParticleSystemShader::SetColor(XMFLOAT3 color)
+{
+	mBufferCache.drawVSInitBuffer.color = color;
+}
+
 void ParticleSystemShader::UpdateDrawShaders(ID3D11DeviceContext* dc)
 {
 	// Update constant shader buffers using our cache

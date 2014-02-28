@@ -57,6 +57,10 @@ end
 -- 7 = portal --
 -- 8 = aim --
 
+function lerp(a, b, c)
+	return ( a + (b - a) * c )
+end
+
 -- Variables --
 -- TODO: Vec3?? --
 xPos = 0.0 yPos = 0.0 zPos = 0.0
@@ -88,7 +92,7 @@ function start_skyflowerparticles()
 	SetAgeLimit(10, 0, 2.5)
 	SetFadeTime(10, 0, 1.5)
 	SetRandomVelocityActive(10, 0, true)
-	SetParticleType(10, 0, 2)
+	SetParticleType(10, 0, 3)
 	SetScale(10, 0, 5.0, 5.0)
 	SetFadeLimit(10, 0, 2.5)
 	Activate(10, 0)
@@ -126,35 +130,31 @@ function update_skyflowerparticles(dt)
 		zTravelDir = zTravelDir * -1.0
 	end
 	
-	if(yPos > 20.0) then
+	if(yPos > 20.0 and yPos < 40.0) then
 		yFactor1 = yFactor1 + (dt * 0.25)
-		SetEmitFrequency(10, 0, 0.05 * (0.1/yFactor1))
+		SetEmitFrequency(10, 0, 0.05 * (0.1 / yFactor1))
 	end
 	
-	if(yPos > 40.0) then
+	if(yPos > 40.0 and yPos < 70.0) then
 		yFactor2 = yFactor2 + (dt * 0.25)
-		SetEmitFrequency(10, 0, 0.01 * ( 0.1/yFactor2))
+		SetEmitFrequency(10, 0, 0.01 * (0.1 / yFactor2))
 	end
 	
 	if(yPos > 70.0) then
 		yFactor = yFactor + (dt * 0.75)
-		SetEmitFrequency(10, 0, 0.001 * (0.1/yFactor))
-		SetDirection(10, 0, math.cos(angle), 1.0, math.sin(angle))
-		SetAcceleration(10, 0, 1.0, -10.0, 1.0)
-		SetRandomVelocity(10, 0, 50.0 * yFactor, 10.0, 50.0 * yFactor)
+		SetEmitFrequency(10, 0, 0.001 * (0.1 / yFactor))
+		--SetDirection(10, 0, math.cos(angle), -1.0, math.sin(angle))
+		--SetAcceleration(10, 0, math.cos(angle), -10.0, math.sin(angle))
+		SetRandomVelocity(10, 0, 100.0 * yFactor, 100.0 * yFactor, 100.0 * yFactor)
 	end
 	
 	if(yPos < 70.0) then
 		SetDirection(10, 0, math.cos(angle), -1.0, math.sin(angle))
-		SetAcceleration(10, 0, math.cos(angle) * 5.0, -2.5, math.sin(angle) * 5.0)
+		SetAcceleration(10, 0, math.cos(angle) * 10.0, -2.5, math.sin(angle) * 10.0)
 	end
 	
-	SetEmitPos(10, 0, xPos, yPos, zPos)	
+	SetEmitPos(10, 0, xPos, yPos, zPos)
 end
-
---function settype_skyflowerparticles()
-	--SetParticleType(10, 0, 3) -- (Entity ID, particlesystem ID, particle type)
---end
 
 
 

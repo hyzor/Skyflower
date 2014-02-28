@@ -42,6 +42,8 @@ public:
 	virtual void SetRandomVelocityActive(bool active) = 0;
 	virtual void SetRandomVelocity(XMFLOAT3 randomVelocity) = 0;
 
+	virtual void SetColor(XMFLOAT3 color) = 0;
+
 	virtual float GetAgeLimit() const = 0;
 
 	virtual void Reset() = 0;
