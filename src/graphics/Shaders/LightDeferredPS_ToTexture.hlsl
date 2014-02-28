@@ -165,14 +165,27 @@ PixelOut main(VertexOut pIn)
 		float speed = length(velocity / texelSize);
 		unsigned int numMotionBlurSamples = clamp(int(speed), 1, MAX_MOTIONBLURSAMPLES);
 
+		unsigned int actualSamples = 0;
+
 		[unroll]
 		for (unsigned int n = 1; n < numMotionBlurSamples; ++n)
 		{
 			float2 offset = velocity * (float(n) / float(numMotionBlurSamples - 1) - 0.5f);
-			diffuse.xyz += gDiffuseTexture.Sample(samPoint, pIn.Tex + offset).xyz;
+			//float weight = gDiffuseTexture.Sample
+			float3 diffuseSample = gDiffuseTexture.Sample(samPoint, pIn.Tex + offset).xyz;
+			float depthSample = gDepthTexture.Sample(samLinear, pIn.Tex + offset).x;
+
+			float relativeDepth = depthSample - depth;
+
+			//if (relativeDepth < 0.1f && relativeDepth > 0.0f)
+			//{
+				diffuse.xyz += diffuseSample;
+				actualSamples++;
+			//}
 		}
 
-		diffuse.xyz /= float(numMotionBlurSamples);
+		if (actualSamples > 0)
+			diffuse.xyz /= float(actualSamples);
 	}
 
 	//--------------------------------------------------

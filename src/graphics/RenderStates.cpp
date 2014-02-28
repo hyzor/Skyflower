@@ -30,6 +30,7 @@ ID3D11DepthStencilState* RenderStates::mDepthEnabledStencilUseDSS = 0;
 ID3D11BlendState* RenderStates::mDefaultBS = 0;
 ID3D11BlendState* RenderStates::mAdditiveBS = 0;
 ID3D11BlendState* RenderStates::mBlendBS = 0;
+ID3D11BlendState* RenderStates::mParticleBlendBS = 0;
 
 void RenderStates::InitAll(ID3D11Device* device)
 {
@@ -446,6 +447,45 @@ void RenderStates::InitAll(ID3D11Device* device)
 	blendBSdesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
 	device->CreateBlendState(&blendBSdesc, &mBlendBS);
+
+	D3D11_BLEND_DESC particleBSdesc;
+	ZeroMemory(&particleBSdesc, sizeof(D3D11_BLEND_DESC));
+	particleBSdesc.AlphaToCoverageEnable = FALSE;
+	particleBSdesc.IndependentBlendEnable = TRUE;
+	particleBSdesc.RenderTarget[0].BlendEnable = FALSE;
+	particleBSdesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	particleBSdesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+	particleBSdesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	particleBSdesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
+	particleBSdesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	particleBSdesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	particleBSdesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	particleBSdesc.RenderTarget[1].BlendEnable = FALSE;
+	particleBSdesc.RenderTarget[1].SrcBlend = D3D11_BLEND_BLEND_FACTOR;
+	particleBSdesc.RenderTarget[1].DestBlend = D3D11_BLEND_INV_BLEND_FACTOR;
+	particleBSdesc.RenderTarget[1].BlendOp = D3D11_BLEND_OP_ADD;
+	particleBSdesc.RenderTarget[1].SrcBlendAlpha = D3D11_BLEND_ZERO;
+	particleBSdesc.RenderTarget[1].DestBlendAlpha = D3D11_BLEND_ZERO;
+	particleBSdesc.RenderTarget[1].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	particleBSdesc.RenderTarget[1].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	particleBSdesc.RenderTarget[2].BlendEnable = FALSE;
+	particleBSdesc.RenderTarget[2].SrcBlend = D3D11_BLEND_BLEND_FACTOR;
+	particleBSdesc.RenderTarget[2].DestBlend = D3D11_BLEND_INV_BLEND_FACTOR;
+	particleBSdesc.RenderTarget[2].BlendOp = D3D11_BLEND_OP_ADD;
+	particleBSdesc.RenderTarget[2].SrcBlendAlpha = D3D11_BLEND_ZERO;
+	particleBSdesc.RenderTarget[2].DestBlendAlpha = D3D11_BLEND_ZERO;
+	particleBSdesc.RenderTarget[2].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	particleBSdesc.RenderTarget[2].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	particleBSdesc.RenderTarget[3].BlendEnable = TRUE;
+	particleBSdesc.RenderTarget[3].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	particleBSdesc.RenderTarget[3].DestBlend = D3D11_BLEND_ONE;
+	particleBSdesc.RenderTarget[3].BlendOp = D3D11_BLEND_OP_ADD;
+	particleBSdesc.RenderTarget[3].SrcBlendAlpha = D3D11_BLEND_ZERO;
+	particleBSdesc.RenderTarget[3].DestBlendAlpha = D3D11_BLEND_ONE;
+	particleBSdesc.RenderTarget[3].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	particleBSdesc.RenderTarget[3].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	device->CreateBlendState(&particleBSdesc, &mParticleBlendBS);
 }
 
 void RenderStates::DestroyAll()
@@ -477,4 +517,5 @@ void RenderStates::DestroyAll()
 	ReleaseCOM(mDefaultBS);
 	ReleaseCOM(mAdditiveBS);
 	ReleaseCOM(mBlendBS);
+	ReleaseCOM(mParticleBlendBS);
 }
