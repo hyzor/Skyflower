@@ -1,5 +1,4 @@
 <root>
-	<Entity type="aimMesh" model="Models\Throwable\Ball" id="5000" isVisible="0" isCollidible="0" isAnimated="0" xPos="0.0" yPos="0.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" />
 <!-- Startingpos for player -->
 <!-- xPos="0.0" yPos="0.0" zPos="-10.0" -->
 
@@ -233,7 +232,7 @@
         <Movement speed="20"/>
 		<Event script="pusher2" />
     </Entity>
-    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\Puncha" id="73" isCollidible="0" isVisible="1" isAnimated="1" xPos="-488.605049724" yPos="124.23260422" zPos="804.748585899" xRot="-0.0" yRot="-1.86242290338" zRot="-0.0" xScale="1" yScale="1" zScale="1">
+    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\PunchaPurple" id="73" isCollidible="0" isVisible="1" isAnimated="1" xPos="-488.605049724" yPos="124.23260422" zPos="804.748585899" xRot="-0.0" yRot="-1.86242290338" zRot="-0.0" xScale="1" yScale="1" zScale="1">
         <Gravity/>
         <AI />
 		<Push />

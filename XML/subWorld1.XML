@@ -1,8 +1,4 @@
 <root>
-	<Entity type="aimMesh" model="Models\Throwable\Ball" id="5000" isVisible="0" isCollidible="0" isAnimated="0" xPos="0.0" yPos="0.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" />
-
-
-
 	<Entity type="player" id="1"
 		xPos="0.0" yPos="20.0" zPos="0.0"
 		xRot="0.0" yRot="0.0" zRot="0.0" 
@@ -22,12 +18,6 @@
 			<Throw haveAim="true"/>
 	</Entity>
 	
-	<Entity type="WoodBlock" model="Models\Throwable\Ball" id="301" isVisible="1" isCollidible="1" isAnimated="0" xPos="20" yPos="10" zPos="20" xRot="0.0" yRot="0.0" zRot="0.0" xScale="2.0" yScale="2.0" zScale="2.0">
-		<Touch />
-		<Balloon />
-		<Event script="balloon" />
-    </Entity>
-
     <Entity type="ballonPlattform" model="Models\Worlds\Subworld 1\ballonPlattform" id="24" isVisible="1" isCollidible="1" isAnimated="0" xPos="294" yPos="79" zPos="125"  xRot="0.0" yRot="-1.57145119464" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <MoveTarget targetPosX="199.477652486" targetPosY="39.1736969453" targetPosZ="116.23238288" duration="5" easingPower="3" continuous="0" />
     </Entity>
