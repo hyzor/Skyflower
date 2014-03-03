@@ -13,6 +13,7 @@ Push::Push() : Component("Push")
 	this->resetSpeed = false;
 	this->canDrag = false;
 	this->box = nullptr;
+	this->previousDir = Vec3();
 }
 
 Push::~Push()
@@ -22,6 +23,7 @@ Push::~Push()
 void Push::addedToEntity()
 {
 	m_isPushingBox = false;
+
 
 	//requestMessage("inAir", &Push::stopPush);
 	requestMessage("Wall", &Push::stopPush);
@@ -92,7 +94,7 @@ void Push::update(float dt)
 			boxDir = Vec3(copysign(1.0f, boxDir.X), 0.0f, 0.0f);
 		else
 			boxDir = Vec3(0.0f, 0.0f, copysign(1.0f, boxDir.Z));
-		
+
 		//check if entity is holding
 		bool canpush = true;
 		Throw* throwcomp = getOwner()->getComponent<Throw*>("Throw");
@@ -102,14 +104,50 @@ void Push::update(float dt)
 				canpush = false;
 		}
 
-		//release pusher from box
-		if (!canpush || box->getComponent<BoxComp*>("Box")->isFalling() || (dir != Vec3() && ((dir != boxDir && !canDrag) || (canDrag && dir*boxDir == Vec3()))) || (canDrag && getOwner()->wall && getOwner()->wall != box))
+		//normal box
+		BoxComp* boxComp = box->getComponent<BoxComp*>("Box");
+		if (boxComp->MinDist() == 0)
 		{
-			relativePos = Vec3();
-			box = nullptr;
+			//release pusher from box
+			if (!canpush || box->getComponent<BoxComp*>("Box")->isFalling() || (dir != Vec3() && ((dir != boxDir && !canDrag) || (canDrag && dir*boxDir == Vec3()))) || (canDrag && getOwner()->wall && getOwner()->wall != box))
+			{
+				relativePos = Vec3();
+				box = nullptr;
+			}
 		}
-		//push box
+		//box puzzel box
 		else
+		{
+			
+
+			//keep moving in same direction
+			if (previousDir == Vec3() || (previousDir*dir != Vec3() && previousDir != Vec3() && dir != Vec3()))
+				previousDir = dir;
+
+
+			Vec3 fromStart = boxComp->startPos - box->returnPos()*Vec3(1, 0, 1);
+			fromStart /= boxComp->MinDist();
+			Vec3 to = Vec3(roundf(fromStart.X), 0, roundf(fromStart.Z));
+
+			if ((fromStart - to).Length() < 0.01f)
+			{
+				previousDir = dir;
+				if (!canpush || box->getComponent<BoxComp*>("Box")->isFalling() || (dir != Vec3() && ((dir != boxDir && !canDrag) || (canDrag && dir*boxDir == Vec3()))))
+				{
+					box->updatePos(boxComp->startPos - to*boxComp->MinDist() + Vec3(0, box->returnPos().Y, 0));
+					relativePos = Vec3();
+					box = nullptr;
+				}
+			}
+
+			dir = previousDir;
+
+			
+
+		}
+
+		//push box
+		if (box)
 		{
 			// Rotate the entity to make it perpendicular to the box it is pushing.
 			Vec3 rotation = Vec3(0.0f, 0.0f, 0.0f);
@@ -119,7 +157,8 @@ void Push::update(float dt)
 				rotation.Y = DegreesToRadians(90.0f + 90.0f * boxDir.Z);
 
 			//move box
-			box->updatePos(box->returnPos() + dir*dt*box->getComponent<Movement*>("Movement")->GetSpeed());
+			if (!getOwner()->wall || getOwner()->wall == box)
+				box->updatePos(box->returnPos() + dir*dt*box->getComponent<Movement*>("Movement")->GetSpeed());
 
 			//move relative to box
 			getOwner()->updatePos((box->returnPos() + relativePos)*Vec3(1, 0, 1) + pos*Vec3(0, 1, 0));

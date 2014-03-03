@@ -4,7 +4,7 @@
 
 
 	<Entity type="player" id="1"
-		xPos="0.0" yPos="20.0" zPos="0.0"
+		xPos="-167.229586079" yPos="74.0400071584" zPos="415.563431628"
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="1.0" yScale="1.0" zScale="1.0"
 		model="Models/Player/playerAnimated"
@@ -159,19 +159,19 @@
         <Throwable/>
     </Entity>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\WoodBlockYellow" id="58" isCollidible="1" isVisible="1" isAnimated="0" xPos="-170.592094725" yPos="50.2496083728" zPos="573.101397502" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="2.44253769545" yScale="2.44253769545" zScale="2.44253769545">
-        <Box speed="20"/>
+        <Box speed="20" minDist="24.529550331669"/>
         <Gravity/>
 	    <Health/>	
         <Movement speed="20"/>
     </Entity>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\WoodBlockBlue" id="59" isCollidible="1" isVisible="1" isAnimated="0" xPos="-120.181040174" yPos="50.2496083728" zPos="573.101397502" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="2.44253769545" yScale="2.44253769545" zScale="2.44253769545">
-        <Box speed="20"/>
+        <Box speed="20" minDist="24.529550331669"/>
         <Gravity/>
 		<Health/>
         <Movement speed="20"/>
     </Entity>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\WoodBlockRed" id="60" isCollidible="1" isVisible="1" isAnimated="0" xPos="-144.755515938" yPos="50.2496083728" zPos="573.101397502" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="2.44253769545" yScale="2.44253769545" zScale="2.44253769545">
-        <Box speed="20"/>
+        <Box speed="20" minDist="24.529550331669"/>
         <Gravity/>
 		<Health/>
         <Movement speed="20"/>

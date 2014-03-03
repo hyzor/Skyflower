@@ -49,6 +49,8 @@ private:
 	float pSpeed;
 	float resetSpeed;
 
+	Vec3 previousDir;
+
 
 	Entity* box;
 	Vec3 relativePos;

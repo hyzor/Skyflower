@@ -817,9 +817,14 @@ bool EntityManager::loadXML(string xmlFile)
 			}
 			else if (componentName == "Box")
 			{
+				float minDist = 0;
+				attr = e->Attribute("minDist");
+				if (attr != nullptr)
+					minDist = e->FloatAttribute("minDist");
+
 				float speed = GetFloatAttribute(e, "speed", entityName, xmlFile, componentName);
 
-				BoxComp* p = new BoxComp(speed);
+				BoxComp* p = new BoxComp(speed, minDist);
 				this->addComponent(entity, p);
 			}
 			else if (componentName == "Goal")
