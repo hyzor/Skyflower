@@ -341,23 +341,15 @@ end
 -----------------
 
 heldtime = 0
-respawnballtime = 0
 function update_thrower(id, dt)
 	if not CanThrow(id, 101) then
 		if not IsHeld(101) then
 			SetTarget(id, 101)
 			PickUp(id, 101)
-			respawnballtime = respawnballtime + dt
-			if respawnballtime > 10 then
-				Respawn(101)
-				respawnballtime = 0
-			end
 		else
-			respawnballtime = 0
 			SetTarget(id, player, 100)
 		end
 	else
-		respawnballtime = 0
 		SetTarget(id, player, 60)
 		heldtime = heldtime + dt
 		if InRange(id, player, 60) and heldtime > 1 then
