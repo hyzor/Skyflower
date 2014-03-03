@@ -11,6 +11,7 @@
 
 static const XMVECTORF32 gVecFLTMAX = { FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX };
 static const XMVECTORF32 gVecFLTMIN = { -FLT_MAX, -FLT_MAX, -FLT_MAX, -FLT_MAX };
+static const XMVECTORF32 gVecZero = { 0.0f, 0.0f, 0.0f, 0.0f };
 
 enum FRUSTUM_SPLIT_METHOD
 {
@@ -39,7 +40,7 @@ private:
 	//Splitdepths used by cascades, stored in a 0-1 interval (0 to 100%)
 	float mCascadeSplits[CASCADESPLITS];
 
-	float mSplitFactor;
+	float mBufferSize;
 
 public:
 	//Adds 1 cascade automatically if no argument is given
