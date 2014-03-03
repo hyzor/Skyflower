@@ -178,7 +178,7 @@ function update_testAI(id, dt)
 		if InRange(id, player, 60) then
 			throwtime = throwtime + dt
 			SetTarget(id, player)
-			if throwtime > 2 then
+			if throwtime > 0 then
 				Throw(id, player)
 				throwtime = 0
 			end

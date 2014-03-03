@@ -115,7 +115,9 @@ void Throw::ThrowAt(Entity* e)
 		{
 			throwalble->setIsBeingPickedUp(false);
 			throwalble->setIsBeingThrown(true, getOwnerId());
-			throwalble->getPhysicsEntity()->FireProjectileAt(getOwner()->returnPos(), e->returnPos());
+			Vec3 pos = getOwner()->returnPos();
+			throwalble->getPhysicsEntity()->FireProjectileAt(pos, e->returnPos());
+			getOwner()->updatePos(pos);
 
 			hideAim();
 

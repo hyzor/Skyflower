@@ -98,7 +98,7 @@ bool PhysicsEntityImpl::FireProjectile(Vec3 &pos, Vec3 direction)
 
 bool PhysicsEntityImpl::FireProjectileAt(Vec3 &pos, Vec3 target)
 {
-	if (!this->mStates.isActiveProjectile)
+	//if (!this->mStates.isActiveProjectile)
 	{
 		Vec3 delta, projectileVelocity, deltaXZPlane;
 		float initVelocityX, initVelocityY, initVelocityZ,
@@ -153,9 +153,9 @@ bool PhysicsEntityImpl::FireProjectileAt(Vec3 &pos, Vec3 target)
 
 		return true;
 	}
-	else
+	//else
 	{
-		return false;
+	//	return false;
 	}
 }
 
