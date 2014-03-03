@@ -171,17 +171,18 @@ PixelOut main(VertexOut pIn)
 		for (unsigned int n = 1; n < numMotionBlurSamples; ++n)
 		{
 			float2 offset = velocity * (float(n) / float(numMotionBlurSamples - 1) - 0.5f);
-			//float weight = gDiffuseTexture.Sample
 			float3 diffuseSample = gDiffuseTexture.Sample(samPoint, pIn.Tex + offset).xyz;
 			float depthSample = gDepthTexture.Sample(samLinear, pIn.Tex + offset).x;
 
 			float relativeDepth = depthSample - depth;
 
-			//if (relativeDepth < 0.1f && relativeDepth > 0.0f)
-			//{
+			// FIXME: Implement a more elegant solution, this value was tested and then adjusted for this particular case
+			// 0.0005f
+			if (relativeDepth > (-0.0005f))
+			{
 				diffuse.xyz += diffuseSample;
 				actualSamples++;
-			//}
+			}
 		}
 
 		if (actualSamples > 0)
