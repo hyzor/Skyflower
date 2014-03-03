@@ -63,8 +63,8 @@ void AI::update(float dt)
 
 	//check if direction is safe
 	bool safe = false;
-	Collision *collision = getOwner()->getModules()->collision;
-	const std::vector<CollisionInstance *> &collisionInstances = collision->GetCollisionInstances();
+	Collision* collision = getOwner()->getModules()->collision;
+	const std::vector<CollisionInstance*> &collisionInstances = collision->GetCollisionInstances();
 
 	for (size_t i = 0; i < collisionInstances.size(); i++)
 	{
@@ -106,5 +106,19 @@ void AI::update(float dt)
 		{
 			getOwner()->sendMessage("Activated", this); //for scripting
 		}
+	}
+
+	this->collision(dt);
+}
+
+void AI::collision(float dt)
+{
+	Entity* player = getEntityManager()->getEntity(1);
+	Vec3 dist = getOwner()->returnPos() - player->returnPos();
+	if (dist.Length() < 5)
+	{
+		dist.Y = 0;
+		getOwner()->updatePos(getOwner()->returnPos() + dist.Normalize() * 10 * dt);
+		player->updatePos(player->returnPos() - dist * 10 * dt);
 	}
 }

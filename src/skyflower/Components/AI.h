@@ -30,9 +30,6 @@ public:
 	};
 	virtual ~AI() 
 	{
-		//if (getEntityManager())
-			//for (int i = 0; i < unsafe.size(); i++)
-				//getEntityManager()->modules->potentialField->DeleteField(unsafe[i]);
 	};
 
 	void addedToEntity();
@@ -56,12 +53,8 @@ private:
 	
 	Entity* target;
 
-	/*void Attack(Message const& msg)
-	{
-		centerradius = 0;
-		attacktime = 2;
-		nextattack = 5;
-	}*/
+
+	void collision(float dt);
 
 	void stopMoving(Message const& msg)
 	{
