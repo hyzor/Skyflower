@@ -85,6 +85,8 @@ void Throwable::update(float deltaTime)
 			this->mParticleSystemThrow->SetActive(false);
 		}
 	}
+
+	Respawn(deltaTime);
 }
 
 void Throwable::setTargetPos(Vec3 pos)
@@ -112,4 +114,16 @@ void Throwable::setIsBeingPickedUp(bool state, EntityId throwerId)
 bool Throwable::getIsBeingPickedUp()
 {
 	return isBeingPickedUp;
+}
+
+void Throwable::Respawn(float dt)
+{
+	respawnTime -= dt;
+	if (respawnTime < 0)
+	{
+		getOwner()->sendMessage("Respawn");
+		respawnTime = 5;
+	}
+	if (getIsBeingPickedUp())
+		respawnTime = 5; // set respawn time
 }
