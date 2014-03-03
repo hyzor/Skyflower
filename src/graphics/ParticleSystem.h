@@ -16,6 +16,9 @@ static const enum ParticleType
 	PT_DUST,
 	PT_PORTAL,
 	PT_AIM,
+	PT_REDSTAR,
+	PT_BLUESTAR,
+	PT_WHITESTAR,
 	NROFTYPES
 };
 
