@@ -600,6 +600,16 @@ void Application::OnKeyDown(unsigned short key)
 			m_entityManager->sendGlobalMessage("enter pressed");
 		}
 		break;
+	case 'R':
+		m_entityManager->getEntity(1)->getComponent<Health*>("Health")->setHealth(0);
+		break;
+	case VK_SPACE:
+		if (m_cutscene->isPlaying())
+			m_cutscene->stop();
+		break;
+	case 'N':
+		g_quakeSounds = !g_quakeSounds;
+		break;
 	case 'Z':
 		m_showCharts = !m_showCharts;
 
@@ -607,25 +617,15 @@ void Application::OnKeyDown(unsigned short key)
 		m_GUI->GetGUIElement(m_fpsChartID)->SetVisible(m_showCharts);
 		m_GUI->GetGUIElement(m_memChartID)->SetVisible(m_showCharts);
 		break;
-	case 'N':
-		g_quakeSounds = !g_quakeSounds;
-		break;
-	case 'R':
+	case 'O':
 		//m_scriptHandler->Load("subWorld2.lua");
 		//m_cutscene->play("intro");
 		//_graphicsEngine->ClearLights();
 		levelHandler->queue(levelHandler->currentLevel());
 		break;
-	case VK_SPACE:
-		if (m_cutscene->isPlaying())
-			m_cutscene->stop();
-		break;
 	case 'L':
 		m_graphicsEngine->ClearLights();
 		m_entityManager->loadXML("subworld2Lights.XML");
-		break;
-	case 'Q':
-		m_entityManager->getEntity(1)->getComponent<Health*>("Health")->setHealth(0);
 		break;
 #if 0
 	case 'P':

@@ -53,7 +53,7 @@ void Menu::init(GUI *g, int screenWidth, int screeenHeight, SoundEngine *sound)
 	g->GetGUIElement(m_credits)->SetVisible(false);
 
 	// FIXME: Hardcoding ;(
-	m_instructionsWidth = 736;
+	m_instructionsWidth = 729;
 	m_instructions = g->CreateGUIElementAndBindTexture(Vec3(screenWidth - m_instructionsWidth - 6.0f, 6.0f), "Menygrafik\\instructions.png");
 	g->GetGUIElement(m_instructions)->SetVisible(false);
 
