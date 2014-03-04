@@ -30,22 +30,6 @@ end
 
 function update_player(id, dt)
 	PushAll(id)
-	
-	--[[
-	--player light
-	if IsLit(id) then
-		Unlit(id, 1)
-	elseif IsUnlit(id) then
-		Lit(id, 1)
-	end
-	
-	--sun
-	if IsLit(201) then
-		Unlit(201, 10)
-	elseif IsUnlit(201) then
-		Lit(201, 10)
-	end
-	--]]
 end
 
 --platform_start script--
@@ -152,53 +136,6 @@ function update_aiPush(id, dt)
 	end
 	
 end
-
-
---TestAI script--
------------------
-
-function load_testAI(id)
-	StartUpdate()
-end
-
-throwtime = 0
-currtarget = 511;
-function skit(id, dt)
-	SetTarget(id, currtarget)
-	if InRange(id, currtarget, 4) then
-		if currtarget == 511 then
-			currtarget = 512
-		else
-			currtarget = 511
-		end
-	end
-end
-
-function update_testAI(id, dt)
-	if not CanThrow(id, 98713) then
-		SetTarget(id, 98713)
-		PickUp(id, 98713)
-	else
-		if InRange(id, player, 60) then
-			throwtime = throwtime + dt
-			SetTarget(id, player)
-			if throwtime > 0 then
-				Throw(id, player)
-				throwtime = 0
-			end
-		else --patrullera
-			SetTarget(id, currtarget)
-			if InRange(id, currtarget, 4) then
-				if currtarget == 511 then
-					currtarget = 512
-				else
-					currtarget = 511
-				end
-			end
-		end
-	end
-end
-
 
 --ballonPop script--
 --------------------

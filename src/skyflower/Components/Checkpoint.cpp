@@ -99,7 +99,6 @@ void Checkpoint::Activate(Message const& msg)
 
 			Vec3 position = getOwner()->returnPos();
 			getOwner()->getModules()->sound->PlaySound("checkpoint_crystal.wav", 1.0f, &position.X);
-			//getOwner()->getModules()->sound->PlaySound("checkpoint_yell.wav", 1.0f, &position.X);
 		}
 	}
 

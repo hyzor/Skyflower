@@ -67,6 +67,7 @@
         <AI />
 		<Push />
 		<Pushable />
+		<Footsteps />
         <Movement speed="10"/>
 		<Event script="aiPush" />
     </Entity>
@@ -76,11 +77,9 @@
         <AI />
 		<Push />
 		<Pushable />
-		<Throw />
-		<Health />
 		<Footsteps />
         <Movement speed="10"/>
-		<Event script="testAI" />
+		<Event script="aiPush" />
     </Entity>
 	
 	<Entity type="spawnpoint" model="" id="511" isVisible="0" isCollidible="0" isAnimated="0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0"
@@ -105,25 +104,12 @@
 		<Box />
     </Entity>
 	
-	<Entity type="Ball" model="Models\Throwable\Ball" id="98713" isVisible="1" isCollidible="0" isAnimated="0" xPos="10.0" yPos="20.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
-        <Gravity/>
-        <Health/>
-		<Movement speed="20"/>
-		<Throwable />
-    </Entity>
-	
     <Entity type="ButtonBase" model="Models\Worlds\Subworld 1\ButtonBase" id="17" relativeid="100" isVisible="1" isCollidible="1" isAnimated="0" xPos="199.034827697" yPos="39.2123622218" zPos="-8.39870949045" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312"/>
     <Entity type="Button" model="Models\Worlds\Subworld 1\Button" id="18" relativeid="17" isVisible="1" isCollidible="1" isAnimated="0" xPos="198.949163262" yPos="39.2689358112" zPos="-8.30721064075" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312">
         <Button/>
 		<HelpText text="*quack* Some buttons needs to be held down to work. *quack*" range="20" />
         <Event script="platform_start"/>
     </Entity>
-	
-	<!--Entity type="ButtonBase" model="Models\Worlds\Subworld 1\ButtonBase" id="17" relativeid="100" isVisible="1" isCollidible="1" isAnimated="0" xPos="199.034827697" yPos="49.2123622218" zPos="-8.39870949045" xRot="1.57" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312"/>
-    <Entity type="Button" model="Models\Worlds\Subworld 1\Button" id="18" relativeid="17" isVisible="1" isCollidible="1" isAnimated="0" xPos="198.949163262" yPos="49.2689358112" zPos="-8.30721064075" xRot="1.57" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312">
-        <WallButton xDir="0" zDir="-1" />
-        <Event script="platform_start"/>
-    </Entity-->
 	
 	<Entity type="movingPlattform" model="Models\Worlds\Subworld 1\movingPlattform" id="20" isVisible="1" isCollidible="1" isAnimated="0" xPos="356" yPos="-334" zPos="159" xRot="0.0" yRot="1.5681321154" zRot="0.0" xScale="1.37679221438" yScale="1.37679221438" zScale="1.37679221438">
         <MoveTarget targetPosX="356" targetPosY="56" targetPosZ="159" duration="3" easingPower="3" continuous="0" />
