@@ -75,6 +75,9 @@ public:
 	AnimatedInstance* CreateAnimatedInstance(std::string file);
 	void DeleteInstance(AnimatedInstance* ai);
 
+	SortedAnimatedInstance* CreateSortedAnimatedInstance(std::string file);
+	void DeleteInstance(SortedAnimatedInstance* ai);
+
 	MorphModelInstance* CreateMorphAnimatedInstance(std::string path, std::string file, Vec3 pos);
 	void DeleteInstance(MorphModelInstance* mmi);
 

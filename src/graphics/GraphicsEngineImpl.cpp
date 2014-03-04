@@ -1085,6 +1085,58 @@ void GraphicsEngineImpl::DeleteInstance(AnimatedInstance* ai)
 	delete mi;
 }
 
+
+
+SortedAnimatedInstance* GraphicsEngineImpl::CreateSortedAnimatedInstance(std::string file)
+{
+	if (mSkinnedSortedModels.find(file) == mSkinnedSortedModels.end())
+	{
+		std::stringstream ss;
+		ss << file << ".dae";
+		mSkinnedSortedModels[file] = new GenericSkinnedModelSorted(mD3D->GetDevice(),
+			mTextureMgr,
+			mResourceDir + ss.str());
+	}
+
+	SortedAnimatedInstanceImpl* mi = new SortedAnimatedInstanceImpl(Vec3(), Vec3(), Vec3(1, 1, 1), mSkinnedSortedModels[file]);
+	mSortedAnimatedInstances.push_back(mi);
+	return mi;
+}
+
+void GraphicsEngineImpl::DeleteInstance(SortedAnimatedInstance* ai)
+{
+	SortedAnimatedInstanceImpl* mi = (SortedAnimatedInstanceImpl*)ai;
+
+	bool found = false;
+	int index = -1;
+	for (unsigned int i = 0; i < mSortedAnimatedInstances.size(); i++)
+	{
+		if (mi == mSortedAnimatedInstances[i])
+			index = i;
+		else if (mi->mSkinnedInstance->model == mSortedAnimatedInstances[i]->mSkinnedInstance->model)
+			found = true;
+	}
+
+	if (index != -1)
+		mSortedAnimatedInstances.erase(mSortedAnimatedInstances.begin() + index);
+
+	if (!found) //delete model if no other instance uses it
+	{
+		for (std::map<std::string, GenericSkinnedModelSorted*>::iterator it = mSkinnedSortedModels.begin(); it != mSkinnedSortedModels.end(); it++)
+		{
+			if (it->second == mi->mSkinnedInstance->model)
+			{
+				mSkinnedSortedModels.erase(it);
+				break;
+			}
+		}
+		delete mi->mSkinnedInstance->model;
+	}
+
+	delete mi;
+}
+
+
 MorphModelInstance* GraphicsEngineImpl::CreateMorphAnimatedInstance(std::string path, std::string file, Vec3 pos)
 {
 	MorphModel *model = new MorphModel(mD3D->GetDevice(), mTextureMgr, mResourceDir + path, file);
