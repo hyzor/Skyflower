@@ -20,11 +20,13 @@ CutScene::CutScene(ScriptHandler* sh, CameraController* camera)
 	mCurrentYaw = 0.0f;
 	mCurrentPitch = 0.0f;
 	done = true;
+	cameraSet = false;
 	this->Register(sh);
 	
 }
 void CutScene::play(string name)
 {
+
 	translateYawPitch(mCurrentYaw, mCurrentPitch);
 	mCurrentWP = 0;
 	mWaypoints.clear();
@@ -38,6 +40,14 @@ void CutScene::play(string name)
 
 void CutScene::update(float dt)
 {  
+	if (cameraSet)
+	{
+		mCameraPtr->Rotate(setYaw, setPitch);
+		mCameraPtr->SetPosition(setPos);
+		mCurrentYaw = setYaw;
+		mCurrentPitch = setPitch;
+		cameraSet = false;
+	}
 	float ymp = mCameraPtr->GetYaw();
 	if (mWaypoints.size() > 0)
 	{
@@ -132,17 +142,12 @@ int CutScene::AddPoint(lua_State* L)
 
 int CutScene::SetCamera(lua_State *L)
 {
-	Vec3 pos;
-	float yaw = 0.0f;
-	float pitch = 0.0f;
+	self->cameraSet = true;
 	int n = lua_gettop(L);
 
-	pos = Vec3(lua_tonumber(L, 1), lua_tonumber(L, 2), lua_tonumber(L, 3));
-	yaw = (float)(lua_tonumber(L, 4) * (3.14 / 180));
-	pitch = (float)(lua_tonumber(L, 5) * (3.14 / 180));
-
-	self->mCameraPtr->SetPosition(pos);
-	self->mCameraPtr->Rotate(yaw, pitch);
+	self->setPos = Vec3(lua_tonumber(L, 1), lua_tonumber(L, 2), lua_tonumber(L, 3));
+	self->setYaw = (float)(lua_tonumber(L, 4) * (3.14 / 180));
+	self->setPitch = (float)(lua_tonumber(L, 5) * (3.14 / 180));
 
 	return 0;
 }
