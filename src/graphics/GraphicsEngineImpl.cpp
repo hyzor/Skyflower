@@ -32,10 +32,8 @@ GraphicsEngineImpl::~GraphicsEngineImpl()
 
 	ReleaseCOM(mParticlesTextureArray);
 
-	for (UINT i = 0; i < mSkinnedSortedInstances.size(); ++i)
-	{
-		delete mSkinnedSortedInstances[i];
-	}
+	for (UINT i = 0; i < mSortedAnimatedInstances.size(); ++i)
+		delete mSortedAnimatedInstances[i];
 
 	for (auto& it(mSkinnedSortedModels.begin()); it != mSkinnedSortedModels.end(); ++it)
 	{
@@ -813,12 +811,10 @@ void GraphicsEngineImpl::DrawScene()
 	}
 
 
-	for (UINT i = 0; i < mSkinnedSortedInstances.size(); ++i)
+	for (UINT i = 0; i < mSortedAnimatedInstances.size(); ++i)
 	{
-		if (mSkinnedSortedInstances[i]->isVisible)
-		{
-			mSkinnedSortedInstances[i]->prevWorld = mSkinnedSortedInstances[i]->world;
-		}
+		if (mAnimatedInstances[i]->IsVisible())
+			mAnimatedInstances[i]->SetPrevWorld(mAnimatedInstances[i]->GetWorld());
 	}
 
 	renderTarget = mD3D->GetRenderTargetView();
@@ -1462,32 +1458,9 @@ void GraphicsEngineImpl::RenderSceneToTexture()
 		}
 	}
 
-	for (UINT i = 0; i < mSkinnedSortedInstances.size(); ++i)
+	for (UINT i = 0; i < mSortedAnimatedInstances.size(); ++i)
 	{
-		if (mSkinnedSortedInstances[i]->isVisible)
-		{
-			mShaderHandler->mBasicDeferredSkinnedSortedShader->SetWorldViewProjTex(XMLoadFloat4x4(&mSkinnedSortedInstances[i]->world), mCamera->GetViewProjMatrix(), toTexSpace);
-			mShaderHandler->mBasicDeferredSkinnedSortedShader->SetPrevWorldViewProj(XMLoadFloat4x4(&mSkinnedSortedInstances[i]->prevWorld), mCamera->GetPreviousViewProj());
-
-			mShaderHandler->mBasicDeferredSkinnedSortedShader->SetBoneTransforms(
-				mSkinnedSortedInstances[i]->FinalLowerBodyTransforms.data(), (UINT)mSkinnedSortedInstances[i]->FinalLowerBodyTransforms.size(),
-				mSkinnedSortedInstances[i]->FinalUpperBodyTransforms.data(), (UINT)mSkinnedSortedInstances[i]->FinalUpperBodyTransforms.size());
-
-			mShaderHandler->mBasicDeferredSkinnedSortedShader->SetRootBoneIndex(mSkinnedSortedInstances[i]->model->skinnedData.RootBoneIndex);
-
-			mD3D->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-			for (UINT j = 0; j < mSkinnedSortedInstances[i]->model->meshes.size(); ++j)
-			{
-				UINT matIndex = mSkinnedSortedInstances[i]->model->meshes[j].mMaterialIndex;
-				mShaderHandler->mBasicDeferredSkinnedSortedShader->SetMaterial(mSkinnedSortedInstances[i]->model->mat[matIndex],
-					mSkinnedSortedInstances[i]->model->mGlobalMaterialIndex[matIndex]);
-				mShaderHandler->mBasicDeferredSkinnedSortedShader->SetDiffuseMap(mD3D->GetImmediateContext(), mSkinnedSortedInstances[i]->model->diffuseMapSRV[matIndex].Get());
-				mShaderHandler->mBasicDeferredSkinnedSortedShader->UpdatePerObj(mD3D->GetImmediateContext());
-
-				mSkinnedSortedInstances[i]->model->meshes[j].draw(mD3D->GetImmediateContext());
-			}
-		}
+		mSortedAnimatedInstances[i]->Draw(mD3D->GetImmediateContext(), mCamera, mShaderHandler->mBasicDeferredSkinnedSortedShader);
 	}
 
 	for (UINT cIndex = 0; cIndex < MAX_CASC; cIndex++)
@@ -2225,6 +2198,6 @@ void GraphicsEngineImpl::ClearModelInstances()
 	for (UINT i = 0; i < mMorphInstances.size(); ++i)
 		DeleteInstance(mMorphInstances[i]);
 
-	for (UINT i = 0; i < mSkinnedSortedInstances.size(); ++i)
-		delete mSkinnedSortedInstances[i];
+	for (UINT i = 0; i < mSortedAnimatedInstances.size(); ++i)
+		delete mSortedAnimatedInstances[i];
 }

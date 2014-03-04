@@ -49,6 +49,36 @@ public:
 
 };
 
+
+class DLL_API SortedAnimatedInstance
+{
+public:
+	virtual ~SortedAnimatedInstance() {};
+
+	virtual bool IsVisible() = 0;
+	virtual Vec3 GetPosition() = 0;
+	virtual Vec3 GetRotation() = 0;
+	virtual Vec3 GetScale() = 0;
+	virtual UINT GetLowerAnimation() = 0;
+	//virtual bool IsLowerAnimationDone() = 0;
+	virtual UINT GetUpperAnimation() = 0;
+	//virtual bool IsUpperAnimationDone() = 0;
+
+	virtual void SetPosition(Vec3 pos) = 0;
+	virtual void SetRotation(Vec3 rot) = 0;
+	virtual void SetScale(Vec3 scale) = 0;
+	virtual void SetVisibility(bool visible) = 0;
+	virtual void Set(Vec3 pos, Vec3 rot, Vec3 scale) = 0;
+
+	virtual void CreateAnimation(int id, int start, int frames) = 0;
+	virtual void CreateAnimation(int id, int start, int frames, bool playForwards) = 0;
+
+	virtual void SetLowerAnimation(UINT id, bool loop) = 0;
+	//virtual void SetLowerAnimationSpeed(UINT id, float speed) = 0;
+	virtual void SetUpperAnimation(UINT id, bool loop) = 0;
+	//virtual void SetUpperAnimationSpeed(UINT id, float speed) = 0;
+};
+
 class DLL_API MorphModelInstance
 {
 public:

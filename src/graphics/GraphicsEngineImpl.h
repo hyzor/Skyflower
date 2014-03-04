@@ -133,11 +133,14 @@ private:
 
 	InputLayouts* mInputLayouts;
 
+
 	std::map<std::string, GenericModel*> mModels;
 	std::map<std::string, GenericSkinnedModel*> mSkinnedModels;
+	std::map<std::string, GenericSkinnedModelSorted*> mSkinnedSortedModels;
 
 	std::vector<ModelInstanceImpl*> mInstances;
 	std::vector<AnimatedInstanceImpl*> mAnimatedInstances;
+	std::vector<SortedAnimatedInstanceImpl*> mSortedAnimatedInstances;
 
 	std::vector<MorphModel*> mMorphModels;
 	std::vector<MorphModelInstanceImpl*> mMorphInstances;
@@ -198,10 +201,7 @@ private:
 	float mCurFPS;
 	float mTargetFPS;
 
-	// Skinned model with upper body and lower body test
-	//GenericSkinnedModelSortedInstance* mSkinnedSortedTestInstance;
-	std::vector<GenericSkinnedModelSortedInstance*> mSkinnedSortedInstances;
-	std::map<std::string, GenericSkinnedModelSorted*> mSkinnedSortedModels;
+	
 
 	// Keep a list of all the materials used in a specific level
 	std::vector<Material*> mMaterials;
