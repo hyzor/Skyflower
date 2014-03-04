@@ -477,11 +477,11 @@ void RenderStates::InitAll(ID3D11Device* device)
 	particleBSdesc.RenderTarget[2].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	particleBSdesc.RenderTarget[2].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	particleBSdesc.RenderTarget[3].BlendEnable = TRUE;
-	particleBSdesc.RenderTarget[3].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-	particleBSdesc.RenderTarget[3].DestBlend = D3D11_BLEND_ONE;
+	particleBSdesc.RenderTarget[3].SrcBlend = D3D11_BLEND_ZERO;
+	particleBSdesc.RenderTarget[3].DestBlend = D3D11_BLEND_SRC_COLOR;
 	particleBSdesc.RenderTarget[3].BlendOp = D3D11_BLEND_OP_ADD;
 	particleBSdesc.RenderTarget[3].SrcBlendAlpha = D3D11_BLEND_ZERO;
-	particleBSdesc.RenderTarget[3].DestBlendAlpha = D3D11_BLEND_ONE;
+	particleBSdesc.RenderTarget[3].DestBlendAlpha = D3D11_BLEND_SRC_ALPHA;
 	particleBSdesc.RenderTarget[3].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	particleBSdesc.RenderTarget[3].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
