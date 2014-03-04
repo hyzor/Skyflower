@@ -444,7 +444,9 @@ int Event::SetSpeed(lua_State* L)
 
 		Entity* entityAi = entityManager->getEntity(aiId);
 
-		entityAi->getComponent<Movement*>("Movement")->SetSpeed((float)lua_tonumber(L, 2));
+		Push* push = entityAi->getComponent<Push*>("Push");
+		if(!push || !push->isResettingSpeed())
+			entityAi->getComponent<Movement*>("Movement")->SetSpeed((float)lua_tonumber(L, 2));
 	}
 
 	return 0;

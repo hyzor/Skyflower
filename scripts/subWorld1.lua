@@ -108,47 +108,65 @@ end
 rush = true
 rushtime = 0
 scaredtime = 0
+push1JumpTime = 2
+push1ChangeTargetTime = 0
+push1Target = 0
 function update_aiPush(id, dt)
-	
-	if IsTouching(id, 16) then
-		Jump(id)
-	end
-
-	if not stairdown then
-		SetTarget(id,16)
-		if IsActivated(16) and IsStanding(id, 16) then
+	if InRange(id, player, 100) then
+		if IsTouching(id, 16) then
 			Jump(id)
+		end
+
+		if not stairdown then
+			SetTarget(id,16)
+			if IsActivated(16) and IsStanding(id, 16) then
+				Jump(id)
+			end
+		else
+			
+			if rush then
+				SetTarget(id, player)
+				
+				if InRange(id, player, 15) then
+					SetSpeed(id, 50)
+					Push(id, player)
+						
+					if rushtime > 2 then
+						rush = false
+						scaredtime = 0
+					end
+				
+					rushtime = rushtime + dt
+				else
+					SetSpeed(id, 10)
+				end
+			else
+				SetTarget(id, player, 30)
+				SetSpeed(id, 30)
+				if scaredtime > 4 then
+					rush = true
+					rushtime = 0
+				end
+				
+				scaredtime = scaredtime + dt
+			end
 		end
 	else
 		
-		if rush then
-			SetTarget(id, player)
-			
-			if InRange(id, player, 15) then
-				SetSpeed(id, 50)
-				if CanPush(id, player) then
-					Push(id, player)
-					rush = false
-					scaredtime = 0
-				elseif rushtime > 2 then
-					rush = false
-					scaredtime = 0
-				end
-			
-				rushtime = rushtime + dt
-			else
-				SetSpeed(id, 10)
-			end
-		else
-			SetTarget(id, player, 30)
-			SetSpeed(id, 30)
-			if scaredtime > 4 then
-				rush = true
-				rushtime = 0
-			end
-			
-			scaredtime = scaredtime + dt
+		
+		push1JumpTime = push1JumpTime - dt
+		if push1JumpTime < 0 or IsTouching(id, 12) or IsTouching(id, 13) then
+			push1JumpTime = math.random(1, 5)
+			Jump(id)
 		end
+		
+		push1ChangeTargetTime = push1ChangeTargetTime - dt
+		if push1ChangeTargetTime < 0 then
+			push1ChangeTargetTime = math.random(2, 7)
+			push1Target = math.random(12, 13)
+		end
+		
+		SetTarget(id, push1Target)
 	end
 	
 end

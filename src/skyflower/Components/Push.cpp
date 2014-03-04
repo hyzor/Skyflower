@@ -193,13 +193,13 @@ void Push::update(float dt)
 	//reset the entity to normal speed
 	if (resetSpeed)
 	{
-		Movement* mov = getOwner()->getComponent<Movement*>("Movement");
-		mov->SetSpeed(mov->GetSpeed()+80*dt); //accelerate speed 40*dt
-		if (mov->GetSpeed() >= pSpeed)
+		currSpeed += 80 * dt; //accelerate speed
+		if (currSpeed >= pSpeed)
 		{
 			resetSpeed = false;
-			mov->SetSpeed(pSpeed);
+			currSpeed = pSpeed;
 		}
+		getOwner()->getComponent<Movement*>("Movement")->SetSpeed(currSpeed);
 	}
 
 	//pushAll();
@@ -270,6 +270,7 @@ void Push::push(Entity* target)
 						{
 							pSpeed = mov->GetSpeed();
 							mov->SetSpeed(5);
+							currSpeed = mov->GetSpeed();
 							resetSpeed = true;
 						}
 					}
@@ -311,4 +312,9 @@ bool Push::isDraging()
 	if (getOwner()->wall)
 		return getOwner()->wall->hasComponents("Box") && canPush && canDrag;
 	return false;;
+}
+
+bool Push::isResettingSpeed()
+{
+	return resetSpeed;
 }

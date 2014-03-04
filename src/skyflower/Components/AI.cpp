@@ -80,7 +80,7 @@ void AI::update(float dt)
 		if (unsafe[unsafeIndex])
 			getEntityManager()->modules->potentialField->DeleteField(unsafe[unsafeIndex]);
 
-		unsafe[unsafeIndex] = getEntityManager()->modules->potentialField->CreateField(15, 15, pos + dir * 5);
+		unsafe[unsafeIndex] = getEntityManager()->modules->potentialField->CreateField(8, 8, pos + dir * 5);
 		unsafeIndex++;
 		unsafeIndex %= 5;
 	}
