@@ -45,19 +45,15 @@
 	<Entity type="Sign" id="537" isVisible="0" isCollidible="1" isAnimated="0" xPos="7.5" yPos="-3.5" zPos="135.0344042124" xRot="0.0" yRot="-0.45" zRot="0.0" xScale="1.88018653941" yScale="1.95493788201" zScale="1.88018653941" model="Models\\placeHolder Subworld\\level1signdone">
 		<PointLight xPos="5.0" yPos="5.0" zPos="-15.0" r="1.0" g="1.0" b="1.0" intensity="1"  />
 	</Entity>	
-	<Entity type="light" id="665" xPos="-2.0" yPos="15.0" zPos="120.0344042124" xRot="0.0" yRot="0.0" zRot="0.0" xScale="0.0" yScale="0.0" zScale="0.0" model="" isVisible="0" isCollidible="0" isAnimated="0">
-	</Entity>
 	
 	<!-- 
 	Same but with the sign for subworld2.
 	-->
-	<Entity type="Sign" id="538" isVisible="1" isCollidible="1" isAnimated="0" xPos="2.0" yPos="9.0" zPos="52.0" xRot="0.0" yRot="3.55" zRot="0.0" xScale="1.88018653941" yScale="1.95493788201" zScale="1.88018653941" model="Models\\placeHolder Subworld\\level2sign">
+	<Entity type="Sign" id="538" isVisible="1" isCollidible="1" isAnimated="0" xPos="58.0" yPos="-3.3" zPos="53.0" xRot="0.0" yRot="33.65" zRot="0.0" xScale="1.88018653941" yScale="1.95493788201" zScale="1.88018653941" model="Models\\placeHolder Subworld\\level2sign">
     </Entity>
-	<Entity type="Sign" id="539" isVisible="0" isCollidible="1" isAnimated="0" xPos="2.0" yPos="9.0" zPos="52.0" xRot="0.0" yRot="3.55" zRot="0.0" xScale="1.88018653941" yScale="1.95493788201" zScale="1.88018653941" model="Models\\placeHolder Subworld\\level2signdone">
+	<Entity type="Sign" id="539" isVisible="0" isCollidible="1" isAnimated="0" xPos="58.0" yPos="-3.3" zPos="53.0" xRot="0.0" yRot="33.65" zRot="0.0" xScale="1.88018653941" yScale="1.95493788201" zScale="1.88018653941" model="Models\\placeHolder Subworld\\level2signdone">
+				<PointLight xPos="5.0" yPos="5.0" zPos="10.0" r="1.0" g="1.0" b="1.0" intensity="1" />
     </Entity>
-	<Entity type="light" id="664" xPos="2.0" yPos="25.0" zPos="65.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="0.0" yScale="0.0" zScale="0.0" model="" isVisible="0" isCollidible="0" isAnimated="0">
-		<PointLight r="1.0" g="1.0" b="1.0" intensity="4" />
-	</Entity>
 
 	<Entity type="skyFlower" model="" id="10" isVisible="1" isCollidible="0" isAnimated="0" xPos="23" yPos="-10" zPos="89" xRot="0.0" yRot="1.64" zRot="0.0" xScale="1" yScale="1" zScale="1">
         <MorphAnimation path="Models/skyflower meshar/Skyflower_Final/" file="skyflower.morph" />
