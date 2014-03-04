@@ -53,7 +53,7 @@ MenuButton::MenuButton(GUI *g, Vec3 position, int textureWidth, int textureHeigh
 {
 	textureIDs.push_back(g->CreateGUIElementAndBindTexture(position, "Menygrafik\\" + textureNormal));
 	textureIDs.push_back(g->CreateGUIElementAndBindTexture(position, "Menygrafik\\" + textureHover));
-	g->GetGUIElement(textureIDs[0])->SetVisible(false);
+	g->GetGUIElement(textureIDs[1])->SetVisible(false);
 	this->highlighted = false;
 	this->handler = []() {};
 }
