@@ -24,7 +24,9 @@ public:
 		menu,
 		game,
 		loading,
-		cutScene
+		cutScene,
+		start,
+		end
 	};
 
 	Application();
@@ -38,6 +40,8 @@ private:
 	void updateMenu(float dt, float gameTime);
 	void updateLoading(float dt);
 	void updateCutScene(float dt);
+	void updateStart(float dt, int startScreen);
+	void updateEnd(float dt, int endScreen);
 	void changeGameState(GameState newState);
 
 	void setBackgroundMusicList(const std::vector<std::string> &musicList);
@@ -65,6 +69,8 @@ private:
 
 	double mGameTime;
 	double mStartTime;
+	float startStoryTimer;
+	float endStoryTimer;
 
 	Window *m_window;
 	InputHandler *m_inputHandler;

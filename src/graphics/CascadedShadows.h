@@ -27,6 +27,15 @@ enum NEAR_FAR_FIT_METHOD
 	FIT_NEARFAR_SCENE_AABB
 };
 
+/*
+	Used when computing near and far values for cascades
+*/
+struct HelpTriangle
+{
+	XMVECTOR pt[3];
+	bool culled;
+};
+
 class CascadedShadows
 {
 
@@ -75,6 +84,9 @@ public:
 	Cascade* GetCascade(UINT index);
 
 	UINT GetNrOfCascades() const;
+
+private:
+	void ComputeNearFar(float& _near, float& _far, XMVECTOR lightOrtographicMin, XMVECTOR lightOrtographicMax, XMVECTOR* sceneAABBPointsLightSpace);
 
 };
 

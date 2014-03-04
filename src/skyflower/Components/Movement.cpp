@@ -332,11 +332,19 @@ void Movement::update(float deltaTime)
 					// Idle
 					if (idleTimer > 2.5f)
 					{
+						if (rand() % 10 < 6)
+						{
+							animatedInstance->SetAnimationSpeed(4, 0.85f);
+							animatedInstance->SetAnimation(4, false);
+						}
 						idleTimer = 0.0f;
-						animatedInstance->SetAnimationSpeed(4, 0.85f);
-						animatedInstance->SetAnimation(4, false);
 					}
-					else if (animatedInstance->GetAnimation() != 4 || animatedInstance->IsAnimationDone())
+
+					else if (animatedInstance->GetAnimation() == 4 && animatedInstance->IsAnimationDone())
+					{
+						animatedInstance->SetAnimation(11, false);
+					}
+					else if (!(animatedInstance->GetAnimation() == 4 || animatedInstance->GetAnimation() == 11))
 					{
 						animatedInstance->SetAnimation(11, false);
 					}
