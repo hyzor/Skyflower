@@ -84,8 +84,6 @@ end
 -----------------
 
 function load_aiPush(id)
-	Print("AI loaded")
-	
 	StartUpdate()
 end
 
@@ -141,7 +139,6 @@ end
 --------------------
 
 function activated_balloon(id)
-	Print("Touched")
 	if IsActivator(id, "Throwable") then
 		Print("POP!")
 		Pop(id)
@@ -153,7 +150,6 @@ end
 ---------------
 
 function cutscene_Goal()
-	Print("cutscene_goal")
 	x, y, z = GetCameraPos()
 	yaw, pitch = GetYawPitch()
 
@@ -162,15 +158,12 @@ function cutscene_Goal()
 end
 
 function update_Goal(id)
-	--Print("update_Goal")
 	if not CutSceneIsPlaying() then
 		ChangeLevel(0)
 	end
 end
 
 function activated_Goal(id)
-	Print("activated_Goal")
-
 	CutScenePlay("Goal")
 	StartUpdate()
 

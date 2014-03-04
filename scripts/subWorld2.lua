@@ -71,7 +71,6 @@ stairdown = true
 function update_temporaryFlowers(id, dt)
 	if IsDown(id) then
 		platformTimer = platformTimer + dt
-		--Print(platformTimer)
 		if stairdown then
 			platformTimer = 0
 			MoveToTarget(22)
@@ -221,7 +220,6 @@ end
 
 function activated_balloon(id)
 	--if IsActivator(id, "Throwable") then
-		Print("mmmm you touched me")
 		Pop(id)
 		MoveToTarget(46)
 		Lit(206,3)
@@ -236,7 +234,6 @@ end
 ---------------
 
 function cutscene_Goal()
-	Print("cutscene_goal")
 	--x, y, z = GetCameraPos()
 	--yaw, pitch = GetYawPitch()
 
@@ -245,15 +242,12 @@ function cutscene_Goal()
 end
 
 function update_Goal(id)
-	--Print("update_Goal")
 	if not CutSceneIsPlaying() then
 		ChangeLevel(0)
 	end
 end
 
 function activated_Goal(id)
-	Print("activated_Goal")
-
 	CutScenePlay("Goal")
 	StartUpdate()
 end
