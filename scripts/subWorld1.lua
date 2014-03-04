@@ -30,28 +30,16 @@ end
 
 function update_player(id, dt)
 	PushAll(id)
-	
-	--[[
-	--player light
-	if IsLit(id) then
-		Unlit(id, 1)
-	elseif IsUnlit(id) then
-		Lit(id, 1)
-	end
-	
-	--sun
-	if IsLit(201) then
-		Unlit(201, 10)
-	elseif IsUnlit(201) then
-		Lit(201, 10)
-	end
-	--]]
 end
 
 --platform_start script--
 -------------------------
-
+first = true
 function activated_platform_start(id)
+	if first then
+		PlayFinishedSound(id)
+		first = false
+	end
 	SetContinous(24, true)
 end
 	
@@ -96,113 +84,80 @@ end
 -----------------
 
 function load_aiPush(id)
-	Print("AI loaded")
-	
 	StartUpdate()
 end
 
 rush = true
 rushtime = 0
 scaredtime = 0
+push1JumpTime = 2
+push1ChangeTargetTime = 0
+push1Target = 0
 function update_aiPush(id, dt)
-	
-	if IsTouching(id, 16) then
-		Jump(id)
-	end
-
-	if not stairdown then
-		SetTarget(id,16)
-		if IsActivated(16) and IsStanding(id, 16) then
+	if InRange(id, player, 100) then
+		if IsTouching(id, 16) then
 			Jump(id)
+		end
+
+		if not stairdown then
+			SetTarget(id,16)
+			if IsActivated(16) and IsStanding(id, 16) then
+				Jump(id)
+			end
+		else
+			
+			if rush then
+				SetTarget(id, player)
+				
+				if InRange(id, player, 15) then
+					SetSpeed(id, 50)
+					Push(id, player)
+						
+					if rushtime > 2 then
+						rush = false
+						scaredtime = 0
+					end
+				
+					rushtime = rushtime + dt
+				else
+					SetSpeed(id, 10)
+				end
+			else
+				SetTarget(id, player, 30)
+				SetSpeed(id, 30)
+				if scaredtime > 4 then
+					rush = true
+					rushtime = 0
+				end
+				
+				scaredtime = scaredtime + dt
+			end
 		end
 	else
 		
-		if rush then
-			SetTarget(id, player)
-			
-			if InRange(id, player, 15) then
-				SetSpeed(id, 50)
-				if CanPush(id, player) then
-					Push(id, player)
-					rush = false
-					scaredtime = 0
-				elseif rushtime > 2 then
-					rush = false
-					scaredtime = 0
-				end
-			
-				rushtime = rushtime + dt
-			else
-				SetSpeed(id, 10)
-			end
-		else
-			SetTarget(id, player, 30)
-			SetSpeed(id, 30)
-			if scaredtime > 4 then
-				rush = true
-				rushtime = 0
-			end
-			
-			scaredtime = scaredtime + dt
+		
+		push1JumpTime = push1JumpTime - dt
+		if push1JumpTime < 0 or IsTouching(id, 12) or IsTouching(id, 13) then
+			push1JumpTime = math.random(1, 5)
+			Jump(id)
 		end
+		
+		push1ChangeTargetTime = push1ChangeTargetTime - dt
+		if push1ChangeTargetTime < 0 then
+			push1ChangeTargetTime = math.random(2, 7)
+			push1Target = math.random(12, 13)
+		end
+		
+		SetTarget(id, push1Target)
 	end
 	
 end
-
-
---TestAI script--
------------------
-
-function load_testAI(id)
-	StartUpdate()
-end
-
-throwtime = 0
-currtarget = 511;
-function skit(id, dt)
-	SetTarget(id, currtarget)
-	if InRange(id, currtarget, 4) then
-		if currtarget == 511 then
-			currtarget = 512
-		else
-			currtarget = 511
-		end
-	end
-end
-
-function update_testAI(id, dt)
-	if not CanThrow(id, 98713) then
-		SetTarget(id, 98713)
-		PickUp(id, 98713)
-	else
-		if InRange(id, player, 60) then
-			throwtime = throwtime + dt
-			SetTarget(id, player)
-			if throwtime > 2 then
-				Throw(id, player)
-				throwtime = 0
-			end
-		else --patrullera
-			SetTarget(id, currtarget)
-			if InRange(id, currtarget, 4) then
-				if currtarget == 511 then
-					currtarget = 512
-				else
-					currtarget = 511
-				end
-			end
-		end
-	end
-end
-
 
 --ballonPop script--
 --------------------
 
 function activated_balloon(id)
-	Print("Touched")
 	if IsActivator(id, "Throwable") then
-		Print("POP!")
 		Pop(id)
 	end
 end
@@ -212,7 +167,6 @@ end
 ---------------
 
 function cutscene_Goal()
-	Print("cutscene_goal")
 	x, y, z = GetCameraPos()
 	yaw, pitch = GetYawPitch()
 
@@ -221,15 +175,12 @@ function cutscene_Goal()
 end
 
 function update_Goal(id)
-	--Print("update_Goal")
 	if not CutSceneIsPlaying() then
 		ChangeLevel(0)
 	end
 end
 
 function activated_Goal(id)
-	Print("activated_Goal")
-
 	CutScenePlay("Goal")
 	StartUpdate()
 

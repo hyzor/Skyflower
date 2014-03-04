@@ -22,14 +22,14 @@ void Checkpoint::addedToEntity()
 
 	particleSystem = getOwner()->getModules()->graphics->CreateParticleSystem();
 	particleSystem->SetActive(false);
-	particleSystem->SetParticleType(ParticleType::PT_PARTICLE);
+	particleSystem->SetParticleType(ParticleType::PT_POLLEN);
 	particleSystem->SetParticleAgeLimit(0.25f);
 	particleSystem->SetEmitFrequency(1.0f / 50.0f);
 	particleSystem->SetEmitDir(XMFLOAT3(0.0f, 1.0f, 0.0f));
 	particleSystem->SetConstantAccel(XMFLOAT3(0.0f, -10.0f, 0.0f));
 	particleSystem->SetRandomVelocityActive(true);
 	particleSystem->SetRandomVelocity(XMFLOAT3(10.0f, 5.0f, 10.0f));
-	particleSystem->SetScale(XMFLOAT2(4.0f, 4.0f));
+	particleSystem->SetScale(XMFLOAT2(1.0f, 1.0f));
 }
 
 void Checkpoint::removeFromEntity()
@@ -99,11 +99,15 @@ void Checkpoint::Activate(Message const& msg)
 
 			Vec3 position = getOwner()->returnPos();
 			getOwner()->getModules()->sound->PlaySound("checkpoint_crystal.wav", 1.0f, &position.X);
-			//getOwner()->getModules()->sound->PlaySound("checkpoint_yell.wav", 1.0f, &position.X);
 		}
 	}
 
 	activated = 0.2f;
+
+	if (getOwnerId() == 69)
+	{
+		getOwner()->sendMessage("Activated", this); //event managment
+	}
 }
 
 void Checkpoint::Deactivate()

@@ -34,6 +34,8 @@ public:
 
 	bool isDraging();
 
+	bool isResettingSpeed();
+
 private:
 	void stopPush(Message const& msg);
 	void beingPushed(Message const& msg);
@@ -47,7 +49,8 @@ private:
 	bool canDrag;
 
 	float pSpeed;
-	float resetSpeed;
+	bool resetSpeed;
+	float currSpeed;
 
 
 	Entity* box;

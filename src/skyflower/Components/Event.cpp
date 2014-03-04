@@ -444,7 +444,9 @@ int Event::SetSpeed(lua_State* L)
 
 		Entity* entityAi = entityManager->getEntity(aiId);
 
-		entityAi->getComponent<Movement*>("Movement")->SetSpeed((float)lua_tonumber(L, 2));
+		Push* push = entityAi->getComponent<Push*>("Push");
+		if(!push || !push->isResettingSpeed())
+			entityAi->getComponent<Movement*>("Movement")->SetSpeed((float)lua_tonumber(L, 2));
 	}
 
 	return 0;
@@ -966,4 +968,20 @@ int Event::Respawn(lua_State* L)
 
 	lua_pushboolean(L, flag);
 	return 1;
+}
+
+int Event::PlayFinishedSound(lua_State* L)
+{
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		Cistron::EntityId Id = (Cistron::EntityId)lua_tointeger(L, 1);
+
+		Entity* e = entityManager->getEntity(Id);
+
+		if (e)
+			e->getModules()->sound->PlaySound("puzzle_solved.wav", 0.5f);
+	}
+
+	return 0;
 }

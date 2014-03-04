@@ -44,6 +44,9 @@ void Input::OnKeyDown(unsigned short key)
 	case VK_SPACE:
 		getOwner()->sendMessage("Jump", this);
 		break;
+	case 'X':
+		getOwner()->sendMessage("StartMorphingTest", this);
+		break;
 	default:
 		break;
 	}

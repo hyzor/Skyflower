@@ -39,6 +39,7 @@ public:
 	void SetParticleType(ParticleType particleType);
 	void SetRandomVelocityActive(bool active);
 	void SetRandomVelocity(XMFLOAT3 randomVelocity);
+	void SetColor(XMFLOAT3 color);
 
 	float GetAgeLimit() const;
 	float GetEmitFrequency() const;
@@ -96,6 +97,8 @@ private:
 
 	bool mRandomizeVelocity;
 	XMFLOAT3 mRandomVelocity;
+
+	XMFLOAT3 mColor;
 };
 
 #endif

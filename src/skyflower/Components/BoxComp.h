@@ -15,7 +15,7 @@ using namespace Cistron;
 class BoxComp : public Component
 {
 public:
-	BoxComp(float speed);
+	BoxComp(float speed, float minDist);
 	virtual ~BoxComp();
 
 	void addedToEntity();
@@ -26,7 +26,9 @@ public:
 	float GetSpeed();
 
 	bool isFalling();
+	float MinDist();
 
+	Vec3 startPos;
 private:
 	float speed;
 	Vec3 pNormal;
@@ -40,6 +42,8 @@ private:
 	Vec3 fall;
 	float rotx;
 	float rotz;
+
+	float minDist;
 };
 
 #endif

@@ -3,7 +3,7 @@
 CascadedShadows::CascadedShadows(ID3D11Device* device, UINT width, UINT height, UINT nrOfCascades)
 {
 	this->mNrOfCascades = 0;
-
+	this->mBufferSize = (float)width;
 	this->mFrustumSplitMethod = FIT_TO_CASCADE;
 	this->mNearFarFitMethod = FIT_NEARFAR_AABB;
 
@@ -97,6 +97,8 @@ void CascadedShadows::CreateLightFrustums(const DLight& light, const BoundingSph
 		sceneBBPointsLightSpace[i] = XMVector3Transform(v, lightView);
 	}
 
+	XMVECTOR worldUnitsPerTexel = gVecZero;
+
 	for (UINT i = 0; i < this->mCascades.size(); i++)
 	{
 		if (this->mFrustumSplitMethod == FIT_TO_CASCADE)
@@ -164,7 +166,18 @@ void CascadedShadows::CreateLightFrustums(const DLight& light, const BoundingSph
 
 			if (this->mFrustumSplitMethod == FIT_TO_CASCADE)
 			{
-				//TODO: optimize specifically for the FIT_TO_CASCADE method
+				float fNormalizeByBufferSize = (1.0f / this->mBufferSize);
+				XMVECTOR vNormalizeByBufferSize = XMVectorSet(fNormalizeByBufferSize, fNormalizeByBufferSize, 0.0f, 0.0f);
+
+				XMVECTOR borderOffset = lightOrtographicMax - lightOrtographicMin;
+				XMVECTORF32 halfVec = { 0.5f, 0.5f, 0.5f, 0.5f };
+
+				borderOffset *= halfVec;
+				lightOrtographicMax += borderOffset;
+				lightOrtographicMin -= borderOffset;
+
+				worldUnitsPerTexel = lightOrtographicMax - lightOrtographicMin;
+				worldUnitsPerTexel *= vNormalizeByBufferSize;
 			}
 			else if (this->mFrustumSplitMethod == FIT_TO_SCENE)
 			{
@@ -173,9 +186,16 @@ void CascadedShadows::CreateLightFrustums(const DLight& light, const BoundingSph
 
 			float lightOrtographicMinZ = XMVectorGetZ(lightOrtographicMin);
 
-			if (false)
+			//Prevent shimmering edges when moving the camera (also for zooming, but not rotating)
+			if (true)
 			{
-				//TODO: Prevent shadowjittering??
+				lightOrtographicMin /= worldUnitsPerTexel;
+				lightOrtographicMin = XMVectorFloor(lightOrtographicMin);
+				lightOrtographicMin *= worldUnitsPerTexel;
+
+				lightOrtographicMax /= worldUnitsPerTexel;
+				lightOrtographicMax = XMVectorFloor(lightOrtographicMax);
+				lightOrtographicMax *= worldUnitsPerTexel;
 			}
 
 			//float nearPlane = 0.0f;

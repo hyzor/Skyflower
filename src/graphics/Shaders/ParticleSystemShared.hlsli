@@ -6,3 +6,7 @@
 #define PT_DUST 5
 #define PT_PORTAL 6
 #define PT_AIM 7
+#define PT_REDSTAR 8
+#define PT_BLUESTAR 9
+#define PT_WHITESTAR 10
+#define PT_POLLEN 11

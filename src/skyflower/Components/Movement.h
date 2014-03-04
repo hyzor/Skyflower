@@ -60,6 +60,8 @@ public:
 		this->canMove = canMove;
 	}
 
+	bool canJump;
+
 private:
 	void startMoveForward(Message const& msg);
 	void startMoveBackward(Message const& msg);

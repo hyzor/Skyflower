@@ -29,10 +29,8 @@ void Throwable::update(float deltaTime)
 
 				if (entity != owner && entity->fId != throwerId && entity->sphere != NULL && ownerSphere->Test(*entity->sphere))
 				{
-					isBeingThrown = false;
 					entity->sendMessage("isDizzy", this);
 					p->SetVelocity(p->GetVelocity() * Vec3(0, 1, 0));
-					throwerId = -1;
 					break;
 				}
 			}
@@ -45,24 +43,14 @@ void Throwable::update(float deltaTime)
 		Vec3 direction = Vec3(cosf(-rotation.Y - (float)M_PI_2), 0.0f, sinf(-rotation.Y - (float)M_PI_2)).Normalize();
 		Vec3 throwablePosition = position + direction * 2.198f;
 
-		int x = (direction.X > 0? 1 : -1);
-		int z = (direction.Z > 0? 1 : -1);
 
-		Ray ray = Ray(throwablePosition, Vec3(x, -1.0f, z));
-
-		Collision *collision = owner->getModules()->collision;
-		const std::vector<CollisionInstance *> &collisionInstances = collision->GetCollisionInstances();
-
-		// Don't fly through collidable entities.
-		for (size_t i = 0; i < collisionInstances.size(); i++)
+		if (getOwner()->wall)
+			p->SetVelocity(p->GetVelocity() * Vec3(0, 1, 0));
+		if (getOwner()->ground)
 		{
-			if (collisionInstances[i]->Test(ray) > 0.0f)
-			{
-				owner->getPhysics()->SetVelocity(Vec3(0.0f, 0.0f, 0.0f));
-				throwerId = -1;
-				isBeingThrown = false;
-				break;
-			}
+			owner->getPhysics()->SetVelocity(Vec3(0.0f, 0.0f, 0.0f));
+			throwerId = -1;
+			isBeingThrown = false;
 		}
 	}
 
@@ -85,6 +73,8 @@ void Throwable::update(float deltaTime)
 			this->mParticleSystemThrow->SetActive(false);
 		}
 	}
+
+	Respawn(deltaTime);
 }
 
 void Throwable::setTargetPos(Vec3 pos)
@@ -112,4 +102,16 @@ void Throwable::setIsBeingPickedUp(bool state, EntityId throwerId)
 bool Throwable::getIsBeingPickedUp()
 {
 	return isBeingPickedUp;
+}
+
+void Throwable::Respawn(float dt)
+{
+	respawnTime -= dt;
+	if (respawnTime < 0)
+	{
+		getOwner()->sendMessage("Respawn");
+		respawnTime = 5;
+	}
+	if (getIsBeingPickedUp())
+		respawnTime = 5; // set respawn time
 }

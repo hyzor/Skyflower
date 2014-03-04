@@ -3,18 +3,19 @@ player = 1 --player id
 function loaded()
 	Lit(195,1)
 	Lit(196,1)
-	Unlit(197,1)
-	Unlit(198,1)
-	Unlit(199,1)
-	Unlit(200,1)
-	Unlit(201,1)
-	Unlit(202,1)
-	Unlit(203,1)
-	Unlit(204,1)
-	Unlit(205,1)
-	Unlit(206,1)
-	Unlit(207,1)
-	Unlit(208,1)
+	
+	Lit(197,1)
+	Lit(198,1)
+	Lit(199,1)
+	Lit(200,1)
+	Lit(201,1)
+	Lit(202,1)
+	Lit(203,1)
+	Lit(204,1)
+	Lit(205,1)
+	Lit(206,1)
+	Lit(207,1)
+	Lit(208,1)
 	--CutScenePlay("intro")
 end
 
@@ -70,7 +71,6 @@ stairdown = true
 function update_temporaryFlowers(id, dt)
 	if IsDown(id) then
 		platformTimer = platformTimer + dt
-		--Print(platformTimer)
 		if stairdown then
 			platformTimer = 0
 			MoveToTarget(22)
@@ -95,7 +95,7 @@ function update_temporaryFlowers(id, dt)
 			stairdown = true
 		end
 	end
-	if platformTimer > 20 then
+	if platformTimer > 10 then
 		ButtonUp(id)
 		platformTimer = 0
 	end
@@ -220,12 +220,12 @@ end
 
 function activated_balloon(id)
 	--if IsActivator(id, "Throwable") then
-		Print("mmmm you touched me")
 		Pop(id)
 		MoveToTarget(46)
 		Lit(206,3)
 		Lit(207,3)
 		Lit(208,3)
+		PlayFinishedSound(id)
 	--end
 end
 
@@ -234,7 +234,6 @@ end
 ---------------
 
 function cutscene_Goal()
-	Print("cutscene_goal")
 	--x, y, z = GetCameraPos()
 	--yaw, pitch = GetYawPitch()
 
@@ -243,15 +242,12 @@ function cutscene_Goal()
 end
 
 function update_Goal(id)
-	--Print("update_Goal")
 	if not CutSceneIsPlaying() then
 		ChangeLevel(0)
 	end
 end
 
 function activated_Goal(id)
-	Print("activated_Goal")
-
 	CutScenePlay("Goal")
 	StartUpdate()
 end
@@ -261,8 +257,13 @@ function load_blinkingLights(id)
 end
 
 timer = 0
+first = true
 function update_blinkingLights(id, dt)
 	if IsActivated(id) then
+		if first then
+			PlayFinishedSound(id)
+			first = false
+		end
 		timer = timer + dt
 		if timer > 0 and timer < 1 then
 			Lit(197, 1)
@@ -275,12 +276,6 @@ function update_blinkingLights(id, dt)
 		elseif timer > 4 then
 			timer = 0
 		end
-	end
-end
-
-function activated_light199(id)
-	if IsActivated(id) then
-		Lit(199,1)
 	end
 end
 
@@ -323,12 +318,35 @@ function update_boxPuzzle(id, dt)
 			failed = false
 			MoveToTarget(id)
 			Lit(201,1)
+			PlayFinishedSound(id)
 		end
 	elseif finished and not failed then
 		MoveToSpawn(id)
 		Unlit(201,1)
 		finished = false
 		failed = true
+	end
+end
+
+function load_puzzleCheckpoint(id)
+	StartUpdate()
+end
+
+firstAtCheckpoint = true
+function update_puzzleCheckpoint(id, dt)
+	if IsActivated(id) and timer > 3then
+		if firstAtCheckpoint then
+			Lit(199,1)
+			firstAtCheckpoint = false
+		end
+		if not finished then
+		Respawn(59)
+		Respawn(58)
+		Respawn(60)
+		timer = 0
+		end
+	else
+		timer = timer + dt
 	end
 end
 
@@ -341,23 +359,15 @@ end
 -----------------
 
 heldtime = 0
-respawnballtime = 0
 function update_thrower(id, dt)
 	if not CanThrow(id, 101) then
 		if not IsHeld(101) then
 			SetTarget(id, 101)
 			PickUp(id, 101)
-			respawnballtime = respawnballtime + dt
-			if respawnballtime > 10 then
-				Respawn(101)
-				respawnballtime = 0
-			end
 		else
-			respawnballtime = 0
 			SetTarget(id, player, 100)
 		end
 	else
-		respawnballtime = 0
 		SetTarget(id, player, 60)
 		heldtime = heldtime + dt
 		if InRange(id, player, 60) and heldtime > 1 then

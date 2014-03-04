@@ -47,6 +47,10 @@ private:
 	ScriptHandler* mScriptHandlerPtr;
 	CameraController* mCameraPtr;
 
+	bool cameraSet;
+	Vec3 setPos;
+	float setYaw;
+	float setPitch;
 	int mCurrentWP;
 	float mCurrentYaw;
 	float mCurrentPitch;

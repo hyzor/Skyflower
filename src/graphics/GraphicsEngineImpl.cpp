@@ -179,7 +179,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mCascadedShadows->SetSplitMethod(FIT_TO_CASCADE);
 	mCascadedShadows->SetNearFarFitMethod(FIT_NEARFAR_AABB);
 	mCascadedShadows->SetSplitDepth(0.125f, 0);
-	mCascadedShadows->SetSplitDepth(0.35f, 1);
+	mCascadedShadows->SetSplitDepth(0.30f, 1);
 
 	mGameTime = 0.0f;
 

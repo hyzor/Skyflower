@@ -23,6 +23,7 @@ void Push::addedToEntity()
 {
 	m_isPushingBox = false;
 
+
 	//requestMessage("inAir", &Push::stopPush);
 	requestMessage("Wall", &Push::stopPush);
 	requestMessage("beingPushed", &Push::beingPushed);
@@ -92,7 +93,7 @@ void Push::update(float dt)
 			boxDir = Vec3(copysign(1.0f, boxDir.X), 0.0f, 0.0f);
 		else
 			boxDir = Vec3(0.0f, 0.0f, copysign(1.0f, boxDir.Z));
-		
+
 		//check if entity is holding
 		bool canpush = true;
 		Throw* throwcomp = getOwner()->getComponent<Throw*>("Throw");
@@ -102,14 +103,64 @@ void Push::update(float dt)
 				canpush = false;
 		}
 
-		//release pusher from box
-		if (!canpush || box->getComponent<BoxComp*>("Box")->isFalling() || (dir != Vec3() && ((dir != boxDir && !canDrag) || (canDrag && dir*boxDir == Vec3()))) || (canDrag && getOwner()->wall && getOwner()->wall != box))
+		//normal box
+		BoxComp* boxComp = box->getComponent<BoxComp*>("Box");
+		if (boxComp->MinDist() == 0)
 		{
-			relativePos = Vec3();
-			box = nullptr;
+			//release pusher from box
+			if (!canpush || box->getComponent<BoxComp*>("Box")->isFalling() || (dir != Vec3() && ((dir != boxDir && !canDrag) || (canDrag && dir*boxDir == Vec3()))) || (canDrag && getOwner()->wall && getOwner()->wall != box))
+			{
+				relativePos = Vec3();
+				box = nullptr;
+			}
 		}
-		//push box
+		//box puzzel box
 		else
+		{
+			//stop pusher from jumping while pushing
+			getOwner()->getComponent<Movement*>("Movement")->canJump = false;
+
+			//position in grid
+			Vec3 fromStart = boxComp->startPos - box->returnPos()*Vec3(1, 0, 1);
+			fromStart /= boxComp->MinDist();
+			Vec3 to = Vec3(roundf(fromStart.X), 0, roundf(fromStart.Z));
+
+			//box at right position
+			if ((fromStart - to).Length() < 0.08f)
+			{
+				//release box
+				if (!canpush || box->getComponent<BoxComp*>("Box")->isFalling() || (dir != Vec3() && ((dir != boxDir && !canDrag) || (canDrag && dir == boxDir*-1 && dir*boxDir == Vec3()))))
+				{
+					getOwner()->getComponent<Movement*>("Movement")->canJump = true;
+					box->updatePos(boxComp->startPos - to*boxComp->MinDist() + Vec3(0, box->returnPos().Y, 0));
+					relativePos = Vec3();
+					box = nullptr;
+				}
+			}
+			else
+			{
+				//limit movement to backwards and forwards
+				if (dir*boxDir == Vec3())
+					dir = Vec3();
+
+				//move to closes grid position
+				if (dir == Vec3())
+				{
+					dir = (fromStart - to).Normalize();
+					if (abs(dir.X) > abs(dir.Z))
+						dir = Vec3(copysign(1.0f, dir.X), 0.0f, 0.0f);
+					else
+						dir = Vec3(0.0f, 0.0f, copysign(1.0f, dir.Z));
+				}
+
+				//disable drag into wall
+				if (dir == boxDir*-1 && (getOwner()->wall && getOwner()->wall != box))
+					dir = Vec3();
+			}
+		}
+
+		//push box
+		if (box)
 		{
 			// Rotate the entity to make it perpendicular to the box it is pushing.
 			Vec3 rotation = Vec3(0.0f, 0.0f, 0.0f);
@@ -142,13 +193,13 @@ void Push::update(float dt)
 	//reset the entity to normal speed
 	if (resetSpeed)
 	{
-		Movement* mov = getOwner()->getComponent<Movement*>("Movement");
-		mov->SetSpeed(mov->GetSpeed()+80*dt); //accelerate speed 40*dt
-		if (mov->GetSpeed() >= pSpeed)
+		currSpeed += 80 * dt; //accelerate speed
+		if (currSpeed >= pSpeed)
 		{
 			resetSpeed = false;
-			mov->SetSpeed(pSpeed);
+			currSpeed = pSpeed;
 		}
+		getOwner()->getComponent<Movement*>("Movement")->SetSpeed(currSpeed);
 	}
 
 	//pushAll();
@@ -219,6 +270,7 @@ void Push::push(Entity* target)
 						{
 							pSpeed = mov->GetSpeed();
 							mov->SetSpeed(5);
+							currSpeed = mov->GetSpeed();
 							resetSpeed = true;
 						}
 					}
@@ -260,4 +312,9 @@ bool Push::isDraging()
 	if (getOwner()->wall)
 		return getOwner()->wall->hasComponents("Box") && canPush && canDrag;
 	return false;;
+}
+
+bool Push::isResettingSpeed()
+{
+	return resetSpeed;
 }

@@ -33,6 +33,12 @@
 #include "External/SMAA/AreaTex.h"
 #include "FullscreenTriangle.h"
 
+
+
+const float fovY = 0.785398f; // 0.25f * MathHelper::pi
+const float zNear = 1.0f;
+const float zFar = 1000.0f;
+
 static const enum BlendingMethods
 {
 	ALPHA_BLENDING = 0,

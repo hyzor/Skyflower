@@ -68,6 +68,7 @@ void Application::Start()
 	m_potentialField = new PotentialField();
 	m_scriptHandler = new ScriptHandler();
 	Event::Register(m_scriptHandler);
+	ParticleSystemComp::Register(m_scriptHandler);
 
 	Modules modules;
 	modules.input = m_inputHandler;
@@ -106,9 +107,10 @@ void Application::Start()
 	levelHandler->init(m_entityManager);
 
 	// Load Hub Level
-	levelHandler->queue(4);
+	levelHandler->queue(0);
 	//levelHandler->loadQueued();
 	levelHandler->LoadQueued(mXmlResourceDir);
+	//levelHandler->loadQueued();
 
 	//m_entityManager->sendMessageToEntity("ActivateListener", "player");
 	m_graphicsEngine->UpdateSceneData();
@@ -238,11 +240,12 @@ void Application::Start()
 		{
 			// Basically a hax - Dont do this at home
 			// FIXME: Don't hardcode this!
+			m_entityManager->sendGlobalMessage("Hide helptexts");
 			m_GUI->GetGUIElement(loadingScreen)->GetDrawInput()->scale = XMFLOAT2((float)m_window->GetWidth() / 1024, (float)m_window->GetHeight() / 768);
 			m_GUI->GetGUIElement(loadingScreen)->SetVisible(true);
 			m_GUI->Draw();
 			m_graphicsEngine->Present();
-
+			m_entityManager->sendGlobalMessage("Show helptexts");
 			//m_graphicsEngine->ClearLevelTextures();
 			//m_graphicsEngine->ClearModelInstances();
 
@@ -598,6 +601,16 @@ void Application::OnKeyDown(unsigned short key)
 			m_entityManager->sendGlobalMessage("enter pressed");
 		}
 		break;
+	case 'R':
+		m_entityManager->getEntity(1)->getComponent<Health*>("Health")->setHealth(0);
+		break;
+	case VK_SPACE:
+		if (m_cutscene->isPlaying())
+			m_cutscene->stop();
+		break;
+	case 'N':
+		g_quakeSounds = !g_quakeSounds;
+		break;
 	case 'Z':
 		m_showCharts = !m_showCharts;
 
@@ -605,25 +618,15 @@ void Application::OnKeyDown(unsigned short key)
 		m_GUI->GetGUIElement(m_fpsChartID)->SetVisible(m_showCharts);
 		m_GUI->GetGUIElement(m_memChartID)->SetVisible(m_showCharts);
 		break;
-	case 'N':
-		g_quakeSounds = !g_quakeSounds;
-		break;
-	case 'R':
+	case 'O':
 		//m_scriptHandler->Load("subWorld2.lua");
 		//m_cutscene->play("intro");
 		//_graphicsEngine->ClearLights();
 		levelHandler->queue(levelHandler->currentLevel());
 		break;
-	case VK_SPACE:
-		if (m_cutscene->isPlaying())
-			m_cutscene->stop();
-		break;
 	case 'L':
 		m_graphicsEngine->ClearLights();
 		m_entityManager->loadXML("subworld2Lights.XML");
-		break;
-	case 'Q':
-		m_entityManager->getEntity(1)->getComponent<Health*>("Health")->setHealth(0);
 		break;
 #if 0
 	case 'P':

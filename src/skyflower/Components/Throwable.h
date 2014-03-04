@@ -23,6 +23,7 @@ public:
 		this->isBeingThrown = false;
 		this->throwerId = -1;
 		this->targetPos = Vec3();
+		this->respawnTime = 5;
 	}
 	virtual ~Throwable() {};
 
@@ -99,6 +100,10 @@ private:
 	{
 		this->isBeingPickedUp = false;
 	}
+
+	void Respawn(float dt);
+
+	float respawnTime;
 };
 
 #endif

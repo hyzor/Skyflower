@@ -817,9 +817,14 @@ bool EntityManager::loadXML(string xmlFile)
 			}
 			else if (componentName == "Box")
 			{
+				float minDist = 0;
+				attr = e->Attribute("minDist");
+				if (attr != nullptr)
+					minDist = e->FloatAttribute("minDist");
+
 				float speed = GetFloatAttribute(e, "speed", entityName, xmlFile, componentName);
 
-				BoxComp* p = new BoxComp(speed);
+				BoxComp* p = new BoxComp(speed, minDist);
 				this->addComponent(entity, p);
 			}
 			else if (componentName == "Goal")
@@ -1003,6 +1008,13 @@ bool EntityManager::loadXML(string xmlFile)
 			{
 				PortalEffectComponent *portalEffect = new PortalEffectComponent();
 				this->addComponent(entity, portalEffect);
+			}
+			else if (componentName == "ParticleSystemComp")
+			{
+				string scriptName = GetStringAttribute(e, "script", entityName, componentName);
+				UINT particleSystemID = GetIntAttribute(e, "particleSystemID", entityName, xmlFile, componentName);
+				ParticleSystemComp* psc = new ParticleSystemComp(scriptName, particleSystemID);
+				this->addComponent(entity, psc);
 			}
 			else
 			{

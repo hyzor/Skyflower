@@ -19,12 +19,13 @@ static const char *pushBoxSounds[] = {
 	"box/move5.wav"
 };
 
-BoxComp::BoxComp(float speed) : Component("Box")
+BoxComp::BoxComp(float speed, float minDist) : Component("Box")
 {
 	this->speed = speed;
 	pNormal = Vec3(0, 1, 0);
 	rotx = 0;
 	rotz = 0;
+	this->minDist = minDist;
 }
 
 BoxComp::~BoxComp()
@@ -37,6 +38,7 @@ void BoxComp::addedToEntity()
 	this->m_oldPosition = getOwner()->returnPos();
 	this->m_oldPosition.Y = 0.0f;
 	this->m_distanceTraveled = 0.0f;
+	startPos = getOwner()->returnPos()*Vec3(1, 0, 1);
 }
 
 void BoxComp::removeFromEntity()
@@ -134,4 +136,9 @@ void BoxComp::respawn(Message const& msg)
 bool BoxComp::isFalling()
 {
 	return fall != Vec3();
+}
+
+float BoxComp::MinDist()
+{
+	return minDist;
 }

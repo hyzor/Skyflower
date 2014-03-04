@@ -45,6 +45,7 @@ Movement::Movement(float speed) : Component("Movement")
 	this->yaw = 0;
 	this->respawnTimer = 0;
 	this->turnAngle = 0.0f;
+	this->canJump = true;
 
 	this->mParticleSystemRun = NULL;
 	this->mParticleSystemDizzy = NULL;
@@ -531,7 +532,7 @@ void Movement::notInAir(Message const& msg)
 
 void Movement::Jump(Message const& msg)
 {
-	if (!getOwner()->ground && timeFalling > 0.3f)
+	if ((!getOwner()->ground && timeFalling > 0.3f) || !canJump)
 	{
 		return;
 	}
