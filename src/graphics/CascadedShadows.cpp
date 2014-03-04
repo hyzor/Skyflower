@@ -178,8 +178,10 @@ void CascadedShadows::CreateLightFrustums(const DLight& light, const BoundingSph
 				//TODO: Prevent shadowjittering??
 			}
 
-			float nearPlane = 0.0f;
-			float farPlane = 10000.0f;
+			//float nearPlane = 0.0f;
+			float nearPlane = zNear;
+			//float farPlane = 10000.0f;
+			float farPlane = zFar;
 
 			if (this->mNearFarFitMethod == FIT_NEARFAR_AABB)
 			{
