@@ -19,6 +19,7 @@ static const enum ParticleType
 	PT_REDSTAR,
 	PT_BLUESTAR,
 	PT_WHITESTAR,
+	PT_POLLEN,
 	NROFTYPES
 };
 
