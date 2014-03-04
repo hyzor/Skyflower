@@ -117,6 +117,9 @@ void Push::update(float dt)
 		//box puzzel box
 		else
 		{
+			//stop pusher from jumping while pushing
+			getOwner()->getComponent<Movement*>("Movement")->canJump = false;
+
 			//position in grid
 			Vec3 fromStart = boxComp->startPos - box->returnPos()*Vec3(1, 0, 1);
 			fromStart /= boxComp->MinDist();
@@ -128,6 +131,7 @@ void Push::update(float dt)
 				//release box
 				if (!canpush || box->getComponent<BoxComp*>("Box")->isFalling() || (dir != Vec3() && ((dir != boxDir && !canDrag) || (canDrag && dir == boxDir*-1 && dir*boxDir == Vec3()))))
 				{
+					getOwner()->getComponent<Movement*>("Movement")->canJump = true;
 					box->updatePos(boxComp->startPos - to*boxComp->MinDist() + Vec3(0, box->returnPos().Y, 0));
 					relativePos = Vec3();
 					box = nullptr;
