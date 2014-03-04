@@ -967,3 +967,21 @@ int Event::Respawn(lua_State* L)
 	lua_pushboolean(L, flag);
 	return 1;
 }
+
+int Event::PlayFinishedSound(lua_State* L)
+{
+	int n = lua_gettop(L);
+	if (n >= 1)
+	{
+		Cistron::EntityId Id = (Cistron::EntityId)lua_tointeger(L, 1);
+
+		Entity* e = entityManager->getEntity(Id);
+
+		Vec3 position = entityManager->getEntityPos(Id);
+
+		if (e)
+			e->getModules()->sound->PlaySound("puzzle_solved.wav", 0.5f);
+	}
+
+	return 0;
+}

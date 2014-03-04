@@ -63,16 +63,22 @@ void CutScene::update(float dt)
 			Vec3 position = mCameraPtr->GetPosition();
 			position = Lerp(position, target.position, dt * target.time);
 
-			float tot = target.yaw - self->mCurrentYaw;
-			if (tot > 3.14f)
-				tot -= 2 * 3.14f;
-			else if (tot < -3.14f)
-				tot += 2 * 3.14f;
+			if (self->mCurrentYaw < - 3.14f)
+				self->mCurrentYaw += 3.14f*2;
+			else if (self->mCurrentYaw > 3.14f)
+				self->mCurrentYaw -= 3.14f*2;
 
-			if (tot > 0)
-				mCurrentYaw += std::abs(tot) * dt * target.time;
+			float fR1 = self->mCurrentYaw - target.yaw;
+			float fR2 = target.yaw - self->mCurrentYaw;
+			if (fR1 > 3.14f)
+				fR1 -= 2 * 3.14f;
+			if (fR2 < 0.0f)
+				fR2 += 2 * 3.14f;
+
+			if (fR2 < fR1)
+				mCurrentYaw += fR2 * dt * target.time;
 			else
-				mCurrentYaw -= std::abs(tot) * dt * target.time;
+				mCurrentYaw -= fR1 * dt * target.time;
 
 			mCurrentPitch = Lerp(mCurrentPitch, target.pitch, dt*target.time);
 

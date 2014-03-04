@@ -50,8 +50,12 @@ end
 
 --platform_start script--
 -------------------------
-
+first = true
 function activated_platform_start(id)
+	if first then
+		PlayFinishedSound(id)
+		first = false
+	end
 	SetContinous(24, true)
 end
 	

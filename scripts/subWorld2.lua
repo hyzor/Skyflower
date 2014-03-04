@@ -227,6 +227,7 @@ function activated_balloon(id)
 		Lit(206,3)
 		Lit(207,3)
 		Lit(208,3)
+		PlayFinishedSound(id)
 	--end
 end
 
@@ -262,8 +263,13 @@ function load_blinkingLights(id)
 end
 
 timer = 0
+first = true
 function update_blinkingLights(id, dt)
 	if IsActivated(id) then
+		if first then
+			PlayFinishedSound(id)
+			first = false
+		end
 		timer = timer + dt
 		if timer > 0 and timer < 1 then
 			Lit(197, 1)
@@ -324,6 +330,7 @@ function update_boxPuzzle(id, dt)
 			failed = false
 			MoveToTarget(id)
 			Lit(201,1)
+			PlayFinishedSound(id)
 		end
 	elseif finished and not failed then
 		MoveToSpawn(id)

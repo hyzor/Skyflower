@@ -73,7 +73,7 @@ void FootstepsComponent::update(float deltaTime)
 	}
 	else
 	{
-		if (m_distanceTraveled >= 30.0f)
+		if (m_distanceTraveled >= 13.0f)
 		{
 			m_distanceTraveled = 0.0f;
 
