@@ -458,7 +458,7 @@ void Application::updateLoading(float dt)
 
 void Application::updateStart(float dt, int startScreen)
 {
-	if (startStoryTimer > 4)
+	if (startStoryTimer > 4 || m_inputHandler->isMouseButtonDown(MouseButton::MouseButtonLeft))
 	{
 		startStoryTimer = 0;
 
