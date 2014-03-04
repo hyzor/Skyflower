@@ -979,8 +979,6 @@ int Event::PlayFinishedSound(lua_State* L)
 
 		Entity* e = entityManager->getEntity(Id);
 
-		Vec3 position = entityManager->getEntityPos(Id);
-
 		if (e)
 			e->getModules()->sound->PlaySound("puzzle_solved.wav", 0.5f);
 	}

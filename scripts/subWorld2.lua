@@ -71,7 +71,6 @@ stairdown = true
 function update_temporaryFlowers(id, dt)
 	if IsDown(id) then
 		platformTimer = platformTimer + dt
-		--Print(platformTimer)
 		if stairdown then
 			platformTimer = 0
 			MoveToTarget(22)
@@ -221,7 +220,6 @@ end
 
 function activated_balloon(id)
 	--if IsActivator(id, "Throwable") then
-		Print("mmmm you touched me")
 		Pop(id)
 		MoveToTarget(46)
 		Lit(206,3)
@@ -236,7 +234,6 @@ end
 ---------------
 
 function cutscene_Goal()
-	Print("cutscene_goal")
 	--x, y, z = GetCameraPos()
 	--yaw, pitch = GetYawPitch()
 
@@ -245,15 +242,12 @@ function cutscene_Goal()
 end
 
 function update_Goal(id)
-	--Print("update_Goal")
 	if not CutSceneIsPlaying() then
 		ChangeLevel(0)
 	end
 end
 
 function activated_Goal(id)
-	Print("activated_Goal")
-
 	CutScenePlay("Goal")
 	StartUpdate()
 end
@@ -282,12 +276,6 @@ function update_blinkingLights(id, dt)
 		elseif timer > 4 then
 			timer = 0
 		end
-	end
-end
-
-function activated_light199(id)
-	if IsActivated(id) then
-		Lit(199,1)
 	end
 end
 
@@ -337,6 +325,28 @@ function update_boxPuzzle(id, dt)
 		Unlit(201,1)
 		finished = false
 		failed = true
+	end
+end
+
+function load_puzzleCheckpoint(id)
+	StartUpdate()
+end
+
+firstAtCheckpoint = true
+function update_puzzleCheckpoint(id, dt)
+	if IsActivated(id) and timer > 3then
+		if firstAtCheckpoint then
+			Lit(199,1)
+			firstAtCheckpoint = false
+		end
+		if not finished then
+		Respawn(59)
+		Respawn(58)
+		Respawn(60)
+		timer = 0
+		end
+	else
+		timer = timer + dt
 	end
 end
 
