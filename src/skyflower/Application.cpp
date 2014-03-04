@@ -23,6 +23,8 @@ static bool g_quakeSounds = false;
 Application::Application()
 {
 	m_oldVolume = 1.0f;
+	this->nrOfLevels = 2;
+	this->haveShownEndStory = false;
 }
 
 Application::~Application()
@@ -151,7 +153,7 @@ void Application::Start()
 
 	int startScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "startbild_placeholder.png");
 
-	int endScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "Menygrafik\\slutbild_placeholder.png");
+	int endScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "slutbild_placeholder.png");
 	m_GUI->GetGUIElement(endScreen)->SetVisible(false);
 
 	m_menuCameraRotation = 0.0f;
@@ -406,44 +408,52 @@ void Application::updateCutScene(float dt)
 
 void Application::updateGame(float dt, float gameTime)
 {
-	Vec3 playerPos = m_entityManager->getEntityPos("player");
-	m_camera->Follow(playerPos);
-
-	Movement* playerMove = m_entityManager->getEntity(1)->getComponent<Movement*>("Movement");
-	playerMove->setCamera(m_camera->GetLook(), m_camera->GetRight(), m_camera->GetUp());
-	playerMove->setYaw(m_camera->GetYaw());
-
-
-	//camera collision
-	Ray ray = Ray(playerPos + Vec3(0, 10, 0), (playerPos + Vec3(0, 10, 0) - m_camera->GetPosition()).Normalize()*-100);
-	//std::vector<CollisionInstance*> cols = m_collision->GetCollisionInstances();
-	for (int i = 0; i < m_entityManager->getNrOfEntities(); i++)
+	if (levelHandler->completedCount() == this->nrOfLevels && !haveShownEndStory)
 	{
-		if (m_entityManager->getEntityByIndex(i)->getType() == "plattform" && m_entityManager->getEntityByIndex(i)->collInst)
+		changeGameState(GameState::end);
+		haveShownEndStory = true;
+	}
+	else
+	{
+		Vec3 playerPos = m_entityManager->getEntityPos("player");
+		m_camera->Follow(playerPos);
+
+		Movement* playerMove = m_entityManager->getEntity(1)->getComponent<Movement*>("Movement");
+		playerMove->setCamera(m_camera->GetLook(), m_camera->GetRight(), m_camera->GetUp());
+		playerMove->setYaw(m_camera->GetYaw());
+
+
+		//camera collision
+		Ray ray = Ray(playerPos + Vec3(0, 10, 0), (playerPos + Vec3(0, 10, 0) - m_camera->GetPosition()).Normalize()*-100);
+		//std::vector<CollisionInstance*> cols = m_collision->GetCollisionInstances();
+		for (int i = 0; i < m_entityManager->getNrOfEntities(); i++)
 		{
-			float t = m_entityManager->getEntityByIndex(i)->collInst->Test(ray);
-			if (t > 0)
+			if (m_entityManager->getEntityByIndex(i)->getType() == "plattform" && m_entityManager->getEntityByIndex(i)->collInst)
 			{
-				Vec3 dir = ray.GetDir();
-				ray.Set(ray.GetPos(), dir*t);
-				m_camera->SetOffsetFast(ray.GetDir().Length() - 5);
+				float t = m_entityManager->getEntityByIndex(i)->collInst->Test(ray);
+				if (t > 0)
+				{
+					Vec3 dir = ray.GetDir();
+					ray.Set(ray.GetPos(), dir*t);
+					m_camera->SetOffsetFast(ray.GetDir().Length() - 5);
+				}
 			}
 		}
+
+		m_camera->Rotate(m_camera->GetYaw(), m_camera->GetPitch());
+		m_camera->Update(dt);
+
+		m_entityManager->update(dt);
+
+		m_graphicsEngine->UpdateScene(dt, gameTime);
+		m_graphicsEngine->DrawScene();
+
+		if (m_cutscene->isPlaying())
+			changeGameState(GameState::cutScene);
+
+		if (m_menu->isActive())
+			changeGameState(GameState::menu);
 	}
-
-	m_camera->Rotate(m_camera->GetYaw(), m_camera->GetPitch());
-	m_camera->Update(dt);
-
-	m_entityManager->update(dt);
-
-	m_graphicsEngine->UpdateScene(dt, gameTime);
-	m_graphicsEngine->DrawScene();
-
-	if (m_cutscene->isPlaying())
-		changeGameState(GameState::cutScene);
-
-	if (m_menu->isActive())
-		changeGameState(GameState::menu);
 }
 
 void Application::updateLoading(float dt)
@@ -490,7 +500,34 @@ void Application::updateStart(float dt, int startScreen)
 
 void Application::updateEnd(float dt, int endScreen)
 {
+	if (endStoryTimer > 4 || m_inputHandler->isMouseButtonDown(MouseButton::MouseButtonLeft))
+	{
+		endStoryTimer = 0;
 
+		m_GUI->GetGUIElement(endScreen)->SetVisible(false);
+
+		changeGameState(GameState::menu);
+		return;
+	}
+	else
+	{
+		this->endStoryTimer += dt;
+		m_GUI->GetGUIElement(endScreen)->SetVisible(true);
+		m_GUI->Draw();
+	}
+
+	if (m_menu->getSettings()._isFullscreen && !m_graphicsEngine->IsFullscreen())
+	{
+		m_graphicsEngine->SetFullscreen(true);
+		this->OnWindowResized(1920, 1080);
+		m_oldTime = GetTime();
+	}
+	else if (!m_menu->getSettings()._isFullscreen && m_graphicsEngine->IsFullscreen())
+	{
+		m_graphicsEngine->SetFullscreen(false);
+		this->OnWindowResized(1024, 768);
+		m_oldTime = GetTime();
+	}
 }
 
 void Application::changeGameState(GameState newState)
