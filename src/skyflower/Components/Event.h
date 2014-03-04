@@ -45,6 +45,7 @@ public:
 		lua_register(sh->L, "IsActivator", Event::IsActivator);
 		lua_register(sh->L, "IsDown", Event::IsDown);
 		lua_register(sh->L, "PrintText", Event::PrintText);
+		lua_register(sh->L, "PlayFinishedSound", Event::PlayFinishedSound);
 
 		//AI
 		lua_register(sh->L, "SetTarget", Event::SetTarget);
@@ -140,6 +141,7 @@ private:
 	static int IsActivated(lua_State* L);
 	static int IsActivator(lua_State* L);
 	static int IsDown(lua_State* L);
+	static int PlayFinishedSound(lua_State* L);
 
 	static int SetTarget(lua_State* L);
 	static int IsTouching(lua_State* L);
