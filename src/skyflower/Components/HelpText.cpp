@@ -121,6 +121,8 @@ void HelpText::activate(Message const & msg)
 }
 void HelpText::deActivate(Message const & msg)
 {
+	getOwner()->getModules()->gui->GetGUIElement(bgID)->SetVisible(false);
+	getOwner()->getModules()->gui->GetGUIElement(duckID)->SetVisible(false);
 	m_active = false;
 }
 void HelpText::hide(Message const & msg)

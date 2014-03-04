@@ -240,11 +240,12 @@ void Application::Start()
 		{
 			// Basically a hax - Dont do this at home
 			// FIXME: Don't hardcode this!
+			m_entityManager->sendGlobalMessage("Hide helptexts");
 			m_GUI->GetGUIElement(loadingScreen)->GetDrawInput()->scale = XMFLOAT2((float)m_window->GetWidth() / 1024, (float)m_window->GetHeight() / 768);
 			m_GUI->GetGUIElement(loadingScreen)->SetVisible(true);
 			m_GUI->Draw();
 			m_graphicsEngine->Present();
-
+			m_entityManager->sendGlobalMessage("Show helptexts");
 			//m_graphicsEngine->ClearLevelTextures();
 			//m_graphicsEngine->ClearModelInstances();
 
