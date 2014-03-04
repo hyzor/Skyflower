@@ -95,7 +95,7 @@ function update_temporaryFlowers(id, dt)
 			stairdown = true
 		end
 	end
-	if platformTimer > 20 then
+	if platformTimer > 10 then
 		ButtonUp(id)
 		platformTimer = 0
 	end
