@@ -49,7 +49,7 @@ Movement::Movement(float speed) : Component("Movement")
 	this->respawnTimer = 0;
 	this->turnAngle = 0.0f;
 	this->canJump = true;
-
+	this->idleTimer = 0.0f;
 	this->mParticleSystemRun = NULL;
 	this->mParticleSystemDizzy = NULL;
 	mParticleSystemDizzyAngle = 0.0f;
@@ -285,14 +285,6 @@ void Movement::update(float deltaTime)
 	{
 		if (getOwnerId() == 1)
 		{
-			/*char buffer[100];
-			string str;
-			sprintf(buffer, "Current rot: %f      Target rot: %f", walkAngle, targetRot);
-			str = buffer;
-			getOwner()->getModules()->gui->printText(str, 20, 20, Vec3(), 1.5f); */
-			// Player animations
-			//cout << "x: " << pos.X << " y: " << pos.Y << " z: " << pos.Z << endl;
-
 			Push *pushComponent = getOwner()->getComponent<Push *>("Push");
 			Throw *throwComponent = getOwner()->getComponent<Throw *>("Throw");
 
@@ -338,7 +330,17 @@ void Movement::update(float deltaTime)
 				else
 				{
 					// Idle
-					animatedInstance->SetAnimation(4, true);
+					if (idleTimer > 2.5f)
+					{
+						idleTimer = 0.0f;
+						animatedInstance->SetAnimationSpeed(4, 0.85f);
+						animatedInstance->SetAnimation(4, false);
+					}
+					else if (animatedInstance->GetAnimation() != 4 || animatedInstance->IsAnimationDone())
+					{
+						animatedInstance->SetAnimation(11, false);
+					}
+					idleTimer += deltaTime;
 				}
 			}
 		}

@@ -158,7 +158,6 @@ end
 
 function activated_balloon(id)
 	if IsActivator(id, "Throwable") then
-		Print("POP!")
 		Pop(id)
 	end
 end
