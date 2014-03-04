@@ -2,6 +2,9 @@
 #include <iostream>
 #include <sstream>
 
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 #include "shared/Vec3.h"
 #include "shared/util.h"
 #include "physics/PhysicsEngine.h"
@@ -110,6 +113,7 @@ void Movement::update(float deltaTime)
 {
 	Vec3 pos = getOwner()->returnPos();
 	Vec3 rot = getOwner()->returnRot();
+	float finalTargetRot = XMConvertToDegrees(-yaw);
 	p->Update(deltaTime);
 
 	GravityComponent *gravity = getOwner()->getComponent<GravityComponent*>("Gravity");
@@ -219,24 +223,40 @@ void Movement::update(float deltaTime)
 			targetRot = 90.0f;
 		}
 
+		finalTargetRot += targetRot;
+		if (finalTargetRot < -180)
+			finalTargetRot += 360;
+		else if (finalTargetRot > 180)
+			finalTargetRot -= 360;
+
 		if (backwards || isMovingForward || isMovingLeft || isMovingRight)
 		{
-			if (walkAngle < -180)
-				walkAngle += 360;
-			else if (walkAngle > 180)
-				walkAngle -= 360;
+			// Update player and AI rotation.
+			float currentRot = XMConvertToDegrees(rot.Y)-90;
 
-			float fR1 = walkAngle - targetRot;
-			float fR2 = targetRot - walkAngle;
+			if (currentRot < -180)
+				currentRot += 360;
+			else if (currentRot > 180)
+				currentRot -= 360;
+
+			float fR1 = currentRot - finalTargetRot;
+			float fR2 = finalTargetRot - currentRot;
 			if (fR1 < 0.0f)
 				fR1 += 360.0f;
 			if (fR2 < 0.0f)
 				fR2 += 360.0f;
 
 			if (fR2 < fR1)
-				walkAngle += deltaTime*400;
+				currentRot += fR2 * 14 * deltaTime;
 			else
-				walkAngle -= deltaTime*400;
+				currentRot -= fR1 * 14 * deltaTime;
+
+			rot = Vec3(0.0f, DegreesToRadians(currentRot + 90), 0.0f);
+			getOwner()->updateRot(rot);
+
+
+
+
 
 			p->GetStates()->isMoving = true;
 			float totalSpeed = this->speed;
@@ -252,12 +272,6 @@ void Movement::update(float deltaTime)
 				p->RotateRelativeVec3(rot, this->camLook, targetRot);
 				p->Walk(pos, totalSpeed * deltaTime);
 			}
-
-			// If the player is moving, rotate it to match the camera's direction.
-			//if (getOwner()->hasComponents("AI"))
-			//{
-				rot = Vec3(0.0f, -this->yaw + DegreesToRadians(90.0f + walkAngle), 0.0f);
-			//}
 		}
 		else
 		{
@@ -382,23 +396,7 @@ void Movement::update(float deltaTime)
 
 	getOwner()->updatePos(pos);
 
-	// Update player and AI rotation.
-	if (ai)
-	{
-		float d = (rot.Y - pRot.Y);
-
-		if (d > 3.14f)
-			d -= 3.14f*2;
-		else if (d < -3.14f)
-			d += 3.14f*2; 
-
-		Vec3 nRot = pRot + Vec3(0,d,0) * 14 *deltaTime;
-
-		getOwner()->updateRot(nRot);
-		pRot = nRot;
-	}
-	else
-		getOwner()->updateRot(rot);
+	
 
 	if (getOwner()->fId == 1)
 	{
@@ -421,6 +419,8 @@ void Movement::update(float deltaTime)
 			speed = 50.0f;
 		}
 	}
+
+	
 }
 
 Vec3 Movement::GetLook()
