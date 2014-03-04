@@ -104,6 +104,11 @@ void Checkpoint::Activate(Message const& msg)
 	}
 
 	activated = 0.2f;
+
+	if (getOwnerId() == 69)
+	{
+		getOwner()->sendMessage("Activated", this); //event managment
+	}
 }
 
 void Checkpoint::Deactivate()

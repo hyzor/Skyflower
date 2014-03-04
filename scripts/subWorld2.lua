@@ -285,12 +285,6 @@ function update_blinkingLights(id, dt)
 	end
 end
 
-function activated_light199(id)
-	if IsActivated(id) then
-		Lit(199,1)
-	end
-end
-
 function activated_light200(id)
 	if IsActivated(id) then
 		Lit(200,1)
@@ -337,6 +331,28 @@ function update_boxPuzzle(id, dt)
 		Unlit(201,1)
 		finished = false
 		failed = true
+	end
+end
+
+function load_puzzleCheckpoint(id)
+	StartUpdate()
+end
+
+firstAtCheckpoint = true
+function update_puzzleCheckpoint(id, dt)
+	if IsActivated(id) and timer > 3then
+		if firstAtCheckpoint then
+			Lit(199,1)
+			firstAtCheckpoint = false
+		end
+		if not finished then
+		Respawn(59)
+		Respawn(58)
+		Respawn(60)
+		timer = 0
+		end
+	else
+		timer = timer + dt
 	end
 end
 
