@@ -17,6 +17,8 @@ GraphicsEngineImpl::GraphicsEngineImpl()
 	mPointLightsCount = 0;
 	mDirLightsCount = 0;
 	mSpotLightsCount = 0;
+
+	mShadowFrustumCalcTimer = 0.0f;
 }
 
 GraphicsEngineImpl::~GraphicsEngineImpl()
@@ -178,6 +180,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mCascadedShadows = new CascadedShadows(mD3D->GetDevice(), 2048, 2048, 3); //Remember that a const is defined in LightDef.hlsli 
 	mCascadedShadows->SetSplitMethod(FIT_TO_CASCADE);
 	mCascadedShadows->SetNearFarFitMethod(FIT_NEARFAR_AABB);
+	//mCascadedShadows->SetNearFarFitMethod(FIT_NEARFAR_SCENE_AABB);
 	mCascadedShadows->SetSplitDepth(0.125f, 0);
 	mCascadedShadows->SetSplitDepth(0.30f, 1);
 
@@ -564,13 +567,12 @@ void GraphicsEngineImpl::DrawScene()
 
 	if (mDirLightsCount > 0)
 	{
-		//mShadowMap->BindDsvAndSetNullRenderTarget(mD3D->GetImmediateContext());
-		//mShadowMap->BuildShadowTransform(mDirLights[0], mSceneBounds);
-		//mShadowMap->DrawSceneToShadowMap(mInstances, mAnimatedInstances, mD3D->GetImmediateContext(), mShaderHandler->mShadowShader, mShaderHandler->mSkinnedShadowShader);
-		//mShadowMap->DrawSceneToShadowMap(mInstances, mAnimatedInstances, mMorphInstances, mD3D->GetImmediateContext(), mShaderHandler->mShadowShader, mShaderHandler->mSkinnedShadowShader, mShaderHandler->mShadowMorphShader);
-
 		//Draw scene to cascades
-		mCascadedShadows->CreateLightFrustums(mDirLights[0], mSceneBounds, mSceneBB, mCamera);
+		//if (mShadowFrustumCalcTimer > 0.3f)
+		{
+			mCascadedShadows->CreateLightFrustums(mDirLights[0], mSceneBounds, mSceneBB, mCamera);
+			mShadowFrustumCalcTimer = 0.0f;
+		}
 		mCascadedShadows->RenderSceneToCascades(mInstances, mAnimatedInstances, mMorphInstances, mD3D->GetImmediateContext(), mShaderHandler->mShadowShader, mShaderHandler->mSkinnedShadowShader, mShaderHandler->mShadowMorphShader);
 	}
 
@@ -901,6 +903,7 @@ void GraphicsEngineImpl::UpdateScene(float dt, float gameTime)
 	mGameTime = gameTime;
 	mCurFPS = 1000.0f / dt;
 	mCurFPS = mCurFPS / 1000.0f;
+	mShadowFrustumCalcTimer += dt;
 
 	// Update skinned instances
 	for (size_t i = 0; i < mAnimatedInstances.size(); i++)

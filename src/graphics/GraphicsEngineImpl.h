@@ -152,6 +152,7 @@ private:
 
 	Sky* mSky;
 	CascadedShadows* mCascadedShadows;
+	float mShadowFrustumCalcTimer;
 
 	ShaderHandler* mShaderHandler;
 
