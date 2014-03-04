@@ -60,5 +60,8 @@
 		<ParticleSystemComp script="skyflowerparticles" particleSystemID="0"/>
 		<Input />
     </Entity>
+	
+	<Entity type="skyFlower" id="10" isVisible="0" isCollidible="1" isAnimated="0" xPos="23" yPos="-10" zPos="89" xRot="0.0" yRot="1.64" zRot="0.0" xScale="0.2" yScale="1" zScale="0.2" model="Models\\skyflower meshar\\Skyflower_Final\\skyflower_cylinder">
+    </Entity>
 
 </root>
