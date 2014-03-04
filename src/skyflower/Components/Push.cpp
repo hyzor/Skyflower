@@ -13,7 +13,6 @@ Push::Push() : Component("Push")
 	this->resetSpeed = false;
 	this->canDrag = false;
 	this->box = nullptr;
-	this->previousDir = Vec3();
 }
 
 Push::~Push()

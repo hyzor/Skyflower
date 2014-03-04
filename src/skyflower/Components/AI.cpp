@@ -68,7 +68,7 @@ void AI::update(float dt)
 
 	for (size_t i = 0; i < collisionInstances.size(); i++)
 	{
-		Vec3 p = pos + dir * 5;
+		Vec3 p = pos + dir * 7;
 		if (collisionInstances[i]->Test(Ray(p + Vec3(0, 15, 0), Vec3(0, -30, 0))) > 0.0f)
 		{
 			safe = true;
