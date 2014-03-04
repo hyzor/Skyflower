@@ -52,13 +52,16 @@
 	<Entity type="Sign" id="538" isVisible="1" isCollidible="1" isAnimated="0" xPos="58.0" yPos="-3.3" zPos="53.0" xRot="0.0" yRot="33.65" zRot="0.0" xScale="1.88018653941" yScale="1.95493788201" zScale="1.88018653941" model="Models\\placeHolder Subworld\\level2sign">
     </Entity>
 	<Entity type="Sign" id="539" isVisible="0" isCollidible="1" isAnimated="0" xPos="58.0" yPos="-3.3" zPos="53.0" xRot="0.0" yRot="33.65" zRot="0.0" xScale="1.88018653941" yScale="1.95493788201" zScale="1.88018653941" model="Models\\placeHolder Subworld\\level2signdone">
-				<PointLight xPos="5.0" yPos="5.0" zPos="10.0" r="1.0" g="1.0" b="1.0" intensity="1" />
+			<PointLight xPos="-4.0" yPos="5.0" zPos="3.0" r="1.0" g="1.0" b="1.0" intensity="1" />
     </Entity>
 
 	<Entity type="skyFlower" model="" id="10" isVisible="1" isCollidible="0" isAnimated="0" xPos="23" yPos="-10" zPos="89" xRot="0.0" yRot="1.64" zRot="0.0" xScale="1" yScale="1" zScale="1">
         <MorphAnimation path="Models/skyflower meshar/Skyflower_Final/" file="skyflower.morph" />
 		<ParticleSystemComp script="skyflowerparticles" particleSystemID="0"/>
 		<Input />
+    </Entity>
+	
+	<Entity type="skyFlower" id="10" isVisible="0" isCollidible="1" isAnimated="0" xPos="23" yPos="-10" zPos="89" xRot="0.0" yRot="1.64" zRot="0.0" xScale="0.2" yScale="1" zScale="0.2" model="Models\\skyflower meshar\\Skyflower_Final\\skyflower_cylinder">
     </Entity>
 
 </root>
