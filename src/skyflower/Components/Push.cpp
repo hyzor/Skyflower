@@ -118,32 +118,42 @@ void Push::update(float dt)
 		//box puzzel box
 		else
 		{
-			
-
-			//keep moving in same direction
-			if (previousDir == Vec3() || (previousDir*dir != Vec3() && previousDir != Vec3() && dir != Vec3()))
-				previousDir = dir;
-
-
+			//position in grid
 			Vec3 fromStart = boxComp->startPos - box->returnPos()*Vec3(1, 0, 1);
 			fromStart /= boxComp->MinDist();
 			Vec3 to = Vec3(roundf(fromStart.X), 0, roundf(fromStart.Z));
 
-			if ((fromStart - to).Length() < 0.01f)
+			//box at right position
+			if ((fromStart - to).Length() < 0.08f)
 			{
-				previousDir = dir;
-				if (!canpush || box->getComponent<BoxComp*>("Box")->isFalling() || (dir != Vec3() && ((dir != boxDir && !canDrag) || (canDrag && dir*boxDir == Vec3()))))
+				//release box
+				if (!canpush || box->getComponent<BoxComp*>("Box")->isFalling() || (dir != Vec3() && ((dir != boxDir && !canDrag) || (canDrag && dir == boxDir*-1 && dir*boxDir == Vec3()))))
 				{
 					box->updatePos(boxComp->startPos - to*boxComp->MinDist() + Vec3(0, box->returnPos().Y, 0));
 					relativePos = Vec3();
 					box = nullptr;
 				}
 			}
+			else
+			{
+				//limit movement to backwards and forwards
+				if (dir*boxDir == Vec3())
+					dir = Vec3();
 
-			dir = previousDir;
+				//move to closes grid position
+				if (dir == Vec3())
+				{
+					dir = (fromStart - to).Normalize();
+					if (abs(dir.X) > abs(dir.Z))
+						dir = Vec3(copysign(1.0f, dir.X), 0.0f, 0.0f);
+					else
+						dir = Vec3(0.0f, 0.0f, copysign(1.0f, dir.Z));
+				}
 
-			
-
+				//disable drag into wall
+				if (dir == boxDir*-1 && (getOwner()->wall && getOwner()->wall != box))
+					dir = Vec3();
+			}
 		}
 
 		//push box
@@ -157,8 +167,7 @@ void Push::update(float dt)
 				rotation.Y = DegreesToRadians(90.0f + 90.0f * boxDir.Z);
 
 			//move box
-			if (!getOwner()->wall || getOwner()->wall == box)
-				box->updatePos(box->returnPos() + dir*dt*box->getComponent<Movement*>("Movement")->GetSpeed());
+			box->updatePos(box->returnPos() + dir*dt*box->getComponent<Movement*>("Movement")->GetSpeed());
 
 			//move relative to box
 			getOwner()->updatePos((box->returnPos() + relativePos)*Vec3(1, 0, 1) + pos*Vec3(0, 1, 0));
