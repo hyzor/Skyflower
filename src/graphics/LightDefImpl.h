@@ -135,7 +135,7 @@ public:
 
 struct Material
 {
-	Material() { ZeroMemory(this, sizeof(this)); }
+	Material() { ZeroMemory(this, sizeof(Material)); }
 
 	XMFLOAT4 Ambient;
 	XMFLOAT4 Diffuse;

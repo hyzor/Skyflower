@@ -111,12 +111,12 @@ int ParticleSystemComp::SetEmitPos(lua_State* L)
 		float z = (float)lua_tonumber(L, 5);
 
 		Entity* entity = mEntityManager->getEntity(entityID);
-		Vec3 pos = entity->returnPos();
 		if (entity)
 		{
 			ParticleSystemComp* psc = entity->getComponent<ParticleSystemComp*>("ParticleSystemComp");
 			if (psc)
 			{
+				Vec3 pos = entity->returnPos();
 				psc->GetParticleSystem()->SetEmitPos(XMFLOAT3(pos.X + x, pos.Y + y, pos.Z + z));
 			}
 		}
