@@ -149,6 +149,11 @@ void Application::Start()
 	int loadingScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "Menygrafik\\fyraTreRatio.png");
 	m_GUI->GetGUIElement(loadingScreen)->SetVisible(false);
 
+	int startScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "startbild_placeholder.png");
+
+	int endScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "Menygrafik\\slutbild_placeholder.png");
+	m_GUI->GetGUIElement(endScreen)->SetVisible(false);
+
 	m_menuCameraRotation = 0.0f;
 
 	m_showHelpTexts = true;
@@ -158,7 +163,10 @@ void Application::Start()
 	mStartTime = GetTime();
 	m_quit = false;
 
-	changeGameState(GameState::menu);
+	startStoryTimer = 0.0f;
+	endStoryTimer = 0.0f;
+
+	changeGameState(GameState::start);
 
 	while(!m_quit)
 	{
@@ -224,6 +232,12 @@ void Application::Start()
 			break;
 		case GameState::cutScene:
 			updateCutScene((float)deltaTime);
+			break;
+		case GameState::start:
+			updateStart((float)deltaTime, startScreen);
+			break;
+		case GameState::end:
+			updateEnd((float)deltaTime, endScreen);
 			break;
 		}
 		
@@ -440,6 +454,43 @@ void Application::updateLoading(float dt)
 
 	if (!levelHandler->isLoading())
 		changeGameState(GameState::game);
+}
+
+void Application::updateStart(float dt, int startScreen)
+{
+	if (startStoryTimer > 4)
+	{
+		startStoryTimer = 0;
+
+		m_GUI->GetGUIElement(startScreen)->SetVisible(false);
+
+		changeGameState(GameState::menu);
+		return;
+	}
+	else
+	{
+		this->startStoryTimer += dt;
+		m_GUI->GetGUIElement(startScreen)->SetVisible(true);
+		m_GUI->Draw();
+	}
+
+	if (m_menu->getSettings()._isFullscreen && !m_graphicsEngine->IsFullscreen())
+	{
+		m_graphicsEngine->SetFullscreen(true);
+		this->OnWindowResized(1920, 1080);
+		m_oldTime = GetTime();
+	}
+	else if (!m_menu->getSettings()._isFullscreen && m_graphicsEngine->IsFullscreen())
+	{
+		m_graphicsEngine->SetFullscreen(false);
+		this->OnWindowResized(1024, 768);
+		m_oldTime = GetTime();
+	}
+}
+
+void Application::updateEnd(float dt, int endScreen)
+{
+
 }
 
 void Application::changeGameState(GameState newState)
