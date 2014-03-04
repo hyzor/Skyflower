@@ -224,9 +224,9 @@ void Movement::update(float deltaTime)
 		}
 
 		finalTargetRot += targetRot;
-		if (finalTargetRot < -180)
+		while (finalTargetRot < -180)
 			finalTargetRot += 360;
-		else if (finalTargetRot > 180)
+		while (finalTargetRot > 180)
 			finalTargetRot -= 360;
 
 		if (backwards || isMovingForward || isMovingLeft || isMovingRight)
@@ -234,9 +234,9 @@ void Movement::update(float deltaTime)
 			// Update player and AI rotation.
 			float currentRot = XMConvertToDegrees(rot.Y)-90;
 
-			if (currentRot < -180)
+			while (currentRot < -180)
 				currentRot += 360;
-			else if (currentRot > 180)
+			while (currentRot > 180)
 				currentRot -= 360;
 
 			float fR1 = currentRot - finalTargetRot;
