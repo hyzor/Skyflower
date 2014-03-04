@@ -103,7 +103,7 @@ private:
 	Vec3 pRot;
 	float respawnTimer;
 	float turnAngle;
-
+	float idleTimer;
 	ParticleSystem *mParticleSystemRun;
 	ParticleSystem *mParticleSystemDizzy;
 	float mParticleSystemDizzyAngle;
