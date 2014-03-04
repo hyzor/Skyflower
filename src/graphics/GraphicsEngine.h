@@ -51,6 +51,9 @@ public:
 	virtual AnimatedInstance* CreateAnimatedInstance(std::string file) = 0;
 	virtual void DeleteInstance(AnimatedInstance* ai) = 0;
 
+	virtual SortedAnimatedInstance* CreateSortedAnimatedInstance(std::string file) = 0;
+	virtual void DeleteInstance(SortedAnimatedInstance* ai) = 0;
+
 	virtual MorphModelInstance* CreateMorphAnimatedInstance(std::string path, std::string file, Vec3 pos) = 0;
 	virtual void DeleteInstance(MorphModelInstance* mmi) = 0;
 
