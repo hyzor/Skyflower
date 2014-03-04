@@ -71,6 +71,7 @@ private:
 	double mStartTime;
 	float startStoryTimer;
 	float endStoryTimer;
+	int nrOfLevels;
 
 	Window *m_window;
 	InputHandler *m_inputHandler;
@@ -113,6 +114,8 @@ private:
 
 	std::string mXmlResourceDir;
 	std::string mResourceDir;
+
+	bool haveShownEndStory;
 };
 
 std::string GetPlayerSoundFile(const std::string &file);
