@@ -128,21 +128,26 @@ float GravityComponent::testMove(Ray r, Entity* e, Entity* &out, bool groundRay,
 	//test ray relative to entity
 	Vec3 pos = e->returnPos();
 
-	float preLength = r.GetDir().Length();
-
-	float limit = ((preLength - 5)*0.5f) / preLength;
-	cout << limit << endl;
-	
-	if (prevPos.Y > pos.Y)
+	float limit = 0.5f;
+	if (groundRay)
 	{
-		Vec3 p = pos;
-		Vec3 dir = r.GetDir();
-		dir.Y -= prevPos.Y - pos.Y;
-		p.Y = prevPos.Y;
-		float newLength = dir.Length();
-		r.Set(p + r.GetPos(), dir);
+		float preLength = r.GetDir().Length();
 
-		limit = ((preLength-5)*0.5f) / newLength;
+		limit = ((preLength - 5)*0.5f) / preLength;
+
+		if (prevPos.Y > pos.Y)
+		{
+			Vec3 p = pos;
+			Vec3 dir = r.GetDir();
+			dir.Y -= prevPos.Y - pos.Y;
+			p.Y = prevPos.Y;
+			float newLength = dir.Length();
+			r.Set(p + r.GetPos(), dir);
+
+			limit = ((preLength - 5)*0.5f) / newLength;
+		}
+		else
+			r.SetPos(pos + r.GetPos());
 	}
 	else
 		r.SetPos(pos + r.GetPos());
