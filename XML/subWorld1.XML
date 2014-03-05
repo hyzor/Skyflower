@@ -112,7 +112,7 @@
 		xPos="20" yPos="0" zPos="-20" />
 		
 	
-    <Entity type="WoodBlock" model="Models\Worlds\Subworld 1\WoodBlock" id="19" isVisible="1" isCollidible="1" isAnimated="0" xPos="472.770895471" yPos="125.251395515" zPos="122.055509702" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
+    <Entity type="WoodBlock" model="Models\Worlds\Subworld 1\WoodBlock" id="19" isVisible="1" isCollidible="1" isAnimated="0" xPos="472.770895471" yPos="125.251395515" zPos="118" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <Gravity/>
         <Box/>
 		<HelpText text="Holding down space will make you jump higher!" range="50" />
@@ -135,18 +135,18 @@
     </Entity>
 	
 	<Entity type="movingPlattform" model="Models\Worlds\Subworld 1\movingPlattform" id="20" isVisible="1" isCollidible="1" isAnimated="0" xPos="356" yPos="-334" zPos="159" xRot="0.0" yRot="1.5681321154" zRot="0.0" xScale="1.37679221438" yScale="1.37679221438" zScale="1.37679221438">
-        <MoveTarget targetPosX="356" targetPosY="56" targetPosZ="159" duration="3" easingPower="3" continuous="0" />
+        <MoveTarget targetPosX="356" targetPosY="56" targetPosZ="160" duration="3" easingPower="3" continuous="0" />
     </Entity>
     <Entity type="movingPlattform" model="Models\Worlds\Subworld 1\movingPlattform" id="80" isVisible="1" isCollidible="1" isAnimated="0" xPos="375" yPos="-288" zPos="170" xRot="0.0" yRot="1.5681321154" zRot="0.0" xScale="1.37679221438" yScale="1.37679221438" zScale="1.37679221438">
-        <MoveTarget targetPosX="375" targetPosY="66" targetPosZ="170" duration="3" easingPower="3" continuous="0" />
+        <MoveTarget targetPosX="382" targetPosY="66" targetPosZ="170" duration="3" easingPower="3" continuous="0" />
     </Entity>
     <Entity type="movingPlattform" model="Models\Worlds\Subworld 1\movingPlattform" id="90" isVisible="1" isCollidible="1" isAnimated="0" xPos="393" yPos="-261" zPos="177" xRot="0.0" yRot="1.5681321154" zRot="0.0" xScale="1.37679221438" yScale="1.37679221438" zScale="1.37679221438">
-        <MoveTarget targetPosX="393" targetPosY="78" targetPosZ="177" duration="3" easingPower="3" continuous="0" />
+        <MoveTarget targetPosX="407" targetPosY="78" targetPosZ="179" duration="3" easingPower="3" continuous="0" />
     </Entity>
     <Entity type="movingPlattform" model="Models\Worlds\Subworld 1\movingPlattform" id="23" isVisible="1" isCollidible="1" isAnimated="0" xPos="415" yPos="-316" zPos="173" xRot="0.0" yRot="1.5681321154" zRot="0.0" xScale="1.37679221438" yScale="1.37679221438" zScale="1.37679221438">
-        <MoveTarget targetPosX="415" targetPosY="84" targetPosZ="173" duration="3" easingPower="3" continuous="0" />
+        <MoveTarget targetPosX="435" targetPosY="84" targetPosZ="187" duration="3" easingPower="3" continuous="0" />
     </Entity>
     <Entity type="movingPlattform" model="Models\Worlds\Subworld 1\movingPlattform" id="10" isVisible="1" isCollidible="1" isAnimated="0" xPos="436" yPos="-274" zPos="165" xRot="0.0" yRot="1.5681321154" zRot="0.0" xScale="1.37679221438" yScale="1.37679221438" zScale="1.37679221438">
-        <MoveTarget targetPosX="436" targetPosY="93" targetPosZ="165" duration="3" easingPower="3" continuous="0" />
+        <MoveTarget targetPosX="461" targetPosY="93" targetPosZ="172" duration="3" easingPower="3" continuous="0" />
     </Entity>
 </root>
