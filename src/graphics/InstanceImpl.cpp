@@ -731,10 +731,10 @@ bool SortedAnimatedInstanceImpl::IsUpperAnimationDone()
 
 void SortedAnimatedInstanceImpl::SetLowerAnimationSpeed(UINT id, float speed)
 {
-	mSkinnedInstance->upperAnimationSpeed = speed;
+	mSkinnedInstance->lowerAnimationSpeed = speed;
 }
 
 void SortedAnimatedInstanceImpl::SetUpperAnimationSpeed(UINT id, float speed)
 {
-	mSkinnedInstance->lowerAnimationSpeed = speed;
+	mSkinnedInstance->upperAnimationSpeed = speed;
 }
