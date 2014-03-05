@@ -291,6 +291,7 @@ void Menu::setVisible(bool visible)
 		if (m_credits == -1)
 		{
 			m_credits = guiPtr->CreateGUIElementAndBindTexture(Vec3(0.0f, 0.0f), "Menygrafik\\credits.png");
+			guiPtr->GetGUIElement(m_credits)->GetDrawInput()->scale = XMFLOAT2((float)this->width / 1024, (float)this->height / 768);
 
 			MenuButton *back_credits = new MenuButton(guiPtr, Vec3(30, 250), 174, 80, "buttons/back.png", "buttons/back_highlighted.png");
 			back_credits->setOnClick([this]() { setActivePage(this->isFirst()? MenuPageStart : MenuPageMain); });
