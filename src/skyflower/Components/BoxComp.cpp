@@ -62,6 +62,8 @@ void BoxComp::update(float dt)
 		else
 			normal = pNormal;
 
+		if(getOwnerId() == 28)
+			std::cout << "normal: x: " << normal.X << " y: " << normal.Y << " z: " << normal.Z << std::endl;
 
 		if (getOwner()->ground)
 		{
@@ -92,11 +94,17 @@ void BoxComp::update(float dt)
 		else
 		{
 			//räkna rotation längs med vectorn
-			rotx = asinf(Vec3(0.0f, normal.Y, normal.Z).Normalize().Y);
-			rotz = asinf(Vec3(normal.X, normal.Y, 0.0f).Normalize().Y);
+			if(normal.Z < 0)
+				rotx = asinf(Vec3(0.0f, normal.Y, normal.Z).Normalize().Y) - (float)M_PI_2;
+			else
+				rotx = -asinf(Vec3(0.0f, normal.Y, normal.Z).Normalize().Y) + (float)M_PI / 2;
+			if(normal.X < 0)
+				rotz = -asinf(Vec3(normal.X, normal.Y, 0.0f).Normalize().Y) + (float)M_PI_2;
+			else
+				rotz = asinf(Vec3(normal.X, normal.Y, 0.0f).Normalize().Y) - (float)M_PI / 2;
 		}
 
-		getOwner()->updateRot(Vec3((rotx - M_PI_2), getOwner()->returnRot().Y, -rotz + M_PI_2));
+		getOwner()->updateRot(Vec3(rotx, getOwner()->returnRot().Y, rotz));
 	}
 }
 
