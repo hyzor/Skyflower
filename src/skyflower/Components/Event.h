@@ -98,6 +98,9 @@ public:
 		lua_register(sh->L, "LevelIsCompleted", Event::LevelIsCompleted);
 		lua_register(sh->L, "SetActivated", Event::SetActivated);
 
+		lua_register(sh->L, "SetCanMoveBox", Event::SetCanMoveBox);
+		lua_register(sh->L, "SetCanNotMoveBox", Event::SetCanNotMoveBox);
+
 
 
 	};
@@ -185,6 +188,9 @@ private:
 	static int OnButton(lua_State* L);
 	static int IsAlive(lua_State* L);
 	static int Respawn(lua_State* L);
+
+	static int SetCanMoveBox(lua_State* L);
+	static int SetCanNotMoveBox(lua_State* L);
 };
 
 #endif

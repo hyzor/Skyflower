@@ -27,6 +27,7 @@ public:
 
 	bool isFalling();
 	float MinDist();
+	bool getCanBeMoved();
 
 	Vec3 startPos;
 private:
@@ -44,6 +45,11 @@ private:
 	float rotz;
 
 	float minDist;
+	bool canBeMoved;
+
+	void setCanBeMoved(Message const &msg);
+	void setCanNotBeMoved(Message const &msg);
+
 };
 
 #endif

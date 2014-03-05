@@ -26,6 +26,7 @@ BoxComp::BoxComp(float speed, float minDist) : Component("Box")
 	rotx = 0;
 	rotz = 0;
 	this->minDist = minDist;
+	this->canBeMoved = true;
 }
 
 BoxComp::~BoxComp()
@@ -35,6 +36,9 @@ BoxComp::~BoxComp()
 void BoxComp::addedToEntity()
 {
 	requestMessage("Respawn", &BoxComp::respawn);
+	requestMessage("CanBeMoved", &BoxComp::setCanBeMoved);
+	requestMessage("CanNotBeMoved", &BoxComp::setCanNotBeMoved);
+
 	this->m_oldPosition = getOwner()->returnPos();
 	this->m_oldPosition.Y = 0.0f;
 	this->m_distanceTraveled = 0.0f;
@@ -141,4 +145,19 @@ bool BoxComp::isFalling()
 float BoxComp::MinDist()
 {
 	return minDist;
+}
+
+bool BoxComp::getCanBeMoved()
+{
+	return this->canBeMoved;
+}
+
+void BoxComp::setCanBeMoved(Message const &msg)
+{
+	this->canBeMoved = true;
+}
+
+void BoxComp::setCanNotBeMoved(Message const &msg)
+{
+	this->canBeMoved = false;
 }
