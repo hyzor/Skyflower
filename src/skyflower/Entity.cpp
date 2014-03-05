@@ -547,10 +547,10 @@ bool Entity::IsAnimationDone(bool lower, bool upper)
 {
 	if (SortInst)
 	{
-		/*if (lower)
+		if (lower)
 			return SortInst->IsLowerAnimationDone();
 		if (upper)
-			return SortInst->IsUpperAnimationDone();*/
+			return SortInst->IsUpperAnimationDone();
 	}
 	if (AnimInst)
 		return AnimInst->IsAnimationDone();
@@ -564,10 +564,10 @@ void Entity::SetAnimationSpeed(int index, float speed, bool lower, bool upper)
 {
 	if (SortInst)
 	{
-		/*if(lower)
+		if(lower)
 			SortInst->SetLowerAnimationSpeed((UINT)index, speed);
 		if (upper)
-			SortInst->SetUpperAnimationSpeed((UINT)index, speed);*/
+			SortInst->SetUpperAnimationSpeed((UINT)index, speed);
 	}
 	if (AnimInst)
 		AnimInst->SetAnimationSpeed((UINT)index, speed);
