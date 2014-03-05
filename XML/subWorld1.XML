@@ -23,6 +23,29 @@
     </Entity>
 	
     <Entity type="plattform" model="Models\Worlds\Subworld 1\plattform1" id="100" isVisible="1" isCollidible="1" isAnimated="0" xPos="0.0" yPos="0.0" zPos="-0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
+    <Entity type="plattform" model="Models\Worlds\Subworld 1\plattform1Mud" id="1001" isVisible="1" isCollidible="1" isAnimated="0" xPos="0.0" yPos="0.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
+    <Entity type="plattform" model="Models\Worlds\Subworld 1\plattform3Mud" id="1003" isVisible="1" isCollidible="1" isAnimated="0" xPos="309.0" yPos="58.0" zPos="155.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.866" yScale="1.866" zScale="1.866"/>
+    <Entity type="plattform" model="Models\Worlds\Subworld 1\plattform4Mud" id="1004" isVisible="1" isCollidible="1" isAnimated="0" xPos="443.0" yPos="97.462" zPos="62.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.866" yScale="1.866" zScale="1.25"/>
+    <Entity type="plattform" model="Models\Worlds\Subworld 1\plattform3Mud" id="1005" isVisible="1" isCollidible="1" isAnimated="0" xPos="566.371" yPos="100" zPos="41.854" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.866" yScale="1.866" zScale="1.866"/>
+
+ <Entity type="object" model="Models\Worlds\Subworld 1\tree" id="1006" isVisible="1" isCollidible="1" isAnimated="0" xPos="436.0" yPos="117.663" zPos="32.288" xRot="0.0" yRot="15.0" zRot="0.0" xScale="1.0" yScale="1.8" zScale="1.0"/>
+ <Entity type="object" model="Models\Worlds\Subworld 1\tree" id="1007" isVisible="1" isCollidible="1" isAnimated="0" xPos="418.0" yPos="117.663" zPos="28.93" xRot="0.0" yRot="45.0" zRot="0.0" xScale="1.0" yScale="0.9" zScale="1.0"/>
+ <Entity type="object" model="Models\Worlds\Subworld 1\tree" id="1008" isVisible="1" isCollidible="1" isAnimated="0" xPos="461.371" yPos="117.663" zPos="31.892" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
+ <Entity type="object" model="Models\Worlds\Subworld 1\tree" id="1009" isVisible="1" isCollidible="1" isAnimated="0" xPos="540.0" yPos="117.663" zPos="75.186" xRot="0.0" yRot="45.0" zRot="0.0" xScale="1.0" yScale="0.7" zScale="1.0"/>
+ <Entity type="object" model="Models\Worlds\Subworld 1\tree" id="1010" isVisible="1" isCollidible="1" isAnimated="0" xPos="551.0" yPos="117.663" zPos="70.775" xRot="0.0" yRot="90.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
+ <Entity type="object" model="Models\Worlds\Subworld 1\tree" id="1011" isVisible="1" isCollidible="1" isAnimated="0" xPos="561.633" yPos="117.663" zPos="63.898" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="0.8" zScale="1.0"/>
+ <Entity type="object" model="Models\Worlds\Subworld 1\tree" id="1012" isVisible="1" isCollidible="1" isAnimated="0" xPos="540.0" yPos="117.663" zPos="29.810" xRot="0.0" yRot="90.0" zRot="0.0" xScale="1.0" yScale="1.1" zScale="1.0"/>
+ <Entity type="object" model="Models\Worlds\Subworld 1\tree" id="1013" isVisible="1" isCollidible="1" isAnimated="0" xPos="551.0" yPos="117.663" zPos="33.5" xRot="0.0" yRot="140.0" zRot="0.0" xScale="1.0" yScale="1.3" zScale="1.0"/>
+ <Entity type="object" model="Models\Worlds\Subworld 1\tree" id="1014" isVisible="1" isCollidible="1" isAnimated="0" xPos="561.0" yPos="117.663" zPos="37.15" xRot="0.0" yRot="270.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
+ <Entity type="object" model="Models\Worlds\Subworld 1\tree" id="1017" isVisible="1" isCollidible="1" isAnimated="0" xPos="76.2" yPos="4.0" zPos="3.15" xRot="0.0" yRot="270.0" zRot="0.0" xScale="1.5" yScale="1.5" zScale="1.5"/>
+<Entity type="object" model="Models\Worlds\Subworld 1\tree" id="1019" isVisible="1" isCollidible="1" isAnimated="0" xPos="85.3" yPos="5.0" zPos="-40.15" xRot="0.0" yRot="270.0" zRot="0.0" xScale="1.5" yScale="1.5" zScale="1.5"/>
+<Entity type="Rock" model="Models\Worlds\Subworld 1\Rock" id="1015" isVisible="1" relativeid="8" isCollidible="1" isAnimated="0" xPos="425.54" yPos="118.2734014" zPos="45.181274461" xRot="1.73764218889" yRot="-0.192779884652" zRot="-0.0324277093744" xScale="6.76847965241" yScale="6.76847965241" zScale="6.76847965241"/>
+<Entity type="Rock" model="Models\Worlds\Subworld 1\Rock" id="1016" isVisible="1" relativeid="8" isCollidible="1" isAnimated="0" xPos="76.54" yPos="5.5634014" zPos="-53.706" xRot="1.73764218889" yRot="-0.192779884652" zRot="-0.0324277093744" xScale="6.76847965241" yScale="6.76847965241" zScale="6.76847965241"/>
+<Entity type="Rock" model="Models\Worlds\Subworld 1\Rock" id="1018" isVisible="1" relativeid="8" isCollidible="1" isAnimated="0" xPos="-6.0" yPos="8.0" zPos="83.706" xRot="1.73764218889" yRot="-0.192779884652" zRot="-90.0324277093744" xScale="10.76847965241" yScale="10.76847965241" zScale="10.76847965241"/>
+<Entity type="cloud2" model="Models\Worlds\Subworld 1\spiral" id="1020" isVisible="1" isCollidible="0" isAnimated="0" xPos="400.0" yPos="-400.0" zPos="-500.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="20.0" yScale="20.0" zScale="20.0"/>
+<Entity type="cloud2" model="Models\Worlds\Subworld 1\spiral" id="1021" isVisible="1" isCollidible="0" isAnimated="0" xPos="400.0" yPos="-350.0" zPos="500.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="10.0" yScale="10.0" zScale="10.0"/>
+<Entity type="cloud2" model="Models\Worlds\Subworld 1\spiral" id="1022" isVisible="1" isCollidible="0" isAnimated="0" xPos="800.0" yPos="-400.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="15.0" yScale="15.0" zScale="15.0"/>
+
     <Entity type="cloud2" model="Models\Worlds\Subworld 1\plattform1Cloud" id="2" isVisible="1" isCollidible="0" isAnimated="0" xPos="0.0" yPos="0.0" zPos="-0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="plattform" model="Models\Worlds\Subworld 1\plattform2" id="3" isVisible="1" isCollidible="1" isAnimated="0" xPos="0.0" yPos="0.0" zPos="-0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
     			<MoveTarget targetPosX="0" targetPosY="10" targetPosZ="0" duration="5" easingPower="2" continuous="1" />
@@ -51,15 +74,15 @@
 		<Goal />
 		<Event script="Goal" />
     </Entity>
-    <Entity type="ButtonBase" model="Models\Worlds\Subworld 1\ButtonBase" id="15" relativeid="8" isVisible="1" isCollidible="1" isAnimated="0" xPos="314.552295649" yPos="78.4037154914" zPos="161.77004996" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312"/>
-    <Entity type="Button" model="Models\Worlds\Subworld 1\Button" id="16" relativeid="15" isVisible="1" isCollidible="1" isAnimated="0" xPos="314.466631214" yPos="78.4602890807" zPos="161.86154881" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312">
+    <Entity type="ButtonBase" model="Models\Worlds\Subworld 1\ButtonBase" id="15" relativeid="8" isVisible="1" isCollidible="1" isAnimated="0" xPos="314.552295649" yPos="79.0" zPos="161.77004996" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312"/>
+    <Entity type="Button" model="Models\Worlds\Subworld 1\Button" id="16" relativeid="15" isVisible="1" isCollidible="1" isAnimated="0" xPos="314.466631214" yPos="79.0" zPos="161.86154881" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312">
         <Button toggle="1"/>
 		<HelpText text="Some buttons will activate or deactivate things *quack*" range="10"/>
         <Event script="btnStair"/> 
     </Entity>
     
     <Entity type="ballonPlattform" model="Models\Worlds\Subworld 1\ballonPlattform" id="25" isVisible="1" isCollidible="1" isAnimated="0" xPos="60.4980955585" yPos="110.0318066" zPos="-24.19353389" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
-        <MoveTarget targetPosX="60" targetPosY="6" targetPosZ="-24" duration="5" easingPower = "3" continuous = "1" />
+        <MoveTarget targetPosX="60" targetPosY="10" targetPosZ="-24" duration="5" easingPower = "3" continuous = "1" />
     </Entity>
 	
     <Entity type="Puncha" model="Models\Worlds\Subworld 1\Puncha" id="984" isVisible="1" isCollidible="0" isAnimated="1" xPos="334.311318695" yPos="78.4862951289" zPos="171.906910353" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
@@ -89,7 +112,7 @@
 		xPos="20" yPos="0" zPos="-20" />
 		
 	
-    <Entity type="WoodBlock" model="Models\Worlds\Subworld 1\WoodBlock" id="19" isVisible="1" isCollidible="1" isAnimated="0" xPos="472.770895471" yPos="120.251395515" zPos="122.055509702" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
+    <Entity type="WoodBlock" model="Models\Worlds\Subworld 1\WoodBlock" id="19" isVisible="1" isCollidible="1" isAnimated="0" xPos="472.770895471" yPos="125.251395515" zPos="122.055509702" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <Gravity/>
         <Box/>
 		<HelpText text="Holding down space will make you jump higher!" range="50" />
@@ -104,8 +127,8 @@
 		<Box />
     </Entity>
 	
-    <Entity type="ButtonBase" model="Models\Worlds\Subworld 1\ButtonBase" id="17" relativeid="100" isVisible="1" isCollidible="1" isAnimated="0" xPos="199.034827697" yPos="39.2123622218" zPos="-8.39870949045" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312"/>
-    <Entity type="Button" model="Models\Worlds\Subworld 1\Button" id="18" relativeid="17" isVisible="1" isCollidible="1" isAnimated="0" xPos="198.949163262" yPos="39.2689358112" zPos="-8.30721064075" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312">
+    <Entity type="ButtonBase" model="Models\Worlds\Subworld 1\ButtonBase" id="17" relativeid="100" isVisible="1" isCollidible="1" isAnimated="0" xPos="199.034827697" yPos="42.0" zPos="-8.39870949045" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312"/>
+    <Entity type="Button" model="Models\Worlds\Subworld 1\Button" id="18" relativeid="17" isVisible="1" isCollidible="1" isAnimated="0" xPos="198.949163262" yPos="42.1689358112" zPos="-8.30721064075" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.67305704312" yScale="1.67305704312" zScale="1.67305704312">
         <Button/>
 		<HelpText text="*quack* Some buttons needs to be held down to work. *quack*" range="20" />
         <Event script="platform_start"/>
