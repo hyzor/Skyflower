@@ -15,7 +15,7 @@ using namespace Cistron;
 
 // constructor/destructor
 Entity::Entity(EntityManager *entityManager, const Modules *modules, EntityId id, EntityId relativeid, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
-	float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated) : fId(id), type(type), fFinalized(false)
+	float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated, bool isSorted) : fId(id), type(type), fFinalized(false)
 {
 	this->entityManager = entityManager;
 
@@ -48,27 +48,27 @@ Entity::Entity(EntityManager *entityManager, const Modules *modules, EntityId id
 
 	modelInst = nullptr;
 	AnimInst = nullptr;
+	SortInst = nullptr;
 
 	ground = nullptr;
 	wall = nullptr;
 
-	//if (isVisible)
-	//{
-		if (!isAnimated)
-		{
-			this->modelInst = this->modules->graphics->CreateInstance(this->model, Vec3(this->pos.X, this->pos.Y, this->pos.Z));
-			this->modelInst->SetRotation(this->rot);
-			this->modelInst->SetScale(this->scale);
-			this->modelInst->SetVisibility(this->isVisible);
-			if (this->type == "cloud")
-				this->modelInst->SetType(1);
-			else if (this->type == "notexture")
-				this->modelInst->SetType(2);
-			else
-				this->modelInst->SetType(0);
-				
-		}
+	if (!isAnimated)
+	{
+		this->modelInst = this->modules->graphics->CreateInstance(this->model, Vec3(this->pos.X, this->pos.Y, this->pos.Z));
+		this->modelInst->SetRotation(this->rot);
+		this->modelInst->SetScale(this->scale);
+		this->modelInst->SetVisibility(this->isVisible);
+		if (this->type == "cloud")
+			this->modelInst->SetType(1);
+		else if (this->type == "notexture")
+			this->modelInst->SetType(2);
 		else
+			this->modelInst->SetType(0);
+	}
+	else
+	{
+		if (!isSorted)
 		{
 			this->AnimInst = this->modules->graphics->CreateAnimatedInstance(this->model);
 			this->AnimInst->SetPosition(Vec3(this->pos.X, this->pos.Y, this->pos.Z));
@@ -110,7 +110,50 @@ Entity::Entity(EntityManager *entityManager, const Modules *modules, EntityId id
 
 			this->AnimInst->SetAnimation(0, true);
 		}
-	//}
+		else
+		{
+			this->SortInst = this->modules->graphics->CreateSortedAnimatedInstance(this->model);
+			this->SortInst->SetPosition(Vec3(this->pos.X, this->pos.Y, this->pos.Z));
+			this->SortInst->SetRotation(this->rot);
+			this->SortInst->SetScale(this->scale);
+			this->SortInst->SetVisibility(this->isVisible);
+
+			std::string keyPath = "../../content/" + model + ".key";
+
+			// Open corresponding keyframes file
+			ifstream keyFramesFile;
+			keyFramesFile.open(keyPath.c_str(), ios::in);
+
+			if (!keyFramesFile.is_open())
+			{
+				std::stringstream ErrorStream;
+				ErrorStream << "Failed to load keyframes file " << keyPath;
+				std::string ErrorStreamStr = ErrorStream.str();
+				LPCSTR Text = ErrorStreamStr.c_str();
+				MessageBoxA(0, Text, 0, 0);
+			}
+			else
+			{
+				int index, start, end, playForwards;
+
+				while (keyFramesFile >> index >> start >> end >> playForwards)
+				{
+					if (end - start > 1)
+					{
+						if (end > 1)
+							end = end - 1;
+					}
+
+					this->SortInst->CreateAnimation(index, start, end, playForwards != 0);
+				}
+
+				keyFramesFile.close();
+			}
+
+			this->SortInst->SetLowerAnimation(0, true);
+			this->SortInst->SetUpperAnimation(0, true);
+		}
+	}
 	
 	if (this->isCollidible && !isAnimated)
 	{
@@ -466,14 +509,83 @@ Vec3 Entity::getRelativePos()
 	return this->pos;
 }
 
-AnimatedInstance *Entity::getAnimatedInstance()
-{
-	return this->AnimInst;
-}
 void Entity::ActiveteField(bool b)
 {
 	if (field)
 		field->Active = b;
 	if (ground)
 		ground->ActiveteField(b);
+}
+
+bool Entity::IsAnimated()
+{
+	if (AnimInst || SortInst)
+		return true;
+	return false;
+}
+void Entity::SetAnimation(int index, bool loop)
+{
+	SetAnimation(index, loop, true, true);
+}
+void Entity::SetAnimation(int index, bool loop, bool lower, bool upper)
+{
+	if (SortInst)
+	{
+		if (lower)
+			SortInst->SetLowerAnimation((UINT)index, loop);
+		if (upper)
+			SortInst->SetUpperAnimation((UINT)index, loop);
+	}
+	if (AnimInst)
+		AnimInst->SetAnimation((UINT)index, loop);
+}
+bool Entity::IsAnimationDone()
+{
+	return IsAnimationDone(true, true);
+}
+bool Entity::IsAnimationDone(bool lower, bool upper)
+{
+	if (SortInst)
+	{
+		/*if (lower)
+			return SortInst->IsLowerAnimationDone();
+		if (upper)
+			return SortInst->IsUpperAnimationDone();*/
+	}
+	if (AnimInst)
+		return AnimInst->IsAnimationDone();
+	return true;
+}
+void Entity::SetAnimationSpeed(int index, float speed)
+{
+	SetAnimationSpeed(index, speed, true, true);
+}
+void Entity::SetAnimationSpeed(int index, float speed, bool lower, bool upper)
+{
+	if (SortInst)
+	{
+		/*if(lower)
+			SortInst->SetLowerAnimationSpeed((UINT)index, speed);
+		if (upper)
+			SortInst->SetUpperAnimationSpeed((UINT)index, speed);*/
+	}
+	if (AnimInst)
+		AnimInst->SetAnimationSpeed((UINT)index, speed);
+}
+bool Entity::IsPlayingAnimation(int index)
+{
+	return IsPlayingAnimation(index, true, true);
+}
+bool Entity::IsPlayingAnimation(int index, bool lower, bool upper)
+{
+	if (SortInst)
+	{
+		if (lower && SortInst->GetLowerAnimation() == (UINT)index)
+			return true;
+		else if (upper && SortInst->GetUpperAnimation() == (UINT)index)
+			return true;
+	}
+	if (AnimInst && AnimInst->GetAnimation() == (UINT)index)
+		return true;
+	return false;
 }

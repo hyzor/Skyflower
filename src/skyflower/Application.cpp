@@ -151,10 +151,8 @@ void Application::Start()
 	int loadingScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "Menygrafik\\fyraTreRatio.png");
 	m_GUI->GetGUIElement(loadingScreen)->SetVisible(false);
 
-	int startScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "startbild_placeholder.png");
-
-	int endScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "slutbild_placeholder.png");
-	m_GUI->GetGUIElement(endScreen)->SetVisible(false);
+	m_startScreen = -1;
+	m_endScreen = -1;
 
 	m_menuCameraRotation = 0.0f;
 
@@ -236,10 +234,10 @@ void Application::Start()
 			updateCutScene((float)deltaTime);
 			break;
 		case GameState::start:
-			updateStart((float)deltaTime, startScreen);
+			updateStart((float)deltaTime);
 			break;
 		case GameState::end:
-			updateEnd((float)deltaTime, endScreen);
+			updateEnd((float)deltaTime);
 			break;
 		}
 		
@@ -470,13 +468,16 @@ void Application::updateLoading(float dt)
 		changeGameState(GameState::game);
 }
 
-void Application::updateStart(float dt, int startScreen)
+void Application::updateStart(float dt)
 {
+	if (m_startScreen == -1)
+		m_startScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "startbild_placeholder.png");
+
 	if (startStoryTimer > 4 || m_inputHandler->isMouseButtonDown(MouseButton::MouseButtonLeft))
 	{
 		startStoryTimer = 0;
 
-		m_GUI->GetGUIElement(startScreen)->SetVisible(false);
+		m_GUI->GetGUIElement(m_startScreen)->SetVisible(false);
 
 		changeGameState(GameState::menu);
 		return;
@@ -484,7 +485,7 @@ void Application::updateStart(float dt, int startScreen)
 	else
 	{
 		this->startStoryTimer += dt;
-		m_GUI->GetGUIElement(startScreen)->SetVisible(true);
+		m_GUI->GetGUIElement(m_startScreen)->SetVisible(true);
 		m_GUI->Draw();
 	}
 
@@ -502,13 +503,16 @@ void Application::updateStart(float dt, int startScreen)
 	}
 }
 
-void Application::updateEnd(float dt, int endScreen)
+void Application::updateEnd(float dt)
 {
+	if (m_endScreen == -1)
+		m_endScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "slutbild_placeholder.png");
+
 	if (endStoryTimer > 4 || m_inputHandler->isMouseButtonDown(MouseButton::MouseButtonLeft))
 	{
 		endStoryTimer = 0;
 
-		m_GUI->GetGUIElement(endScreen)->SetVisible(false);
+		m_GUI->GetGUIElement(m_endScreen)->SetVisible(false);
 
 		changeGameState(GameState::menu);
 		return;
@@ -516,7 +520,7 @@ void Application::updateEnd(float dt, int endScreen)
 	else
 	{
 		this->endStoryTimer += dt;
-		m_GUI->GetGUIElement(endScreen)->SetVisible(true);
+		m_GUI->GetGUIElement(m_endScreen)->SetVisible(true);
 		m_GUI->Draw();
 	}
 

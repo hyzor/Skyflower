@@ -146,7 +146,7 @@ RequestId EntityManager::getExistingRequestId(ComponentRequestType type, string 
 
 // create a new Entity
 EntityId EntityManager::createEntity(string type, int id, int relativeid, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
-	float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated) {
+	float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated, bool isSorted) {
 
 	vector<Entity*> temp;
 	for (unsigned int i = 0; i < fEntitys.size(); i++)
@@ -158,7 +158,7 @@ EntityId EntityManager::createEntity(string type, int id, int relativeid, float 
 	}
 	fEntitys = temp;
 	// create a new Entity
-	Entity *obj = new Entity(this, modules, id, relativeid, type, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, isAnimated);
+	Entity *obj = new Entity(this, modules, id, relativeid, type, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, isAnimated, isSorted);
 	//cout << "Created Entity " << fIdCounter << endl;
 	//++fIdCounter;
 
@@ -683,9 +683,10 @@ bool EntityManager::loadXML(string xmlFile)
 		bool isVisible = GetBoolAttribute(elem, "isVisible", entityName, xmlFile);
 		bool isCollidible = GetBoolAttribute(elem, "isCollidible", entityName, xmlFile);
 		bool isAnimated = GetBoolAttribute(elem, "isAnimated", entityName, xmlFile);
+		bool isSorted = GetBoolAttribute(elem, "isSorted", entityName, xmlFile);
 
 		//Creating the entity and adding it to the entitymanager
-		EntityId entity = this->createEntity(entityName, id, relativeid, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, isAnimated);
+		EntityId entity = this->createEntity(entityName, id, relativeid, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, isAnimated, isSorted);
 
 		//Looping through all the components for the entity.
 		for (XMLElement* e = elem->FirstChildElement(); e != NULL; e = e->NextSiblingElement())

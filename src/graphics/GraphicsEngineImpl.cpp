@@ -815,8 +815,8 @@ void GraphicsEngineImpl::DrawScene()
 
 	for (UINT i = 0; i < mSortedAnimatedInstances.size(); ++i)
 	{
-		if (mAnimatedInstances[i]->IsVisible())
-			mAnimatedInstances[i]->SetPrevWorld(mAnimatedInstances[i]->GetWorld());
+		if (mSortedAnimatedInstances[i]->IsVisible())
+			mSortedAnimatedInstances[i]->SetPrevWorld(mSortedAnimatedInstances[i]->GetWorld());
 	}
 
 	renderTarget = mD3D->GetRenderTargetView();

@@ -38,7 +38,7 @@ class EntityManager {
 
 		// create a new Entity
 		EntityId createEntity(string type, int id, int relativeid, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
-			float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated);
+			float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated, bool isSorted);
 
 		// add a new component to an Entity
 		void addComponent(EntityId, Component*);
