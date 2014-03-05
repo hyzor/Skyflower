@@ -700,8 +700,8 @@ void SortedAnimatedInstanceImpl::Draw(ID3D11DeviceContext* dc, Camera* cam, Basi
 			0.0f, 0.0f, 1.0f, 0.0f,
 			0.5f, 0.5f, 0.0f, 1.0f);
 
-		deferredShader->SetWorldViewProjTex(XMLoadFloat4x4(&mSkinnedInstance->world), cam->GetViewProjMatrix(), toTexSpace);
-		deferredShader->SetPrevWorldViewProj(XMLoadFloat4x4(&mSkinnedInstance->prevWorld), cam->GetPreviousViewProj());
+		deferredShader->SetWorldViewProjTex(GetWorld(), cam->GetViewProjMatrix(), toTexSpace);
+		deferredShader->SetPrevWorldViewProj(GetPrevWorld(), cam->GetPreviousViewProj());
 
 		deferredShader->SetBoneTransforms(
 			mSkinnedInstance->FinalLowerBodyTransforms.data(), (UINT)mSkinnedInstance->FinalLowerBodyTransforms.size(),

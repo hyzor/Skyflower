@@ -142,6 +142,7 @@ GenericSkinnedModelSortedInstance::GenericSkinnedModelSortedInstance()
 	loopUpperbodyAnim = true;
 	upperAnimationDone = false;
 	upperTimePos = 0.0f;
+	upperAnimationSpeed = 1.0f;
 
 	lowerBodyFrameStart = 0;
 	lowerBodyFrameEnd = 1;
@@ -149,6 +150,7 @@ GenericSkinnedModelSortedInstance::GenericSkinnedModelSortedInstance()
 	loopLowerBodyAnim = true;
 	upperAnimationDone = false;
 	lowerTimePos = 0.0f;
+	lowerAnimationSpeed = 1.0f;
 }
 
 GenericSkinnedModelSortedInstance::~GenericSkinnedModelSortedInstance()
