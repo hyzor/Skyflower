@@ -57,17 +57,20 @@ void Push::update(float dt)
 	}
 
 
-	//find box to push
+	//find box to push or pull
 	if (getOwner()->wall && !box)
 	{
 		if (getOwner()->wall->hasComponents("Box") && getOwner()->hasComponents("Movement") && getOwner()->wall->hasComponents("Movement") && canPush)
 		{
-			box = getOwner()->wall;
-			relativePos = getOwner()->returnPos() - box->returnPos();
+			if (getOwner()->wall->getComponent<BoxComp*>("Box")->getCanBeMoved())
+			{
+				box = getOwner()->wall;
+				relativePos = getOwner()->returnPos() - box->returnPos();
+			}
 		}
 	}
 
-	//push box
+	//push or pull box 
 	bool isPushingBox = false;
 	if (box)
 	{
@@ -129,7 +132,7 @@ void Push::update(float dt)
 			if ((fromStart - to).Length() < 0.08f)
 			{
 				//release box
-				if (!canpush || box->getComponent<BoxComp*>("Box")->isFalling() || (dir != Vec3() && ((dir != boxDir && !canDrag) || (canDrag && dir == boxDir*-1 && dir*boxDir == Vec3()))))
+				if (!boxComp->getCanBeMoved() || !canpush || box->getComponent<BoxComp*>("Box")->isFalling() || (dir != Vec3() && ((dir != boxDir && !canDrag) || (canDrag && dir == boxDir*-1 && dir*boxDir == Vec3()))))
 				{
 					getOwner()->getComponent<Movement*>("Movement")->canJump = true;
 					box->updatePos(boxComp->startPos - to*boxComp->MinDist() + Vec3(0, box->returnPos().Y, 0));
