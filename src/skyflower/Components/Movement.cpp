@@ -322,8 +322,8 @@ void Movement::update(float deltaTime)
 				if (p->GetStates()->isMoving)
 				{
 					// Run
-					getOwner()->SetAnimation(0, true, true, false);
-					getOwner()->SetAnimationSpeed(0, speed / 25.0f, true, false);
+					getOwner()->SetAnimation(0, true, true, true);
+					getOwner()->SetAnimationSpeed(0, speed / 25.0f, true, true);
 				}
 				else
 				{
@@ -338,7 +338,7 @@ void Movement::update(float deltaTime)
 						idleTimer = 0.0f;
 					}
 
-					else if (getOwner()->IsPlayingAnimation(4) && getOwner()->IsAnimationDone())
+					else if (getOwner()->IsPlayingAnimation(4) && getOwner()->IsAnimationDone()) //if idle animation is done
 					{
 						getOwner()->SetAnimation(11, false); //idle
 					}
