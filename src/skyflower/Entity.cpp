@@ -173,13 +173,6 @@ Entity::Entity(EntityManager *entityManager, const Modules *modules, EntityId id
 }
 Entity::~Entity() {
 
-	// delete all components
-	// deleted by the Entity manager
-	/*for (map<string, list<Component*> >::iterator it = fComponents.begin(); it != fComponents.end(); ++it) {
-		for (list<Component*>::iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
-			delete (*it2);
-		}
-	}*/
 
 	if (sphere)
 		delete sphere;
@@ -189,6 +182,9 @@ Entity::~Entity() {
 
 	if (AnimInst)
 		this->modules->graphics->DeleteInstance(this->AnimInst);
+
+	if (SortInst)
+		this->modules->graphics->DeleteInstance(this->SortInst);
 
 	if (field)
 		this->modules->potentialField->DeleteField(field);
