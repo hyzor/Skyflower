@@ -524,6 +524,7 @@ bool GenericObjectLoader::LoadSkinnedObjectSorted(
 	const aiScene* scene = importer.ReadFile(fileName,
 		aiProcess_ConvertToLeftHanded | 			// Make compatible with Direct3D
 		aiProcessPreset_TargetRealtime_Quality		// Combination of post processing flags
+		//aiProcess_CalcTangentSpace
 		);
 
 	// Failed reading file
@@ -1183,7 +1184,8 @@ bool GenericObjectLoader::loadObject(const std::string& fileName,
 	// Read file with post processing flags
 	const aiScene* scene = importer.ReadFile(fileName,
 		aiProcess_ConvertToLeftHanded | 			// Make compatible with Direct3D
-		aiProcessPreset_TargetRealtime_Quality		// Combination of post processing flags
+		//aiProcessPreset_TargetRealtime_Quality // Combination of post processing flags
+		aiProcessPreset_TargetRealtime_Fast	// Combination of post processing flags
 		);										
 
 	// Failed reading file
