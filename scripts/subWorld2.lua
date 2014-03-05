@@ -330,12 +330,18 @@ function update_boxPuzzle(id, dt)
 	end
 	if OnButton(56, 59) then
 		SetCanNotMoveBox(59)
+	else
+		SetCanMoveBox(59)
 	end
 	if OnButton(66, 58) then
 		SetCanNotMoveBox(58)
+	else
+		SetCanMoveBox(58)
 	end
 	if OnButton(64, 60) then
 		SetCanNotMoveBox(60)
+			else
+		SetCanMoveBox(60)
 	end
 end
 
@@ -352,11 +358,11 @@ function update_puzzleCheckpoint(id, dt)
 		end
 		if not finished then
 		Respawn(59)
-		SetCanMoveBox(59)
+--		SetCanMoveBox(59)
 		Respawn(58)
-		SetCanMoveBox(58)
+--		SetCanMoveBox(58)
 		Respawn(60)	
-		SetCanMoveBox(60)	
+--		SetCanMoveBox(60)	
 		timer = 0
 		end
 	else
