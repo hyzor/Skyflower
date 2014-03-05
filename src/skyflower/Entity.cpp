@@ -424,6 +424,8 @@ void Entity::updatePos(Vec3 pos)
 		this->modelInst->SetPosition(returnPos());
 	if (this->AnimInst)
 		this->AnimInst->SetPosition(returnPos());
+	if (this->SortInst)
+		this->SortInst->SetPosition(returnPos());
 	if (this->collInst)
 		this->collInst->SetPosition(returnPos());
 	if (this->field)
@@ -454,6 +456,8 @@ void Entity::updateRot(Vec3 rot)
 		this->modelInst->SetRotation(rot);
 	if (this->AnimInst)
 		this->AnimInst->SetRotation(rot);
+	if (this->SortInst)
+		this->SortInst->SetRotation(rot);
 	//if (this->collInst)
 		//this->collInst->SetRotation(rot);
 }
@@ -465,6 +469,10 @@ void Entity::updateScale(Vec3 scale)
 		this->modelInst->SetScale(scale);
 	if (this->collInst)
 		this->collInst->SetScale(scale);
+	if (this->AnimInst)
+		this->AnimInst->SetScale(scale);
+	if (this->SortInst)
+		this->SortInst->SetScale(scale);
 }
 
 void Entity::updateVisible(bool isVisible)
