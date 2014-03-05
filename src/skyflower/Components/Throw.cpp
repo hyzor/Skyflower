@@ -90,8 +90,17 @@ void Throw::update(float dt)
 			Vec3 rotation = getOwner()->returnRot();
 
 			Vec3 direction = Vec3(cosf(-rotation.Y - (float)M_PI_2), 0.0f, sinf(-rotation.Y - (float)M_PI_2)).Normalize();
-			Vec3 throwablePosition = position + direction * 2.198f;
-			throwablePosition.Y += 5.423f;
+			Vec3 throwablePosition;
+			if (getOwnerId() == 1)
+			{
+				throwablePosition = position + direction * 2.198f;
+				throwablePosition.Y += 5.423f;
+			}
+			else
+			{
+				throwablePosition = position + direction * 2.2f;
+				throwablePosition.Y += 1.387f;
+			}
 
 			this->heldEntity->updateRot(rotation);
 			this->heldEntity->updatePos(throwablePosition);
@@ -127,6 +136,11 @@ void Throw::ThrowAt(Entity* e)
 			// Play throw animation
 			if (getOwner()->IsAnimated() && getOwnerId() == 1)
 				getOwner()->SetAnimation(7, false, false, true);
+
+
+			// Play throw animation
+			if (getOwner()->IsAnimated() && getOwner()->hasComponents("AI"))
+				getOwner()->SetAnimation(4, false);
 
 			this->heldEntity = nullptr;
 		}

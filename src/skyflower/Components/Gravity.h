@@ -35,7 +35,6 @@ private:
 	float testMove(Ray r, Entity* e, Entity* &out, bool groundRay, int index);
 	void createRays();
 	void calculateGroundNormal(Entity* e, Entity* ground);
-	void sphereCollision(float dt);
 
 private:
 	PhysicsEntity* p;

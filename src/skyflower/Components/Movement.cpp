@@ -346,13 +346,11 @@ void Movement::update(float deltaTime)
 			}
 		}
 
-
-		
-
-		if (ai)
+		else if (ai)
 		{
-			// AI animations
+			
 
+			// AI animations
 			if (p->GetStates()->isJumping)
 			{
 				// Playing jump animation, do nothing.
@@ -360,16 +358,27 @@ void Movement::update(float deltaTime)
 			else if (p->GetStates()->isMoving)
 			{
 				// Run
-				getOwner()->SetAnimation(0, true, true, false);
+				if(getOwner()->IsPlayingAnimation(4, false, true) && !getOwner()->IsAnimationDone(false, true))
+					getOwner()->SetAnimation(0, true, true, false);
+				else
+					getOwner()->SetAnimation(0, true, true, true);
 			}
 			else
 			{
 				// Idle
 
 				// AIn har ingen idle animation, spela springanimationen istället.
-				getOwner()->SetAnimation(0, true, true, false);
+				//getOwner()->SetAnimation(0, true, true, false);
+			}
+
+			Throw *throwComponent = getOwner()->getComponent<Throw *>("Throw");
+			if (throwComponent && throwComponent->getHeldEntity())
+			{
+				// Holding ball
+				getOwner()->SetAnimation(6, true, false, true);
 			}
 		}
+
 	}
 
 	this->p->ApplyVelocityToPos(pos);
@@ -591,7 +600,7 @@ void Movement::Jump(Message const& msg)
 				else if (getOwner()->getComponent<AI *>("AI"))
 				{
 					// Play jump animation for AI.
-					getOwner()->SetAnimation(5, false);
+					//getOwner()->SetAnimation(5, false);
 				}
 			}
 		}

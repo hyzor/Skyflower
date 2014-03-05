@@ -4,7 +4,7 @@
 
 
 	<Entity type="player" id="1"
-		xPos="0.0" yPos="0.0" zPos="-10.0"
+		xPos="-269.379498537" yPos="109.316849944" zPos="834.99023128"
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="1.0" yScale="1.0" zScale="1.0"
 		model="Models/Player/playerAnimated"
@@ -205,7 +205,7 @@
         <Goal/>
         <Event script="Goal"/>
     </Entity>
-    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\Puncha" id="71" isCollidible="0" isVisible="1" isAnimated="1" xPos="-446.229879321" yPos="124.23260422" zPos="756.500382396" xRot="-0.0" yRot="-1.86242290338" zRot="-0.0" xScale="1" yScale="1" zScale="1">
+    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\Puncha" id="71" isCollidible="0" isVisible="1" isAnimated="1" xPos="-446.229879321" yPos="124.23260422" zPos="756.500382396" xRot="-0.0" yRot="-1.86242290338" zRot="-0.0" xScale="1" yScale="1" zScale="1" isSorted="1">
         <Gravity/>
         <AI />
 		<Push />
@@ -216,7 +216,7 @@
         <Movement speed="20"/>
 		<Event script="pusher1" />
     </Entity>
-    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\Puncha" id="72" isCollidible="0" isVisible="1" isAnimated="1" xPos="-458.434638847" yPos="124.23260422" zPos="848.313119286" xRot="-0.0" yRot="-1.86242290338" zRot="-0.0" xScale="1" yScale="1" zScale="1">
+    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\Puncha" id="72" isCollidible="0" isVisible="1" isAnimated="1" xPos="-458.434638847" yPos="124.23260422" zPos="848.313119286" xRot="-0.0" yRot="-1.86242290338" zRot="-0.0" xScale="1" yScale="1" zScale="1" isSorted="1">
         <Gravity/>
         <AI />
 		<Push />
@@ -227,7 +227,7 @@
         <Movement speed="20"/>
 		<Event script="pusher2" />
     </Entity>
-    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\PunchaPurple" id="73" isCollidible="0" isVisible="1" isAnimated="1" xPos="-488.605049724" yPos="124.23260422" zPos="804.748585899" xRot="-0.0" yRot="-1.86242290338" zRot="-0.0" xScale="1" yScale="1" zScale="1">
+    <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\PunchaPurple" id="73" isCollidible="0" isVisible="1" isAnimated="1" xPos="-488.605049724" yPos="124.23260422" zPos="804.748585899" xRot="-0.0" yRot="-1.86242290338" zRot="-0.0" xScale="1" yScale="1" zScale="1" isSorted="1">
         <Gravity/>
         <AI />
 		<Push />

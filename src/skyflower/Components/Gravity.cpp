@@ -96,7 +96,6 @@ void GravityComponent::update(float dt)
 			getOwner()->wall->sendMessage("Wall", this);
 
 
-		//sphereCollision(dt);
 		calculateGroundNormal(getOwner(), getOwner()->ground);
 	}
 
@@ -351,25 +350,6 @@ void GravityComponent::calculateGroundNormal(Entity* e, Entity* ground)
 	groundNormal = Triangle(pointL, pointR, pointB).GetNormal();
 
 	foundGroundNormal = true;
-}
-
-void GravityComponent::sphereCollision(float dt)
-{
-	/*if (getOwner()->sphere)
-	{
-		for (int j = 0; j < getEntityManager()->getNrOfEntities(); j++)
-		{
-			Entity* EntiJ = getEntityManager()->getEntityByIndex(j);
-			if (EntiJ->sphere && EntiJ != getOwner())
-			{
-				if (EntiJ->sphere->Test(*getOwner()->sphere))
-				{
-					Vec3 dist = EntiJ->returnPos() - getOwner()->returnPos();
-					//getOwner()->updatePos(getOwner()->returnPos()-dist*2*dt);
-				}
-			}
-		}
-	}*/
 }
 
 
