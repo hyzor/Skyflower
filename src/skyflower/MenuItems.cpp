@@ -291,6 +291,7 @@ int Slider::getHeight() const
 
 void Slider::updateScreenRes(unsigned int x, unsigned int y)
 {
+	float value = getValue();
 	float scaleY, scaleX, rscaleX, rscaleY;
 
 	scaleX = (float)x / DEFAULT_SCREEN_WIDTH;
@@ -309,9 +310,9 @@ void Slider::updateScreenRes(unsigned int x, unsigned int y)
 	this->sliderBounds._width = (int)(SLIDER_TEXTURE_WIDTH * scaleX);
 	this->sliderBounds._height = (int)(SLIDER_TEXTURE_HEIGHT * scaleY);
 
-	Vec3 sliderPos = Vec3(origPos.X + width / 2, origPos.Y-5.0f);
+	Vec3 sliderPos = Vec3(bounds._position.X + (bounds._width * value), origPos.Y - 5.0f);
 
-	this->sliderBounds._position.X = sliderPos.X * scaleX;
+	this->sliderBounds._position.X = sliderPos.X;
 	this->sliderBounds._position.Y = sliderPos.Y * scaleY;
 
 	guiPtr->GetGUIElement(textureIDs[0])->GetDrawInput()->scale = XMFLOAT2(rscaleX*scaleX, rscaleY*scaleY);
