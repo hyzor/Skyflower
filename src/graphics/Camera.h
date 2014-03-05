@@ -6,6 +6,10 @@
 #include <DirectXMath.h>
 #include "shared\Vec3.h"
 
+const float fovY = 0.785398f; // 0.25f * MathHelper::pi
+const float zNear = 1.0f;
+const float zFar = 5000.0f;
+
 class Camera
 {
 public:

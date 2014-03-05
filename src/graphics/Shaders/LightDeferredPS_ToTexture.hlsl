@@ -74,7 +74,7 @@ PixelOut main(VertexOut pIn)
 	//float diffuseMultiplier;
 	float2 velocity;
 	int materialIndex;
-	
+
 	diffuse.xyz = gDiffuseTexture.Sample(samLinear, pIn.Tex).xyz;
 	normal = gNormalTexture.Sample(samLinear, pIn.Tex).xyz;
 	//specular = gSpecularTexture.Sample(samLinear, pIn.Tex);
@@ -122,18 +122,18 @@ PixelOut main(VertexOut pIn)
 
 	float4 H = float4(pIn.Tex.x * 2.0f - 1.0f, (1.0f - pIn.Tex.y) * 2.0f - 1.0f, depth, 1.0f);
 
-	float4 D_transformed = mul(H, gCamViewProjInv);
+		float4 D_transformed = mul(H, gCamViewProjInv);
 
-	positionW = (D_transformed / D_transformed.w).xyz;
+		positionW = (D_transformed / D_transformed.w).xyz;
 
 	// The toEye vector is used in lighting
 	float3 toEye = gEyePosW - positionW;
 
-	// Direction of eye to pixel world position
-	float3 eyeDir = positionW - gEyePosW;
+		// Direction of eye to pixel world position
+		float3 eyeDir = positionW - gEyePosW;
 
-	// Cache the distance to the eye from this surface point.
-	float distToEye = length(toEye);
+		// Cache the distance to the eye from this surface point.
+		float distToEye = length(toEye);
 
 	// Normalize
 	toEye /= distToEye;
@@ -161,18 +161,31 @@ PixelOut main(VertexOut pIn)
 		gVelocityTexture.GetDimensions(velocityDimensions.x, velocityDimensions.y);
 		float2 texelSize = 1.0f / velocityDimensions;
 
-		// Figure out how many samples to take
-		float speed = length(velocity / texelSize);
+			// Figure out how many samples to take
+			float speed = length(velocity / texelSize);
 		unsigned int numMotionBlurSamples = clamp(int(speed), 1, MAX_MOTIONBLURSAMPLES);
+
+		unsigned int actualSamples = 1;
 
 		[unroll]
 		for (unsigned int n = 1; n < numMotionBlurSamples; ++n)
 		{
 			float2 offset = velocity * (float(n) / float(numMotionBlurSamples - 1) - 0.5f);
-			diffuse.xyz += gDiffuseTexture.Sample(samPoint, pIn.Tex + offset).xyz;
+				float3 diffuseSample = gDiffuseTexture.Sample(samPoint, pIn.Tex + offset).xyz;
+				float depthSample = gDepthTexture.Sample(samLinear, pIn.Tex + offset).x;
+
+			float relativeDepth = depth - depthSample;
+
+			// FIXME: Implement a more elegant solution, this value was tested and then adjusted for this particular case
+			// 0.0005f
+			if (relativeDepth < (0.00035f))
+			{
+				diffuse.xyz += diffuseSample;
+				actualSamples++;
+			}
 		}
 
-		diffuse.xyz /= float(numMotionBlurSamples);
+		diffuse.xyz /= float(actualSamples);
 	}
 
 	//--------------------------------------------------
@@ -182,8 +195,8 @@ PixelOut main(VertexOut pIn)
 	pOut.LitColor = diffuse;
 
 	float4 ambient_Lights = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 diffuse_Lights = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 specular_Lights = float4(0.0f, 0.0f, 0.0f, 0.0f);
+		float4 diffuse_Lights = float4(0.0f, 0.0f, 0.0f, 0.0f);
+		float4 specular_Lights = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	if (gSkipLighting == 1)
 		diffuse_Lights = float4(diffuse.x, diffuse.y, diffuse.z, 0.0f);
@@ -236,7 +249,7 @@ PixelOut main(VertexOut pIn)
 	if (gEnableFogging)
 	{
 		float3 eyeDirOffset = eyeDir;
-		eyeDirOffset.y -= gFogHeightOffset;
+			eyeDirOffset.y -= gFogHeightOffset;
 
 		float cVolFogHeightDensityAtViewer = exp(-gFogHeightFalloff * (gEyePosW.y - gFogHeightOffset));
 		float fogIntensity = length(eyeDirOffset) * cVolFogHeightDensityAtViewer;
@@ -277,17 +290,17 @@ PixelOut main(VertexOut pIn)
 		if (backgroundColor.w != 1.0f)
 		{
 			float3 alphaFloat3 = float3(backgroundColor.w, backgroundColor.w, backgroundColor.w);
-			float3 alphaFloat3Inv = float3(1.0f - backgroundColor.w, 1.0f - backgroundColor.w, 1.0f - backgroundColor.w);
+				float3 alphaFloat3Inv = float3(1.0f - backgroundColor.w, 1.0f - backgroundColor.w, 1.0f - backgroundColor.w);
 
-			float3 colorOut = pOut.LitColor.xyz * alphaFloat3 + backgroundColor.xyz * alphaFloat3Inv;
-			pOut.LitColor.xyz = colorOut.xyz;
+				float3 colorOut = pOut.LitColor.xyz * alphaFloat3 + backgroundColor.xyz * alphaFloat3Inv;
+				pOut.LitColor.xyz = colorOut.xyz;
 		}
 
 		// Perform additive blending
 		else
 		{
 			float3 colorOut = pOut.LitColor.xyz * float3(1.0f, 1.0f, 1.0f) + backgroundColor.xyz * float3(1.0f, 1.0f, 1.0f);
-			pOut.LitColor.xyz = colorOut.xyz;
+				pOut.LitColor.xyz = colorOut.xyz;
 		}
 	}
 

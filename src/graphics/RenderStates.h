@@ -36,6 +36,7 @@ public:
 	static ID3D11BlendState* mDefaultBS;
 	static ID3D11BlendState* mAdditiveBS;
 	static ID3D11BlendState* mBlendBS;
+	static ID3D11BlendState* mParticleBlendBS;
 };
 
 #endif
