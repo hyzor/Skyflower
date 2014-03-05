@@ -173,13 +173,6 @@ Entity::Entity(EntityManager *entityManager, const Modules *modules, EntityId id
 }
 Entity::~Entity() {
 
-	// delete all components
-	// deleted by the Entity manager
-	/*for (map<string, list<Component*> >::iterator it = fComponents.begin(); it != fComponents.end(); ++it) {
-		for (list<Component*>::iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
-			delete (*it2);
-		}
-	}*/
 
 	if (sphere)
 		delete sphere;
@@ -189,6 +182,9 @@ Entity::~Entity() {
 
 	if (AnimInst)
 		this->modules->graphics->DeleteInstance(this->AnimInst);
+
+	if (SortInst)
+		this->modules->graphics->DeleteInstance(this->SortInst);
 
 	if (field)
 		this->modules->potentialField->DeleteField(field);
@@ -424,6 +420,8 @@ void Entity::updatePos(Vec3 pos)
 		this->modelInst->SetPosition(returnPos());
 	if (this->AnimInst)
 		this->AnimInst->SetPosition(returnPos());
+	if (this->SortInst)
+		this->SortInst->SetPosition(returnPos());
 	if (this->collInst)
 		this->collInst->SetPosition(returnPos());
 	if (this->field)
@@ -454,6 +452,8 @@ void Entity::updateRot(Vec3 rot)
 		this->modelInst->SetRotation(rot);
 	if (this->AnimInst)
 		this->AnimInst->SetRotation(rot);
+	if (this->SortInst)
+		this->SortInst->SetRotation(rot);
 	//if (this->collInst)
 		//this->collInst->SetRotation(rot);
 }
@@ -465,6 +465,10 @@ void Entity::updateScale(Vec3 scale)
 		this->modelInst->SetScale(scale);
 	if (this->collInst)
 		this->collInst->SetScale(scale);
+	if (this->AnimInst)
+		this->AnimInst->SetScale(scale);
+	if (this->SortInst)
+		this->SortInst->SetScale(scale);
 }
 
 void Entity::updateVisible(bool isVisible)
@@ -547,10 +551,10 @@ bool Entity::IsAnimationDone(bool lower, bool upper)
 {
 	if (SortInst)
 	{
-		/*if (lower)
+		if (lower)
 			return SortInst->IsLowerAnimationDone();
 		if (upper)
-			return SortInst->IsUpperAnimationDone();*/
+			return SortInst->IsUpperAnimationDone();
 	}
 	if (AnimInst)
 		return AnimInst->IsAnimationDone();
@@ -564,10 +568,10 @@ void Entity::SetAnimationSpeed(int index, float speed, bool lower, bool upper)
 {
 	if (SortInst)
 	{
-		/*if(lower)
+		if(lower)
 			SortInst->SetLowerAnimationSpeed((UINT)index, speed);
 		if (upper)
-			SortInst->SetUpperAnimationSpeed((UINT)index, speed);*/
+			SortInst->SetUpperAnimationSpeed((UINT)index, speed);
 	}
 	if (AnimInst)
 		AnimInst->SetAnimationSpeed((UINT)index, speed);
