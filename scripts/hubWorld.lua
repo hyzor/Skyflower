@@ -32,8 +32,8 @@ function loaded()
 		SetActivated(538, false)
 		SetActivated(539, true)
 	else
-		SetActivated(538, false)
-		SetActivated(539, true)
+		SetActivated(538, true)
+		SetActivated(539, false)
 	end
 end
 
