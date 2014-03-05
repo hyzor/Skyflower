@@ -985,3 +985,37 @@ int Event::PlayFinishedSound(lua_State* L)
 
 	return 0;
 }
+
+int Event::SetCanMoveBox(lua_State* L)
+{
+	int n = lua_gettop(L);
+
+	if (n >= 1)
+	{
+		EntityId Id = (EntityId)lua_tointeger(L, 1);
+		Entity* Entity = entityManager->getEntity(Id);
+
+		if (Entity->hasComponents("Box"))
+		{
+			Entity->sendMessage("CanBeMoved");
+		}
+	}
+	return 0;
+}
+
+int Event::SetCanNotMoveBox(lua_State* L)
+{
+	int n = lua_gettop(L);
+
+	if (n >= 1)
+	{
+		EntityId Id = (EntityId)lua_tointeger(L, 1);
+		Entity* Entity = entityManager->getEntity(Id);
+
+		if (Entity->hasComponents("Box"))
+		{
+			Entity->sendMessage("CanNotBeMoved");
+		}
+	}
+	return 0;
+}

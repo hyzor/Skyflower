@@ -109,7 +109,7 @@ void Application::Start()
 	levelHandler->init(m_entityManager);
 
 	// Load Hub Level
-	levelHandler->queue(5);
+	levelHandler->queue(0);
 	//levelHandler->loadQueued();
 	levelHandler->LoadQueued(mXmlResourceDir);
 	//levelHandler->loadQueued();
@@ -139,9 +139,6 @@ void Application::Start()
 
 	LineChartRendererD3D lineChartRenderer(m_graphicsEngine);
 
-	// Don't start listening to input events until everything has been initialized.
-	m_inputHandler->AddListener(this);
-
 	double time, deltaTime;
 
 	//startTime = GetTime();
@@ -157,6 +154,9 @@ void Application::Start()
 	m_menuCameraRotation = 0.0f;
 
 	m_showHelpTexts = true;
+
+	// Don't start listening to input events until everything has been initialized.
+	m_inputHandler->AddListener(this);
 
 	mGameTime = 0.0;
 	m_oldTime = GetTime();
@@ -294,6 +294,8 @@ void Application::Start()
 		}
 	}
 	
+	m_inputHandler->RemoveListener(this);
+
 	//m_graphicsEngine->DeleteTexture2D(memoryChartTexture);
 	//m_graphicsEngine->DeleteTexture2D(frameTimeChartTexture);
 
