@@ -125,9 +125,8 @@ void Throw::ThrowAt(Entity* e)
 			getOwner()->getModules()->sound->PlaySound("swish.wav", 1.0f, &throwablePosition.X);
 
 			// Play throw animation
-			AnimatedInstance *animatedInstance = getOwner()->getAnimatedInstance();
-			if (animatedInstance && getOwnerId() == 1)
-				animatedInstance->SetAnimation(7, false);
+			if (getOwner()->IsAnimated() && getOwnerId() == 1)
+				getOwner()->SetAnimation(7, false);
 
 			this->heldEntity = nullptr;
 		}
@@ -154,9 +153,8 @@ void Throw::ThrowPlayer()
 			getOwner()->getModules()->sound->PlaySound("swish.wav", 1.0f, &throwablePosition.X);
 
 			// Play throw animation
-			AnimatedInstance *animatedInstance = getOwner()->getAnimatedInstance();
-			if (animatedInstance && getOwnerId() == 1)
-				animatedInstance->SetAnimation(7, false);
+			if (getOwner()->IsAnimated() && getOwnerId() == 1)
+				getOwner()->SetAnimation(7, false);
 
 			this->heldEntity = nullptr;
 		}

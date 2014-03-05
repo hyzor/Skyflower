@@ -279,53 +279,51 @@ void Movement::update(float deltaTime)
 		}
 	}
 
-	AnimatedInstance *animatedInstance = getOwner()->getAnimatedInstance();
-
-	if (animatedInstance)
+	if (getOwner()->IsAnimated())
 	{
 		if (getOwnerId() == 1)
 		{
 			Push *pushComponent = getOwner()->getComponent<Push *>("Push");
 			Throw *throwComponent = getOwner()->getComponent<Throw *>("Throw");
 
-			if (animatedInstance->GetAnimation() == 7 && !animatedInstance->IsAnimationDone())
+			if (getOwner()->IsPlayingAnimation(7) && !getOwner()->IsAnimationDone())
 			{
 				// Do nothing, waiting for throw animation to finish.
 			}
 			else if (isDizzy)
 			{
 				// Dizzy
-				animatedInstance->SetAnimation(10, true);
+				getOwner()->SetAnimation(10, true);
 			}
 			else if ((this->isInAir && timeFalling > 0.3f) || p->GetStates()->isJumping)
 			{
-				if (animatedInstance->GetAnimation() != 8 && animatedInstance->GetAnimation() != 9)
+				if (!getOwner()->IsPlayingAnimation(8) && !getOwner()->IsPlayingAnimation(9))
 				{
-					if (animatedInstance->GetAnimation() != 1 || (animatedInstance->GetAnimation() == 1 && animatedInstance->IsAnimationDone()))
+					if (!getOwner()->IsPlayingAnimation(1) || (getOwner()->IsPlayingAnimation(1) && getOwner()->IsAnimationDone()))
 					{
 						// Raise hands for fall
-						animatedInstance->SetAnimation(8, false);
+						getOwner()->SetAnimation(8, false);
 					}
 				}
 
-				if (animatedInstance->GetAnimation() == 8 && animatedInstance->IsAnimationDone())
+				if (getOwner()->IsPlayingAnimation(8) && getOwner()->IsAnimationDone())
 				{
 					// Fall
-					animatedInstance->SetAnimation(9, true);
+					getOwner()->SetAnimation(9, true);
 				}
 			}
 			else if (throwComponent && throwComponent->getHeldEntity())
 			{
 				// Holding ball
-				animatedInstance->SetAnimation(6, true);
+				getOwner()->SetAnimation(6, true);
 			}
 			else if (pushComponent && !pushComponent->isPushingBox())
 			{
 				if (p->GetStates()->isMoving)
 				{
 					// Run
-					animatedInstance->SetAnimation(0, true);
-					animatedInstance->SetAnimationSpeed(0, speed/25.0f);
+					getOwner()->SetAnimation(0, true);
+					getOwner()->SetAnimationSpeed(0, speed / 25.0f);
 				}
 				else
 				{
@@ -334,19 +332,19 @@ void Movement::update(float deltaTime)
 					{
 						if (rand() % 10 < 6)
 						{
-							animatedInstance->SetAnimationSpeed(4, 0.85f);
-							animatedInstance->SetAnimation(4, false);
+							getOwner()->SetAnimationSpeed(4, 0.85f);
+							getOwner()->SetAnimation(4, false);
 						}
 						idleTimer = 0.0f;
 					}
 
-					else if (animatedInstance->GetAnimation() == 4 && animatedInstance->IsAnimationDone())
+					else if (getOwner()->IsPlayingAnimation(4) && getOwner()->IsAnimationDone())
 					{
-						animatedInstance->SetAnimation(11, false);
+						getOwner()->SetAnimation(11, false);
 					}
-					else if (!(animatedInstance->GetAnimation() == 4 || animatedInstance->GetAnimation() == 11))
+					else if (!(getOwner()->IsPlayingAnimation(4) || getOwner()->IsPlayingAnimation(11)))
 					{
-						animatedInstance->SetAnimation(11, false);
+						getOwner()->SetAnimation(11, false);
 					}
 					idleTimer += deltaTime;
 				}
@@ -363,14 +361,14 @@ void Movement::update(float deltaTime)
 			else if (p->GetStates()->isMoving)
 			{
 				// Run
-				animatedInstance->SetAnimation(0, true);
+				getOwner()->SetAnimation(0, true);
 			}
 			else
 			{
 				// Idle
 
 				// AIn har ingen idle animation, spela springanimationen istället.
-				animatedInstance->SetAnimation(0, true);
+				getOwner()->SetAnimation(0, true);
 			}
 		}
 	}
@@ -584,19 +582,17 @@ void Movement::Jump(Message const& msg)
 
 			owner->getModules()->sound->PlaySound(GetPlayerSoundFile("player/jump1.wav"), 1.0f, &pos.X);
 
-			AnimatedInstance *animatedInstance = owner->getAnimatedInstance();
-
-			if (animatedInstance)
+			if (getOwner()->IsAnimated())
 			{
 				if (getOwnerId() == 1)
 				{
 					// Play jump animation for player.
-					getOwner()->getAnimatedInstance()->SetAnimation(1, false);
+					getOwner()->SetAnimation(1, false);
 				}
 				else if (getOwner()->getComponent<AI *>("AI"))
 				{
 					// Play jump animation for AI.
-					getOwner()->getAnimatedInstance()->SetAnimation(5, false);
+					getOwner()->SetAnimation(5, false);
 				}
 			}
 		}

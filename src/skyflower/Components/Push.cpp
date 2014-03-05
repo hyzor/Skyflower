@@ -179,10 +179,10 @@ void Push::update(float dt)
 			getOwner()->updateRot(Vec3(box->returnRot().X, rotation.Y, box->returnRot().Z));
 
 			//play push animation for player
-			if (dir != Vec3() && getOwnerId() == 1 && getOwner()->getAnimatedInstance())
+			if (dir != Vec3() && getOwnerId() == 1 && getOwner()->IsAnimated())
 			{
 				isPushingBox = true;
-				getOwner()->getAnimatedInstance()->SetAnimation(3, true);
+				getOwner()->SetAnimation(3, true);
 			}
 		}
 	}

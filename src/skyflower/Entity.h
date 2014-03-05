@@ -32,7 +32,7 @@ class Entity {
 
 		// constructor/destructor
 		Entity(EntityManager *entityManager, const Modules *modules, EntityId id, EntityId relativeid, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
-			 float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated);
+			 float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated, bool isSorted);
 		virtual ~Entity();
 		
 		Entity* ground;				//a pointer to the ground the entity stands on, if it stands on something		
@@ -60,6 +60,17 @@ class Entity {
 		bool getIsActive();
 		bool hasComponents(const string &name);
 
+		bool IsAnimated();
+		void SetAnimation(int index, bool loop);
+		void SetAnimation(int index, bool loop, bool lower, bool upper);
+		bool IsAnimationDone();
+		bool IsAnimationDone(bool lower, bool upper);
+		void SetAnimationSpeed(int index, float speed);
+		void SetAnimationSpeed(int index, float speed, bool lower, bool upper);
+		bool IsPlayingAnimation(int index);
+		bool IsPlayingAnimation(int index, bool lower, bool upper);
+
+
 		Vec3 returnPos();
 		Vec3 returnRot();
 		Vec3 returnScale();
@@ -68,7 +79,6 @@ class Entity {
 		const Modules *getModules();
 		PhysicsEntity* getPhysics();
 		string getType();
-		AnimatedInstance *getAnimatedInstance();
 		CollisionInstance* returnCollision();
 
 		template <typename T>
@@ -95,6 +105,7 @@ class Entity {
 		bool isCollidible;
 		ModelInstance* modelInst;
 		AnimatedInstance* AnimInst;
+		SortedAnimatedInstance* SortInst;
 		const Modules *modules;
 
 		EntityManager *entityManager;
