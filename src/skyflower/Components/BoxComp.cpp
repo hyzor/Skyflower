@@ -62,8 +62,6 @@ void BoxComp::update(float dt)
 		else
 			normal = pNormal;
 
-		if(getOwnerId() == 28)
-			std::cout << "normal: x: " << normal.X << " y: " << normal.Y << " z: " << normal.Z << std::endl;
 
 		if (getOwner()->ground)
 		{

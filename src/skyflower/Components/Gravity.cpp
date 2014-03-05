@@ -127,7 +127,26 @@ float GravityComponent::testMove(Ray r, Entity* e, Entity* &out, bool groundRay,
 {
 	//test ray relative to entity
 	Vec3 pos = e->returnPos();
-	r.SetPos(pos + r.GetPos());
+
+	float preLength = r.GetDir().Length();
+
+	float limit = ((preLength - 5)*0.5f) / preLength;
+	cout << limit << endl;
+	
+	if (prevPos.Y > pos.Y)
+	{
+		Vec3 p = pos;
+		Vec3 dir = r.GetDir();
+		dir.Y -= prevPos.Y - pos.Y;
+		p.Y = prevPos.Y;
+		float newLength = dir.Length();
+		r.Set(p + r.GetPos(), dir);
+
+		limit = ((preLength-5)*0.5f) / newLength;
+	}
+	else
+		r.SetPos(pos + r.GetPos());
+
 
 	//create sphere for ray
 	Vec3 raypos = r.GetDir();
@@ -174,7 +193,7 @@ float GravityComponent::testMove(Ray r, Entity* e, Entity* &out, bool groundRay,
 
 	//collision detected
 	float dir = 0;
-	if (col > 0.5f) //feet
+	if (col > limit) //feet
 	{
 		if (groundRay && r.GetDir().Y * col > r.GetDir().Y + 5)
 		{
