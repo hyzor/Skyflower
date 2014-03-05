@@ -621,6 +621,10 @@ void Application::OnWindowActivate()
 		m_window->SetCursorVisibility(false);
 		m_oldTime = GetTime();
 	}
+	else
+	{
+		m_inputHandler->SetMouseCapture(false);
+	}
 }
 
 void Application::OnWindowDeactivate()
