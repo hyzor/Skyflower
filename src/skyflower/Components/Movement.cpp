@@ -302,7 +302,7 @@ void Movement::update(float deltaTime)
 					if (!getOwner()->IsPlayingAnimation(1) || (getOwner()->IsPlayingAnimation(1) && getOwner()->IsAnimationDone()))
 					{
 						// Raise hands for fall
-						getOwner()->SetAnimation(8, false);
+						getOwner()->SetAnimation(8, false, false, true);
 					}
 				}
 
@@ -315,15 +315,15 @@ void Movement::update(float deltaTime)
 			else if (throwComponent && throwComponent->getHeldEntity())
 			{
 				// Holding ball
-				getOwner()->SetAnimation(6, true);
+				getOwner()->SetAnimation(6, true, false, true);
 			}
 			else if (pushComponent && !pushComponent->isPushingBox())
 			{
 				if (p->GetStates()->isMoving)
 				{
 					// Run
-					getOwner()->SetAnimation(0, true);
-					getOwner()->SetAnimationSpeed(0, speed / 25.0f);
+					getOwner()->SetAnimation(0, true, true, false);
+					getOwner()->SetAnimationSpeed(0, speed / 25.0f, true, false);
 				}
 				else
 				{
@@ -340,7 +340,7 @@ void Movement::update(float deltaTime)
 
 					else if (getOwner()->IsPlayingAnimation(4) && getOwner()->IsAnimationDone())
 					{
-						getOwner()->SetAnimation(11, false);
+						getOwner()->SetAnimation(11, false); //idle
 					}
 					else if (!(getOwner()->IsPlayingAnimation(4) || getOwner()->IsPlayingAnimation(11)))
 					{
@@ -361,14 +361,14 @@ void Movement::update(float deltaTime)
 			else if (p->GetStates()->isMoving)
 			{
 				// Run
-				getOwner()->SetAnimation(0, true);
+				getOwner()->SetAnimation(0, true, true, false);
 			}
 			else
 			{
 				// Idle
 
 				// AIn har ingen idle animation, spela springanimationen istället.
-				getOwner()->SetAnimation(0, true);
+				getOwner()->SetAnimation(0, true, true, false);
 			}
 		}
 	}

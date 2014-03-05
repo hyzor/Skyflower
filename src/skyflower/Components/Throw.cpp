@@ -126,7 +126,7 @@ void Throw::ThrowAt(Entity* e)
 
 			// Play throw animation
 			if (getOwner()->IsAnimated() && getOwnerId() == 1)
-				getOwner()->SetAnimation(7, false);
+				getOwner()->SetAnimation(7, false, false, true);
 
 			this->heldEntity = nullptr;
 		}
@@ -154,7 +154,7 @@ void Throw::ThrowPlayer()
 
 			// Play throw animation
 			if (getOwner()->IsAnimated() && getOwnerId() == 1)
-				getOwner()->SetAnimation(7, false);
+				getOwner()->SetAnimation(7, false, false, true);
 
 			this->heldEntity = nullptr;
 		}
