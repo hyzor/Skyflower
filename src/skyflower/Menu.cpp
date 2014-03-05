@@ -49,13 +49,11 @@ void Menu::init(GUI *g, int screenWidth, int screeenHeight, SoundEngine *sound)
 	m_bg = g->CreateGUIElementAndBindTexture(Vec3(0, 0), "Menygrafik\\logoFyraTre.png");
 	g->GetGUIElement(m_bg)->SetVisible(false);
 
-	m_credits = g->CreateGUIElementAndBindTexture(Vec3(0.0f, 0.0f), "Menygrafik\\credits.png");
-	g->GetGUIElement(m_credits)->SetVisible(false);
+	m_credits = -1;
 
 	// FIXME: Hardcoding ;(
 	m_instructionsWidth = 729;
-	m_instructions = g->CreateGUIElementAndBindTexture(Vec3(screenWidth - m_instructionsWidth - 6.0f, 6.0f), "Menygrafik\\instructions.png");
-	g->GetGUIElement(m_instructions)->SetVisible(false);
+	m_instructions = -1;
 
 	settingsBox = g->CreateGUIElementAndBindTexture(Vec3(400, 100), "Menygrafik\\bg_settings.png");
 	g->GetGUIElement(settingsBox)->GetDrawInput()->color = XMVectorSet(1.0f, 1.0f, 1.0f, 0.9f);
@@ -114,11 +112,6 @@ void Menu::init(GUI *g, int screenWidth, int screeenHeight, SoundEngine *sound)
 	MenuButton *back_inst = new MenuButton(g, Vec3(30, 250), 174, 80, "buttons/back.png", "buttons/back_highlighted.png");
 	back_inst->setOnClick([this]() { setActivePage(this->isFirst()? MenuPageStart : MenuPageMain); });
 	m_pages[MenuPageInstructions].buttons.push_back(back_inst);
-
-	// Credits page
-	MenuButton *back_credits = new MenuButton(g, Vec3(30, 250), 174, 80, "buttons/back.png", "buttons/back_highlighted.png");
-	back_credits->setOnClick([this]() { setActivePage(this->isFirst()? MenuPageStart : MenuPageMain); });
-	m_pages[MenuPageCredits].buttons.push_back(back_credits);
 
 	// Start menu
 	MenuButton *start = new MenuButton(g, Vec3(30, 250), 253, 78, "buttons/start.png", "buttons/start_highlighted.png");
@@ -275,9 +268,18 @@ void Menu::setVisible(bool visible)
 		guiPtr->GetGUIElement(m_bg)->SetVisible(false);
 
 	if (visible && m_activePage == MenuPageInstructions)
+	{
+		if (m_instructions == -1)
+		{
+			m_instructions = guiPtr->CreateGUIElementAndBindTexture(Vec3(this->width - m_instructionsWidth - 6.0f, 6.0f), "Menygrafik\\instructions.png");
+		}
+
 		guiPtr->GetGUIElement(m_instructions)->SetVisible(true);
-	else
+	}
+	else if (m_instructions != -1)
+	{
 		guiPtr->GetGUIElement(m_instructions)->SetVisible(false);
+	}
 
 	if (visible && m_activePage == MenuPageSettings)
 		guiPtr->GetGUIElement(settingsBox)->SetVisible(true);
@@ -285,9 +287,22 @@ void Menu::setVisible(bool visible)
 		guiPtr->GetGUIElement(settingsBox)->SetVisible(false);
 
 	if (visible && m_activePage == MenuPageCredits)
+	{
+		if (m_credits == -1)
+		{
+			m_credits = guiPtr->CreateGUIElementAndBindTexture(Vec3(0.0f, 0.0f), "Menygrafik\\credits.png");
+
+			MenuButton *back_credits = new MenuButton(guiPtr, Vec3(30, 250), 174, 80, "buttons/back.png", "buttons/back_highlighted.png");
+			back_credits->setOnClick([this]() { setActivePage(this->isFirst()? MenuPageStart : MenuPageMain); });
+			m_pages[MenuPageCredits].buttons.push_back(back_credits);
+		}
+
 		guiPtr->GetGUIElement(m_credits)->SetVisible(true);
-	else
+	}
+	else if (m_credits != -1)
+	{
 		guiPtr->GetGUIElement(m_credits)->SetVisible(false);
+	}
 
 	for (int i = 0; i < MenuPageCount; i++)
 	{
@@ -342,11 +357,16 @@ void Menu::onResize(unsigned int width, unsigned int height)
 	}
 
 	guiPtr->GetGUIElement(m_bg)->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
-	guiPtr->GetGUIElement(m_credits)->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
+
+	if (m_credits != -1)
+		guiPtr->GetGUIElement(m_credits)->GetDrawInput()->scale = XMFLOAT2(scaleX, scaleY);
 
 	XMFLOAT2 oldPos(400, 100);
 	guiPtr->GetGUIElement(settingsBox)->GetDrawInput()->pos = XMFLOAT2(oldPos.x *scaleX, oldPos.y*scaleY);
 	guiPtr->GetGUIElement(settingsBox)->GetDrawInput()->scale = XMFLOAT2(scaleX*40, scaleY*40);
+
+	if (m_instructions != -1)
+		guiPtr->GetGUIElement(m_instructions)->GetDrawInput()->pos = XMFLOAT2(width - m_instructionsWidth - 6.0f, 6.0f);
 
 	this->width = width;
 	this->height = height;

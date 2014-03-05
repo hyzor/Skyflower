@@ -29,8 +29,6 @@ void HelpText::addedToEntity()
 	gui->GetGUIElement(bgID)->SetVisible(false);
 
 	duckID = gui->CreateGUIElementAndBindTexture(Vec3(0, 0), "helpful_duck.png");
-	gui->GetGUIElement(duckID)->GetDrawInput()->scale.x = 0.3f;
-	gui->GetGUIElement(duckID)->GetDrawInput()->scale.y = 0.3f;
 	gui->GetGUIElement(duckID)->SetVisible(false);
 	top = 0;
 }
@@ -78,7 +76,7 @@ void HelpText::update(float dt)
  			gui->GetGUIElement(bgID)->SetVisible(true);
 			gui->GetGUIElement(duckID)->SetVisible(true);
 			gui->GetGUIElement(bgID)->GetDrawInput()->pos.y = height - top + 85.0f;
-			gui->GetGUIElement(duckID)->GetDrawInput()->pos.y = height - top;
+			gui->GetGUIElement(duckID)->GetDrawInput()->pos.y = height - top + 38.0f;
 			gui->printText(m_textToPrint, (int)(xPos), (int)(height - top + 108.6f), Vec3(0.0f, 1.0f, 0.0f), 1.5f);
 		}
 		else if (top > 0.0f)
