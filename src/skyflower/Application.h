@@ -40,8 +40,8 @@ private:
 	void updateMenu(float dt, float gameTime);
 	void updateLoading(float dt);
 	void updateCutScene(float dt);
-	void updateStart(float dt, int startScreen);
-	void updateEnd(float dt, int endScreen);
+	void updateStart(float dt);
+	void updateEnd(float dt);
 	void changeGameState(GameState newState);
 
 	void setBackgroundMusicList(const std::vector<std::string> &musicList);
@@ -116,6 +116,8 @@ private:
 	std::string mResourceDir;
 
 	bool haveShownEndStory;
+	int m_startScreen;
+	int m_endScreen;
 };
 
 std::string GetPlayerSoundFile(const std::string &file);
