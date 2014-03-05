@@ -93,13 +93,65 @@ GenericSkinnedModelSorted::~GenericSkinnedModelSorted(void)
 
 void GenericSkinnedModelSortedInstance::Update(float dt)
 {
-	TimePos += dt;
+	//TimePos += dt;
+	lowerTimePos += dt * lowerAnimationSpeed;
+	upperTimePos += dt * upperAnimationSpeed;
+
+	if (!loopUpperbodyAnim)
+	{
+		float animationDuration = model->skinnedData.GetAnimationDuration(AnimationIndex, upperBodyFrameStart, upperBodyFrameEnd);
+
+		if (upperTimePos > animationDuration)
+		{
+			upperTimePos = animationDuration;
+			upperAnimationDone = true;
+		}
+	}
+
+	if (!loopLowerBodyAnim)
+	{
+		float animationDuration = model->skinnedData.GetAnimationDuration(AnimationIndex, lowerBodyFrameStart, lowerBodyFrameEnd);
+
+		if (lowerTimePos > animationDuration)
+		{
+			lowerTimePos = animationDuration;
+			lowerAnimationDone = true;
+		}
+	}
 
 	//if (!loop)
 		//TimePos = min(TimePos, model->skinnedData.GetAnimationDuration(AnimationIndex, frameStart, frameEnd));
 
 	//FinalTransforms = model->skinnedData.GetTransforms(TimePos, AnimationIndex, frameStart, frameEnd, playAnimForward);
 
-	FinalLowerBodyTransforms = model->skinnedData.GetLowerBodyTransforms(TimePos, AnimationIndex, lowerBodyFrameStart, lowerBodyFrameEnd, playLowerBodyAnimForward);
-	FinalUpperBodyTransforms = model->skinnedData.GetUpperBodyTransforms(TimePos, AnimationIndex, upperBodyFrameStart, upperBodyFrameEnd, playUpperBodyAnimForward);
+	FinalLowerBodyTransforms = model->skinnedData.GetLowerBodyTransforms(lowerTimePos, AnimationIndex, lowerBodyFrameStart, lowerBodyFrameEnd, playLowerBodyAnimForward);
+	FinalUpperBodyTransforms = model->skinnedData.GetUpperBodyTransforms(upperTimePos, AnimationIndex, upperBodyFrameStart, upperBodyFrameEnd, playUpperBodyAnimForward);
+}
+
+GenericSkinnedModelSortedInstance::GenericSkinnedModelSortedInstance()
+{
+	model = nullptr;
+	isVisible = false;
+	AnimationName = "";
+	AnimationIndex = 0;
+	//TimePos = 0.0f;
+
+	upperBodyFrameStart = 0;
+	upperBodyFrameEnd = 1;
+	playUpperBodyAnimForward = true;
+	loopUpperbodyAnim = true;
+	upperAnimationDone = false;
+	upperTimePos = 0.0f;
+
+	lowerBodyFrameStart = 0;
+	lowerBodyFrameEnd = 1;
+	playLowerBodyAnimForward = true;
+	loopLowerBodyAnim = true;
+	upperAnimationDone = false;
+	lowerTimePos = 0.0f;
+}
+
+GenericSkinnedModelSortedInstance::~GenericSkinnedModelSortedInstance()
+{
+
 }

@@ -136,6 +136,7 @@ AnimatedInstanceImpl::AnimatedInstanceImpl(Vec3 pos, Vec3 rot, Vec3 scale, Gener
 
 	//mSkinnedInstance.model = model;
 	mSkinnedInstance = new GenericSkinnedModelInstance();
+
 	//ZeroMemory(&mSkinnedInstance, sizeof(GenericSkinnedModelInstance));
 
 	mSkinnedInstance->model = model;
@@ -480,9 +481,11 @@ SortedAnimatedInstanceImpl::SortedAnimatedInstanceImpl(Vec3 pos, Vec3 rot, Vec3 
 
 	mSkinnedInstance = new GenericSkinnedModelSortedInstance();
 
+	//ZeroMemory(&mSkinnedInstance, sizeof(GenericSkinnedModelSortedInstance));
+
 	mSkinnedInstance->model = model;
 	mSkinnedInstance->isVisible = true;
-	mSkinnedInstance->TimePos = 0.0f;
+	//mSkinnedInstance->TimePos = 0.0f;
 	mSkinnedInstance->AnimationName = "animation";
 	mSkinnedInstance->AnimationIndex = mSkinnedInstance->model->skinnedData.GetAnimationIndex(mSkinnedInstance->AnimationName);
 	mSkinnedInstance->FinalLowerBodyTransforms.resize(mSkinnedInstance->model->skinnedData.Bones.size());
@@ -601,10 +604,10 @@ UINT SortedAnimatedInstanceImpl::GetUpperAnimation()
 	return mCurUpperAnim;
 }
 
-/*bool SortedAnimatedInstanceImpl::IsLowerAnimationDone()
+bool SortedAnimatedInstanceImpl::IsLowerAnimationDone()
 {
-	return mSkinnedInstance->animationDone;
-}*/
+	return mSkinnedInstance->lowerAnimationDone;
+}
 
 XMMATRIX SortedAnimatedInstanceImpl::GetWorld()
 {
@@ -627,12 +630,13 @@ void SortedAnimatedInstanceImpl::SetLowerAnimation(UINT index, bool loop)
 	if (index == mCurLowerAnim && !mFirstLowerAnimation)
 		return;
 
-	mSkinnedInstance->TimePos = 0.0f;
+	mSkinnedInstance->lowerTimePos = 0.0f;
 	mSkinnedInstance->lowerBodyFrameStart = mAnimations[index].FrameStart;
 	mSkinnedInstance->lowerBodyFrameEnd = mAnimations[index].FrameEnd;
 	mSkinnedInstance->loopLowerBodyAnim = loop;
 	//mSkinnedInstance-> = mAnimations[index].AnimationSpeed;
 	//mSkinnedInstance->animationDone = false;
+	mSkinnedInstance->lowerAnimationDone = false;
 
 	mSkinnedInstance->playLowerBodyAnimForward = mAnimations[index].playForwards;
 
@@ -645,12 +649,13 @@ void SortedAnimatedInstanceImpl::SetUpperAnimation(UINT index, bool loop)
 	if (index == mCurUpperAnim && !mFirstUpperAnimation)
 		return;
 
-	mSkinnedInstance->TimePos = 0.0f;
+	mSkinnedInstance->upperTimePos = 0.0f;
 	mSkinnedInstance->upperBodyFrameStart = mAnimations[index].FrameStart;
 	mSkinnedInstance->upperBodyFrameEnd = mAnimations[index].FrameEnd;
 	mSkinnedInstance->loopUpperbodyAnim = loop;
 	//mSkinnedInstance-> = mAnimations[index].AnimationSpeed;
 	//mSkinnedInstance->animationDone = false;
+	mSkinnedInstance->upperAnimationDone = false;
 
 	mSkinnedInstance->playUpperBodyAnimForward = mAnimations[index].playForwards;
 
@@ -717,4 +722,19 @@ void SortedAnimatedInstanceImpl::Draw(ID3D11DeviceContext* dc, Camera* cam, Basi
 			mSkinnedInstance->model->meshes[j].draw(dc);
 		}
 	}
+}
+
+bool SortedAnimatedInstanceImpl::IsUpperAnimationDone()
+{
+	return mSkinnedInstance->upperAnimationDone;
+}
+
+void SortedAnimatedInstanceImpl::SetLowerAnimationSpeed(UINT id, float speed)
+{
+	mSkinnedInstance->upperAnimationSpeed = speed;
+}
+
+void SortedAnimatedInstanceImpl::SetUpperAnimationSpeed(UINT id, float speed)
+{
+	mSkinnedInstance->lowerAnimationSpeed = speed;
 }

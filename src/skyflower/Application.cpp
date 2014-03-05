@@ -402,19 +402,23 @@ void Application::updateCutScene(float dt)
 		changeGameState(GameState::menu);
 	if (!m_cutscene->isPlaying())
 	{
-		changeGameState(GameState::game);
+		if (levelHandler->completedCount() == this->nrOfLevels && !haveShownEndStory)
+		{
+			changeGameState(GameState::end);
+			haveShownEndStory = true;
+		}
+		else
+		{
+			changeGameState(GameState::game);
+		}
 	}
 }
 
 void Application::updateGame(float dt, float gameTime)
 {
-	if (levelHandler->completedCount() == this->nrOfLevels && !haveShownEndStory)
-	{
-		changeGameState(GameState::end);
-		haveShownEndStory = true;
-	}
-	else
-	{
+	
+	//else
+	//{
 		Vec3 playerPos = m_entityManager->getEntityPos("player");
 		m_camera->Follow(playerPos);
 
@@ -453,7 +457,7 @@ void Application::updateGame(float dt, float gameTime)
 
 		if (m_menu->isActive())
 			changeGameState(GameState::menu);
-	}
+	//}
 }
 
 void Application::updateLoading(float dt)

@@ -57,16 +57,24 @@ struct GenericSkinnedModelSortedInstance
 
 	std::string AnimationName;
 	UINT AnimationIndex;
-	float TimePos;
+	//float TimePos;
 
 	UINT lowerBodyFrameStart, lowerBodyFrameEnd;
 	bool playLowerBodyAnimForward;
 	bool loopLowerBodyAnim;
+	float lowerAnimationSpeed;
+	bool lowerAnimationDone;
+	float lowerTimePos;
 
 	UINT upperBodyFrameStart, upperBodyFrameEnd;
 	bool playUpperBodyAnimForward;
 	bool loopUpperbodyAnim;
+	float upperAnimationSpeed;
+	bool upperAnimationDone;
+	float upperTimePos;
 
+	GenericSkinnedModelSortedInstance();
+	~GenericSkinnedModelSortedInstance();
 	void Update(float dt);
 };
 
