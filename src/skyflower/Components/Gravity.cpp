@@ -131,7 +131,7 @@ float GravityComponent::testMove(Ray r, Entity* e, Entity* &out, bool groundRay,
 	float preLength = r.GetDir().Length();
 
 	float limit = ((preLength - 5)*0.5f) / preLength;
-	cout << limit << endl;
+	//cout << limit << endl;
 	
 	if (prevPos.Y > pos.Y)
 	{
