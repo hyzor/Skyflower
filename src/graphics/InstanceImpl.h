@@ -146,9 +146,9 @@ public:
 	Vec3 GetRotation();
 	Vec3 GetScale();
 	UINT GetLowerAnimation();
-	//bool IsLowerAnimationDone();
+	bool IsLowerAnimationDone();
 	UINT GetUpperAnimation();
-	//bool IsUpperAnimationDone();
+	bool IsUpperAnimationDone();
 
 	void SetVisibility(bool visible);
 	void SetPosition(Vec3 pos);
@@ -162,9 +162,9 @@ public:
 	void CreateAnimation(int id, int start, int frames, bool playForwards);
 
 	void SetLowerAnimation(UINT index, bool loop);
-	//void SetLowerAnimationSpeed(UINT id, float speed);
+	void SetLowerAnimationSpeed(UINT id, float speed);
 	void SetUpperAnimation(UINT index, bool loop);
-	//void SetUpperAnimationSpeed(UINT id, float speed);
+	void SetUpperAnimationSpeed(UINT id, float speed);
 
 	void Draw(ID3D11DeviceContext* dc, Camera* cam, BasicDeferredSkinnedSortedShader* deferredShader);
 

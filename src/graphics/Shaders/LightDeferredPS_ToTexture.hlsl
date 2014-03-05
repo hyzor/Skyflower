@@ -178,6 +178,7 @@ PixelOut main(VertexOut pIn)
 
 			// FIXME: Implement a more elegant solution, this value was tested and then adjusted for this particular case
 			// 0.0005f
+			// 0.00035f
 			if (relativeDepth < (0.00035f))
 			{
 				diffuse.xyz += diffuseSample;

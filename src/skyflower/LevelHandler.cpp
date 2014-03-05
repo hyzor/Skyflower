@@ -151,7 +151,12 @@ void LevelHandler::LoadQueued(const std::string& xmlResourceDir)
 	}
 	m_entityManager->modules->graphics->ClearLights();
 
-	//m_entityManager->modules->graphics->ClearModelInstances();
+	//remove old entities
+	for (unsigned int i = 0; i < old.size(); i++)
+		delete old[i];
+
+	m_entityManager->modules->graphics->ClearModelInstances();
+	m_entityManager->modules->graphics->ClearLevelTextures();
 
 	//load new entities
 	std::string xmlfile = m_levels.at(m_queueID).path;
@@ -190,8 +195,8 @@ void LevelHandler::LoadQueued(const std::string& xmlResourceDir)
 	}
 
 	//remove old entities
-	for (unsigned int i = 0; i < old.size(); i++)
-		delete old[i];
+// 	for (unsigned int i = 0; i < old.size(); i++)
+// 		delete old[i];
 
 	//load lua file
 	std::string luafile = m_levels.at(m_queueID).path;
