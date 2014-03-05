@@ -907,6 +907,11 @@ void GraphicsEngineImpl::UpdateScene(float dt, float gameTime)
 		mAnimatedInstances[i]->Update(dt);
 	}
 
+	for (size_t i = 0; i < mSortedAnimatedInstances.size(); ++i)
+	{
+		mSortedAnimatedInstances[i]->Update(dt);
+	}
+
 	// Morph testing
 	/*
 	if (mMorphInstances.size() >= 1)
@@ -2254,5 +2259,5 @@ void GraphicsEngineImpl::ClearModelInstances()
 		DeleteInstance(mMorphInstances[i]);
 
 	for (UINT i = 0; i < mSortedAnimatedInstances.size(); ++i)
-		delete mSortedAnimatedInstances[i];
+		DeleteInstance(mSortedAnimatedInstances[i]);
 }
