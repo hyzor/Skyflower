@@ -283,14 +283,8 @@ void Movement::update(float deltaTime)
 	{
 		if (getOwnerId() == 1)
 		{
-			Push *pushComponent = getOwner()->getComponent<Push *>("Push");
-			Throw *throwComponent = getOwner()->getComponent<Throw *>("Throw");
 
-			if (getOwner()->IsPlayingAnimation(7) && !getOwner()->IsAnimationDone())
-			{
-				// Do nothing, waiting for throw animation to finish.
-			}
-			else if (isDizzy)
+			if (isDizzy)
 			{
 				// Dizzy
 				getOwner()->SetAnimation(10, true);
@@ -312,18 +306,16 @@ void Movement::update(float deltaTime)
 					getOwner()->SetAnimation(9, true);
 				}
 			}
-			else if (throwComponent && throwComponent->getHeldEntity())
-			{
-				// Holding ball
-				getOwner()->SetAnimation(6, true, false, true);
-			}
-			else if (pushComponent && !pushComponent->isPushingBox())
+			else
 			{
 				if (p->GetStates()->isMoving)
 				{
 					// Run
-					getOwner()->SetAnimation(0, true, true, true);
-					getOwner()->SetAnimationSpeed(0, speed / 25.0f, true, true);
+					if (getOwner()->IsPlayingAnimation(7, false, true) && !getOwner()->IsAnimationDone(false, true))
+						getOwner()->SetAnimation(0, true, true, false);
+					else
+						getOwner()->SetAnimation(0, true, true, true);
+					getOwner()->SetAnimationSpeed(0, speed / 25.0f, true, false);
 				}
 				else
 				{
@@ -338,19 +330,26 @@ void Movement::update(float deltaTime)
 						idleTimer = 0.0f;
 					}
 
-					else if (getOwner()->IsPlayingAnimation(4) && getOwner()->IsAnimationDone()) //if idle animation is done
-					{
-						getOwner()->SetAnimation(11, false); //idle
-					}
-					else if (!(getOwner()->IsPlayingAnimation(4) || getOwner()->IsPlayingAnimation(11)))
+					if (!getOwner()->IsPlayingAnimation(4, true, false) || (getOwner()->IsPlayingAnimation(4, true, false) && getOwner()->IsAnimationDone())) //if idle animation is done
 					{
 						getOwner()->SetAnimation(11, false);
 					}
 					idleTimer += deltaTime;
 				}
+
+				Throw *throwComponent = getOwner()->getComponent<Throw *>("Throw");
+				if (throwComponent && throwComponent->getHeldEntity())
+				{
+					// Holding ball
+					getOwner()->SetAnimation(6, true, false, true);
+				}
 			}
 		}
-		else if (ai)
+
+
+		
+
+		if (ai)
 		{
 			// AI animations
 

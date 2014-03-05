@@ -4,7 +4,7 @@
 		xRot="0.0" yRot="0.0" zRot="0.0" 
 		xScale="1.0" yScale="1.0" zScale="1.0"
 		model="Models/Player/playerAnimated"
-		isVisible="1" isCollidible="1" isAnimated="1">
+		isVisible="1" isCollidible="1" isAnimated="1" isSorted="1">
 			<Input />
 			<Movement speed="50" />
 			<Gravity />
