@@ -33,13 +33,10 @@ public:
 	};
 
 	void addedToEntity();
-
+	void update(float dt);
+	void setTarget(Entity* e, float radius);
 	void sendAMessage(string message)	{
 	}
-
-	void update(float dt);
-
-	void setTarget(Entity* e, float radius);
 
 private:
 	Vec3 curDir;
@@ -53,12 +50,10 @@ private:
 	
 	Entity* target;
 
-
 	void collision(float dt);
 
 	void stopMoving(Message const& msg)
 	{
-		//cout << "STOP MOVING" << endl;
 		this->canMove = false;
 	}
 

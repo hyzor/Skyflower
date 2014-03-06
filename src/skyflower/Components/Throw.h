@@ -27,22 +27,21 @@ public:
 
 	void addedToEntity();
 	void removeFromEntity();
-
 	void update(float dt);
-
-	Entity* getHeldEntity();
-	
 	void ThrowAt(Entity* e);
 	void ThrowPlayer();
 	void PutDown();
 	void PickUp(Entity* e);
 	void PickUpAll();
 
+	Entity* getHeldEntity();
+
 private:
 
 	bool toPickUp;
-	Entity* heldEntity;
 	bool isDizzy;
+
+	Entity* heldEntity;
 
 	int nextAimParticleSystemIndex;
 	float nextAimParticleSystemTime;

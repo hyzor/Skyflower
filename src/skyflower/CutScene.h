@@ -48,13 +48,17 @@ private:
 	CameraController* mCameraPtr;
 
 	bool cameraSet;
+	bool done;
+
 	Vec3 setPos;
+
 	float setYaw;
 	float setPitch;
-	int mCurrentWP;
 	float mCurrentYaw;
 	float mCurrentPitch;
-	bool done;
+
+	int mCurrentWP;
+
 	void translateYawPitch(float& yaw, float& pitch);
 
 private:

@@ -23,27 +23,6 @@ void WallButton::update(float dt)
 			Deactivate();
 	}
 
-	////activate button when button is down
-	//if (isDown())
-	//{
-	//	if (!act)
-	//	{
-	//		act = true;
-	//		getOwner()->sendMessage("Activated", this);
-
-	//		Vec3 position = getOwner()->returnPos();
-	//		getOwner()->getModules()->sound->PlaySound("button/activate.wav", 1.0f, &position.X);
-	//	}
-	//}
-	//else if (act)
-	//{
-	//	act = false;
-	//	getOwner()->sendMessage("Deactivated", this);
-
-	//	Vec3 position = getOwner()->returnPos();
-	//	getOwner()->getModules()->sound->PlaySound("button/activate.wav", 1.0f, &position.X);
-	//}
-
 	//move button animation
 	getOwner()->updateRelativePos(getOwner()->getRelativePos() + (moveTo - getOwner()->getRelativePos()) * 10 * dt / (getOwner()->returnScale()*Vec3(1, 0, 1)).Length());
 }

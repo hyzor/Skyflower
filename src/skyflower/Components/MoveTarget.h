@@ -31,19 +31,20 @@ public:
 	void setContinuous(bool continuous);
 
 private:
-	float GetPositionalProgress(float progress);
 
-private:
 	Vec3 m_spawnPosition;
 	Vec3 m_targetPosition;
+
 	float m_duration;
 	float m_easingPower;
+	float m_travelDistance;
+	float m_progress;
+
 	bool m_continuous;
 
-	float m_travelDistance;
-
 	MoveTargetState m_state;
-	float m_progress;
+
+	float GetPositionalProgress(float progress);
 };
 
 #endif
