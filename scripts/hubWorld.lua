@@ -1,7 +1,7 @@
 function cutscene_intro()
 	Print("intro")
 	SetCamera(60, 20, 30, -45 ,0)
-	AddPoint(-80, 100, -10 ,45 ,20, 0.5)
+	AddPoint(-80, 100, -10 ,45 ,15, 0.5)
 end
 
 
