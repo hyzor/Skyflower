@@ -473,9 +473,9 @@ void Application::updateLoading(float dt)
 void Application::updateStart(float dt)
 {
 	if (m_startScreen == -1)
-		m_startScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "startbild_placeholder.png");
+		m_startScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "Menygrafik\\IntroFyraTre.png");
 
-	if (startStoryTimer > 4 || m_inputHandler->isMouseButtonDown(MouseButton::MouseButtonLeft))
+	if (startStoryTimer > 10 || m_inputHandler->isMouseButtonDown(MouseButton::MouseButtonLeft))
 	{
 		startStoryTimer = 0;
 
@@ -508,7 +508,7 @@ void Application::updateStart(float dt)
 void Application::updateEnd(float dt)
 {
 	if (m_endScreen == -1)
-		m_endScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "slutbild_placeholder.png");
+		m_endScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "Menygrafik\\endingFyraTreRatio.png");
 
 	if (endStoryTimer > 4 || m_inputHandler->isMouseButtonDown(MouseButton::MouseButtonLeft))
 	{
