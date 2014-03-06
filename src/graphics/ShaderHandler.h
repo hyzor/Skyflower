@@ -16,7 +16,7 @@
 #define MAX_POINT_LIGHTS 16
 #define MAX_DIR_LIGHTS 2
 #define MAX_SPOT_LIGHTS 32
-#define MAX_CASC 3
+#define MAX_CASC 4
 #define MAX_MATERIALS 64
 
 using namespace DirectX;
@@ -89,7 +89,6 @@ private:
 	struct BUFFERCACHE mBufferCache;
 
 	ID3D11Buffer* vs_cBuffer;
-	//ID3D11DepthStencilState* DSState;
 	VS_CPEROBJBUFFER vs_cBufferVariables;
 };
 
@@ -464,6 +463,63 @@ private:
 	VS_CPEROBJBUFFER vs_cBufferVariables;
 };
 #pragma endregion ShadowMorphShaderEnd
+
+#pragma region BasicDeferredSkinnedSortedShadowShader
+class BasicDeferredSkinnedSortedShadowShader : public IShader
+{
+public:
+	BasicDeferredSkinnedSortedShadowShader();
+	~BasicDeferredSkinnedSortedShadowShader();
+
+	bool Init(ID3D11Device* device, ID3D11InputLayout* inputLayout);
+	bool BindShaders(ID3D11VertexShader* vShader, ID3D11PixelShader* pShader);
+	bool SetActive(ID3D11DeviceContext* dc);
+	bool BindVertexShader(ID3D11VertexShader* vShader);
+
+	void SetLightWVP(ID3D11DeviceContext* dc, const XMMATRIX& lgwp);
+	void SetBoneTransforms(const XMFLOAT4X4 lowerBodyTransforms[], UINT numLowerBodyTransforms, const XMFLOAT4X4 upperBodyTransforms[], UINT numUpperBodyTransforms);
+	void SetRootBoneIndex(UINT rootBoneIndex);
+
+	void UpdatePerObj(ID3D11DeviceContext* dc);
+
+private:
+	void Update(ID3D11DeviceContext* dc) { ; }
+
+	struct VS_CPEROBJBUFFER
+	{
+		XMMATRIX lightWVP;
+	};
+
+	struct VS_CSKINNEDBUFFER
+	{
+		XMMATRIX upperBodyTransforms[64];
+		UINT numUpperBodyBoneTransforms;
+
+		UINT rootBoneIndex;
+		XMFLOAT2 padding123;
+
+		XMMATRIX lowerBodyTransforms[64];
+		UINT numLowerBodyBoneTransforms;
+		XMFLOAT3 padding124;
+	};
+
+	struct BUFFERCACHE
+	{
+		VS_CPEROBJBUFFER vsPerObjBuffer;
+		VS_CSKINNEDBUFFER vsSkinnedBuffer;
+	};
+
+	struct BUFFERCACHE mBufferCache;
+
+	// VS - per object
+	ID3D11Buffer* vs_cPerObjBuffer;
+	VS_CPEROBJBUFFER vs_cPerObjBufferVariables;
+
+	// VS - skinned data
+	ID3D11Buffer* vs_cSkinnedBuffer;
+	VS_CSKINNEDBUFFER vs_cSkinnedBufferVariables;
+};
+#pragma endregion BasicDeferredSkinnedSortedShadowShader
 
 #pragma region BasicDeferredShader
 class BasicDeferredShader : public IShader
@@ -1537,6 +1593,7 @@ public:
 	CompositeShader* mCompositeShader;
 	BasicDeferredMorphShader* mDeferredMorphShader;
 	ShadowMorphShader* mShadowMorphShader;
+	BasicDeferredSkinnedSortedShadowShader* mSkinnedSortedShadowShader;
 	ParticleSystemShader* mParticleSystemShader;
 	LightDeferredShader* mLightDeferredToTextureShader;
 	BasicDeferredSkinnedSortedShader* mBasicDeferredSkinnedSortedShader;

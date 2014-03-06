@@ -237,13 +237,16 @@ void Cascade::DrawSceneToShadowMap(
 	deviceContext->RSSetState(0);
 }
 
-void Cascade::DrawSceneToShadowMap(const std::vector<ModelInstanceImpl*>& modelInstances,
+void Cascade::DrawSceneToShadowMap(
+	const std::vector<ModelInstanceImpl*>& modelInstances,
 	const std::vector<AnimatedInstanceImpl*>& mAnimatedInstances,
 	const std::vector<MorphModelInstanceImpl*>& mMorphInstances,
+	const std::vector<SortedAnimatedInstanceImpl*>& mSkinnedSortedInstances,
 	ID3D11DeviceContext* deviceContext,
 	ShadowShader* shadowShader,
 	SkinnedShadowShader* skinnedShadowShader,
-	ShadowMorphShader* shadowMorphShader)
+	ShadowMorphShader* shadowMorphShader,
+	BasicDeferredSkinnedSortedShadowShader* skinnedSortedShadowShader)
 {
 	XMMATRIX view = XMLoadFloat4x4(&mLightView);
 	XMMATRIX proj = XMLoadFloat4x4(&mLightProj);
@@ -317,6 +320,34 @@ void Cascade::DrawSceneToShadowMap(const std::vector<ModelInstanceImpl*>& modelI
 			{
 				shadowMorphShader->UpdatePerObj(deviceContext);
 				mMorphInstances[i]->model->Draw(deviceContext);
+			}
+		}
+	}
+
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	skinnedSortedShadowShader->SetActive(deviceContext);
+
+	for (UINT i = 0; i < mSkinnedSortedInstances.size(); ++i)
+	{
+		if (mSkinnedSortedInstances[i]->IsVisible())
+		{
+			world = mSkinnedSortedInstances[i]->GetWorld();
+			worldViewProj = world * viewProj;
+
+			skinnedSortedShadowShader->SetLightWVP(deviceContext, worldViewProj);
+			skinnedSortedShadowShader->SetBoneTransforms(
+				mSkinnedSortedInstances[i]->mSkinnedInstance->FinalLowerBodyTransforms.data(), 
+				mSkinnedSortedInstances[i]->mSkinnedInstance->FinalLowerBodyTransforms.size(),
+				mSkinnedSortedInstances[i]->mSkinnedInstance->FinalUpperBodyTransforms.data(),
+				mSkinnedSortedInstances[i]->mSkinnedInstance->FinalUpperBodyTransforms.size()
+				);
+
+			skinnedSortedShadowShader->SetRootBoneIndex(mSkinnedSortedInstances[i]->mSkinnedInstance->model->skinnedData.RootBoneIndex);
+
+			for (UINT j = 0; j < mSkinnedSortedInstances[i]->mSkinnedInstance->model->meshes.size(); ++j)
+			{
+				skinnedSortedShadowShader->UpdatePerObj(deviceContext);
+				mSkinnedSortedInstances[i]->mSkinnedInstance->model->meshes[j].draw(deviceContext);
 			}
 		}
 	}
