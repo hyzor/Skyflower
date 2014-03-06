@@ -47,9 +47,7 @@ public:
 	}
 
 private:
-
 	bool pop;
-
 };
 
 #endif

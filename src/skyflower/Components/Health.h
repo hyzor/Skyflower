@@ -13,7 +13,6 @@ class Health : public Component {
 
 public:
 
-	// constructor - age is fixed at creation time
 	Health(int maxHP) : Component("Health")
 	{ 
 		this->health = 100;
@@ -22,7 +21,6 @@ public:
 	virtual ~Health() {};
 
 
-	// we are added to an Entity, and thus to the component system
 	void addedToEntity()
 	{
 		Entity *owner = getOwner();

@@ -6,8 +6,6 @@
 
 void AI::addedToEntity()
 {
-	//cout << "A AI was added to the system." << endl;
-
 	//requestMessage("Attack", &AI::Attack);
 	requestMessage("StopMoving", &AI::stopMoving);
 	requestMessage("StartMoving", &AI::startMoving);

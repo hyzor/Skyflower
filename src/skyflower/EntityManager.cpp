@@ -159,8 +159,6 @@ EntityId EntityManager::createEntity(string type, int id, int relativeid, float 
 	fEntitys = temp;
 	// create a new Entity
 	Entity *obj = new Entity(this, modules, id, relativeid, type, xPos, yPos, zPos, xRot, yRot, zRot, xScale, yScale, zScale, model, isVisible, isCollidible, isAnimated, isSorted);
-	//cout << "Created Entity " << fIdCounter << endl;
-	//++fIdCounter;
 
 	// add it to the list
 	fEntitys.push_back(obj);
@@ -284,7 +282,6 @@ void EntityManager::addComponent(EntityId id, Component *component) {
 
 		// put in log
 		//if (fStream.is_open()) fStream << "CREATE  " << *component << endl;
-		//cout << "CREATE " << *component << endl;
 
 		// let the component know
 		component->addedToEntity();
@@ -338,7 +335,7 @@ void EntityManager::registerLocalRequest(ComponentRequest req, RegisteredCompone
 	// put in log
 	//if (fStream.is_open()) fStream << "DESTROY " << *comp << endl;
 
-//cout << "Registered local request of " << (*reg.component) << " for " << req.name << endl;
+	//cout << "Registered local request of " << (*reg.component) << " for " << req.name << endl;
 	// if we want the previously created components as well, we process them
 	if (req.type != REQ_COMPONENT) return;
 	

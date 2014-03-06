@@ -20,21 +20,16 @@ public:
 
 	void addedToEntity();
 	void removeFromEntity();
-
 	void update(float deltaTime);
-
-	bool colliding(Entity* target);
-
 	//push only selected entity
 	void push(Entity* target);
 	//push all entites in range
 	void pushAll();
 
 	bool isPushingBox();
-
 	bool isDraging();
-
 	bool isResettingSpeed();
+	bool colliding(Entity* target);
 
 private:
 	void stopPush(Message const& msg);
@@ -47,11 +42,10 @@ private:
 	bool canPush;
 	bool isColliding;
 	bool canDrag;
+	bool resetSpeed;
 
 	float pSpeed;
-	bool resetSpeed;
 	float currSpeed;
-
 
 	Entity* box;
 	Vec3 relativePos;

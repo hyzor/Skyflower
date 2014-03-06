@@ -50,11 +50,11 @@ struct VertexOut
 	float3 NormalW : NORMAL;
 	float2 Tex : TEXCOORD;
 	float4 TangentW : TANGENT;
-	float4 CurPosH : CURPOSH;
-	float4 PrevPosH : PREVPOSH;
 	float4 ShadowPosH1 : TEXCOORD1;
 	float4 ShadowPosH2 : TEXCOORD2;
 	float4 ShadowPosH3 : TEXCOORD3;
+	float4 CurPosH : CURPOSH;
+	float4 PrevPosH : PREVPOSH;
 	float Depth : TEXCOORD4;
 };
 
