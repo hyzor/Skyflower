@@ -52,6 +52,8 @@ private:
 	//screen width and heigh
 	UINT width, height;
 
+	vector<string> SplitString(string str, char token);
+
 	void activate(Message const& msg);
 	void deActivate(Message const& msg);
 	void hide(Message const& msg);

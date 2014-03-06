@@ -18,6 +18,7 @@
 			<Pushable />
 			<Health maxHP = "100" />
 			<Throw haveAim="true"/>
+			<Shadow />
 			<Event script="player" />
 	</Entity>
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform1grass" id="2" isCollidible="1" isVisible="1" isAnimated="0" xPos="-6.37177594061" yPos="-10.4756680473" zPos="8.49696289447" xRot="" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
@@ -116,7 +117,7 @@
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2mud" id="36" isCollidible="1" isVisible="1" isAnimated="0" xPos="-159.730631736" yPos="51.467582351" zPos="729.792758621" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform2cloud" id="37" isCollidible="0" isVisible="1" isAnimated="0" xPos="-159.730631736" yPos="51.467582351" zPos="729.792758621" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\flowerPlattform" id="38" isCollidible="1" isVisible="1" isAnimated="0" xPos="-144.323374518" yPos="123.687268297" zPos="641.598382801" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0">
-        <MoveTarget continuous="0" duration="2" easingPower="3" targetPosX="-144" targetPosY="48" targetPosZ="641"/>
+        <MoveTarget continuous="0" duration="2" easingPower="3" targetPosX="-144" targetPosY="52" targetPosZ="641"/>
 		<Event script="boxPuzzle" />
     </Entity>
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\fallingBallonPlattform" id="46" isCollidible="1" isVisible="1" isAnimated="0" xPos="-815.498624296" yPos="35.452839533" zPos="715.798563142" xRot="-0.0" yRot="1.4" zRot="0.05" xScale="4.82952212442" yScale="2" zScale="4.82952212442">
