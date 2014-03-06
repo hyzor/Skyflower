@@ -22,18 +22,18 @@ public:
 
 	void addedToEntity();
 	void removeFromEntity();
-
 	void update(float dt);
 
 private:
 
-	void Activate(Message const& msg);
-
-	void Deactivate();
-
 	float activated;
 	Vec3 spawnpoint;
 	ParticleSystem *particleSystem;
+
+	void Activate(Message const& msg);
+	void Deactivate();
+
+
 };
 
 #endif

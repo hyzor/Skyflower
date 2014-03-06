@@ -9,9 +9,6 @@
 Cistron::EntityManager* Event::entityManager = nullptr;
 Event* Event::self = nullptr;
 
-
-
-// we are added to an Entity, and thus to the component system
 void Event::addedToEntity() {
 
 	requestMessage("Activated", &Event::Activated);

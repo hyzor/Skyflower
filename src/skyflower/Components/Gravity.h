@@ -20,16 +20,17 @@ public:
 
 	void addedToEntity();
 	void removeFromEntity();
-
 	void update(float deltaTime);
-
 	void setEnabled(bool enabled);
+
 	bool isEnabled();
+	bool GroundRayColliding(int index);
+
 	const Vec3 *GetGroundNormal();
 
 	int NrOfGroundRays();
 	Ray GroundRay(int index);
-	bool GroundRayColliding(int index);
+
 
 private:
 	float testMove(Ray r, Entity* e, Entity* &out, bool groundRay, int index);
@@ -37,11 +38,13 @@ private:
 	void calculateGroundNormal(Entity* e, Entity* ground);
 
 private:
+
 	PhysicsEntity* p;
+
 	bool enabled;
-	Vec3 groundNormal;
 	bool foundGroundNormal;
 
+	Vec3 groundNormal;
 	Vec3 prevPos;
 
 	vector<Ray> groundRays;

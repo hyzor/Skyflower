@@ -20,36 +20,33 @@ public:
 
 	void addedToEntity();
 	void removeFromEntity();
-
 	void update(float deltaTime);
 
 	float GetSpeed();
+	float MinDist();
 
 	bool isFalling();
-	float MinDist();
 	bool getCanBeMoved();
 
 	Vec3 startPos;
 private:
-	float speed;
-	Vec3 pNormal;
 
-	Vec3 m_oldPosition;
+	float speed;
+	float rotx;
+	float rotz;
+	float minDist;
 	float m_distanceTraveled;
+
+	Vec3 pNormal;
+	Vec3 m_oldPosition;
+	Vec3 fall;
+
+	bool canBeMoved;
 
 	Vec3 fallDir();
 	void respawn(Message const& msg);
-
-	Vec3 fall;
-	float rotx;
-	float rotz;
-
-	float minDist;
-	bool canBeMoved;
-
 	void setCanBeMoved(Message const &msg);
 	void setCanNotBeMoved(Message const &msg);
-
 };
 
 #endif

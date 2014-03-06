@@ -16,7 +16,6 @@ class WallButton : public Component {
 
 public:
 
-	// constructor - age is fixed at creation time
 	WallButton(Vec3 dir) : Component("WallButton")
 	{
 		activated = 0;
@@ -26,7 +25,6 @@ public:
 	};
 	virtual ~WallButton() {};
 
-	// we are added to an Entity, and thus to the component system
 	void addedToEntity()
 	{
 		requestMessage("Wall", &WallButton::Activate);
@@ -42,16 +40,14 @@ private:
 	void Deactivate();
 
 	float activated;
+
 	bool act;
+	bool first;
 
 	Vec3 moveTo;
 	Vec3 startPos;
 	Vec3 downPos;
-	bool first;
-
 	Vec3 dir;
-
-
 };
 
 #endif

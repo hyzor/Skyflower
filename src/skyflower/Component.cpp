@@ -106,16 +106,6 @@ void Component::requestMessage(const string &message, MessageFunction handler) {
 	fEntityManager->registerGlobalRequest(req, reg);
 }
 
-/**
- * MESSAGING FUNCTIONS
- */
-
-// send a message
-/*void Component::sendMessageToEntity(EntityId id, const string &msg, Payload payload)
-{
-	fEntityManager->sendMessageToEntity(msg, this, id, payload);
-}*/
-
 // called when added to an Entity
 void Component::addedToEntity() {
 	// does nothing by default
@@ -160,43 +150,3 @@ string Component::toString() {
 void Component::processPing(Message const & msg) {
 	cout << *this << " PING" << endl;
 }
-
-/*Vec3 Component::getEntityPos()
-{
-	return this->fEntityManager->getEntityPos(this->fOwnerId);
-}
-
-Vec3 Component::getEntityRot()
-{
-	return this->fEntityManager->getEntityRot(this->fOwnerId);
-}
-Vec3 Component::getEntityScale()
-{
-	return this->fEntityManager->getEntityScale(this->fOwnerId);
-}
-bool Component::getEntityVisibility()
-{
-	return this->fEntityManager->getEntityVisibility(this->fOwnerId);
-}
-CollisionInstance* Component::getEntityCollision()
-{
-	return this->fEntityManager->getEntityCollision(this->fOwnerId);
-}
-
-void Component::updateEntityPos(Vec3 pos)
-{
-	this->fEntityManager->updateEntityPos(pos, this->fOwnerId);
-}
-
-void Component::updateEntityRot(Vec3 rot)
-{
-	this->fEntityManager->updateEntityRot(rot, this->fOwnerId);
-}
-void Component::updateEntityScale(Vec3 scale)
-{
-	this->fEntityManager->updateEntityScale(scale, this->fOwnerId);
-}
-void Component::updateEntityVisibility(bool isVisible)
-{
-	this->fEntityManager->updateEntityVisibility(isVisible, this->fOwnerId);
-}*/

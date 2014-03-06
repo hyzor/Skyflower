@@ -128,21 +128,6 @@ class Component {
 		template<class T>
 		void requestMessage(const string &message, void (T::*f)(Message const &));
 
-		// request all components of a given type and dynamic_cast to a particular class
-		//template<class T>
-		//list<T*> getComponents(string name, EntityId id = -1);
-
-		/**
-		 * MESSAGING FUNCTIONS
-		 */
-
-		// send a message
-		//void sendMessage(string msg, Payload  payload = 0);
-		//void sendMessage(RequestId id, Payload  payload = 0);
-		//void sendMessageToEntity(EntityId id, const string &msg, Payload payload = 0);
-		//void sendMessageToEntity(EntityId id, RequestId reqId, Payload payload = 0);
-		//void sendMessageToEntity(EntityId id, RequestId reqId, Message const & msg);
-
 		/**
 		 * IMPLEMENTED REQUESTS & LOGGING
 		 */
@@ -178,17 +163,6 @@ class Component {
 
 		// to string
 		string toString();
-
-		// entity-functions
-		//Vec3 getEntityPos();
-		//Vec3 getEntityRot();
-		//Vec3 getEntityScale();
-		//bool getEntityVisibility();
-		//CollisionInstance* getEntityCollision();
-		//void updateEntityPos(Vec3 pos);
-		//void updateEntityRot(Vec3 rot);
-		//void updateEntityScale(Vec3 scale);
-		//void updateEntityVisibility(bool isVisible);
 
 	private:
 		// set owner
@@ -228,21 +202,6 @@ class Component {
 /**
  * TEMPLATED REQUEST FUNCTIONS
  */
-
-/*
-// request all components of a given type in a given Entity
-template<class T>
-list<T*> Component::getComponents(string name, EntityId id) {
-	list<Component*> comps;
-	if (id == -1) comps = fEntityManager->getComponents(getOwnerId(), name);
-	else comps = fEntityManager->getComponents(id, name);
-	list<T*> tcomps;
-	for (list<Component*>::iterator it = comps.begin(); it != comps.end(); ++it) {
-		tcomps.push_back(dynamic_cast<T*>(*it));
-	}
-	return tcomps;
-}
-*/
 
 // message request function
 template<class T>
