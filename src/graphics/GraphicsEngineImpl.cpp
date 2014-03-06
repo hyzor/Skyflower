@@ -179,9 +179,9 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mCascadedShadows->SetSplitMethod(FIT_TO_CASCADE);
 	mCascadedShadows->SetNearFarFitMethod(FIT_NEARFAR_AABB);
 	//mCascadedShadows->SetNearFarFitMethod(FIT_NEARFAR_SCENE_AABB);
-	mCascadedShadows->SetSplitDepth(0.10f, 0);
-	mCascadedShadows->SetSplitDepth(0.30f, 1);
-	mCascadedShadows->SetSplitDepth(0.70f, 2);
+	mCascadedShadows->SetSplitDepth(0.075f, 0);
+	mCascadedShadows->SetSplitDepth(0.15f, 1);
+	mCascadedShadows->SetSplitDepth(0.35f, 2);
 
 	mGameTime = 0.0f;
 
@@ -839,7 +839,7 @@ void GraphicsEngineImpl::DrawScene()
 
 	//mSpriteBatch->Draw(
 	//	mCascadedShadows->GetCascade(0)->getDepthMapSRV(),
-	//	XMFLOAT2(225.0f, 0.0f),
+	//	XMFLOAT2(0.0f, 0.0f),
 	//	nullptr,
 	//	Colors::Red,
 	//	0.0f,
@@ -849,7 +849,7 @@ void GraphicsEngineImpl::DrawScene()
 
 	//mSpriteBatch->Draw(
 	//	mCascadedShadows->GetCascade(1)->getDepthMapSRV(),
-	//	XMFLOAT2(450.0f, 0.0f),
+	//	XMFLOAT2(450.0f - 225.0f, 0.0f),
 	//	nullptr,
 	//	Colors::Red,
 	//	0.0f,
@@ -859,7 +859,17 @@ void GraphicsEngineImpl::DrawScene()
 
 	//mSpriteBatch->Draw(
 	//	mCascadedShadows->GetCascade(2)->getDepthMapSRV(),
-	//	XMFLOAT2(675.0f, 0.0f),
+	//	XMFLOAT2(675.0f - 225.0f, 0.0f),
+	//	nullptr,
+	//	Colors::Red,
+	//	0.0f,
+	//	XMFLOAT2(0.0f, 0.0f),
+	//	XMFLOAT2(0.1f, 0.1f)
+	//	);
+
+	//mSpriteBatch->Draw(
+	//	mCascadedShadows->GetCascade(3)->getDepthMapSRV(),
+	//	XMFLOAT2(900.0f - 225.0f, 0.0f),
 	//	nullptr,
 	//	Colors::Red,
 	//	0.0f,

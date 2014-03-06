@@ -54,31 +54,21 @@ PixelOut main(VertexOut pIn)
 	float4 shadowPosH3 = pIn.ShadowPosH3;
 	float4 shadowPosH4 = pIn.ShadowPosH4;
 
-		//If current depth is beyond the furthest depth, dont shadow it
-	if (depth > gFarDepths.x && nrOfCascades == 1)
-		shadowFactor = 1.0f;
-	if (depth > gFarDepths.y && nrOfCascades == 2)
-		shadowFactor = 1.0f;
-	if (depth > gFarDepths.z && nrOfCascades == 3)
-		shadowFactor = 1.0f;
-	if (depth > gFarDepths.w && nrOfCascades == 4)
-		shadowFactor = 1.0f;
-
 	//Compare the depth of current pixel in camera space to given near and far depths
 	//to decide appropriate index of cascade to sample from
 	if (depth > gNearDepths.x && depth < gFarDepths.x)
 	{
 		cascadeIndex = 0;
 	}
-	else if (nrOfCascades > 1 && (depth > gNearDepths.y && depth < gFarDepths.y))
+	if (nrOfCascades > 1 && (depth > gNearDepths.y && depth < gFarDepths.y))
 	{
 		cascadeIndex = 1;
 	}
-	else if (nrOfCascades > 2 && (depth > gNearDepths.z && depth < gFarDepths.z))
+	if (nrOfCascades > 2 && (depth > gNearDepths.z && depth < gFarDepths.z))
 	{
 		cascadeIndex = 2;
 	}
-	else if (nrOfCascades > 3 && (depth > gNearDepths.w && depth < gFarDepths.w))
+	if (nrOfCascades > 3 && (depth > gNearDepths.w && depth < gFarDepths.w))
 	{
 		cascadeIndex = 3;
 	}

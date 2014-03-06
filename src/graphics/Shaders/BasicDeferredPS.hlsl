@@ -61,15 +61,15 @@ PixelOut main(VertexOut pIn)
 		{
 			cascadeIndex = 0;
 		}
-		else if (nrOfCascades > 1 && (depth > gNearDepths.y && depth < gFarDepths.y))
+		if (nrOfCascades > 1 && (depth > gNearDepths.y && depth < gFarDepths.y))
 		{
 			cascadeIndex = 1;
 		}
-		else if (nrOfCascades > 2 && (depth > gNearDepths.z && depth < gFarDepths.z))
+		if (nrOfCascades > 2 && (depth > gNearDepths.z && depth < gFarDepths.z))
 		{
 			cascadeIndex = 2;
 		}
-		else if (nrOfCascades > 3 && (depth > gNearDepths.w && depth < gFarDepths.w))
+		if (nrOfCascades > 3 && (depth > gNearDepths.w && depth < gFarDepths.w))
 		{
 			cascadeIndex = 3;
 		}
