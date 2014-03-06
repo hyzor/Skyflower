@@ -1017,6 +1017,11 @@ bool EntityManager::loadXML(string xmlFile)
 				ParticleSystemComp* psc = new ParticleSystemComp(scriptName, particleSystemID);
 				this->addComponent(entity, psc);
 			}
+			else if (componentName == "Shadow")
+			{
+				ShadowComp *sc = new ShadowComp();
+				this->addComponent(entity, sc);
+			}
 			else
 			{
 				cout << xmlFile << ": Unknown component with name " << componentName << " in entity " << entityName << endl;

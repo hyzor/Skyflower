@@ -18,6 +18,7 @@
 			<Pushable />
 			<Health maxHP = "100" />
 			<Throw haveAim="true"/>
+			<Shadow />
 			<Event script="player" />
 	</Entity>
     <Entity type="plattform" model="Models\Worlds\Subworld 2_FINAL\subworld2\plattform1grass" id="2" isCollidible="1" isVisible="1" isAnimated="0" xPos="-6.37177594061" yPos="-10.4756680473" zPos="8.49696289447" xRot="" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
