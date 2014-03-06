@@ -290,9 +290,6 @@
     <ClInclude Include="src\skyflower\resources\resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\skyflower\Components\PortalEffect.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\skyflower\Components\ParticleSystemComp.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
@@ -300,6 +297,9 @@
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\skyflower\Components\ShadowComp.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\Components\PortalEffect.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
