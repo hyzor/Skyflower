@@ -1728,23 +1728,25 @@ void GraphicsEngineImpl::UpdateSceneData()
 	// Get vertex positions from all models
 	for (UINT i = 0; i < mInstances.size(); ++i)
 	{
-		for (UINT j = 0; j < mInstances[i]->model->meshes.size(); ++j)
+		if (mInstances[i]->GetLightFrustumCalcFlag() == false)
 		{
-
-			for (UINT k = 0; k < mInstances[i]->model->meshes.at(j).vertices.size(); ++k)
+			for (UINT j = 0; j < mInstances[i]->model->meshes.size(); ++j)
 			{
-				XMFLOAT3 vPos = mInstances[i]->model->meshes.at(j).vertices.at(k).position;
-				vPos.x += mInstances[i]->GetPosition().X;
-				vPos.y += mInstances[i]->GetPosition().Y;
-				vPos.z += mInstances[i]->GetPosition().Z;
+				for (UINT k = 0; k < mInstances[i]->model->meshes.at(j).vertices.size(); ++k)
+				{
+					XMFLOAT3 vPos = mInstances[i]->model->meshes.at(j).vertices.at(k).position;
+					vPos.x += mInstances[i]->GetPosition().X;
+					vPos.y += mInstances[i]->GetPosition().Y;
+					vPos.z += mInstances[i]->GetPosition().Z;
 
-				minPt.x = MathHelper::getMin(minPt.x, vPos.x);
-				minPt.y = MathHelper::getMin(minPt.y, vPos.y);
-				minPt.z = MathHelper::getMin(minPt.z, vPos.z);
+					minPt.x = MathHelper::getMin(minPt.x, vPos.x);
+					minPt.y = MathHelper::getMin(minPt.y, vPos.y);
+					minPt.z = MathHelper::getMin(minPt.z, vPos.z);
 
-				maxPt.x = MathHelper::getMax(maxPt.x, vPos.x);
-				maxPt.y = MathHelper::getMax(maxPt.y, vPos.y);
-				maxPt.z = MathHelper::getMax(maxPt.z, vPos.z);
+					maxPt.x = MathHelper::getMax(maxPt.x, vPos.x);
+					maxPt.y = MathHelper::getMax(maxPt.y, vPos.y);
+					maxPt.z = MathHelper::getMax(maxPt.z, vPos.z);
+				}
 			}
 		}
 	}

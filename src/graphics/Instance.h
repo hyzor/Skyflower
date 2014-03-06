@@ -18,7 +18,9 @@ public:
 	virtual void SetRotation(Vec3 rot) = 0;
 	virtual void SetScale(Vec3 scale) = 0;
 	virtual void SetVisibility(bool visible) = 0;
+	virtual void SetLightFrustumCalcFlag(bool flag) = 0;
 	virtual void Set(Vec3 pos, Vec3 rot, Vec3 scale) = 0;
+	virtual bool GetLightFrustumCalcFlag() const = 0;
 	virtual int GetType() = 0;
 	virtual void SetType(int type) = 0;
 

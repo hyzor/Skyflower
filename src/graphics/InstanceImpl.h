@@ -24,7 +24,9 @@ public:
 	void SetPosition(Vec3 pos);
 	void SetRotation(Vec3 rot);
 	void SetScale(Vec3 scale);
+	void SetLightFrustumCalcFlag(bool flag);
 	void Set(Vec3 pos, Vec3 rot, Vec3 scale);
+	bool GetLightFrustumCalcFlag() const;
 	int GetType();
 	void SetType(int type);
 
@@ -42,6 +44,7 @@ private:
 	XMFLOAT4X4 modelWorld;
 	XMFLOAT4X4 mPrevWorld; // World matrix from previous frame
 
+	bool mUseInLightFrustumCalc;
 	bool isVisible;
 	int type;
 	Vec3 pos;
