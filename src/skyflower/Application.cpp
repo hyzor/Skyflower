@@ -109,7 +109,7 @@ void Application::Start()
 	levelHandler->init(m_entityManager);
 
 	// Load Hub Level
-	levelHandler->queue(0);
+	levelHandler->queue(5);
 	//levelHandler->loadQueued();
 	levelHandler->LoadQueued(mXmlResourceDir);
 	//levelHandler->loadQueued();
