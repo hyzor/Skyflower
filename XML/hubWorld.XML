@@ -19,7 +19,7 @@
 	</Entity>
     <Entity type="plattform" id="11" isVisible="1" isCollidible="1" isAnimated="0" xPos="23.0" yPos="-17.3297862346" zPos="89.1007535446" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" model="Models\\placeHolder Subworld\\CloudPlatform"/>
     <Entity type="plattform" id="22" isVisible="1" isCollidible="1" isAnimated="0" xPos="30.7170603524" yPos="-2.19146028307" zPos="137.0478908232" xRot="0.0" yRot="3.7" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0" model="Models\\placeHolder Subworld\\entry">
-		<HelpText text="If you take this portal you will end up in subworld 1 *quack* Hello Bjarne! :D *quack*" range="30" /> 
+		<HelpText text="If you take this portal you will end up in subworld 1 *quack*" range="30" /> 
 		<PortalEffect />
 	</Entity>
     <Entity type="doorPlane" id="33" isVisible="0" isCollidible="1" isAnimated="0" xPos="30.0236303383" yPos="11.5446867292" zPos="137.0344042124" xRot="0.0" yRot="3.7" zRot="0.0" xScale="1.88018653941" yScale="1.95493788201" zScale="1.88018653941" model="Models\\placeHolder Subworld\\doorPlane">
