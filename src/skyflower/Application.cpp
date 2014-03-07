@@ -473,7 +473,10 @@ void Application::updateLoading(float dt)
 void Application::updateStart(float dt)
 {
 	if (m_startScreen == -1)
+	{
 		m_startScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "Menygrafik\\IntroFyraTre.png");
+		m_GUI->GetGUIElement(m_startScreen)->GetDrawInput()->scale = XMFLOAT2((float)m_window->GetWidth() / 1024, (float)m_window->GetHeight() / 768);
+	}
 
 	if (startStoryTimer > 10 || m_inputHandler->isMouseButtonDown(MouseButton::MouseButtonLeft))
 	{
@@ -508,7 +511,10 @@ void Application::updateStart(float dt)
 void Application::updateEnd(float dt)
 {
 	if (m_endScreen == -1)
+	{
 		m_endScreen = m_GUI->CreateGUIElementAndBindTexture(Vec3::Zero(), "Menygrafik\\endingFyraTreRatio.png");
+		m_GUI->GetGUIElement(m_endScreen)->GetDrawInput()->scale = XMFLOAT2((float)m_window->GetWidth() / 1024, (float)m_window->GetHeight() / 768);
+	}
 
 	if (endStoryTimer > 4 || m_inputHandler->isMouseButtonDown(MouseButton::MouseButtonLeft))
 	{
@@ -610,6 +616,11 @@ void Application::OnWindowShouldClose()
 
 void Application::OnWindowResized(unsigned int width, unsigned int height)
 {
+	if (m_startScreen != -1)
+		m_GUI->GetGUIElement(m_startScreen)->GetDrawInput()->scale = XMFLOAT2((float)width / 1024, (float)height / 768);
+	if (m_endScreen != -1)
+		m_GUI->GetGUIElement(m_endScreen)->GetDrawInput()->scale = XMFLOAT2((float)width / 1024, (float)height / 768);
+
 	m_graphicsEngine->OnResize(width, height);
 	m_menu->onResize(width, height);
 	m_oldTime = GetTime();
