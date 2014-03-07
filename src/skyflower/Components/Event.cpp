@@ -978,7 +978,7 @@ int Event::PlayFinishedSound(lua_State* L)
 
 		if (e)
 		{
-			cout << "spela ljud!" << endl;
+			//cout << "spela ljud!" << endl;
  			e->getModules()->sound->PlaySound("puzzle_solved.wav", 0.5f);
 		}
 	}
