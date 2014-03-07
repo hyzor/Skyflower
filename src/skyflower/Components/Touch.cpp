@@ -42,7 +42,7 @@ void Touch::findActivator()
 		Entity* j = getEntityManager()->getEntityByIndex(i);
 		if (j != getOwner())
 		{
-			if (j->ground == getOwner() || j->wall == getOwner())
+			if (j->ground == getOwner() || j->wall == getOwner() || j->roof == getOwner())
 				activator = j;
 			else if (j->sphere && getOwner()->sphere)
 			{

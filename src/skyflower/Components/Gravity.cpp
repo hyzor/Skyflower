@@ -42,6 +42,7 @@ void GravityComponent::update(float dt)
 	if (prevPos != getOwner()->getRelativePos())
 	{
 		getOwner()->wall = nullptr;
+		getOwner()->roof = nullptr;
 		Entity *ground = nullptr;
 
 		for (size_t k = 0; k < groundRays.size(); k++)
@@ -66,6 +67,7 @@ void GravityComponent::update(float dt)
 			else if (t == 1)
 			{
 				getOwner()->mPhysicsEntity->SetVelocity(Vec3());
+				getOwner()->roof = ground;
 				ground = nullptr;
 			}
 		}

@@ -52,6 +52,7 @@ Entity::Entity(EntityManager *entityManager, const Modules *modules, EntityId id
 
 	ground = nullptr;
 	wall = nullptr;
+	roof = nullptr;
 
 	if (!isAnimated)
 	{
