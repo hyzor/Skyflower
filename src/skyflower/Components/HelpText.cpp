@@ -113,6 +113,7 @@ void HelpText::update(float dt)
 				m_timer += dt;
 				if (m_timer > 0.02f && m_textToPrint.size() < m_text.size())
 				{
+					m_timer = 0;
 					m_textToPrint += m_text[m_textToPrint.size()];
 				}
 			}
