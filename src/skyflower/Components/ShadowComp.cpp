@@ -55,5 +55,4 @@ void ShadowComp::update(float dt)
 	}
 	else
 		shadowmodel->SetVisibility(false);
-
 }

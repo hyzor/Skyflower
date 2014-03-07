@@ -93,18 +93,35 @@ scaredtime = 0
 push1JumpTime = 2
 push1ChangeTargetTime = 0
 push1Target = 0
+stairjumptimer = 0
+stairsettarget = 0
 function update_aiPush(id, dt)
 	if InRange(id, player, 100) then
-		if IsTouching(id, 16) then
-			Jump(id)
-		end
-
+		
+		
+		
 		if not stairdown then
-			SetTarget(id,16)
-			if IsActivated(16) and IsStanding(id, 16) then
+			if not IsStanding(id, 16) then
+				stairsettarget = stairsettarget + dt
+				if stairsettarget > 1 then
+					stairsettarget = 0
+					SetTarget(id,16)
+				end
+			else
+				stairjumptimer = stairjumptimer + dt
+				if stairjumptimer > 0.5 then
+					stairsettarget = 0
+					stairjumptimer = 0
+					--Jump(id)
+					SetTarget(id, 16, 10)
+					SetSpeed(id, 30)
+				end
+			end
+			
+		else
+			if IsTouching(id, 16) or not stairdown then
 				Jump(id)
 			end
-		else
 			
 			if rush then
 				SetTarget(id, player)
@@ -137,7 +154,7 @@ function update_aiPush(id, dt)
 		
 		
 		push1JumpTime = push1JumpTime - dt
-		if push1JumpTime < 0 or IsTouching(id, 12) or IsTouching(id, 13) then
+		if push1JumpTime < 0 or IsTouching(id, 12) then
 			push1JumpTime = math.random(1, 5)
 			Jump(id)
 		end
@@ -183,7 +200,6 @@ end
 function activated_Goal(id)
 	CutScenePlay("Goal")
 	StartUpdate()
-
 end
 
 
