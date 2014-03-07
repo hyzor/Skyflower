@@ -977,7 +977,10 @@ int Event::PlayFinishedSound(lua_State* L)
 		Entity* e = entityManager->getEntity(Id);
 
 		if (e)
-			e->getModules()->sound->PlaySound("puzzle_solved.wav", 0.5f);
+		{
+			//cout << "spela ljud!" << endl;
+ 			e->getModules()->sound->PlaySound("puzzle_solved.wav", 0.5f);
+		}
 	}
 
 	return 0;

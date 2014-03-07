@@ -17,7 +17,7 @@ function loaded()
 	Unlit(207,1)
 	Unlit(208,1)
 	Unlit(209,1)
-	--CutScenePlay("intro")
+	CutScenePlay("intro")
 end
 
 --Intro script--
@@ -296,6 +296,7 @@ end
 finished = false
 failed = false
 spawning = false
+soundTimer = 0
 timer = 0
 function update_boxPuzzle(id, dt)
 	-- blue, yellow, red
@@ -314,13 +315,15 @@ function update_boxPuzzle(id, dt)
 		spawning = true
 	end
 	if OnButton(56, 59) and OnButton(66, 58) and OnButton(64, 60) then
-		if not finished then
+		if not finished and soundTimer > 0.2 then
 			finished = true
 			failed = false
 			MoveToTarget(id)
 			Lit(201,1)
 			PlayFinishedSound(id)
+			soundTimer = 0
 		end
+		soundTimer = soundTimer + dt
 	elseif finished and not failed then
 		MoveToSpawn(id)
 		Unlit(201,1)
