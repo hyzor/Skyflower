@@ -36,18 +36,13 @@ public:
 	void DrawSceneToShadowMap(
 		const std::vector<ModelInstanceImpl*>& modelInstances,
 		const std::vector<AnimatedInstanceImpl*>& mAnimatedInstances,
-		ID3D11DeviceContext* deviceContext,
-		ShadowShader* shadowShader,
-		SkinnedShadowShader* skinnedShadowShader);
-
-	void DrawSceneToShadowMap(
-		const std::vector<ModelInstanceImpl*>& modelInstances,
-		const std::vector<AnimatedInstanceImpl*>& mAnimatedInstances,
-		const std::vector<MorphModelInstanceImpl*>& mMorphInstances,
+		const std::vector<MorphModelInstanceImpl*>& mMorphInstances, 
+		const std::vector<SortedAnimatedInstanceImpl*>& mSkinnedSortedInstances,
 		ID3D11DeviceContext* deviceContext,
 		ShadowShader* shadowShader,
 		SkinnedShadowShader* skinnedShadowShader,
-		ShadowMorphShader* shadowMorphShader);
+		ShadowMorphShader* shadowMorphShader,
+		BasicDeferredSkinnedSortedShadowShader* skinnedSortedShadowShader);
 
 private:
 	float zNearSplit;

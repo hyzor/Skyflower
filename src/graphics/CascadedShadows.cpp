@@ -86,6 +86,8 @@ void CascadedShadows::CreateLightFrustums(const DLight& light, const BoundingSph
 
 	float camNear = cam->GetNearZ(), camFar = cam->GetFarZ();
 	float camRange = camFar - camNear;
+	if (camRange > 500)
+		camRange = 500;
 
 
 	XMFLOAT3 temp[8];
@@ -118,7 +120,7 @@ void CascadedShadows::CreateLightFrustums(const DLight& light, const BoundingSph
 			else
 			{
 				intervalBegin = this->mCascades.at(i - 1)->GetSplitDepthFar();
-				intervalEnd = camFar;
+				intervalEnd = camRange;
 			}
 
 			//Create frustum points for this cascade interval
@@ -244,10 +246,13 @@ void CascadedShadows::RenderSceneToCascades(
 	const std::vector<ModelInstanceImpl*>& modelInstances,
 	const std::vector<AnimatedInstanceImpl*>& mAnimatedInstances,
 	const std::vector<MorphModelInstanceImpl*>& mMorphInstances,
+	const std::vector<SortedAnimatedInstanceImpl*>& mSkinnedSortedInstances,
 	ID3D11DeviceContext* deviceContext,
 	ShadowShader* shadowShader,
 	SkinnedShadowShader* skinnedShadowShader,
-	ShadowMorphShader* shadowMorphShader)
+	ShadowMorphShader* shadowMorphShader,
+	BasicDeferredSkinnedSortedShadowShader* skinnedSortedShadowShader
+	)
 {
 	for (UINT i = 0; i < this->mCascades.size(); i++)
 	{
@@ -263,15 +268,20 @@ void CascadedShadows::RenderSceneToCascades(
 		case 2:
 			deviceContext->RSSetState(RenderStates::mDepthBiasSuperFarFromEyeRS);
 			break;
+		case 3:
+			deviceContext->RSSetState(RenderStates::mDepthBiasSuperFarFromEyeRS);
+			break;
 		}
 		this->mCascades.at(i)->DrawSceneToShadowMap(
 			modelInstances, 
 			mAnimatedInstances, 
-			mMorphInstances, 
+			mMorphInstances,
+			mSkinnedSortedInstances,
 			deviceContext, 
 			shadowShader, 
 			skinnedShadowShader, 
-			shadowMorphShader);
+			shadowMorphShader,
+			skinnedSortedShadowShader);
 	}
 }
 

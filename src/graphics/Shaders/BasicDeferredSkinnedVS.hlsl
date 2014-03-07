@@ -38,9 +38,10 @@ struct VertexOut
 	float4 ShadowPosH1 : TEXCOORD1;
 	float4 ShadowPosH2 : TEXCOORD2;
 	float4 ShadowPosH3 : TEXCOORD3;
+	float4 ShadowPosH4 : TEXCOORD4;
 	float4 CurPosH : CURPOSH;
 	float4 PrevPosH : PREVPOSH;
-	float Depth : TEXCOORD4;
+	float Depth : TEXCOORD5;
 };
 
 VertexOut main(VertexIn vIn)
@@ -88,6 +89,7 @@ VertexOut main(VertexIn vIn)
 	vOut.ShadowPosH1 = mul(float4(vOut.PosW, 1.0f), gShadowTransforms[0]);
 	vOut.ShadowPosH2 = mul(float4(vOut.PosW, 1.0f), gShadowTransforms[1]);
 	vOut.ShadowPosH3 = mul(float4(vOut.PosW, 1.0f), gShadowTransforms[2]);
+	vOut.ShadowPosH4 = mul(float4(vOut.PosW, 1.0f), gShadowTransforms[3]);
 
 	vOut.CurPosH = vOut.PosH;
 	//vOut.CurPosH.xy /= vOut.CurPosH.w;

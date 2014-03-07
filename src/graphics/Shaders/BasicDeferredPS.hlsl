@@ -18,6 +18,7 @@ Texture2D gDiffuseMap : register(t0);
 Texture2D gShadowMap1 : register(t1);
 Texture2D gShadowMap2 : register(t2);
 Texture2D gShadowMap3 : register(t3);
+Texture2D gShadowMap4 : register(t4);
 //TODO: Texture2DArray gShadowMaps : register(t2);
 
 SamplerState samLinear : register(s0);
@@ -43,37 +44,48 @@ PixelOut main(VertexOut pIn)
 	pOut.Velocity = float2(0.0f, 0.0f);
 
 	float shadowFactor = 1.0f;
+	float shadowFactorBlend = 1.0f;
 
 	if (type == 0 || type == 2)
 	{
-		int cascadeIndex = 0;
+		int cascadeIndex = -1;
 		int nrOfCascades = gNrOfCascades;
 		float depth = pIn.Depth;
 		float4 shadowPosH1 = pIn.ShadowPosH1;
 		float4 shadowPosH2 = pIn.ShadowPosH2;
 		float4 shadowPosH3 = pIn.ShadowPosH3;
-
-		//If current depth is beyond the furthest depth, dont shadow it
-		if (depth > gFarDepths.x && nrOfCascades == 1)
-			shadowFactor = 1.0f;
-		if (depth > gFarDepths.y && nrOfCascades == 2)
-			shadowFactor = 1.0f;
-		if (depth > gFarDepths.z && nrOfCascades == 3)
-			shadowFactor = 1.0f;
+		float4 shadowPosH4 = pIn.ShadowPosH4;
+		int blendIndex = -1;
 
 		//Compare the depth of current pixel in camera space to given near and far depths
 		//to decide appropriate index of cascade to sample from
-		if (depth > gNearDepths.x && depth < gFarDepths.x)
+		if (nrOfCascades == 1 || depth > gNearDepths.x && depth < gFarDepths.x)
 		{
 			cascadeIndex = 0;
+			if ((gFarDepths.x - depth) < BLEND_LIMIT_1)
+				blendIndex = 1;
 		}
-		else if (depth > gNearDepths.y && depth < gFarDepths.y && nrOfCascades > 1)
+		if (nrOfCascades > 1 && (depth > gNearDepths.y && depth < gFarDepths.y))
 		{
 			cascadeIndex = 1;
+			if ((depth - gNearDepths.x) < BLEND_LIMIT_1)
+				blendIndex = 0;
+			else if ((gFarDepths.y - depth) < BLEND_LIMIT_2)
+				blendIndex = 2;
 		}
-		else if (depth > gNearDepths.z && depth < gFarDepths.z && nrOfCascades > 2)
+		if (nrOfCascades > 2 && (depth > gNearDepths.z && depth < gFarDepths.z))
 		{
 			cascadeIndex = 2;
+			if ((depth - gNearDepths.y) < BLEND_LIMIT_2)
+				blendIndex = 1;
+			else if ((gFarDepths.z - depth) < BLEND_LIMIT_3)
+				blendIndex = 3;
+		}
+		if (nrOfCascades > 3 && (depth > gNearDepths.w && depth < gFarDepths.w))
+		{
+			cascadeIndex = 3;
+			if ((depth - gNearDepths.z) < BLEND_LIMIT_3)
+				blendIndex = 2;
 		}
 
 		if (cascadeIndex == 0)
@@ -88,6 +100,31 @@ PixelOut main(VertexOut pIn)
 		{
 			shadowFactor = CalcShadowFactor(samShadow, gShadowMap3, shadowPosH3); //Cascade 3
 		}
+		else if (cascadeIndex == 3)
+		{
+			shadowFactor = CalcShadowFactor(samShadow, gShadowMap4, shadowPosH4); //Cascade 3
+		}
+
+		switch (blendIndex)
+		{
+		case 0:
+			shadowFactorBlend = CalcShadowFactor(samShadow, gShadowMap1, shadowPosH1);
+			break;
+		case 1:
+			shadowFactorBlend = CalcShadowFactor(samShadow, gShadowMap2, shadowPosH2);
+			break;
+		case 2:
+			shadowFactorBlend = CalcShadowFactor(samShadow, gShadowMap3, shadowPosH3);
+			break;
+		case 3:
+			shadowFactorBlend = CalcShadowFactor(samShadow, gShadowMap4, shadowPosH4);
+			break;
+		}
+
+		if (blendIndex != -1)
+		{
+			shadowFactor = lerp(shadowFactor, shadowFactorBlend, 0.5f);
+		}
 
 	}
 
@@ -98,51 +135,26 @@ PixelOut main(VertexOut pIn)
 		pOut.Color = gDiffuseMap.Sample(samAnisotropic, pIn.Tex);
 
 		pOut.Normal = float4(pIn.NormalW, 0.0f);
-
-		//pOut.Specular = gMaterial.Specular;
-
-		// Bake shadow factor into color w component
-		//float shadowFactor = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
-
-		//pOut.Color.w = shadowFactor;
-		pOut.Normal.w = shadowFactor;
 	}
 
 	// Cloud
 	else if (type == 1)
 	{
 		pOut.Color = gMaterial.Diffuse;
-
 		pOut.Normal = float4(pIn.NormalW, 1.0f);
 
-		//pOut.Specular = gMaterial.Specular;
-
-		//pOut.Color.w = 1.0f;
-		pOut.Normal.w = shadowFactor;
 	}
 
 	// No texture
 	else if (type == 2)
 	{
 		pOut.Color = gMaterial.Diffuse;
-
 		pOut.Normal = float4(pIn.NormalW, 0.0f);
-
-		//pOut.Specular = gMaterial.Specular;
-
-		// Bake shadow factor into color w component
-		//float shadowFactor = CalcShadowFactor(samShadow, gShadowMap, pIn.ShadowPosH);
-
-		//pOut.Color.w = shadowFactor;
-		pOut.Normal.w = shadowFactor;
 	}
 	else
 	{
 		pOut.Color = gMaterial.Diffuse;
-
 		pOut.Normal = float4(pIn.NormalW, 0.0f);
-
-		pOut.Normal.w = shadowFactor;
 	}
 
 	//pOut.Position = float4(pIn.PosW, 1.0f);

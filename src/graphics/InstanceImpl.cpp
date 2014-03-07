@@ -84,6 +84,12 @@ void ModelInstanceImpl::SetVisibility(bool visible)
 {
 	isVisible = visible;
 }
+
+void ModelInstanceImpl::SetLightFrustumCalcFlag(bool flag)
+{
+	mUseInLightFrustumCalc = flag;
+}
+
 bool ModelInstanceImpl::IsVisible()
 {
 	return isVisible;
@@ -104,6 +110,11 @@ Vec3 ModelInstanceImpl::GetScale()
 XMMATRIX ModelInstanceImpl::GetWorld()
 {
 	return XMLoadFloat4x4(&modelWorld);
+}
+
+bool ModelInstanceImpl::GetLightFrustumCalcFlag() const
+{
+	return mUseInLightFrustumCalc;
 }
 
 int ModelInstanceImpl::GetType()

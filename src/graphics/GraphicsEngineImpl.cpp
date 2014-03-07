@@ -175,12 +175,13 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 
 	//mSky = new Sky(mD3D->GetDevice(), mTextureMgr, mResourceDir + "Textures\\SkyBox.dds", 2000.0f);
 	mSky = new Sky(mD3D->GetDevice(), mTextureMgr, 2000.0f);
-	mCascadedShadows = new CascadedShadows(mD3D->GetDevice(), 2048, 2048, 3); //Remember that a const is defined in LightDef.hlsli 
+	mCascadedShadows = new CascadedShadows(mD3D->GetDevice(), 2048, 2048, 4); //Remember that a const is defined in LightDef.hlsli 
 	mCascadedShadows->SetSplitMethod(FIT_TO_CASCADE);
 	mCascadedShadows->SetNearFarFitMethod(FIT_NEARFAR_AABB);
 	//mCascadedShadows->SetNearFarFitMethod(FIT_NEARFAR_SCENE_AABB);
-	mCascadedShadows->SetSplitDepth(0.125f, 0);
-	mCascadedShadows->SetSplitDepth(0.30f, 1);
+	mCascadedShadows->SetSplitDepth(0.1125f, 0);
+	mCascadedShadows->SetSplitDepth(0.225f, 1);
+	mCascadedShadows->SetSplitDepth(0.45f, 2);
 
 	mGameTime = 0.0f;
 
@@ -206,6 +207,8 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\SkinnedShadowBuildPS.cso", "SkinnedShadowBuildPS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\ShadowBuildMorphVS.cso", "ShadowBuildMorphVS", mD3D->GetDevice());
 	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\ShadowBuildMorphPS.cso", "ShadowBuildMorphPS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\SkinnedSortedShadowBuildVS.cso", "SkinnedSortedShadowBuildVS", mD3D->GetDevice());
+	mShaderHandler->LoadCompiledPixelShader(L"..\\shaders\\SkinnedSortedShadowBuildPS.cso", "SkinnedSortedShadowBuildPS", mD3D->GetDevice());
 
 	// Deferred shaders
 	mShaderHandler->LoadCompiledVertexShader(L"..\\shaders\\BasicDeferredVS.cso", "BasicDeferredVS", mD3D->GetDevice());
@@ -328,6 +331,9 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mShadowMorphShader->BindShaders(
 		mShaderHandler->GetVertexShader("ShadowBuildMorphVS"),
 		mShaderHandler->GetPixelShader("ShadowBuildMorphPS"));
+	mShaderHandler->mSkinnedSortedShadowShader->BindShaders(
+		mShaderHandler->GetVertexShader("SkinnedSortedShadowBuildVS"),
+		mShaderHandler->GetPixelShader("SkinnedSortedShadowBuildPS"));
 
 	// Particle system
 	mShaderHandler->mParticleSystemShader->BindShaders(
@@ -369,7 +375,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	// Init all the shader objects
 	mShaderHandler->mBasicShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTex);
 	mShaderHandler->mSkyShader->Init(mD3D->GetDevice(), mInputLayouts->Position);
-	mShaderHandler->mNormalSkinned->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTanSkinned);
+	//mShaderHandler->mNormalSkinned->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTanSkinned);
 	mShaderHandler->mLineShader->Init(mD3D->GetDevice(), mInputLayouts->Position2D);
 	mShaderHandler->mBasicDeferredShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTex);
 	mShaderHandler->mBasicDeferredSkinnedShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTanSkinned);
@@ -386,6 +392,7 @@ bool GraphicsEngineImpl::Init(HWND hWindow, UINT width, UINT height, const std::
 	mShaderHandler->mCompositeShader->Init(mD3D->GetDevice(), NULL);
 	mShaderHandler->mDeferredMorphShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTargets4);
 	mShaderHandler->mShadowMorphShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTargets4);
+	mShaderHandler->mSkinnedSortedShadowShader->Init(mD3D->GetDevice(), mInputLayouts->PosNormalTexTanSkinned);
 	mShaderHandler->mParticleSystemShader->Init(mD3D->GetDevice(), mInputLayouts->Particle);
 
 	mShaderHandler->mLightDeferredToTextureShader->Init(mD3D->GetDevice(), mInputLayouts->PosTex);
@@ -571,7 +578,11 @@ void GraphicsEngineImpl::DrawScene()
 			mCascadedShadows->CreateLightFrustums(mDirLights[0], mSceneBounds, mSceneBB, mCamera);
 			mShadowFrustumCalcTimer = 0.0f;
 		}
-		mCascadedShadows->RenderSceneToCascades(mInstances, mAnimatedInstances, mMorphInstances, mD3D->GetImmediateContext(), mShaderHandler->mShadowShader, mShaderHandler->mSkinnedShadowShader, mShaderHandler->mShadowMorphShader);
+		mCascadedShadows->RenderSceneToCascades(
+			mInstances, mAnimatedInstances, mMorphInstances, mSortedAnimatedInstances, 
+			mD3D->GetImmediateContext(), 
+			mShaderHandler->mShadowShader, mShaderHandler->mSkinnedShadowShader,
+			mShaderHandler->mShadowMorphShader, mShaderHandler->mSkinnedSortedShadowShader);
 	}
 
 	mD3D->GetImmediateContext()->RSSetState(0);
@@ -828,7 +839,7 @@ void GraphicsEngineImpl::DrawScene()
 
 	//mSpriteBatch->Draw(
 	//	mCascadedShadows->GetCascade(0)->getDepthMapSRV(),
-	//	XMFLOAT2(225.0f, 0.0f),
+	//	XMFLOAT2(0.0f, 0.0f),
 	//	nullptr,
 	//	Colors::Red,
 	//	0.0f,
@@ -838,7 +849,7 @@ void GraphicsEngineImpl::DrawScene()
 
 	//mSpriteBatch->Draw(
 	//	mCascadedShadows->GetCascade(1)->getDepthMapSRV(),
-	//	XMFLOAT2(450.0f, 0.0f),
+	//	XMFLOAT2(450.0f - 225.0f, 0.0f),
 	//	nullptr,
 	//	Colors::Red,
 	//	0.0f,
@@ -848,7 +859,17 @@ void GraphicsEngineImpl::DrawScene()
 
 	//mSpriteBatch->Draw(
 	//	mCascadedShadows->GetCascade(2)->getDepthMapSRV(),
-	//	XMFLOAT2(675.0f, 0.0f),
+	//	XMFLOAT2(675.0f - 225.0f, 0.0f),
+	//	nullptr,
+	//	Colors::Red,
+	//	0.0f,
+	//	XMFLOAT2(0.0f, 0.0f),
+	//	XMFLOAT2(0.1f, 0.1f)
+	//	);
+
+	//mSpriteBatch->Draw(
+	//	mCascadedShadows->GetCascade(3)->getDepthMapSRV(),
+	//	XMFLOAT2(900.0f - 225.0f, 0.0f),
 	//	nullptr,
 	//	Colors::Red,
 	//	0.0f,
@@ -1707,23 +1728,25 @@ void GraphicsEngineImpl::UpdateSceneData()
 	// Get vertex positions from all models
 	for (UINT i = 0; i < mInstances.size(); ++i)
 	{
-		for (UINT j = 0; j < mInstances[i]->model->meshes.size(); ++j)
+		if (mInstances[i]->GetLightFrustumCalcFlag() == false)
 		{
-
-			for (UINT k = 0; k < mInstances[i]->model->meshes.at(j).vertices.size(); ++k)
+			for (UINT j = 0; j < mInstances[i]->model->meshes.size(); ++j)
 			{
-				XMFLOAT3 vPos = mInstances[i]->model->meshes.at(j).vertices.at(k).position;
-				vPos.x += mInstances[i]->GetPosition().X;
-				vPos.y += mInstances[i]->GetPosition().Y;
-				vPos.z += mInstances[i]->GetPosition().Z;
+				for (UINT k = 0; k < mInstances[i]->model->meshes.at(j).vertices.size(); ++k)
+				{
+					XMFLOAT3 vPos = mInstances[i]->model->meshes.at(j).vertices.at(k).position;
+					vPos.x += mInstances[i]->GetPosition().X;
+					vPos.y += mInstances[i]->GetPosition().Y;
+					vPos.z += mInstances[i]->GetPosition().Z;
 
-				minPt.x = MathHelper::getMin(minPt.x, vPos.x);
-				minPt.y = MathHelper::getMin(minPt.y, vPos.y);
-				minPt.z = MathHelper::getMin(minPt.z, vPos.z);
+					minPt.x = MathHelper::getMin(minPt.x, vPos.x);
+					minPt.y = MathHelper::getMin(minPt.y, vPos.y);
+					minPt.z = MathHelper::getMin(minPt.z, vPos.z);
 
-				maxPt.x = MathHelper::getMax(maxPt.x, vPos.x);
-				maxPt.y = MathHelper::getMax(maxPt.y, vPos.y);
-				maxPt.z = MathHelper::getMax(maxPt.z, vPos.z);
+					maxPt.x = MathHelper::getMax(maxPt.x, vPos.x);
+					maxPt.y = MathHelper::getMax(maxPt.y, vPos.y);
+					maxPt.z = MathHelper::getMax(maxPt.z, vPos.z);
+				}
 			}
 		}
 	}

@@ -6,7 +6,7 @@
 #include "Camera.h"
 #include "RenderStates.h"
 
-#define CASCADES_MAX 3
+#define CASCADES_MAX 4
 #define CASCADESPLITS CASCADES_MAX - 1
 
 static const XMVECTORF32 gVecFLTMAX = { FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX };
@@ -76,10 +76,12 @@ public:
 		const std::vector<ModelInstanceImpl*>& modelInstances,
 		const std::vector<AnimatedInstanceImpl*>& mAnimatedInstances,
 		const std::vector<MorphModelInstanceImpl*>& mMorphInstances,
+		const std::vector<SortedAnimatedInstanceImpl*>& mSkinnedSortedInstances,
 		ID3D11DeviceContext* deviceContext,
 		ShadowShader* shadowShader,
 		SkinnedShadowShader* skinnedShadowShader,
-		ShadowMorphShader* shadowMorphShader);
+		ShadowMorphShader* shadowMorphShader,
+		BasicDeferredSkinnedSortedShadowShader* skinnedSortedShadowShader);
 
 	Cascade* GetCascade(UINT index);
 

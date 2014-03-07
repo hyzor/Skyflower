@@ -42,9 +42,9 @@
 <Entity type="Rock" model="Models\Worlds\Subworld 1\Rock" id="1015" isVisible="1" relativeid="8" isCollidible="1" isAnimated="0" xPos="425.54" yPos="118.2734014" zPos="45.181274461" xRot="1.73764218889" yRot="-0.192779884652" zRot="-0.0324277093744" xScale="6.76847965241" yScale="6.76847965241" zScale="6.76847965241"/>
 <Entity type="Rock" model="Models\Worlds\Subworld 1\Rock" id="1016" isVisible="1" relativeid="8" isCollidible="1" isAnimated="0" xPos="76.54" yPos="5.5634014" zPos="-53.706" xRot="1.73764218889" yRot="-0.192779884652" zRot="-0.0324277093744" xScale="6.76847965241" yScale="6.76847965241" zScale="6.76847965241"/>
 <Entity type="Rock" model="Models\Worlds\Subworld 1\Rock" id="1018" isVisible="1" relativeid="8" isCollidible="1" isAnimated="0" xPos="-6.0" yPos="8.0" zPos="83.706" xRot="1.73764218889" yRot="-0.192779884652" zRot="-90.0324277093744" xScale="10.76847965241" yScale="10.76847965241" zScale="10.76847965241"/>
-<Entity type="cloud2" model="Models\Worlds\Subworld 1\spiral" id="1020" isVisible="1" isCollidible="0" isAnimated="0" xPos="400.0" yPos="-400.0" zPos="-500.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="20.0" yScale="20.0" zScale="20.0"/>
-<Entity type="cloud2" model="Models\Worlds\Subworld 1\spiral" id="1021" isVisible="1" isCollidible="0" isAnimated="0" xPos="400.0" yPos="-350.0" zPos="500.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="10.0" yScale="10.0" zScale="10.0"/>
-<Entity type="cloud2" model="Models\Worlds\Subworld 1\spiral" id="1022" isVisible="1" isCollidible="0" isAnimated="0" xPos="800.0" yPos="-400.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="15.0" yScale="15.0" zScale="15.0"/>
+<Entity type="cloud2" model="Models\Worlds\Subworld 1\spiral" id="1020" isVisible="1" isCollidible="0" isAnimated="0" xPos="400.0" yPos="-400.0" zPos="-500.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="20.0" yScale="20.0" zScale="20.0" irrelevantForLightFrustum="1"/>
+<Entity type="cloud2" model="Models\Worlds\Subworld 1\spiral" id="1021" isVisible="1" isCollidible="0" isAnimated="0" xPos="400.0" yPos="-350.0" zPos="500.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="10.0" yScale="10.0" zScale="10.0" irrelevantForLightFrustum="1"/>
+<Entity type="cloud2" model="Models\Worlds\Subworld 1\spiral" id="1022" isVisible="1" isCollidible="0" isAnimated="0" xPos="800.0" yPos="-400.0" zPos="0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="15.0" yScale="15.0" zScale="15.0" irrelevantForLightFrustum="1"/>
 
     <Entity type="cloud2" model="Models\Worlds\Subworld 1\plattform1Cloud" id="2" isVisible="1" isCollidible="0" isAnimated="0" xPos="0.0" yPos="0.0" zPos="-0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0"/>
     <Entity type="plattform" model="Models\Worlds\Subworld 1\plattform2" id="3" isVisible="1" isCollidible="1" isAnimated="0" xPos="0.0" yPos="0.0" zPos="-0.0" xRot="0.0" yRot="0.0" zRot="0.0" xScale="1.0" yScale="1.0" zScale="1.0">
@@ -134,19 +134,19 @@
         <Event script="platform_start"/>
     </Entity>
 	
-	<Entity type="movingPlattform" model="Models\Worlds\Subworld 1\movingPlattform" id="20" isVisible="1" isCollidible="1" isAnimated="0" xPos="356" yPos="-334" zPos="159" xRot="0.0" yRot="1.5681321154" zRot="0.0" xScale="1.37679221438" yScale="1.37679221438" zScale="1.37679221438">
+	<Entity type="movingPlattform" model="Models\Worlds\Subworld 1\movingPlattform" id="20" isVisible="1" isCollidible="1" isAnimated="0" xPos="356" yPos="-334" zPos="159" xRot="0.0" yRot="1.5681321154" zRot="0.0" xScale="1.37679221438" yScale="1.37679221438" zScale="1.37679221438" irrelevantForLightFrustum="1">
         <MoveTarget targetPosX="356" targetPosY="56" targetPosZ="160" duration="3" easingPower="3" continuous="0" />
     </Entity>
-    <Entity type="movingPlattform" model="Models\Worlds\Subworld 1\movingPlattform" id="80" isVisible="1" isCollidible="1" isAnimated="0" xPos="375" yPos="-288" zPos="170" xRot="0.0" yRot="1.5681321154" zRot="0.0" xScale="1.37679221438" yScale="1.37679221438" zScale="1.37679221438">
+    <Entity type="movingPlattform" model="Models\Worlds\Subworld 1\movingPlattform" id="80" isVisible="1" isCollidible="1" isAnimated="0" xPos="375" yPos="-288" zPos="170" xRot="0.0" yRot="1.5681321154" zRot="0.0" xScale="1.37679221438" yScale="1.37679221438" zScale="1.37679221438" irrelevantForLightFrustum="1">
         <MoveTarget targetPosX="382" targetPosY="66" targetPosZ="170" duration="3" easingPower="3" continuous="0" />
     </Entity>
-    <Entity type="movingPlattform" model="Models\Worlds\Subworld 1\movingPlattform" id="90" isVisible="1" isCollidible="1" isAnimated="0" xPos="393" yPos="-261" zPos="177" xRot="0.0" yRot="1.5681321154" zRot="0.0" xScale="1.37679221438" yScale="1.37679221438" zScale="1.37679221438">
+    <Entity type="movingPlattform" model="Models\Worlds\Subworld 1\movingPlattform" id="90" isVisible="1" isCollidible="1" isAnimated="0" xPos="393" yPos="-261" zPos="177" xRot="0.0" yRot="1.5681321154" zRot="0.0" xScale="1.37679221438" yScale="1.37679221438" zScale="1.37679221438" irrelevantForLightFrustum="1">
         <MoveTarget targetPosX="407" targetPosY="78" targetPosZ="179" duration="3" easingPower="3" continuous="0" />
     </Entity>
-    <Entity type="movingPlattform" model="Models\Worlds\Subworld 1\movingPlattform" id="23" isVisible="1" isCollidible="1" isAnimated="0" xPos="415" yPos="-316" zPos="173" xRot="0.0" yRot="1.5681321154" zRot="0.0" xScale="1.37679221438" yScale="1.37679221438" zScale="1.37679221438">
+    <Entity type="movingPlattform" model="Models\Worlds\Subworld 1\movingPlattform" id="23" isVisible="1" isCollidible="1" isAnimated="0" xPos="415" yPos="-316" zPos="173" xRot="0.0" yRot="1.5681321154" zRot="0.0" xScale="1.37679221438" yScale="1.37679221438" zScale="1.37679221438" irrelevantForLightFrustum="1">
         <MoveTarget targetPosX="435" targetPosY="84" targetPosZ="187" duration="3" easingPower="3" continuous="0" />
     </Entity>
-    <Entity type="movingPlattform" model="Models\Worlds\Subworld 1\movingPlattform" id="10" isVisible="1" isCollidible="1" isAnimated="0" xPos="436" yPos="-274" zPos="165" xRot="0.0" yRot="1.5681321154" zRot="0.0" xScale="1.37679221438" yScale="1.37679221438" zScale="1.37679221438">
+    <Entity type="movingPlattform" model="Models\Worlds\Subworld 1\movingPlattform" id="10" isVisible="1" isCollidible="1" isAnimated="0" xPos="436" yPos="-274" zPos="165" xRot="0.0" yRot="1.5681321154" zRot="0.0" xScale="1.37679221438" yScale="1.37679221438" zScale="1.37679221438" irrelevantForLightFrustum="1">
         <MoveTarget targetPosX="461" targetPosY="93" targetPosZ="172" duration="3" easingPower="3" continuous="0" />
     </Entity>
 </root>

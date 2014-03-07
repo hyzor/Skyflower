@@ -15,6 +15,7 @@ Texture2D gDiffuseMap : register(t0);
 Texture2D gShadowMap1 : register(t1);
 Texture2D gShadowMap2 : register(t2);
 Texture2D gShadowMap3 : register(t3);
+Texture2D gShadowMap4 : register(t4);
 
 SamplerState samLinear : register(s0);
 SamplerState samAnisotropic : register(s1);
@@ -51,28 +52,25 @@ PixelOut main(VertexOut pIn)
 	float4 shadowPosH1 = pIn.ShadowPosH1;
 	float4 shadowPosH2 = pIn.ShadowPosH2;
 	float4 shadowPosH3 = pIn.ShadowPosH3;
-
-		//If current depth is beyond the furthest depth, dont shadow it
-	if (depth > gFarDepths.x && nrOfCascades == 1)
-		shadowFactor = 1.0f;
-	if (depth > gFarDepths.y && nrOfCascades == 2)
-		shadowFactor = 1.0f;
-	if (depth > gFarDepths.z && nrOfCascades == 3)
-		shadowFactor = 1.0f;
+	float4 shadowPosH4 = pIn.ShadowPosH4;
 
 	//Compare the depth of current pixel in camera space to given near and far depths
 	//to decide appropriate index of cascade to sample from
-	if (depth > gNearDepths.x && depth < gFarDepths.x)
+	if (nrOfCascades == 1 || depth > gNearDepths.x && depth < gFarDepths.x)
 	{
 		cascadeIndex = 0;
 	}
-	else if (depth > gNearDepths.y && depth < gFarDepths.y && nrOfCascades > 1)
+	if (nrOfCascades > 1 && (depth > gNearDepths.y && depth < gFarDepths.y))
 	{
 		cascadeIndex = 1;
 	}
-	else if (depth > gNearDepths.z && depth < gFarDepths.z && nrOfCascades > 2)
+	if (nrOfCascades > 2 && (depth > gNearDepths.z && depth < gFarDepths.z))
 	{
 		cascadeIndex = 2;
+	}
+	if (nrOfCascades > 3 && (depth > gNearDepths.w && depth < gFarDepths.w))
+	{
+		cascadeIndex = 3;
 	}
 
 	if (cascadeIndex == 0)
@@ -86,6 +84,10 @@ PixelOut main(VertexOut pIn)
 	else if (cascadeIndex == 2)
 	{
 		shadowFactor = CalcShadowFactor(samShadow, gShadowMap3, shadowPosH3); //Cascade 3
+	}
+	else if (cascadeIndex == 3)
+	{
+		shadowFactor = CalcShadowFactor(samShadow, gShadowMap4, shadowPosH4); //Cascade 3
 	}
 
 	pOut.Normal.w = shadowFactor;

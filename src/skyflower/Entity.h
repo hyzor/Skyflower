@@ -32,7 +32,7 @@ class Entity {
 
 		// constructor/destructor
 		Entity(EntityManager *entityManager, const Modules *modules, EntityId id, EntityId relativeid, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
-			 float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated, bool isSorted);
+			 float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated, bool isSorted, bool irrelevantForLightFrustum);
 		virtual ~Entity();
 		
 		Entity* ground;				//a pointer to the ground the entity stands on, if it stands on something		

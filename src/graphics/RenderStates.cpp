@@ -87,7 +87,7 @@ void RenderStates::InitAll(ID3D11Device* device)
 	//For rendering shadows not as close to the eye
 	D3D11_RASTERIZER_DESC depthBiasFarRSdesc;
 	ZeroMemory(&depthBiasFarRSdesc, sizeof(D3D11_RASTERIZER_DESC));
-	depthBiasFarRSdesc.DepthBias = 100000;
+	depthBiasFarRSdesc.DepthBias = 10000;
 	depthBiasFarRSdesc.DepthBiasClamp = 0.0f;
 	depthBiasFarRSdesc.SlopeScaledDepthBias = 5.0f;
 	depthBiasFarRSdesc.FillMode = D3D11_FILL_SOLID;
@@ -98,7 +98,7 @@ void RenderStates::InitAll(ID3D11Device* device)
 	//For rendering shadows far from the eye
 	D3D11_RASTERIZER_DESC depthBiasSuperFarRSdesc;
 	ZeroMemory(&depthBiasSuperFarRSdesc, sizeof(D3D11_RASTERIZER_DESC));
-	depthBiasSuperFarRSdesc.DepthBias = 100000;
+	depthBiasSuperFarRSdesc.DepthBias = 10000;
 	depthBiasSuperFarRSdesc.DepthBiasClamp = 0.0f;
 	depthBiasSuperFarRSdesc.SlopeScaledDepthBias = 4.0f;
 	depthBiasSuperFarRSdesc.FillMode = D3D11_FILL_SOLID;

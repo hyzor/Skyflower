@@ -15,7 +15,7 @@ using namespace Cistron;
 
 // constructor/destructor
 Entity::Entity(EntityManager *entityManager, const Modules *modules, EntityId id, EntityId relativeid, string type, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot,
-	float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated, bool isSorted) : fId(id), type(type), fFinalized(false)
+	float xScale, float yScale, float zScale, string model, bool isVisible, bool isCollidible, bool isAnimated, bool isSorted, bool irrelevantForLightFrustum) : fId(id), type(type), fFinalized(false)
 {
 	this->entityManager = entityManager;
 
@@ -66,6 +66,8 @@ Entity::Entity(EntityManager *entityManager, const Modules *modules, EntityId id
 			this->modelInst->SetType(2);
 		else
 			this->modelInst->SetType(0);
+
+		this->modelInst->SetLightFrustumCalcFlag(irrelevantForLightFrustum);
 	}
 	else
 	{
