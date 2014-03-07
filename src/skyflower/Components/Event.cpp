@@ -978,7 +978,7 @@ int Event::PlayFinishedSound(lua_State* L)
 
 		if (e)
 		{
- 			e->getModules()->sound->PlaySound("positive_game_sound.wav", 0.2f);
+ 			e->getModules()->sound->PlaySound("positive_game_sound.wav", 0.1f);
 		}
 	}
 
