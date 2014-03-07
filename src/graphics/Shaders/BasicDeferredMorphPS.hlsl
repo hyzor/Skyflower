@@ -56,7 +56,7 @@ PixelOut main(VertexOut pIn)
 
 	//Compare the depth of current pixel in camera space to given near and far depths
 	//to decide appropriate index of cascade to sample from
-	if (depth > gNearDepths.x && depth < gFarDepths.x)
+	if (nrOfCascades == 1 || depth > gNearDepths.x && depth < gFarDepths.x)
 	{
 		cascadeIndex = 0;
 	}

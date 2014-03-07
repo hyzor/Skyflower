@@ -86,8 +86,8 @@ void CascadedShadows::CreateLightFrustums(const DLight& light, const BoundingSph
 
 	float camNear = cam->GetNearZ(), camFar = cam->GetFarZ();
 	float camRange = camFar - camNear;
-	if (camRange > 1000)
-		camRange = 1000;
+	if (camRange > 500)
+		camRange = 500;
 
 
 	XMFLOAT3 temp[8];
