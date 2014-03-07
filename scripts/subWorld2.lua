@@ -106,26 +106,25 @@ function load_fallingPlatform5(id)
 	StartUpdate()
 end
 
-standingTimer5 = 0
-downTimer5 = 0
-movingDown5 = false
+falltime5 = 0
+startfalltime5 = false
+movingfall5 = false
 function update_fallingPlatform5(id, dt)	
-	if FallingPlatform(id) and not movingDown5 then
-		downTimer5 = 0
-		standingTimer5 = standingTimer5 +dt;
-		if standingTimer5 > 0.3 then
-			MoveToTarget(id)
-			standingTimer5 = 0
-			movingDown5 = true
-		end	
+	if FallingPlatform(id) and not startfalltime5 then
+		startfalltime5 = true
+		falltime5 = 0
+		Print("Standing")
 	end
-	if not FallingPlatform(id) then
-		downTimer5 = downTimer5 + dt
-		standingTimer5 = 0
-		if downTimer5 > 2 then
-			downTimer5 = 0
+	if startfalltime5 then
+		falltime5 = falltime5 + dt
+		if falltime5 > 0.3 and not movingfall5 then
+			MoveToTarget(id)
+			movingfall5 = true
+		elseif falltime5 > 2 then
 			MoveToSpawn(id)
-			movingDown5 = false
+			movingfall5 = false
+			falltime5 = 0
+			startfalltime5 = false
 		end
 	end
 end
@@ -134,26 +133,25 @@ function load_fallingPlatform6(id)
 	StartUpdate()
 end
 
-standingTimer6 = 0
-downTimer6 = 0
-movingDown6 = false
+falltime6 = 0
+startfalltime6 = false
+movingfall6 = false
 function update_fallingPlatform6(id, dt)	
-	if FallingPlatform(id) and not movingDown6 then
-		downTimer6 = 0
-		standingTimer6 = standingTimer6 +dt;
-		if standingTimer6 > 0.3 then
-			MoveToTarget(id)
-			standingTimer6 = 0
-			movingDown6 = true
-		end	
+	if FallingPlatform(id) and not startfalltime6 then
+		startfalltime6 = true
+		falltime6 = 0
+		Print("Standing")
 	end
-	if not FallingPlatform(id) then
-		downTimer6 = downTimer6 + dt
-		standingTimer6 = 0
-		if downTimer6 > 2 then
-			downTimer6 = 0
+	if startfalltime6 then
+		falltime6 = falltime6 + dt
+		if falltime6 > 0.3 and not movingfall6 then
+			MoveToTarget(id)
+			movingfall6 = true
+		elseif falltime6 > 2 then
 			MoveToSpawn(id)
-			movingDown6 = false
+			movingfall6 = false
+			falltime6 = 0
+			startfalltime6 = false
 		end
 	end
 end
@@ -162,26 +160,25 @@ function load_fallingPlatform7(id)
 	StartUpdate()
 end
 
-standingTimer7 = 0
-downTimer7 = 0
-movingDown7 = false
+falltime7 = 0
+startfalltime7 = false
+movingfall7 = false
 function update_fallingPlatform7(id, dt)	
-	if FallingPlatform(id) and not movingDown7 then
-		downTimer7 = 0
-		standingTimer7 = standingTimer7 +dt;
-		if standingTimer7 > 0.3 then
-			MoveToTarget(id)
-			standingTimer7 = 0
-			movingDown7 = true
-		end	
+	if FallingPlatform(id) and not startfalltime7 then
+		startfalltime7 = true
+		falltime7 = 0
+		Print("Standing")
 	end
-	if not FallingPlatform(id) then
-		downTimer7 = downTimer7 + dt
-		standingTimer7 = 0
-		if downTimer7 > 2 then
-			downTimer7 = 0
+	if startfalltime7 then
+		falltime7 = falltime7 + dt
+		if falltime7 > 0.3 and not movingfall7 then
+			MoveToTarget(id)
+			movingfall7 = true
+		elseif falltime7 > 2 then
 			MoveToSpawn(id)
-			movingDown7 = false
+			movingfall7 = false
+			falltime7 = 0
+			startfalltime7 = false
 		end
 	end
 end
@@ -190,26 +187,25 @@ function load_fallingPlatform8(id)
 	StartUpdate()
 end
 
-standingTimer8 = 0
-downTimer8 = 0
-movingDown8 = false
+falltime8 = 0
+startfalltime8 = false
+movingfall8 = false
 function update_fallingPlatform8(id, dt)	
-	if FallingPlatform(id) and not movingDown8 then
-		downTimer8 = 0
-		standingTimer8 = standingTimer8 +dt;
-		if standingTimer8 > 0.3 then
-			MoveToTarget(id)
-			standingTimer8 = 0
-			movingDown8 = true
-		end	
+	if FallingPlatform(id) and not startfalltime8 then
+		startfalltime8 = true
+		falltime8 = 0
+		Print("Standing")
 	end
-	if not FallingPlatform(id) then
-		downTimer8 = downTimer8 + dt
-		standingTimer8 = 0
-		if downTimer8 > 2 then
-			downTimer8 = 0
-			movingDown8 = false
+	if startfalltime8 then
+		falltime8 = falltime8 + dt
+		if falltime8 > 0.3 and not movingfall8 then
+			MoveToTarget(id)
+			movingfall8 = true
+		elseif falltime8 > 2 then
 			MoveToSpawn(id)
+			movingfall8 = false
+			falltime8 = 0
+			startfalltime8 = false
 		end
 	end
 end
