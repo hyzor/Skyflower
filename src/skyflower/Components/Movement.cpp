@@ -308,7 +308,11 @@ void Movement::update(float deltaTime)
 			}
 			else
 			{
-				if (p->GetStates()->isMoving)
+				Push* push = getOwner()->getComponent<Push*>("Push");
+				if (push && push->isPushingBox())
+				{
+				}
+				else if (p->GetStates()->isMoving)
 				{
 					// Run
 					if (getOwner()->IsPlayingAnimation(7, false, true) && !getOwner()->IsAnimationDone(false, true))
@@ -337,7 +341,7 @@ void Movement::update(float deltaTime)
 					idleTimer += deltaTime;
 				}
 
-				Throw *throwComponent = getOwner()->getComponent<Throw *>("Throw");
+				Throw* throwComponent = getOwner()->getComponent<Throw*>("Throw");
 				if (throwComponent && throwComponent->getHeldEntity())
 				{
 					// Holding ball

@@ -185,7 +185,7 @@ void Push::update(float dt)
 			if (dir != Vec3() && getOwnerId() == 1 && getOwner()->IsAnimated())
 			{
 				isPushingBox = true;
-				getOwner()->SetAnimation(3, true, false, true);
+				getOwner()->SetAnimation(3, true, true, true);
 			}
 		}
 	}
