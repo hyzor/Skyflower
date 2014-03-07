@@ -16,6 +16,7 @@ function loaded()
 	Unlit(206,1)
 	Unlit(207,1)
 	Unlit(208,1)
+	Unlit(209,1)
 	--CutScenePlay("intro")
 end
 
