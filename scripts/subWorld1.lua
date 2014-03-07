@@ -96,78 +96,74 @@ push1Target = 0
 stairjumptimer = 0
 stairsettarget = 0
 function update_aiPush(id, dt)
-	if InRange(id, player, 100) then
-		
-		
-		
-		if not stairdown then
-			if not IsStanding(id, 16) then
-				stairsettarget = stairsettarget + dt
-				if stairsettarget > 1 then
-					stairsettarget = 0
-					SetTarget(id,16)
+	if CutSceneIsPlaying() == false then
+		if InRange(id, player, 100) then
+			if not stairdown then
+				if not IsStanding(id, 16) then
+					stairsettarget = stairsettarget + dt
+					if stairsettarget > 1 then
+						stairsettarget = 0
+						SetTarget(id,16)
+					end
+				else
+					stairjumptimer = stairjumptimer + dt
+					if stairjumptimer > 0.5 then
+						stairsettarget = 0
+						stairjumptimer = 0
+						--Jump(id)
+						SetTarget(id, 16, 10)
+						SetSpeed(id, 30)
+					end
 				end
+				
 			else
-				stairjumptimer = stairjumptimer + dt
-				if stairjumptimer > 0.5 then
-					stairsettarget = 0
-					stairjumptimer = 0
-					--Jump(id)
-					SetTarget(id, 16, 10)
+				if IsTouching(id, 16) or not stairdown then
+					Jump(id)
+				end
+				
+				if rush then
+					SetTarget(id, player)
+					
+					if InRange(id, player, 15) then
+						SetSpeed(id, 50)
+						Push(id, player)
+							
+						if rushtime > 2 then
+							rush = false
+							scaredtime = 0
+						end
+					
+						rushtime = rushtime + dt
+					else
+						SetSpeed(id, 10)
+					end
+				else
+					SetTarget(id, player, 30)
 					SetSpeed(id, 30)
+					if scaredtime > 4 then
+						rush = true
+						rushtime = 0
+					end
+					
+					scaredtime = scaredtime + dt
 				end
 			end
-			
 		else
-			if IsTouching(id, 16) or not stairdown then
+			push1JumpTime = push1JumpTime - dt
+			if push1JumpTime < 0 or IsTouching(id, 12) then
+				push1JumpTime = math.random(1, 5)
 				Jump(id)
 			end
 			
-			if rush then
-				SetTarget(id, player)
-				
-				if InRange(id, player, 15) then
-					SetSpeed(id, 50)
-					Push(id, player)
-						
-					if rushtime > 2 then
-						rush = false
-						scaredtime = 0
-					end
-				
-					rushtime = rushtime + dt
-				else
-					SetSpeed(id, 10)
-				end
-			else
-				SetTarget(id, player, 30)
-				SetSpeed(id, 30)
-				if scaredtime > 4 then
-					rush = true
-					rushtime = 0
-				end
-				
-				scaredtime = scaredtime + dt
+			push1ChangeTargetTime = push1ChangeTargetTime - dt
+			if push1ChangeTargetTime < 0 then
+				push1ChangeTargetTime = math.random(2, 7)
+				push1Target = math.random(12, 13)
 			end
+			
+			SetTarget(id, push1Target)
 		end
-	else
-		
-		
-		push1JumpTime = push1JumpTime - dt
-		if push1JumpTime < 0 or IsTouching(id, 12) then
-			push1JumpTime = math.random(1, 5)
-			Jump(id)
-		end
-		
-		push1ChangeTargetTime = push1ChangeTargetTime - dt
-		if push1ChangeTargetTime < 0 then
-			push1ChangeTargetTime = math.random(2, 7)
-			push1Target = math.random(12, 13)
-		end
-		
-		SetTarget(id, push1Target)
-	end
-	
+	end	
 end
 
 --ballonPop script--
