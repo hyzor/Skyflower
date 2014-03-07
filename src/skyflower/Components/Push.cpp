@@ -132,7 +132,7 @@ void Push::update(float dt)
 			if ((fromStart - to).Length() < 0.08f)
 			{
 				//release box
-				if (!boxComp->getCanBeMoved() || !canpush || box->getComponent<BoxComp*>("Box")->isFalling() || (dir != Vec3() && ((dir != boxDir && !canDrag) || (canDrag && dir == boxDir*-1 && dir*boxDir == Vec3()))))
+				if (!boxComp->getCanBeMoved() || !canpush || box->getComponent<BoxComp*>("Box")->isFalling() || (dir != Vec3() && ((dir != boxDir && !canDrag) || (canDrag && (dir != boxDir*-1 && dir != boxDir)))))
 				{
 					getOwner()->getComponent<Movement*>("Movement")->canJump = true;
 					box->updatePos(boxComp->startPos - to*boxComp->MinDist() + Vec3(0, box->returnPos().Y, 0));
