@@ -731,13 +731,16 @@ void Application::OnKeyDown(unsigned short key)
 		m_GUI->GetGUIElement(m_fpsChartID)->SetVisible(m_showCharts);
 		m_GUI->GetGUIElement(m_memChartID)->SetVisible(m_showCharts);
 		break;
-	/*case 'O':
+#ifdef DEBUG
+	case 'O':
 		//m_scriptHandler->Load("subWorld2.lua");
 		//m_cutscene->play("intro");
 		//_graphicsEngine->ClearLights();
 		levelHandler->queue(levelHandler->currentLevel());
 		break;
-	case 'L':
+#endif
+	
+	/*case 'L':
 		m_graphicsEngine->ClearLights();
 		m_entityManager->loadXML("subworld2Lights.XML");
 		break;*/

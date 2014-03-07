@@ -412,7 +412,7 @@ void Movement::update(float deltaTime)
 
 	getOwner()->updatePos(pos);
 
-	/*
+#ifdef DEBUG
 	if (getOwner()->fId == 1)
 	{
 		if (getOwner()->getModules()->input->isKeyDown('E'))
@@ -435,7 +435,7 @@ void Movement::update(float deltaTime)
 			speed = 50.0f;
 		}
 	}
-	*/
+#endif
 }
 
 Vec3 Movement::GetLook()
