@@ -181,7 +181,7 @@
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\ButtonRed" id="64" isCollidible="1" isVisible="1" isAnimated="0" xPos="-169.900011669" yPos="48.7098579087" zPos="500.696490125" xRot="-0.0" yRot="-0.0" zRot="0.00439782962308" xScale="2.94557554482" yScale="2.94557554482" zScale="2.94557554482">
         <Button toggle=""/>
         <Event script="buttonRed"/>
-		<HelpText text="It looks like you need to solve the puzzle to be able to continue." range="70" />
+		<HelpText text="It looks like you need to solve the puzzle to be able to continue *quack*" range="70" />
     </Entity>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\ButtonBase" id="65" isCollidible="1" isVisible="1" isAnimated="0" xPos="-146.003177071" yPos="48.7098579087" zPos="500.696490125" xRot="-0.0" yRot="-0.0" zRot="0.00439782962308" xScale="2.83616256893" yScale="2.83616256893" zScale="2.83616256893"/>
     <Entity type="object" model="Models\Worlds\Subworld 2_FINAL\subworld2\ButtonYellow" id="66" isCollidible="1" isVisible="1" isAnimated="0" xPos="-146.003177071" yPos="48.7098579087" zPos="500.696490125" xRot="-0.0" yRot="-0.0" zRot="0.00439782962308" xScale="2.83616256893" yScale="2.83616256893" zScale="2.83616256893">
@@ -192,7 +192,7 @@
         <Checkpoint/>
         <MorphAnimation path="Models\Checkpoint\Checkpoint_FINAL\" file="checkPoint.morph"/>
 		<Event script="light200"/>
-		<HelpText text="Uh oh! You know you can push, jump and throw, right?" range="20" />
+		<HelpText text="Uh oh! You know you can push, jump and throw, right? *quack*" range="20" />
     </Entity>
     <Entity type="object" id="68" isCollidible="0" isVisible="1" isAnimated="0" xPos="-122.25639555" yPos="25.452823515" zPos="-15.6426041247" xRot="-0.0" yRot="-0.0" zRot="-0.0" xScale="1.0" yScale="1.0" zScale="1.0">
         <Checkpoint/>
