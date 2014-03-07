@@ -720,7 +720,7 @@ void Application::OnKeyDown(unsigned short key)
 		m_GUI->GetGUIElement(m_fpsChartID)->SetVisible(m_showCharts);
 		m_GUI->GetGUIElement(m_memChartID)->SetVisible(m_showCharts);
 		break;
-	case 'O':
+	/*case 'O':
 		//m_scriptHandler->Load("subWorld2.lua");
 		//m_cutscene->play("intro");
 		//_graphicsEngine->ClearLights();
@@ -729,7 +729,7 @@ void Application::OnKeyDown(unsigned short key)
 	case 'L':
 		m_graphicsEngine->ClearLights();
 		m_entityManager->loadXML("subworld2Lights.XML");
-		break;
+		break;*/
 #if 0
 	case 'P':
 		m_graphicsEngine->SetPostProcessingEffects(m_graphicsEngine->GetPostProcessingEffects() ^ POST_PROCESSING_SSAO);
