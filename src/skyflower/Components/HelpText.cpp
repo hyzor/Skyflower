@@ -50,6 +50,8 @@ void HelpText::addedToEntity()
 	duckID = gui->CreateGUIElementAndBindTexture(Vec3(), "helpful_duck.png");
 	gui->GetGUIElement(duckID)->SetVisible(false);
 	top = 0;
+
+	gui->GetGUIElement(bgID)->GetDrawInput()->color.m128_f32[3] = 0.75f;
 }
 
 void HelpText::removeFromEntity()

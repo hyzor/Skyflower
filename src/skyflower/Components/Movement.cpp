@@ -587,7 +587,7 @@ void Movement::Jump(Message const& msg)
 				this->timeUntilGravityEnable = MAX_JUMP_KEY_TIME;
 			}
 
-			owner->getModules()->sound->PlaySound(GetPlayerSoundFile("player/jump1.wav"), 1.0f, &pos.X);
+			owner->getModules()->sound->PlaySound(GetPlayerSoundFile("player/jump1.wav"), 0.6f, &pos.X);
 
 			if (getOwner()->IsAnimated())
 			{

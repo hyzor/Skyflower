@@ -394,7 +394,7 @@ void Menu::onMouseMove(Vec3 mousePos)
 	if (newSelected != selectedButton)
 	{
 		selectedButton = newSelected;
-		soundEngine->PlaySound("menu/button.wav", 0.5f);
+		soundEngine->PlaySound("menu/button.wav", 0.2f);
 	}
 	else
 	{
