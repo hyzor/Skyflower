@@ -522,3 +522,18 @@ end
 
 
 
+--arenaFlower script--
+----------------------
+
+function load_arenaFlower(id)
+	StartUpdate()
+end
+
+flowermoved = false
+function update_arenaFlower(id, dt)
+	if not flowermoved and not IsAlive(71) and not IsAlive(72) and not IsAlive(73) then
+		MoveToTarget(id)
+		flowermoved = true
+	end
+end
+
