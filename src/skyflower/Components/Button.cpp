@@ -15,10 +15,7 @@ void Button::update(float dt)
 		first = false;
 		down = true;
 	}
-
-
-
-
+	
 	//controll button deavtivation movement
 	if (activated > 0)
 	{

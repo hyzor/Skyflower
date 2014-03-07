@@ -18,7 +18,6 @@ class Event : public Component {
 
 public:
 
-	// constructor - age is fixed at creation time
 	Event(std::string file) : Component("Event")
 	{
 		this->file = file;
@@ -93,21 +92,20 @@ public:
 		lua_register(sh->L, "OnButton", Event::OnButton);
 		lua_register(sh->L, "IsAlive", Event::IsAlive);
 		lua_register(sh->L, "Respawn", Event::Respawn);
+		lua_register(sh->L, "SetCanMoveBox", Event::SetCanMoveBox);
+		lua_register(sh->L, "SetCanNotMoveBox", Event::SetCanNotMoveBox);
 
 		//Determine which sign to use in the hubworld, with or without a mark that indicates that you have completed a subworld
 		lua_register(sh->L, "LevelIsCompleted", Event::LevelIsCompleted);
 		lua_register(sh->L, "SetActivated", Event::SetActivated);
 
-		lua_register(sh->L, "SetCanMoveBox", Event::SetCanMoveBox);
-		lua_register(sh->L, "SetCanNotMoveBox", Event::SetCanNotMoveBox);
+
 
 
 
 	};
 
-	// we are added to an Entity, and thus to the component system
 	void addedToEntity();
-
 	void update(float deltaTime);
 
 	static EntityManager* entityManager;
@@ -122,10 +120,8 @@ private:
 
 	std::string file;
 
-
 	bool startUpdate;
 	bool firstUpdate;
-
 	bool activated;
 
 	void Activated(Message const& msg);
@@ -188,7 +184,6 @@ private:
 	static int OnButton(lua_State* L);
 	static int IsAlive(lua_State* L);
 	static int Respawn(lua_State* L);
-
 	static int SetCanMoveBox(lua_State* L);
 	static int SetCanNotMoveBox(lua_State* L);
 };

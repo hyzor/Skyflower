@@ -9,8 +9,8 @@
 
 using namespace Cistron;
 
-#define PORTAL_EFFECT_PARTICLE_SYSTEMS 3
-#define PORTAL_EFFECT_DURATION         4.0f
+#define PORTAL_EFFECT_PARTICLE_SYSTEMS 1
+#define PORTAL_EFFECT_DURATION         3.0f
 
 class PortalEffectComponent : public Component
 {

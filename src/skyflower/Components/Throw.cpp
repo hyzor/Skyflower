@@ -10,7 +10,7 @@
 // Must be included last!
 #include "shared/debug.h"
 
-#define THROW_FORCE 150.0f
+#define THROW_FORCE 170.0f
 #define THROW_PARTICLE_EMIT_FREQUENCY (1.0f / 25.0f)
 
 Throw::Throw(bool haveAim) : Component("Throw")
@@ -264,7 +264,7 @@ Vec3 Throw::getAimDirection()
 {
 	Vec3 rotation = getOwner()->returnRot();
 	float pitch = getOwner()->getModules()->camera->GetPitch();
-	pitch -= 0.2f;
+	pitch -= 0.5f;
 
 	return Vec3(cosf(-rotation.Y - (float)M_PI_2), sinf(-pitch), sinf(-rotation.Y - (float)M_PI_2)).Normalize();
 }

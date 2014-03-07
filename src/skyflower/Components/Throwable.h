@@ -55,8 +55,8 @@ public:
 	}
 
 	void setIsBeingThrown(bool state, EntityId throwerId = -1);
-
 	void setIsBeingPickedUp(bool state, EntityId throwerId = -1);
+
 	bool getIsBeingPickedUp();
 
 	bool getIsBeingThrown()
@@ -73,17 +73,24 @@ private:
 
 	bool isBeingPickedUp;
 	bool isBeingThrown;
+
 	EntityId throwerId;
+
 	PhysicsEntity* p;
+
 	Vec3 targetPos;
+
 	ParticleSystem *mParticleSystemThrow;
+
 	Vec3 mPrevPos;
 	Vec3 mStartThrowPos;
+
 	float mCurrThrowParticleScale;
 	float mThrowParticleTimer;
 
 	void update(float deltaTime);
 	void setTargetPos(Vec3 pos);
+
 	Vec3 getTargetPos();
 
 	void beingThrown(Message const & msg)

@@ -30,11 +30,10 @@ public:
 	};
 
 	void addedToEntity();
-
 	void update(float dt);
-
 	void lit(float time);
 	void unlit(float time);
+
 	bool isLit();
 	bool isUnlit();
 
@@ -45,10 +44,12 @@ private:
 	Vec3 pos;
 	Vec3 color;
 	Vec3 dir;
+	Vec3 speed;
+
 	float angle;
 
 	bool lightOn;
-	Vec3 speed;
+
 };
 
 #endif

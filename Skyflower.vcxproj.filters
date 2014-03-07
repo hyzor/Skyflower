@@ -144,11 +144,13 @@
     <ClCompile Include="src\skyflower\Components\Push.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-
     <ClCompile Include="src\skyflower\Components\PortalEffect.cpp">
-		<Filter>Source Files\Components</Filter>
+      <Filter>Source Files\Components</Filter>
     </ClCompile>
     <ClCompile Include="src\skyflower\Components\ParticleSystemComp.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\skyflower\Components\ShadowComp.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
   </ItemGroup>
@@ -288,14 +290,16 @@
     <ClInclude Include="src\skyflower\resources\resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-
-    <ClInclude Include="src\skyflower\Components\PortalEffect.h">
-		<Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\skyflower\Components\ParticleSystemComp.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\skyflower\Components\Event.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\Components\ShadowComp.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyflower\Components\PortalEffect.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>

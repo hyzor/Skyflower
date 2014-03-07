@@ -20,9 +20,9 @@ void PortalEffectComponent::addedToEntity()
 		m_particleSystems[i] = getOwner()->getModules()->graphics->CreateParticleSystem();
 		m_particleSystems[i]->SetActive(true);
 		m_particleSystems[i]->SetParticleType(ParticleType::PT_PORTAL);
-		m_particleSystems[i]->SetEmitFrequency(1.0f / 50.0f);
-		m_particleSystems[i]->SetParticleAgeLimit(2.0f);
-		m_particleSystems[i]->SetParticleFadeTime(2.0f);
+		m_particleSystems[i]->SetEmitFrequency(1.0f / 25.0f);
+		m_particleSystems[i]->SetParticleAgeLimit(1.0f);
+		m_particleSystems[i]->SetParticleFadeTime(1.0f);
 		m_particleSystems[i]->SetScale(XMFLOAT2(3.0f, 3.0f));
 		m_particleSystems[i]->SetConstantAccel(XMFLOAT3(0.0f, 0.0f, 0.0f));
 		m_particleSystems[i]->SetRandomVelocityActive(true);
@@ -63,7 +63,8 @@ void PortalEffectComponent::update(float deltaTime)
 		float animationProgress = m_animationTime[i] / PORTAL_EFFECT_DURATION;
 
 		float angle = m_animationTime[i] * XM_2PI;
-		float distance = animationProgress * maxDistance;
+		//float distance = animationProgress * maxDistance;
+		float distance = 3.0f;
 
 		float x = 0.0f;
 		float y = 17.0f;

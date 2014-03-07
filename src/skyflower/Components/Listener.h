@@ -16,11 +16,8 @@ public:
 
 	void addedToEntity();
 	void removeFromEntity();
-
 	void update(float deltaTime);
-
 	void activateListener(Message const& msg);
-
 	void setVolume(float volume);
 
 private:

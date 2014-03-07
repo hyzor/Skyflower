@@ -8,8 +8,8 @@
 // Must be included last!
 #include "shared/debug.h"
 
-//int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
-int main(int argc, const char *argv[])
+//int main(int argc, const char *argv[])
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
 	// Check for memory leaks in debug builds.
 #ifdef _DEBUG

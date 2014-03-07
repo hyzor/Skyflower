@@ -18,17 +18,36 @@ void HelpText::addedToEntity()
 	requestMessage("Show helptexts", &HelpText::activate);
 
 	orig = getOwner()->spawnpos;
+	this->width = 0;
+	this->height = 0;
+	getOwner()->getModules()->graphics->GetWindowResolution(width, height);
 
 	GUI* gui = getOwner()->getModules()->gui;
+	GraphicsEngine* graphics = getOwner()->getModules()->graphics;
+	vector<string> split = SplitString(m_text, ' ');
+	string tmpStr = "";
+	for (unsigned int i = 0; i < split.size(); i++)
+	{
+		float stringWidth = graphics->MeassureString(tmpStr + split[i]).X;
+		if (stringWidth > width*0.5f)
+		{
+			tmpStr += "\n";
+		}
+		else
+		{
+			tmpStr += " ";
+		}
+		tmpStr += split[i];
+	}
+	m_text = tmpStr;
 
-	height = width = 0;
 	getOwner()->getModules()->graphics->GetWindowResolution(width, height);
-	bgID = gui->CreateGUIElementAndBindTexture(Vec3(0, 0), "MenyGrafik\\bg_settings.png");
+	bgID = gui->CreateGUIElementAndBindTexture(Vec3(), "MenyGrafik\\bg_settings.png");
 	gui->GetGUIElement(bgID)->GetDrawInput()->scale.x = width * 0.1f; 	// bg_settings.png is 10x10px so to get a proper size we scale it
-	gui->GetGUIElement(bgID)->GetDrawInput()->scale.y = 10.0f;
+	gui->GetGUIElement(bgID)->GetDrawInput()->scale.y = 15.0f;
 	gui->GetGUIElement(bgID)->SetVisible(false);
 
-	duckID = gui->CreateGUIElementAndBindTexture(Vec3(0, 0), "helpful_duck.png");
+	duckID = gui->CreateGUIElementAndBindTexture(Vec3(), "helpful_duck.png");
 	gui->GetGUIElement(duckID)->SetVisible(false);
 	top = 0;
 }
@@ -45,11 +64,35 @@ void HelpText::update(float dt)
 {
 	if (m_active && !m_menuActive)
 	{
-
 		GUI* gui = getOwner()->getModules()->gui;
 
+		UINT oldW = width;
+		UINT oldH = height;
 		getOwner()->getModules()->graphics->GetWindowResolution(width, height);
+
+		if (oldW != width || oldH != height)
+		{
+			GraphicsEngine* graphics = getOwner()->getModules()->graphics;
+			vector<string> split = SplitString(m_text, ' ');
+			string tmpStr = "";
+			for (unsigned int i = 0; i < split.size(); i++)
+			{
+				float stringWidth = graphics->MeassureString(tmpStr + split[i]).X;
+				if (stringWidth > width*0.5f)
+				{
+					tmpStr += "\n";
+				}
+				else
+				{
+					tmpStr += " ";
+				}
+				tmpStr += split[i];
+			}
+			m_text = tmpStr;
+		}
+
 		xPos = (width * 0.5f) - (getOwner()->getModules()->graphics->MeassureString(m_text).X*1.5f * 0.5f);
+		int stringHeight = (int)(getOwner()->getModules()->graphics->MeassureString(m_text).X*1.5f);
 
 		gui->GetGUIElement(bgID)->GetDrawInput()->scale.x = width * 0.1f;
 
@@ -63,7 +106,7 @@ void HelpText::update(float dt)
 				getOwner()->getModules()->sound->PlaySound("comedy_duck.wav", 1.0f);
 			}
 
-			if (top < 153.6f)
+			if (top < 120.0f)
 				top += dt*300;
 			else
 			{	
@@ -75,9 +118,14 @@ void HelpText::update(float dt)
 			}
  			gui->GetGUIElement(bgID)->SetVisible(true);
 			gui->GetGUIElement(duckID)->SetVisible(true);
-			gui->GetGUIElement(bgID)->GetDrawInput()->pos.y = height - top + 85.0f;
-			gui->GetGUIElement(duckID)->GetDrawInput()->pos.y = height - top + 38.0f;
-			gui->printText(m_textToPrint, (int)(xPos), (int)(height - top + 108.6f), Vec3(0.0f, 1.0f, 0.0f), 1.5f);
+			gui->GetGUIElement(bgID)->GetDrawInput()->pos.y = height - top;
+			gui->GetGUIElement(duckID)->GetDrawInput()->pos.y = height - top - 1.0f;
+			gui->printText(m_textToPrint, (int)(xPos), (int)(height - top + 20.0f), Vec3(0.0f, 1.0f, 0.0f), 1.5f);
+
+			string close = "(Press enter to close)";
+			float cHeight = getOwner()->getModules()->graphics->MeassureString(close).Y * 0.8f;
+			float closePos = width * 0.5f - getOwner()->getModules()->graphics->MeassureString(close).X * 0.8f * 0.5f;
+			gui->printText(close, (int)closePos, (int)(height - top + (120-cHeight)), Vec3(1.0f, 1.0f, 1.0f), 0.8f);
 		}
 		else if (top > 0.0f)
 		{
@@ -85,9 +133,14 @@ void HelpText::update(float dt)
 			gui->GetGUIElement(bgID)->SetVisible(true);
 			gui->GetGUIElement(duckID)->SetVisible(true);
 
-			gui->GetGUIElement(bgID)->GetDrawInput()->pos.y = height - top + 85.0f;
-			gui->GetGUIElement(duckID)->GetDrawInput()->pos.y = height - top;
-			gui->printText(m_textToPrint, (int)(xPos), (int)(height - top + 108.6f), Vec3(0.0f, 1.0f, 0.0f), 1.5f);
+			gui->GetGUIElement(bgID)->GetDrawInput()->pos.y = height - top;
+			gui->GetGUIElement(duckID)->GetDrawInput()->pos.y = height - top - 1.0f;
+			gui->printText(m_textToPrint, (int)(xPos), (int)(height - top + 20.0f), Vec3(0.0f, 1.0f, 0.0f), 1.5f);
+
+			string close = "(Press enter to close)";
+			float cHeight = getOwner()->getModules()->graphics->MeassureString(close).Y * 0.8f; 
+			float closePos = width * 0.5f - getOwner()->getModules()->graphics->MeassureString(close).X * 0.8f * 0.5f;
+			gui->printText(close, (int)closePos, (int)(height - top + (120 - cHeight)), Vec3(1.0f, 1.0f, 1.0f), 0.8f);
 
 		}
 		else
@@ -99,8 +152,30 @@ void HelpText::update(float dt)
 			gui->GetGUIElement(duckID)->SetVisible(false);
 		}
 	}
-	
 }
+
+vector<string> HelpText::SplitString(string str, char token)
+{
+	vector<string> ret;
+	ret.emplace_back(string());
+
+	int j = 0;
+	for (unsigned i = 0; i < str.length(); i++)
+	{
+		if (str[i] != token)
+		{
+			ret.at(j) += str[i];
+		}
+		else
+		{
+			j++;
+			ret.emplace_back(string());
+		}
+	}
+	return ret;
+}
+
+// Message handling
 
 void HelpText::menu_activate(Message const & msg)
 {

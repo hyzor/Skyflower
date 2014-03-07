@@ -16,7 +16,6 @@ class Button : public Component {
 
 public:
 
-	// constructor - age is fixed at creation time
 	Button(bool toggle) : Component("Button")
 	{
 		activated = 0;
@@ -26,7 +25,6 @@ public:
 	};
 	virtual ~Button() {};
 
-	// we are added to an Entity, and thus to the component system
 	void addedToEntity()
 	{
 		requestMessage("Ground", &Button::Activate);
@@ -35,24 +33,23 @@ public:
 	bool isDown();
 
 	void update(float dt);
-
 	void Deactivate();
+
 private:
 
-	void Activate(Message const& msg);
-
-
-
 	float activated;
+
 	bool act;
+	bool first;
+	bool toggle;
+	bool down;
 
 	Vec3 moveTo;
 	Vec3 startPos;
 	Vec3 downPos;
-	bool first;
-	
-	bool toggle;
-	bool down;
+
+	void Activate(Message const& msg);
+
 
 
 };

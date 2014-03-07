@@ -31,17 +31,16 @@ public:
 
 	void addedToEntity();
 	void removeFromEntity();
-
 	void update(float deltaTime);
-
 	void setCamera(Vec3 look, Vec3 right, Vec3 up);
 	void setYaw(float yaw);
-
 	void moveforward();
-	float GetSpeed();
 	void SetSpeed(float speed);
-	bool getIsInAir();
+
+	float GetSpeed();
 	float getTimeFalling();
+
+	bool getIsInAir();
 
 	Vec3 GetLook();
 
@@ -83,30 +82,35 @@ private:
 
 private:
 	PhysicsEntity* p;
+
 	bool isMovingForward;
 	bool isMovingBackward;
 	bool isMovingLeft;
 	bool isMovingRight;
 	bool isInAir;
-	Vec3 camLook;
-	float speed;
 	bool canMove;
+	bool isDizzy;
+
+	Vec3 camLook;
+	Vec3 pRot;
+
+	float speed;
 	float timeUntilGravityEnable;
 	float yaw;
 	float targetRot;
 	float walkAngle;
 	float timeFalling;
-	JumpDirection mInitialJumpDir;
 	float dizzyMaxTimer;
 	float dizzyCounter;
-	bool isDizzy;
-	Vec3 pRot;
 	float respawnTimer;
 	float turnAngle;
 	float idleTimer;
+	float mParticleSystemDizzyAngle;
+
+	JumpDirection mInitialJumpDir;
+
 	ParticleSystem *mParticleSystemRun;
 	ParticleSystem *mParticleSystemDizzy;
-	float mParticleSystemDizzyAngle;
 
 	void DoJumpStuff(float &speed);
 };

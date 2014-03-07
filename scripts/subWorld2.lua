@@ -4,18 +4,18 @@ function loaded()
 	Lit(195,1)
 	Lit(196,1)
 	
-	Lit(197,1)
-	Lit(198,1)
-	Lit(199,1)
-	Lit(200,1)
-	Lit(201,1)
-	Lit(202,1)
-	Lit(203,1)
-	Lit(204,1)
-	Lit(205,1)
-	Lit(206,1)
-	Lit(207,1)
-	Lit(208,1)
+	Unlit(197,1)
+	Unlit(198,1)
+	Unlit(199,1)
+	Unlit(200,1)
+	Unlit(201,1)
+	Unlit(202,1)
+	Unlit(203,1)
+	Unlit(204,1)
+	Unlit(205,1)
+	Unlit(206,1)
+	Unlit(207,1)
+	Unlit(208,1)
 	--CutScenePlay("intro")
 end
 
@@ -225,6 +225,7 @@ function activated_balloon(id)
 		Lit(206,3)
 		Lit(207,3)
 		Lit(208,3)
+		Lit(209,3)
 		PlayFinishedSound(id)
 	--end
 end
@@ -289,9 +290,6 @@ end
 
 function load_boxPuzzle(id)
 	StartUpdate()
-	--Lit(200,1)
-	--Lit(204,1)
-	--Lit(205,1)
 end
 
 finished = false
@@ -358,11 +356,8 @@ function update_puzzleCheckpoint(id, dt)
 		end
 		if not finished then
 		Respawn(59)
---		SetCanMoveBox(59)
 		Respawn(58)
---		SetCanMoveBox(58)
 		Respawn(60)	
---		SetCanMoveBox(60)	
 		timer = 0
 		end
 	else

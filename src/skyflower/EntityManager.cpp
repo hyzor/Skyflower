@@ -284,7 +284,6 @@ void EntityManager::addComponent(EntityId id, Component *component) {
 
 		// put in log
 		//if (fStream.is_open()) fStream << "CREATE  " << *component << endl;
-		//cout << "CREATE " << *component << endl;
 
 		// let the component know
 		component->addedToEntity();
@@ -338,7 +337,7 @@ void EntityManager::registerLocalRequest(ComponentRequest req, RegisteredCompone
 	// put in log
 	//if (fStream.is_open()) fStream << "DESTROY " << *comp << endl;
 
-//cout << "Registered local request of " << (*reg.component) << " for " << req.name << endl;
+	//cout << "Registered local request of " << (*reg.component) << " for " << req.name << endl;
 	// if we want the previously created components as well, we process them
 	if (req.type != REQ_COMPONENT) return;
 	
@@ -1017,6 +1016,11 @@ bool EntityManager::loadXML(string xmlFile)
 				UINT particleSystemID = GetIntAttribute(e, "particleSystemID", entityName, xmlFile, componentName);
 				ParticleSystemComp* psc = new ParticleSystemComp(scriptName, particleSystemID);
 				this->addComponent(entity, psc);
+			}
+			else if (componentName == "Shadow")
+			{
+				ShadowComp *sc = new ShadowComp();
+				this->addComponent(entity, sc);
 			}
 			else
 			{

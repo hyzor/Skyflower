@@ -29,11 +29,10 @@ public:
 	};
 
 	void addedToEntity();
-
 	void update(float dt);
-
 	void lit(float time);
 	void unlit(float time);
+
 	bool isLit();
 	bool isUnlit();
 
@@ -42,14 +41,14 @@ public:
 private:
 
 	Vec3 pPos;
-
 	Vec3 pos;
 	Vec3 color;
+	Vec3 speed;
+
 	float intensity;
 	float range;
 
 	bool lightOn;
-	Vec3 speed;
 };
 
 #endif

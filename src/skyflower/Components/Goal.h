@@ -17,14 +17,12 @@ class Goal : public Component {
 
 public:
 
-	// constructor - age is fixed at creation time
 	Goal() : Component("Goal")
 	{
 		activated = 0.0f;
 	};
 	virtual ~Goal() {};
 
-	// we are added to an Entity, and thus to the component system
 	void addedToEntity()
 	{
 		requestMessage("Ground", &Goal::Activate);
@@ -34,11 +32,13 @@ public:
 
 	void update(float dt);
 private:
-	void Activate(Message const& msg);
-
-	void Deactivate();
 
 	float activated;
+
+	void Activate(Message const& msg);
+	void Deactivate();
+
+
 };
 
 #endif
